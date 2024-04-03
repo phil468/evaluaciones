@@ -1,0 +1,30 @@
+<div class="container-fluid">
+    @foreach(${{modelNamePluralLowerCase}} as $row)
+    <div class="rounded border p-2 my-1">
+        <div class="flex justify-between align-items-center my-1">
+            <div class="d-flex justify-content-between">
+	            <div class="container">
+		        	<div class="row">
+{{dataBody}}
+					</div>
+				</div>
+
+				<span>
+					@if ($row->updated_at < Carbon\Carbon::now())
+					<small>Actualizado: {{$row->updated_at->diffForHumans()}}</small> <i class="fa fa-check-circle text-success"></i>
+					@elseif ($row->updated_at >= Carbon\Carbon::now())
+					<small>Actualizado: {{$row->updated_at->diffForHumans()}}</small> <i class="fa fa-times-circle text-warning"></i>
+					@endif
+				</span>
+				<span>
+					<div class="btn-group">
+						<a data-toggle="modal" data-target="#updateModal" class="btn btn-primary" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar </a>							 
+						<a class="btn btn-danger" onclick="confirm('Confirma Eliminar Bag id {{$row->id}}? \n {{modelName}} borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"><i class="fa fa-trash"></i> Borrar </a>   
+					</div>
+				</span>
+            </div>
+        </div>
+    </div>
+    @endforeach
+	{{${{modelNamePluralLowerCase}}->links()}}
+</div>

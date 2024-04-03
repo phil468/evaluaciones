@@ -1,0 +1,24 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\JabaTipo;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+class JabaTipoFactory extends Factory
+{
+    protected $model = JabaTipo::class;
+
+    public function definition()
+    {
+        return [
+			'name' => $this->faker->name,
+			'state' => $this->faker->name,
+			'valor' => $this->faker->name,
+			'fecha' => $this->faker->name,
+			'updated_date' => $this->faker->name,
+			'type' => $this->faker->name,
+        ];
+    }
+}
