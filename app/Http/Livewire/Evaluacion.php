@@ -49,6 +49,7 @@ $tipo_objetivo_id2;
             if ($this->evaluacion->tipo_de_evaluacion_id == 2) {
                 $this->evaluacion_por_objetivos = true;
                 $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+                // $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
                 // $this->]
             } else {
                 
@@ -131,26 +132,22 @@ $tipo_objetivo_id2;
     {
         $this->validate([
             'descripcion1' => 'required|string',
-            // 'descripcion2' => 'string',
-            'cantidad1' => 'required|numeric',
-            // 'cantidad2' => 'numeric',
             'tipo_objetivo_id1' => 'required|numeric',
-            // 'tipo_objetivo_id2' => 'numeric',
         ]);
 
         Objetivo::create([
             'descripcion' => $this->descripcion1,
-            'cantidad' => $this->cantidad1,
+            'evaluador_id' => $this->evaluadorHasEvaluado->evaluador_id,
             'evaluado_id' => $this->evaluado->id,
             'tipo_objetivo_id' => $this->tipo_objetivo_id1,
         ]);
 
 
         //$this->descripcion2,$this->cantidad2,$this->evaluado->id,$this->tipo_objetivo_id2 que no sean vacuio ni null 
-        if($this->descripcion2 != null && $this->descripcion2 != '' && $this->cantidad2 != null && $this->cantidad2 != '' && $this->tipo_objetivo_id2 != null && $this->tipo_objetivo_id2 != '' ){
+        if($this->descripcion2 != null && $this->descripcion2 != '' && $this->tipo_objetivo_id2 != null && $this->tipo_objetivo_id2 != '' ){
             Objetivo::create([
                 'descripcion' => $this->descripcion2,
-                'cantidad' => $this->cantidad2,
+                'evaluador_id' => $this->evaluadorHasEvaluado->evaluador_id,
                 'evaluado_id' => $this->evaluado->id,
                 'tipo_objetivo_id' => $this->tipo_objetivo_id2,
             ]);

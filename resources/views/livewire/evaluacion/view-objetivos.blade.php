@@ -10,7 +10,7 @@
                         </div>
                         @if ($errors->any())
                             <div wire:poll.4s class="btn btn-sm btn-danger" style="margin-top:0px; margin-bottom:0px;">
-                                Debe responder todas las preguntas.
+                                Debe ingresar al menos un objetivo.
                             </div>
                         @endif
 
@@ -166,7 +166,7 @@
                             </div>
                             <br>
                             <div>
-                                <h1 class="h1">
+                                <h1 class="h5">
                                     Ejemplos:
                                 </h1>
                                 <ol>
