@@ -6,9 +6,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Objetivo;
 use App\Models\Personal;
 use App\Models\Pregunta;
 use App\Models\Respuesta;
+use App\Models\TiposDeObjetivo;
 
 class Evaluacion extends Component
 {
@@ -19,41 +21,154 @@ class Evaluacion extends Component
      $status, $evaluacion_id, $evaluacion, $evaluador,
       $evaluado, $evaluadorHasEvaluado,$preguntas, $secciones, $seccion_index_select, $seccion_indexs;
     public $updateMode = false;
+    public $aceptado = false;
+    public $realizado = false;
+    public $evaluacion_por_objetivos = false;
+
+    public
+$descripcion1,
+$cantidad1,
+$tipo_objetivo_id1,
+$descripcion2,
+$cantidad2,
+$tipo_objetivo_id2;
 
     protected $listeners = ['guardar' => 'guardar'];
 
     public function mount($evaluacion_id)
     {
-        $this->evaluacion_id = $evaluacion_id;
+
+            $this->evaluacion_id = $evaluacion_id;
         
-        // Obtener el evaluadorHasEvaluado correspondiente al evaluacion_id
-        $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)->first();
+            // Obtener el evaluadorHasEvaluado correspondiente al evaluacion_id
+            $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)->first();
+                
+            // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
+            $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
 
-        // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
-        $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
+            if ($this->evaluacion->tipo_de_evaluacion_id == 2) {
+                $this->evaluacion_por_objetivos = true;
+                $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+                // $this->]
+            } else {
+                
+                if($this->evaluadorHasEvaluado->realizado == 1){
+                    $this->aceptado = true;
+                    $this->realizado = true;
+                }
+        
+                // Obtener las preguntas de la evaluacion con sus respectivas secciones
+                $this->preguntas = Pregunta::where('evaluacion_id',$this->evaluacion->id)->with('seccion'
+                )->orderBy('preguntas.numero_orden')->get()->toArray();
+        
+                // Inicializar los valores de las preguntas en 7
+                foreach ($this->preguntas as $key => $value) {
+                    $this->preguntas[$key]['valor'] = null;
+                }
+        
+                // Obtener el evaluador correspondiente al evaluadorHasEvaluado
+                $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
+        
+                // Obtener el evaluado correspondiente al evaluadorHasEvaluado
+                $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+        
+                // Obtener las secciones unicas de la evaluacion
+                $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
+                $this->secciones = (array) $this->secciones;
+                $this->seccion_indexs = array_keys($this->secciones);
+                //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
+                // $this->seccion_index_select = count($this->seccion_indexs)-1;
+                $this->seccion_index_select = 0;
+                
+            }
+            
+    }
 
-        // Obtener las preguntas de la evaluacion con sus respectivas secciones
-        $this->preguntas = Pregunta::where('evaluacion_id',$this->evaluacion->id)->with('seccion'
-        )->orderBy('preguntas.numero_orden')->get()->toArray();
+    public function render()
+    {
+        if ($this->evaluacion_por_objetivos) {
+            
+            return view('livewire.evaluacion.view-objetivos',
+            [
+                'tipos_objetivo' => TiposDeObjetivo::all(),
+            ]
+        );
+        } else {
 
-        // Inicializar los valores de las preguntas en 7
-        foreach ($this->preguntas as $key => $value) {
-            $this->preguntas[$key]['valor'] = 7;
+            // contar el total de preguntas: preguntas.*.valor
+            // contar el total de preguntas cuyo valor no sea nulo
+            $totalPreguntas = count($this->preguntas);
+            $totalPreguntasNoNulas = count(array_filter($this->preguntas, function ($pregunta) {
+                return $pregunta['valor'] !== null;
+            }));
+
+            //mostrar una barra de progreso
+            $porcentaje =  $totalPreguntas == 0 ? 0 : ($totalPreguntasNoNulas/$totalPreguntas)*100;
+            $porcentaje = round($porcentaje,2);
+            
+            if ($totalPreguntasNoNulas == 0) {
+                $class = 'bg-secondary';
+                $porcentaje = 100;
+                $label = '0%';
+            } else if ($totalPreguntas == $totalPreguntasNoNulas) {
+                $class = 'bg-primary';
+                $label = $porcentaje.'%';
+            } else {
+                $class = 'bg-primary';
+                $label = $porcentaje.'%';
+            }
+
+            $keyWord = '%'.$this->keyWord .'%';        
+            return view('livewire.evaluacion.view', [
+                'class' => $class,
+                'porcentaje' => $porcentaje,
+                'label' => $label
+            ]);
+        }
+    }
+
+    public function guardar_objetivos()
+    {
+        $this->validate([
+            'descripcion1' => 'required|string',
+            // 'descripcion2' => 'string',
+            'cantidad1' => 'required|numeric',
+            // 'cantidad2' => 'numeric',
+            'tipo_objetivo_id1' => 'required|numeric',
+            // 'tipo_objetivo_id2' => 'numeric',
+        ]);
+
+        Objetivo::create([
+            'descripcion' => $this->descripcion1,
+            'cantidad' => $this->cantidad1,
+            'evaluado_id' => $this->evaluado->id,
+            'tipo_objetivo_id' => $this->tipo_objetivo_id1,
+        ]);
+
+
+        //$this->descripcion2,$this->cantidad2,$this->evaluado->id,$this->tipo_objetivo_id2 que no sean vacuio ni null 
+        if($this->descripcion2 != null && $this->descripcion2 != '' && $this->cantidad2 != null && $this->cantidad2 != '' && $this->tipo_objetivo_id2 != null && $this->tipo_objetivo_id2 != '' ){
+            Objetivo::create([
+                'descripcion' => $this->descripcion2,
+                'cantidad' => $this->cantidad2,
+                'evaluado_id' => $this->evaluado->id,
+                'tipo_objetivo_id' => $this->tipo_objetivo_id2,
+            ]);
         }
 
-        // Obtener el evaluador correspondiente al evaluadorHasEvaluado
-        $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
+        $this->evaluadorHasEvaluado->realizado = 1;
+        $this->evaluadorHasEvaluado->save();
+        
+        $this->emit('openGraciasModal');
 
-        // Obtener el evaluado correspondiente al evaluadorHasEvaluado
-        $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+        // Objetivo::create([
+        //     'descripcion' =>        $this->descripcion2,
+        //     'cantidad' =>           $this->cantidad2,
+        //     'evaluado_id' =>        $this->evaluado->id,
+        //     'tipo_objetivo_id' =>   $this->tipo_objetivo_id2,
+        // ]);
 
-        // Obtener las secciones unicas de la evaluacion
-        $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
-        $this->secciones = (array) $this->secciones;
-        $this->seccion_indexs = array_keys($this->secciones);
-        //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
-        $this->seccion_index_select = count($this->seccion_indexs)-1;
-        // $this->seccion_index_select = 0;
+        // Redirige o muestra un mensaje de éxito...
     }
 
     public function anterior() {
@@ -93,7 +208,12 @@ class Evaluacion extends Component
 
     public function confirmarGuardado()
     {
-        $this->emit('confirmarGuardado');
+        // $this->emit('confirmarGuardado');
+    }
+    
+    public function volver_a_preguntas()
+    {
+        $this->emit('closeModal');
     }
 
     public function guardar()
@@ -118,7 +238,7 @@ class Evaluacion extends Component
         $evaluacionRealizada = EvaluadorHasEvaluado::where('id', $this->evaluadorHasEvaluado->id)->first();
         if ($evaluacionRealizada->realizado == 1) {
             session()->flash('message-danger', 'Esta evaluación ya fue realizada y guardada anteriormente.');
-            return redirect()->to('/evaluaciones_de_desempeno');
+            return redirect()->to('/evaluaciones-de-desempeno/1');
         } else {
             // Guardar las respuestas en el modelo Respuesta
             foreach ($this->preguntas as $key => $value) {
@@ -135,25 +255,26 @@ class Evaluacion extends Component
             $this->evaluadorHasEvaluado->realizado = 1;
             $this->evaluadorHasEvaluado->save();        
     
-            $this->emit('closeModal');
-            session()->flash('message', 'Evaluacion guardada correctamente.');
-            // Redirigir a /evaluaciones_de_desempeno
-            return redirect()->to('/evaluaciones_de_desempeno');
+            $this->emit('openGraciasModal');
         }
-
     }
 
-    
     public function cancelar()
     {
         // Volver a /evaluaciones_de_desempeno
-        return redirect()->to('/evaluaciones_de_desempeno');
+        return redirect()->to('/evaluaciones-de-desempeno/1');
+    }
+        
+    public function aceptar()
+    {        
+        $this->aceptado = true;
     }
 
-    public function render()
+    public function volver()
     {
-        $keyWord = '%'.$this->keyWord .'%';
-        return view('livewire.evaluacion.view');
+        // Volver a /evaluaciones_de_desempeno
+        // $this->emit('closeModal');
+        return redirect()->to('/evaluaciones-de-desempeno/1');
     }
     
     public function cancel()

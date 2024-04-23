@@ -1,6 +1,6 @@
 <li @isset($item['id']) id="{{ $item['id'] }}" @endisset class="nav-item">
 
-    <a class="nav-link {{ $item['class'] }} @isset($item['shift']) {{ $item['shift'] }} @endisset"
+    <a class="nav-link font-medium rounded-xl {{ $item['class'] }} @isset($item['shift']) {{ $item['shift'] }} @endisset"
        href="{{ $item['href'] }}" @isset($item['target']) target="{{ $item['target'] }}" @endisset
        {!! $item['data-compiled'] ?? '' !!}>
 

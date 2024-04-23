@@ -18,12 +18,28 @@
     @php( $password_reset_url = $password_reset_url ? url($password_reset_url) : '' )
 @endif
 
-@section('auth_header', __('adminlte::adminlte.login_message'))
+{{-- @section('auth_header', __('adminlte::adminlte.login_message')) --}}
 @section('css')
 <style>
 body {
-  background-color: #568ca5!important;
+    
+    background-image: url('/img/evaluacion/login-10s.mp4');
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* background-color: #568ca5!important; */
 }
+
+video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 105%;
+  min-height: 100%;
+  transform: translateX(calc((100% - 100vw) / 2));
+  z-index: -2;
+  max-width: none !important;
+}
+
 </style>
 @stop
 
@@ -49,11 +65,11 @@ body {
 
         {{-- Email field --}}
         <div class="mb-3 input-group">
-            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror border border-info"
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror border border-primary"
                    value="{{ old('email') }}" placeholder="{{ __('adminlte::adminlte.email') }}" autofocus>
 
             <div class="input-group-append">
-                <div class="input-group-text bg-info">
+                <div class="input-group-text bg-primary">
                     <span class="fas fa-envelope {{ config('adminlte.classes_auth_icon', '') }}"></span>
                 </div>
             </div>
@@ -67,11 +83,11 @@ body {
 
         {{-- Password field --}}
         <div class="mb-3 input-group">
-            <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror border border-info"
+            <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror border border-primary"
                    placeholder="{{ __('adminlte::adminlte.password') }}">
 
             <div class="input-group-append">
-                <div class="input-group-text bg-info">
+                <div class="input-group-text bg-primary">
                     <a id="show_password" type="button" onclick="mostrarPassword()"> 
                         <span class="fa fa-eye-slash icon-password"></span> 
                     </a>

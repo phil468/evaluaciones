@@ -8,7 +8,7 @@
 
 @section('content')
 
-@livewire('evaluador-has-evaluados')
+@livewire('evaluador-has-evaluados', ['tipo_de_evaluacion_id' => $tipo_de_evaluacion_id])
 
 @stop
 

@@ -32,6 +32,7 @@
 
         <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+        <link rel="stylesheet" href="https://use.typekit.net/jfl4jsk.css">
     @else
         <link rel="stylesheet" href="{{ mix(config('adminlte.laravel_mix_css_path', 'css/app.css')) }}">
     @endif
@@ -87,8 +88,10 @@
 
     <style>
         .body-bg {
-            background-color: #6ECBC9;
-            /* background-image: url('{{asset('img/bg/bg5.jpg')}}'); */
+            /* background-color: #6ECBC9; */
+            background-image: url('/img/evaluacion/login-10s.mp4');
+
+            /* background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}'); */
             background-repeat: no-repeat;
             background-position: center center;
             background-attachment: fixed;

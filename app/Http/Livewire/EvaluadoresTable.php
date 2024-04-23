@@ -23,27 +23,44 @@ class EvaluadoresTable extends LivewireDatatable
     public $export_name = 'Evaluadores';
 
     public function builder()
-    {
-         return EvaluadorHasEvaluado::query()
-        ->groupBy('evaluador_id')
+    {       
+        return EvaluadorHasEvaluado::query()
+         ->select('evaluador_has_evaluados.*')
+        ->addSelect([
+            'realizados' => EvaluadorHasEvaluado::selectRaw('count(*)')
+                ->whereColumn('evaluador_id', 'evaluador_has_evaluados.evaluador_id')
+                ->where('realizado', 1),
+            'total' => EvaluadorHasEvaluado::selectRaw('count(*)')
+        ])
+        ->groupBy('evaluador_has_evaluados.evaluador_id')
+        ->orderByRaw('realizados DESC')
         ->where('evaluador_has_evaluados.deleted_at',null)
         ->leftJoin('personal','personal.id','=','evaluador_has_evaluados.evaluador_id');
     }
 
-    public $model = Respuesta::class;
+    public $model = EvaluadorHasEvaluado::class;
 
     public function columns()
     {
+        //
+        // dd($this->model::query()->where('id', '=', $this->model::query()->first()->id)->get()->first()->realizados);
         return [
-            Column::name('personal.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
-            Column::callback('evaluador_id',function ($value) {
-
+            Column::name('personal.name')->label('Evaluador')->searchable()->filterable(),
+            Column::callback('evaluador_has_evaluados.evaluador_id',function ($value) {
+               
+                // $realizados = $this->model::query()->where('evaluador_has_evaluados.evaluador_id',$value)->first()->realizados;
+                // $total = $this->model::query()->where('evaluador_has_evaluados.evaluador_id',$value)->first()->total;
+                
                 $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
                 $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
 
                 //mostrar una barra de progreso
-                $porcentaje = ($realizados/$total)*100;
-                $porcentaje = round($porcentaje,2);
+                if($total == 0){
+                    $porcentaje = 0;
+                }else {
+                    $porcentaje = ($realizados/$total)*100;
+                    $porcentaje = round($porcentaje,2);                    
+                }
                 
                 if ($realizados == 0) {
                     $class = 'bg-white';
@@ -59,12 +76,24 @@ class EvaluadoresTable extends LivewireDatatable
                 </div>';
                 return $barra;
             })->label('Avance')->exportCallback(function ($value) {
+                
+                // $realizados = $this->model::query()->where('evaluador_id',$value)->first()->realizados;
+                // $total = $this->model::query()->where('evaluador_id',$value)->first()->total;
+                
                 $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
                 $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
                 return $realizados.' de '.$total;
             }),
             
-            //exportar realizados y total pero que no sean visibles
+            // Column::callback('evaluador_has_evaluados.evaluador_id',function ($value) {
+            //     $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
+            //     return (int) $realizados;
+            // })->label('Realizadoss')
+            // ->filterable()->searchable()->sortBy(function ($builder, $direction) {
+            //     // dd($builder);
+            //     return $builder->orderBy('realizados', $direction);
+            // }),
+            
         ];
 
     }

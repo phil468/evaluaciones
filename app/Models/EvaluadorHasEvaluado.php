@@ -15,7 +15,7 @@ class EvaluadorHasEvaluado extends Model
 
     protected $table = 'evaluador_has_evaluados';
 
-    protected $fillable = ['evaluador_id','evaluado_id','evaluacion_id','realizado'];
+    protected $fillable = ['evaluador_id','evaluado_id','evaluacion_id','realizado','tipo_de_evaluacion_id'];
 	
     public function evaluador()
     {
@@ -31,5 +31,13 @@ class EvaluadorHasEvaluado extends Model
     {
         return $this->belongsTo(Evaluacione::class,'evaluacion_id','id');
     }
+
+    // campo total_realizados 
+    public function getTotalRealizadosAttribute()
+    {
+        return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->count();
+    }
+
+    
     
 }

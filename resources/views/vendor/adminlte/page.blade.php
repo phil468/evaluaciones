@@ -62,6 +62,9 @@
             $('#seleccionarActivoModal').modal('hide');
             $('#resultadoModal').modal('hide');
             $('#guardarNoAsignacionModal').modal('hide');
+            $('#indicacionesModal').modal('hide');
+            $('#confirmacionModal').modal('hide');
+            $('#graciasModal').modal('hide');
         });
         
         window.livewire.on('openSeleccionarActivoModal', () => {
@@ -78,6 +81,15 @@
         
         window.livewire.on('openGuardarNoAsignacionModal', () => {
             $('#guardarNoAsignacionModal').modal('show');
+        });
+        
+        // window.livewire.on('openIndicacionesModal', () => {
+        //     $('#indicacionesModal').modal('show');
+        // });
+        
+        window.livewire.on('openGraciasModal', () => {
+            $('#confirmacionModal').modal('hide');
+            $('#graciasModal').modal('show');
         });
         
         window.livewire.on('limpiarFile', () => {

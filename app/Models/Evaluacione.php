@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Evaluacione extends Model
+class 
+Evaluacione extends Model
 {
 	use HasFactory;
     use SoftDeletes;
@@ -15,7 +16,21 @@ class Evaluacione extends Model
 
     protected $table = 'evaluaciones';
 
-    protected $fillable = ['eid','title','date','status'];
+    protected $fillable = [
+        'eid',
+        'title',
+        'date',
+        'status',
+        'nombre_para_mostrar',
+        'campania',
+        'mes',
+        'anio',
+        'fecha_inicio',
+        'fecha_fin',
+        'identificador'
+    ];
+
+    protected $dates = ['date','fecha_inicio','fecha_fin'];
 
     public function preguntas() {
         return $this->hasMany(Pregunta::class,'evaluacion_id','id');
@@ -28,6 +43,21 @@ class Evaluacione extends Model
 
     public function seccionesUnicas() {
         return $this->secciones()->get()->unique('id');
+    }
+
+    public function recordatorios() {
+        return $this->hasMany(Recordatorio::class,'id_evaluacion','id');
+    }
+    
+    public function evaluadores() {
+        return $this->hasMany(EvaluadorHasEvaluado::class,'evaluacion_id','id');
+    }
+
+    //lista de correos de evaluadores que tienen evaluaciones realizadas en 0 (evaluador_has_evaluados.realizado = 0 )
+    public function evaluadoresSinRealizar() {
+        //solo correos
+        return $this->evaluadores()->where('realizado',0)->get()->pluck('evaluador.correo_empresa');
+        //return $this->evaluadores()->where('realizado',0)->get();
     }
 
     // public function evaluacione_has_preguntas()

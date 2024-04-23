@@ -33,14 +33,6 @@ Route::get('/tipodetrabajador/importar/{empresa}/{val}', [App\Http\Controllers\T
 //Rutas de autenticación
 Auth::routes();
 
-Route::get('/evaluacion/login', function () {
-    return view('app-evaluacion.auth.login-evaluacion-view');
-})->name('evaluacion.login');
-
-
-
-Route::post('/login', 'Auth\LoginController@login')->name('evaluacion.login');
-
 Route::group(['middleware'  =>  ['auth']],function(){
     Route::resource('roles',RolController::class);
 
@@ -71,13 +63,18 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/evaluaciones','livewire.evaluaciones.index')->name('evaluaciones')->middleware(['can:ver-empresa']);
     Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-empresa']);
     Route::view('/opciones','livewire.opciones.index')->name('opciones')->middleware(['can:ver-empresa']);
-    Route::view('/evaluaciones_de_desempeno','livewire.evaluador-has-evaluados.index')->name('evaluacion_de_desempeno')->middleware(['can:ver-empresa']);
+    Route::get('/evaluaciones-de-desempeno/{id}', function ($tipo_de_evaluacion_id) {
+        return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id', $tipo_de_evaluacion_id);
+    })->name('evaluacion_de_desempeno')
+    ->middleware(['can:ver-evaluaciones-de-desempeno']);
+
     Route::view('/evaluadores','livewire.evaluadores.index')->name('evaluadores')->middleware(['can:ver-empresa']);
     Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-empresa']);
     
     Route::get('/evaluacion/{id}', function ($evaluacion_id) {
         return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
-    })->name('evaluacion.show')->middleware(['can:ver-capacitacion']);
+    })->name('evaluacion.show')->middleware(['can:ver-evaluaciones-de-desempeno']);
+
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-empresa']);
     Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-empresa']);
     Route::view('/seguimiento_evaluados','livewire.seguimiento-evaluados.index')->name('seguimiento_evaluados')->middleware(['can:ver-empresa']);
@@ -120,45 +117,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     
         return view('livewire.asignaciones.pdf', ['asignacion_guardada' => $asignacion_guardada]);
     });
-    // Route::view('/clientes','livewire.clientes.index')->name('clientes')->middleware(['can:ver-clientes']);
-    // Route::view('/jaba_tipos','livewire.jaba-tipos.index')->name('jaba-tipos')->middleware(['can:ver-jaba-tipos']);
-    // Route::view('/motivo_tipos','livewire.motivo-tipos.index')->name('motivo-tipos')->middleware(['can:ver-motivo-tipos']);
-    // Route::view('/parihuela_tipos','livewire.parihuela-tipos.index')->name('parihuela-tipos')->middleware(['can:ver-parihuela-tipos']);
-    // Route::view('/fruto_colores','livewire.fruto-colores.index')->name('colores')->middleware(['can:ver-fruto-colores']);
-    // Route::view('/fruto_variedades','livewire.fruto-variedades.index')->name('variedades')->middleware(['can:ver-fruto-variedades']);
-    // Route::view('/productores','livewire.productores.index')->name('productores')->middleware(['can:ver-productores']);
-    
-    // Route::view('/salida-pallets','livewire.pallets-salidas.index')->name('salida-pallets')->middleware(['can:ver-pallets-salida']);
-    
-    // Route::view('/reporte_ingreso_pallets','livewire.reporte-ingreso-pallets.index')->name('reporte-ingreso-pallets')->middleware(['can:ver-reporte-ingreso']);
-    // Route::view('/reporte_salida_pallets','livewire.reporte-salida-pallets.index')->name('reporte-salida-pallets')->middleware(['can:ver-reporte-salida']);
-    // Route::view('/resumen_ingreso_pallets','livewire.resumen-ingreso-pallets.index')->name('resumen-ingreso-pallets')->middleware(['can:ver-resumen-ingreso-pallets']);
-    // Route::view('/grafica_pallets','livewire.grafica-pallets.index')->name('grafica-pallets')->middleware(['can:ver-grafica-pallets']);
-    // Route::view('/resumen_pallets','livewire.resumen-pallets.index')->name('resumen-pallets')->middleware(['can:ver-resumen-pallets']);
-    // Route::view('/kardex','livewire.kardex.index')->name('kardex')->middleware(['can:ver-kardex']);
-
-    // Route::view('/distribucion_variedad','livewire.distribucion-variedad.index')->name('distribucion-variedad')->middleware(['can:ver-distribucion-variedad']);
-    // Route::view('/distribucion_salida','livewire.distribucion-salida.index')->name('distribucion-salida')->middleware(['can:ver-distribucion-salida']);
-    // Route::view('/distribucion-saldos','livewire.distribucion-saldos.index')->name('distribucion-saldos')->middleware(['can:ver-distribucion-saldos']);
-
-    // Route::view('/resumen-ventas','livewire.resumen-ventas.index')->name('resumen-ventas')->middleware(['can:ver-resumen-ventas']);
-    // Route::view('/grafica-ventas','livewire.grafica-ventas.index')->name('grafica-ventas')->middleware(['can:ver-grafica-ventas']);
-    // Route::view('/grafica-ml','livewire.grafica-ml.index')->name('grafica-ml')->middleware(['can:ver-grafica-ml']);
-    // Route::view('/grafica-ml-resumen-porcentual','livewire.grafica-ml-resumen-porcentual.index')->name('grafica-ml-resumen-porcentual')->middleware(['can:ver-grafica-ml-resumen-porcentual']);
-
-    // Route::view('/inventario','livewire.inventario.index')->name('inventario')->middleware(['can:ver-inventario']);
-    // Route::view('/grafica-inventario','livewire.grafica-inventario.index')->name('grafica-inventario')->middleware(['can:ver-grafica-inventario']);
-
-    // Route::view('/impresora','livewire.impresoras.index')->name('impresora')->middleware(['can:ver-impresora']);
 
     Route::resource('users',UserController::class);
     Route::resource('roles',RolController::class);
-
-    // Route::post('/obtener-token', 'ApiController@login');
-    
-    // Route::post('/reporte1/pdf', [GeneraReporte::class, 'createPDF'])->name('reporte1.pdf');
-    // Route::get('/reporte1', [GeneraReporte::class, 'index'])->name('reporte1.index');
-    // Route::post('/imprimezebra', [GeneraReporte::class, 'ImprimeZebra'])->name('imprimezebra');
     
 });
 // Auth::routes();

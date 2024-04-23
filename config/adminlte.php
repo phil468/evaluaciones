@@ -103,12 +103,12 @@ return [
     |
     */
 
-    'classes_auth_card' => 'card-outline card-info',
+    'classes_auth_card' => 'card-primary',
     'classes_auth_header' => '',
     'classes_auth_body' => '',
-    'classes_auth_footer' => '',
+    'classes_auth_footer' => 'bg-primary',
     'classes_auth_icon' => '',
-    'classes_auth_btn' => 'btn-flat btn-info',
+    'classes_auth_btn' => 'btn-flat btn-primary',
 
     /*
     |--------------------------------------------------------------------------
@@ -130,7 +130,7 @@ return [
     'classes_content' => '',
     'classes_sidebar' => 'sidebar-dark-lightblue elevation-4',
     'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-primary navbar-dark',
+    'classes_topnav' => 'navbar-vanguard navbar-dark',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
 
@@ -239,10 +239,10 @@ return [
 
         // Sidebar items:
         
-        ['header' => 'CAPACITACIONES', 'can' => ['ver-activo','ver-entrega','ver-devolucion'
-        // 'ver-reporte-detallado',
-        // 'ver-reporte-ingreso','ver-reporte salida'
-        ]],
+        // ['header' => 'CAPACITACIONES', 'can' => ['ver-activo','ver-entrega','ver-devolucion'
+        // // 'ver-reporte-detallado',
+        // // 'ver-reporte-ingreso','ver-reporte salida'
+        // ]],
         // [
         //     'text' => 'Activos',
         //     'url'  => 'activos',
@@ -261,298 +261,237 @@ return [
         //     'icon' => 'fas fa-sign-in-alt',
         //     'can'  => 'ver-devolucion',
         // ],
-        [
-            'text' => 'CAPACITACIONES',
-            'url'  => 'capacitaciones',
-            'icon' => 'fas fa-sign-in-alt',
-            'can'  => 'ver-capacitacion',
-        ],
+        // ['header' => 'CAPACITACIONES', 'can'  => ['ver-capacitacion']],
+
+        // [
+        //     'text' => 'CAPACITACIONES',
+        //     'url'  => 'capacitaciones',
+        //     'icon' => 'fas fa-sign-in-alt',
+        //     'can'  => 'ver-capacitacion',
+        // ],
         
-        [
-            'text' => 'Asistencias',
-            'url'  => 'asistencias',
-            'icon' => 'fas fa-sign-in-alt',
-            'can'  => 'ver-capacitacion',
-        ],
+        // [
+        //     'text' => 'Asistencias',
+        //     'url'  => 'asistencias',
+        //     'icon' => 'fas fa-sign-in-alt',
+        //     'can'  => 'ver-capacitacion',
+        // ],
+        ['header' => 'Evaluaciones', 'can'  => ['ver-evaluaciones-de-desempeno']],
 
         [
-            'text' => 'Evaluación',
-            'url'  => 'evaluaciones_de_desempeno',
+            'text' => 'Ev. de Desempeño por competencias',
+            'url'  => 'evaluaciones-de-desempeno/1',
             'icon' => 'fas fa-pencil-alt',
-            'can'  => 'ver-capacitacion',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
         ],
 
         [
-            'text' => 'Respuestas',
-            'url'  => 'respuestas',
-            'icon' => 'fas fa-list-ol',
-            'can'  => 'ver-capacitacion',
+            'text' => 'Ev. de Desempeño por objetivos',
+            'url'  => 'evaluaciones-de-desempeno/2',
+            'icon' => 'fas fa-pencil-alt',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
         ],
 
-        [
-            'text' => 'Seguimiento Evaluadores',
-            'url'  => 'seguimiento_evaluadores',
-            'icon' => 'fas fa-tasks',
-            'can'  => 'ver-capacitacion',
-        ],
-
-        [
-            'text' => 'Seguimiento Evaluados',
-            'url'  => 'seguimiento_evaluados',
-            'icon' => 'fas fa-tasks',
-            'can'  => 'ver-capacitacion',
-        ],
-
-        ['header' => 'account_settings', 'can'  => ['ver-user','ver-rol']],
-        [
-            'text' => 'Usuarios',
-            'url'  => 'users',
-            'icon' => 'fas fa-fw fa-users',
-            'can'  => 'ver-user',
-            'active' => ['regex:@^users/[0-9]+/edit$@','users/create']
-        ],
-        [
-            'text' => 'Roles',
-            'url'  => 'roles',
-            'icon' => 'fas fa-fw fa-lock',
-            'can'  => 'ver-rol',
-            'active' => ['regex:@^roles/[0-9]+/edit$@','roles/create']
-        ],
-
-        ['text' => 'MANTENIMIENTO', 
-        'icon' => 'fas fa-cogs',
-        'can' => [
-            'ver-estado',
-            'ver-condicion',
-            'ver-cargo',
-            'ver-area',
-            'ver-personal',
-            'ver-empresa',
-            'ver-sede',
-            'ver-tema',//
-            'ver-planilla',//
-            'ver-tipo-de-capacitacion',//
-            'ver-gerencia',
-            'ver-modalidad'// //
-        ],
+        ['text' => 'Seguimiento de Evaluaciones', 'can'  => ['ver-capacitacion'],
+        'icon' => 'fas fa-tasks',
+        'classes' => 'rounded-xl',
         'submenu' => [
-            [
-                'text' => 'Personal',
-                'url'  => 'personal',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-personal',
-            ],
-            [
-                'text' => 'Empresas',
-                'url'  => 'empresas',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-empresa',
-            ],
-            [
-                'text' => 'Sedes',
-                'url'  => 'sedes',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-sede',
-            ],
-            [
-                'text' => 'Gerencias',
-                'url'  => 'gerencias',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-gerencia',
-            ],
-            [
-                'text' => 'Áreas',
-                'url'  => 'areas',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-area',
-            ],
-            [
-                'text' => 'Cargos',
-                'url'  => 'cargos',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-cargo',
-            ],
-            [
-                'text' => 'Planillas',
-                'url'  => 'planillas',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-planilla',
-            ],
-            [
-                'text' => 'Tipos de capacitaciones',
-                'url'  => 'tipos_de_capacitaciones',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-tipo-de-capacitacion',
-            ],
-            [
-                'text' => 'Estados de capacitaciones',
-                'url'  => 'estados',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-estado',
-            ],
-            [
-                'text' => 'Temas',
-                'url'  => 'temas',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-tema',
-            ],
-            [
-                'text' => 'Modalidades',
-                'url'  => 'modalidades',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-modalidad',
-            ],
+                [
+                    'text' => 'Respuestas',
+                    'url'  => 'respuestas',
+                    'icon' => 'fas fa-list-ol',
+                    'can'  => 'ver-capacitacion',
+                    'classes' => 'rounded-xl',
+                ],
 
-            
-            [
-                'text' => 'Evaluaciones',
-                'url'  => 'evaluaciones',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-modalidad',
-            ],
-            
-            [
-                'text' => 'Evaluadores',
-                'url'  => 'evaluadores',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-modalidad',
-            ],
-            
-            [
-                'text' => 'Secciones',
-                'url'  => 'secciones',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-modalidad',
-            ],
+                [
+                    'text' => 'Seguimiento Evaluadores',
+                    'url'  => 'seguimiento_evaluadores',
+                    'icon' => 'fas fa-tasks',
+                    'can'  => 'ver-capacitacion',
+                    'classes' => 'rounded-xl',
+                ],
 
-            [
-                'text' => 'Preguntas',
-                'url'  => 'preguntas',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-modalidad',
-            ],
-            
-            [
-                'text' => 'Opciones',
-                'url'  => 'opciones',
-                'icon' => 'fas fa-cog fa-xs',
-                'can'  => 'ver-modalidad',
-            ],
-            // [
-            //     'text' => 'Accesorios',
-            //     'url'  => 'accesorios',
-            //     'icon' => 'fas fa-cog fa-xs',
-            //     'can'  => 'ver-accesorio',
-            // ],
-            // [
-            //     'text' => 'Marcas',
-            //     'url'  => 'marcas',
-            //     'icon' => 'fas fa-cog fa-xs',
-            //     'can'  => 'ver-marca',
-            // ],
-            // [
-            //     'text' => 'Modelos',
-            //     'url'  => 'modelos',
-            //     'icon' => 'fas fa-cog fa-xs',
-            //     'can'  => 'ver-modelo',
-            // ],
-            // [
-            //     'text' => 'Vigencia',
-            //     'url'  => 'vigencia',
-            //     'icon' => 'fas fa-cog fa-xs',
-            //     'can'  => 'ver-vigencia',
-            // ],
-            // [
-            //     'text' => 'Motivo baja',
-            //     'url'  => 'motivo_baja',
-            //     'icon' => 'fas fa-cog fa-xs',
-            //     'can'  => 'ver-motivo-baja',
-            // ],
-            // [
-            //     'text' => 'Tipo Asignación',
-            //     'url'  => 'tipo_asignacion',
-            //     'icon' => 'fas fa-cog fa-xs',
-            //     'can'  => 'ver-tipo-asignacion',
-            // ],        
-        // [
-        //     'text' => 'Impresora',
-        //     'url'  => 'impresora',
-        //     'icon' => 'fas fa-cogs',
-        //     'can'  => 'ver-impresora',
-        // ],
-        // [
-        //     'text' => 'Tipo de Pagos',
-        //     'url'  => 'pago-tipos',
-        //     'icon' => 'fas fa-cogs',
-        //     'can'  => 'ver-pago-tipos',
-        // ],
-        ]],
-        // [
-        //     'text' => 'Tipo de materiales',
-        //     'url'  => 'tipo-materiales',
-        //     'icon' => 'fas fa-list',
-        //     'can'  => 'ver-tipo-material',
-        // ],
-        // [
-        //     'text' => 'Materiales',
-        //     'url'  => 'materiales',
-        //     'icon' => 'fas fa-box',
-        //     'can'  => 'ver-material',
-        // ],
-        // [
-        //     'text'    => 'multilevel',
-        //     'icon'    => 'fas fa-fw fa-share',
+                [
+                    'text' => 'Seguimiento Evaluados',
+                    'url'  => 'seguimiento_evaluados',
+                    'icon' => 'fas fa-tasks',
+                    'can'  => 'ver-capacitacion',
+                    'classes' => 'rounded-xl',
+                ],
+            ]
+        ],
+
+        ['text' => 'Ajustes de usuarios', 'can'  => ['ver-user','ver-rol'],
+        'icon' => 'fas fa-users-cog',
+        'classes' => 'rounded-xl',
+        'submenu' => [
+                [
+                    'text' => 'Usuarios',
+                    'url'  => 'users',
+                    'icon' => 'fas fa-fw fa-users',
+                    'can'  => 'ver-user',
+                    'classes' => 'rounded-xl',
+                    'active' => ['regex:@^users/[0-9]+/edit$@','users/create']
+                ],
+                [
+                    'text' => 'Roles',
+                    'url'  => 'roles',
+                    'icon' => 'fas fa-fw fa-lock',
+                    'can'  => 'ver-rol',
+                    'classes' => 'rounded-xl',
+                    'active' => ['regex:@^roles/[0-9]+/edit$@','roles/create']
+                ],
+            ]
+        ],
+
+        // ['text' => 'Mantenimiento', 
+        // 'icon' => 'fas fa-cogs',
+        // 'can' => [
+        //         'ver-estado',
+        //         'ver-condicion',
+        //         'ver-cargo',
+        //         'ver-area',
+        //         'ver-personal',
+        //         'ver-empresa',
+        //         'ver-sede',
+        //         'ver-tema',//
+        //         'ver-planilla',//
+        //         'ver-tipo-de-capacitacion',//
+        //         'ver-gerencia',
+        //         'ver-modalidad'// //
+        //         ],
+        //     'classes' => 'rounded-xl',
         //     'submenu' => [
         //         [
-        //             'text' => 'level_one',
-        //             'url'  => '#',
+        //             'text' => 'Personal',
+        //             'url'  => 'personal',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-personal',
+        //             'classes' => 'rounded-xl',
         //         ],
         //         [
-        //             'text'    => 'level_one',
-        //             'url'     => '#',
-        //             'submenu' => [
-        //                 [
-        //                     'text' => 'level_two',
-        //                     'url'  => '#',
-        //                 ],
-        //                 [
-        //                     'text'    => 'level_two',
-        //                     'url'     => '#',
-        //                     'submenu' => [
-        //                         [
-        //                             'text' => 'level_three',
-        //                             'url'  => '#',
-        //                         ],
-        //                         [
-        //                             'text' => 'level_three',
-        //                             'url'  => '#',
-        //                         ],
-        //                     ],
-        //                 ],
-        //             ],
+        //             'text' => 'Empresas',
+        //             'url'  => 'empresas',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-empresa',
+        //             'classes' => 'rounded-xl',
         //         ],
         //         [
-        //             'text' => 'level_one',
-        //             'url'  => '#',
+        //             'text' => 'Sedes',
+        //             'url'  => 'sedes',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-sede',
+        //             'classes' => 'rounded-xl',
         //         ],
-        //     ],
+        //         [
+        //             'text' => 'Gerencias',
+        //             'url'  => 'gerencias',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-gerencia',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Áreas',
+        //             'url'  => 'areas',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-area',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Cargos',
+        //             'url'  => 'cargos',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-cargo',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Planillas',
+        //             'url'  => 'planillas',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-planilla',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Tipos de capacitaciones',
+        //             'url'  => 'tipos_de_capacitaciones',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-tipo-de-capacitacion',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Estados de capacitaciones',
+        //             'url'  => 'estados',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-estado',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Temas',
+        //             'url'  => 'temas',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-tema',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //         [
+        //             'text' => 'Modalidades',
+        //             'url'  => 'modalidades',
+        //             'icon' => 'fas fa-cog fa-xs',
+        //             'can'  => 'ver-modalidad',
+        //             'classes' => 'rounded-xl',
+        //         ],
+        //     ]
         // ],
-        // ['header' => 'labels'],
-        // [
-        //     'text'       => 'important',
-        //     'icon_color' => 'red',
-        //     'url'        => '#',
-        // ],
-        // [
-        //     'text'       => 'warning',
-        //     'icon_color' => 'yellow',
-        //     'url'        => '#',
-        // ],
-        // [
-        //     'text'       => 'information',
-        //     'icon_color' => 'cyan',
-        //     'url'        => '#',
-        // ],
+
+    
+        [
+            'text' => 'Ajustes de evaluaciones', 'can'  => ['ver-user','ver-rol'],
+            'classes' => 'rounded-xl',
+            'icon' => 'fas fa-cogs',
+            'submenu' =>[
+                [
+                    'text' => 'Evaluaciones',
+                    'url'  => 'evaluaciones',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-modalidad',
+                    'classes' => 'rounded-xl',
+                ],
+                
+                [
+                    'text' => 'Evaluadores',
+                    'url'  => 'evaluadores',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-modalidad',
+                    'classes' => 'rounded-xl',
+                ],
+                
+                [
+                    'text' => 'Secciones',
+                    'url'  => 'secciones',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-modalidad',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Preguntas',
+                    'url'  => 'preguntas',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-modalidad',
+                    'classes' => 'rounded-xl',
+                ],
+                
+                // [
+                //     'text' => 'Opciones',
+                //     'url'  => 'opciones',
+                //     'icon' => 'fas fa-cog fa-xs',
+                //     'can'  => 'ver-modalidad',
+                //     'classes' => 'rounded-xl',
+                // ],
+            ],
+        ]
     ],
 
     /*

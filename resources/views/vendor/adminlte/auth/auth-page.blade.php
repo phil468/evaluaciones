@@ -16,6 +16,12 @@
 @section('classes_body'){{ ($auth_type ?? 'login') . '-page' }}@stop
 
 @section('body')
+
+    <div class="video-background" style="background-image: url('https://carontestudio.com/img/contacto.jpg');">
+        <video class="video-background-content" src="{{asset('img/evaluacion/login-10s.mp4')}}" autoplay="true" muted="true" loop="true"></video>
+    </div>
+    
+
     <div class="body-bg d-flex h-100 w-100 justify-content-center ">
         <div class="{{ $auth_type ?? 'login' }}-box ">
             <div class="h-25 d-inline-block" ></div>
@@ -31,12 +37,12 @@
                                 <img src="{{ asset('img/icon/inventario.png') }}" height="100">
                             </a>
                         </div> --}}
-            {{-- <div class="text-center">
-                <h2 class="text-white">STOCK DE INVENTARIO</h2>            
-            </div> --}}
+            <div class="text-center">
+                <h2 class="text-white h1">EVALUACIÓN <br> DE DESEMPEÑO</h2>            
+            </div>
 
             {{-- Card Box --}}
-            <div class="card {{ config('adminlte.classes_auth_card', 'card-outline card-primary') }} opacity-95">
+            <div class="card {{ config('adminlte.classes_auth_card', 'card-primary') }} opacity-95">
 
                 {{-- Card Header --}}
                 {{-- @hasSection('auth_header')
@@ -48,8 +54,8 @@
                 @endif --}}
 
                 {{-- Card Body --}}
-                <div class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95">
-                    <div class="{{ $auth_type ?? 'login' }}-logo my-4">
+                <div class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95" style="border-radius: 10px">
+                    <div class="{{ $auth_type ?? 'login' }}-logo mt-2 mb-4">
                         <a href="{{ $dashboard_url }}">
                             <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}" height="100">
                             {{-- {!! config('adminlte.logo', '<b>Admin</b>LTE') !!} --}}
@@ -75,13 +81,13 @@
         </div>
     </div>
 
-    <div class="py-2 bg-info w-100">
+    {{-- <div class="py-2 bg-info w-100">
         <div class="text-center container-fluid">
             <span class="text-white h6 text-bold">
               Bienvenido a la Plataforma de Capacitaciones
             </span>
           </div>
-    </div>
+    </div> --}}
 
 
 @stop

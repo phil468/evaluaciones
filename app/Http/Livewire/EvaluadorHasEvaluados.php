@@ -13,21 +13,73 @@ class EvaluadorHasEvaluados extends Component
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $evaluador_id, $evaluado_id, $evaluacion;
     public $updateMode = false;
+    public $view_alternative = false;
+    public $tipo_de_evaluacion_id;
 
+    public function mount($tipo_de_evaluacion_id)
+    {
+        $this->tipo_de_evaluacion_id = $tipo_de_evaluacion_id;
+    }
+    
     public function render()
     {
         // dd(auth()->user()->personal->id);
 		$keyWord = '%'.$this->keyWord .'%';
+
+        $id_personal = auth()->user()->personal->id;
+                $realizados = EvaluadorHasEvaluado::
+                where('evaluador_has_evaluados.evaluador_id',$id_personal)
+                ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+                ->where('realizado',1)
+                ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->count();
+                
+                $total = EvaluadorHasEvaluado::
+                where('evaluador_has_evaluados.evaluador_id',$id_personal)
+                ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+                ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->count();
+
+                //mostrar una barra de progreso
+                $porcentaje =  $total == 0 ? 0 : ($realizados/$total)*100;
+                $porcentaje = round($porcentaje,2);
+                
+                if ($realizados == 0) {
+                    $class = 'bg-secondary';
+                    $porcentaje = 100;
+                    $label = '0%';
+                } else if ($total == $realizados) {
+                    $class = 'bg-primary';
+                    $label = $porcentaje.'%';
+                } else {
+                    $class = 'bg-primary';
+                    $label = $porcentaje.'%';
+                }
+
         return view('livewire.evaluador-has-evaluados.view', [
-            'evaluadorHasEvaluados' => EvaluadorHasEvaluado::latest()
-            ->where('evaluador_id', '=', auth()->user()->personal->id)
-						// ->orWhere('evaluador_id', 'LIKE', $keyWord)
+            'evaluadorHasEvaluados' => EvaluadorHasEvaluado::
+            latest('evaluador_has_evaluados.created_at')
+            ->select('evaluador_has_evaluados.*')
+            ->where('evaluador_has_evaluados.evaluador_id', '=', $id_personal)
+            ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+            ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            ->with('evaluacion')						
+            // ->orWhere('evaluador_id', 'LIKE', $keyWord)
 						// ->orWhere('evaluado_id', 'LIKE', $keyWord)
 						// ->orWhere('evaluacion_id', 'LIKE', $keyWord)
 						->paginate(10),
+            // 'barra' => $barra,
+            'class' => $class,
+            'porcentaje' => $porcentaje,
+            'label' => $label
         ]);
     }
 	
+    public function changeView() {
+        // dd('hola munda');
+        $this->view_alternative = !$this->view_alternative;
+    }
+    
     public function cancel()
     {
         $this->resetInput();
