@@ -95,7 +95,12 @@
 							{{-- <div> --}}
 								{{--Primero evaluamos estado de evaluacion --}}
 								@if ($row->realizado)
-									<span class="badge badge-secondary badge-pill" style="width: 8rem; height: 2rem; font-size: 90%; line-height: inherit;">FINALIZADO</span>
+									@if ($tipo_de_evaluacion_id == 2)
+										<a href="{{ route('evaluacion.show', $row->id) }}"><span class="badge badge-secondary badge-pill" style="width: 8rem; height: 2rem; font-size: 90%; line-height: inherit;">EDITAR <i class="far fa-hand-point-up"></i></span> </a>									
+									@endif
+									@if ($tipo_de_evaluacion_id == 1)
+										<span class="badge badge-secondary badge-pill" style="width: 8rem; height: 2rem; font-size: 90%; line-height: inherit;">FINALIZADO</span>
+									@endif
 								@else
 									<a href="{{ route('evaluacion.show', $row->id) }}"><span class="badge badge-primary badge-pill" style="width: 8rem; height: 2rem; font-size: 90%; line-height: inherit;">PENDIENTE <i class="far fa-hand-point-up"></i></span> </a>
 								@endif

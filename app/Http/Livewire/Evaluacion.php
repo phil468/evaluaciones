@@ -89,7 +89,7 @@ $tipo_objetivo_id2;
     {
         if ($this->evaluacion_por_objetivos) {
             
-            return view('livewire.evaluacion.view-objetivos',
+            return view('livewire.objetivos.index',
             [
                 'tipos_objetivo' => TiposDeObjetivo::all(),
             ]

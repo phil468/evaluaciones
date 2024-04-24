@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
 use App\Models\Asignacione;
+use App\Models\EvaluadorHasEvaluado;
 use Livewire\Livewire;
 
 /*
@@ -72,10 +73,17 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-empresa']);
     
     Route::get('/evaluacion/{id}', function ($evaluacion_id) {
-        return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
+        $tipo_de_evaluacion_id = EvaluadorHasEvaluado::find($evaluacion_id)->evaluacion->tipo_de_evaluacion_id;
+        if ($tipo_de_evaluacion_id == 1) {
+            return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
+        } elseif ($tipo_de_evaluacion_id == 2) {
+            return view('livewire.objetivos.index')->with('evaluacion_id', $evaluacion_id);
+        }
+        // return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
     })->name('evaluacion.show')->middleware(['can:ver-evaluaciones-de-desempeno']);
 
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-empresa']);
+    Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-empresa']);
     Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-empresa']);
     Route::view('/seguimiento_evaluados','livewire.seguimiento-evaluados.index')->name('seguimiento_evaluados')->middleware(['can:ver-empresa']);
 

@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Respuesta;
+use App\Models\TipoDeEvaluacione;
 use Illuminate\Support\Facades\DB;
 use Mediconesystems\LivewireDatatables\Action;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
@@ -51,30 +52,76 @@ class EvaluadoresTable extends LivewireDatatable
                 // $realizados = $this->model::query()->where('evaluador_has_evaluados.evaluador_id',$value)->first()->realizados;
                 // $total = $this->model::query()->where('evaluador_has_evaluados.evaluador_id',$value)->first()->total;
                 
-                $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
-                $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
+                // $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
+                // $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
 
-                //mostrar una barra de progreso
-                if($total == 0){
-                    $porcentaje = 0;
-                }else {
-                    $porcentaje = ($realizados/$total)*100;
-                    $porcentaje = round($porcentaje,2);                    
+                // //mostrar una barra de progreso
+                // if($total == 0){
+                //     $porcentaje = 0;
+                // }else {
+                //     $porcentaje = ($realizados/$total)*100;
+                //     $porcentaje = round($porcentaje,2);                    
+                // }
+                
+                // if ($realizados == 0) {
+                //     $class = 'bg-white';
+                //     $porcentaje = 100;
+                // } else if ($total == $realizados) {
+                //     $class = 'bg-primary';
+                // } else {
+                //     $class = 'bg-secondary';
+                // }
+                
+                // $barra = '<div class="progress" style="height: 25px;">
+                // <div class="progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
+                // </div>';
+                // return $barra;
+
+
+                $barra='';
+                for ($i=1; $i <3 ; $i++) {
+                    $realizados = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+                    ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                    ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+                    ->where('evaluador_has_evaluados.realizado',1)
+                    ->count();
+                    
+                    $total = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+                    ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                    ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+                    // ->where('evaluador_has_evaluados.realizado',1)
+                    ->count();
+
+                    if ($total > 0) {
+                        //mostrar una barra de progreso
+                        $porcentaje = ($realizados/$total)*100;
+                        $porcentaje = round($porcentaje,2);                
+                        
+                        if ($realizados == 0) {
+                            $class = 'bg-white';
+                            $porcentaje = 100;
+                        } else if ($total == $realizados) {
+                            $class = 'bg-primary';
+                        } else {
+                            $class = 'bg-secondary';
+                        }
+                        
+                        $tipo_de_evaluacion = TipoDeEvaluacione::find($i);
+                        
+                        $barra = $barra .'
+                        
+                        <h5 class="">'. ucfirst(mb_strtolower($tipo_de_evaluacion->name)).'</h5>
+                        <div class="mb-3 progress" style="height: 25px;">
+                        <div class="progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
+                        </div>
+                        ';
+                    }
+                    
                 }
                 
-                if ($realizados == 0) {
-                    $class = 'bg-white';
-                    $porcentaje = 100;
-                } else if ($total == $realizados) {
-                    $class = 'bg-primary';
-                } else {
-                    $class = 'bg-secondary';
-                }
-                
-                $barra = '<div class="progress" style="height: 25px;">
-                <div class="progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
-                </div>';
                 return $barra;
+                
+
             })->label('Avance')->exportCallback(function ($value) {
                 
                 // $realizados = $this->model::query()->where('evaluador_id',$value)->first()->realizados;

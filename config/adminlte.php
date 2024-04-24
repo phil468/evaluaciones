@@ -299,13 +299,20 @@ return [
         'classes' => 'rounded-xl',
         'submenu' => [
                 [
-                    'text' => 'Respuestas',
+                    'text' => 'Respuestas Ev. por Competencias',
                     'url'  => 'respuestas',
                     'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-capacitacion',
                     'classes' => 'rounded-xl',
                 ],
-
+                    
+                    [
+                        'text' => 'Respuestas Ev. por Objetivos',
+                        'url'  => 'objetivos',
+                        'icon' => 'fas fa-list-ol',
+                        'can'  => 'ver-capacitacion',
+                        'classes' => 'rounded-xl',
+                    ],
                 [
                     'text' => 'Seguimiento Evaluadores',
                     'url'  => 'seguimiento_evaluadores',

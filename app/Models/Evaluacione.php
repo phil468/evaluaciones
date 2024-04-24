@@ -27,7 +27,8 @@ Evaluacione extends Model
         'anio',
         'fecha_inicio',
         'fecha_fin',
-        'identificador'
+        'identificador',
+        'tipo_de_evaluacion_id',
     ];
 
     protected $dates = ['date','fecha_inicio','fecha_fin'];
