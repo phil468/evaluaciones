@@ -87,17 +87,17 @@ public $personals 	;
     public function store()
     {
         $this->validate([
-		'name' => 'required',
-		'encargado_id' => 'required',
-		'empleado_id' => 'required',
-		'competencia_id' => 'required',
-		// 'tipo_de_proceso_id' => 'required',
-		'proceso_id' => 'required',
-		'estado_id' => 'required',
-		// 'gerencia_id' => 'required',
-		// 'area_id' => 'required',
-		'avance' => 'required',
-        ]);
+			'name' => 'required',
+			'encargado_id' => 'required',
+			'empleado_id' => 'required',
+			'competencia_id' => 'required',
+			// 'tipo_de_proceso_id' => 'required',
+			'proceso_id' => 'required',
+			'estado_id' => 'required',
+			// 'gerencia_id' => 'required',
+			// 'area_id' => 'required',
+			'avance' => 'required',
+			]);
 
         PlanesDeAccion::create([ 
 			'encargado_id' => $this-> encargado_id,
@@ -141,16 +141,17 @@ public $personals 	;
     public function update()
     {
         $this->validate([
-		'encargado_id' => 'required',
-		'empleado_id' => 'required',
-		'competencia_id' => 'required',
-		'tipo_de_proceso_id' => 'required',
-		'proceso_id' => 'required',
-		'estado_id' => 'required',
-		'gerencia_id' => 'required',
-		'area_id' => 'required',
-		'avance' => 'required',
-        ]);
+			'name' => 'required',
+			'encargado_id' => 'required',
+			'empleado_id' => 'required',
+			'competencia_id' => 'required',
+			// 'tipo_de_proceso_id' => 'required',
+			'proceso_id' => 'required',
+			'estado_id' => 'required',
+			// 'gerencia_id' => 'required',
+			// 'area_id' => 'required',
+			'avance' => 'required',
+			]);
 
         if ($this->selected_id) {
 			$record = PlanesDeAccion::find($this->selected_id);

@@ -11,50 +11,90 @@
             <div class="modal-body">
                 <form>
 					<input type="hidden" wire:model="selected_id">
-            <div class="form-group">
-                <label for="encargado_id">Encargado Id</label>
-                <input wire:model="encargado_id" type="text" class="form-control" id="encargado_id" placeholder="Encargado Id">@error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="empleado_id">Empleado Id</label>
-                <input wire:model="empleado_id" type="text" class="form-control" id="empleado_id" placeholder="Empleado Id">@error('empleado_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="competencia_id">Competencia Id</label>
-                <input wire:model="competencia_id" type="text" class="form-control" id="competencia_id" placeholder="Competencia Id">@error('competencia_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="tipo_de_proceso_id">Tipo De Proceso Id</label>
-                <input wire:model="tipo_de_proceso_id" type="text" class="form-control" id="tipo_de_proceso_id" placeholder="Tipo De Proceso Id">@error('tipo_de_proceso_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="proceso_id">Proceso Id</label>
-                <input wire:model="proceso_id" type="text" class="form-control" id="proceso_id" placeholder="Proceso Id">@error('proceso_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="fecha_de_revision">Fecha De Revision</label>
-                <input wire:model="fecha_de_revision" type="text" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision">@error('fecha_de_revision') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="estado_id">Estado Id</label>
-                <input wire:model="estado_id" type="text" class="form-control" id="estado_id" placeholder="Estado Id">@error('estado_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="gerencia_id">Gerencia Id</label>
-                <input wire:model="gerencia_id" type="text" class="form-control" id="gerencia_id" placeholder="Gerencia Id">@error('gerencia_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="area_id">Area Id</label>
-                <input wire:model="area_id" type="text" class="form-control" id="area_id" placeholder="Area Id">@error('area_id') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="avance">Avance</label>
-                <input wire:model="avance" type="text" class="form-control" id="avance" placeholder="Avance">@error('avance') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input wire:model="name" type="text" class="form-control" id="name" placeholder="Name">@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
+                    <div class="form-group">
+                        <label for="name">Descripcion</label>
+                        <input wire:model.defer="name" type="text" class="form-control" id="name" placeholder="Name">@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    {{-- <div class="form-group">
+                        <label for="tipo_de_proceso_id">Tipo De Proceso Id</label>
+                        <select wire:model="tipo_de_proceso_id" class="form-control" id="tipo_de_proceso_id">
+                            <option value="">Seleccionar Tipo De Proceso Id</option>
+                            @foreach($tipoDeProcesos as $index => $name)
+                                <option value="{{ $index}}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div> --}}
+                    
+                    
+                    <div class="form-group">
+                        <label for="proceso_id">Proceso</label>
+                        <select wire:model="proceso_id" class="form-control" id="proceso_id">
+                            <option value="">Seleccionar Proceso</option>
+                            @foreach($procesos as $index => $name)
+                                <option value="{{ $index}}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="encargado_id">Encargado</label>
+                        <select wire:model="encargado_id" class="form-control" id="encargado_id">
+                            <option value="">Seleccionar Encargado</option>
+                            @foreach($personals as $index => $name)
+                                <option value="{{ $index}}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="empleado_id">Personal</label>
+                        <select wire:model="empleado_id" class="form-control" id="empleado_id">
+                            <option value="">Seleccionar Personal</option>
+                            @foreach($personals as $index => $name)
+                                <option value="{{ $index}}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="competencia_id">Competencia</label>
+                        <select wire:model="competencia_id" class="form-control" id="competencia_id">
+                            <option value="">Seleccionar Competencia</option>
+                            @foreach($competencias as $index => $name)
+                                <option value="{{ $index}}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fecha_de_revision">Fecha De Revision</label>
+                        <input wire:model="fecha_de_revision" type="date" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision">@error('fecha_de_revision') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="estado_id">Estado</label>
+                        <select wire:model="estado_id" class="form-control" id="estado_id">
+                            <option value="">Seleccionar Estado</option>
+                            @foreach($estados as $index => $name)
+                                <option value="{{ $index}}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                        {{-- <input wire:model="estado_id" type="text" class="form-control" id="estado_id" placeholder="Estado Id">@error('estado_id') <span class="error text-danger">{{ $message }}</span> @enderror --}}
+                    </div>
+                    {{-- <div class="form-group">
+                        <label for="gerencia_id">Gerencia Id</label>
+                        <input wire:model="gerencia_id" type="text" class="form-control" id="gerencia_id" placeholder="Gerencia Id">@error('gerencia_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="area_id">Area Id</label>
+                        <input wire:model="area_id" type="text" class="form-control" id="area_id" placeholder="Area Id">@error('area_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div> --}}
+                    <div class="form-group">
+                        <label for="avance">Avance</label>
+                        <input wire:model="avance" type="number" class="form-control" id="avance" placeholder="Avance">@error('avance') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
 
                 </form>
             </div>
