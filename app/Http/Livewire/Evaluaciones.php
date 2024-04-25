@@ -14,6 +14,11 @@ class Evaluaciones extends Component
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $eid, $title, $date, $status;
     public $updateMode = false;
+    
+	protected $listeners = [
+        'edit',
+		'selectedUpdated' => 'updateSelected'
+    ];
 
     public function render()
     {
@@ -70,6 +75,11 @@ class Evaluaciones extends Component
 		$this->title = null;
 		$this->date = null;
 		$this->status = null;
+    }
+
+    public function create() {
+        // $this->resetInput();
+        // $this->updateMode = false;
     }
 
     public function store()

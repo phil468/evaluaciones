@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Split;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
@@ -182,4 +183,8 @@ class EvaluacioneResource extends Resource
     //     });
     // }
 
+    protected function getFooter(): View
+        {
+            return view('footer');
+        }
 }

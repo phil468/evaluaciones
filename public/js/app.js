@@ -1007,14 +1007,13 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 
 /***/ }),
 
-/***/ "./resources/css/app.css":
-/*!*******************************!*\
-  !*** ./resources/css/app.css ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ "./resources/css/filament.css":
+/*!************************************!*\
+  !*** ./resources/css/filament.css ***!
+  \************************************/
+/***/ (() => {
 
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9yZXNvdXJjZXMvY3NzL2FwcC5jc3MiLCJtYXBwaW5ncyI6IjtBQUFBIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vLy4vcmVzb3VyY2VzL2Nzcy9hcHAuY3NzPzllY2YiXSwic291cmNlc0NvbnRlbnQiOlsiLy8gZXh0cmFjdGVkIGJ5IG1pbmktY3NzLWV4dHJhY3QtcGx1Z2luXG5leHBvcnQge307Il0sIm5hbWVzIjpbXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./resources/css/app.css\n");
+throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):\nModuleBuildError: Module build failed (from ./node_modules/postcss-loader/dist/cjs.js):\nSyntaxError\n\n(46:9) C:\\laragon\\www\\evaluaciones\\vendor\\filament\\filament\\resources\\css\\app.css The `inset-x-0` class does not exist. If `inset-x-0` is a custom class, make sure it is defined within a `@layer` directive.\n\n \u001b[90m 44 | \u001b[39m\n \u001b[90m 45 | \u001b[39m    \u001b[33m.filament-login-page\u001b[39m form\u001b[33m:\u001b[39m\u001b[33m:\u001b[39mbefore \u001b[33m{\u001b[39m\n\u001b[1m\u001b[31m>\u001b[39m\u001b[22m\u001b[90m 46 | \u001b[39m        \u001b[36m@apply\u001b[39m absolute inset-x-0 mx-auto h-px w-2/3 bg-gradient-to-r from-gray-200 via-primary-400 to-gray-200 dark\u001b[33m:\u001b[39mfrom-gray-700 dark\u001b[33m:\u001b[39mvia-primary-400 dark\u001b[33m:\u001b[39mto-gray-700\u001b[33m;\u001b[39m\n \u001b[90m    | \u001b[39m        \u001b[1m\u001b[31m^\u001b[39m\u001b[22m\n \u001b[90m 47 | \u001b[39m        content\u001b[33m:\u001b[39m \u001b[32m''\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 48 | \u001b[39m        z-index\u001b[33m:\u001b[39m 1\u001b[33m;\u001b[39m\n\n    at processResult (C:\\laragon\\www\\evaluaciones\\node_modules\\webpack\\lib\\NormalModule.js:764:19)\n    at C:\\laragon\\www\\evaluaciones\\node_modules\\webpack\\lib\\NormalModule.js:866:5\n    at C:\\laragon\\www\\evaluaciones\\node_modules\\loader-runner\\lib\\LoaderRunner.js:399:11\n    at C:\\laragon\\www\\evaluaciones\\node_modules\\loader-runner\\lib\\LoaderRunner.js:251:18\n    at context.callback (C:\\laragon\\www\\evaluaciones\\node_modules\\loader-runner\\lib\\LoaderRunner.js:124:13)\n    at Object.loader (C:\\laragon\\www\\evaluaciones\\node_modules\\postcss-loader\\dist\\index.js:140:7)");
 
 /***/ }),
 
@@ -1214,7 +1213,7 @@ module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"P
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
 /******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/js/app.js")))
 /******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/sass/app.scss")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/css/app.css")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/css/filament.css")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

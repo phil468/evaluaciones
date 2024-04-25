@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TipoDeEvaluacione extends Model
+class Proceso extends Model
 {
 	use HasFactory;
     use SoftDeletes;
@@ -16,9 +16,10 @@ class TipoDeEvaluacione extends Model
     protected $table = 'tipo_de_evaluaciones';
 
     protected $fillable = ['name','estado','tipo_de_proceso_id'];
-	
+
     public function tipo_de_proceso()
     {
-        return $this->belongsTo('App\Models\TipoDeProceso', 'tipo_de_proceso_id','id');
+        return $this->belongsTo('App\Models\TipoDeProceso','id', 'tipo_de_proceso_id');
     }
+	
 }

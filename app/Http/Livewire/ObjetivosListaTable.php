@@ -25,8 +25,6 @@ class ObjetivosListaTable extends LivewireDatatable
         ->leftJoin('tipo_de_objetivos','tipo_de_objetivos.id','=','objetivos.tipo_objetivo_id')
         ->leftJoin('personal as evaluado','evaluado.id','=','objetivos.evaluado_id')
         ->leftJoin('personal as evaluador','evaluador.id','=','objetivos.evaluador_id')
-        // ->leftJoin('secciones','secciones.id','=','preguntas.seccion_id')
-        // ->leftJoin('evaluaciones','evaluaciones.id','=','preguntas.evaluacion_id')
         //cargo
         // ->leftJoin('cargos','cargos.id','=','personal.cargo_id')
         ;
@@ -45,7 +43,6 @@ class ObjetivosListaTable extends LivewireDatatable
         Column::name('objetivos.evidencia')->label('Evidencia')->searchable()->filterable()->defaultSort('asc'),
 
         // Column::name('cargos.name')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('secciones.name')->label('Competencia')->searchable()->filterable()->defaultSort('asc'),
         // Column::name('preguntas.pregunta')->label('Pregunta')->searchable()->filterable()->defaultSort('asc'),
         // Column::name('valor_numerico')->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
         // Column::name('evaluaciones.title')->label('Evaluación')->searchable()->filterable()->defaultSort('asc'),

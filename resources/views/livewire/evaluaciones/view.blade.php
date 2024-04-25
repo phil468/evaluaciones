@@ -26,12 +26,12 @@
 				</div>
 				
 				<div class="card-body">					
-						{{-- @can('crear-evaluacion')
+						@can('crear-evaluacion')
 						@include('livewire.evaluaciones.create')
 						@endcan						
 						@can('editar-evaluacion')
 						@include('livewire.evaluaciones.update')
-						@endcan --}}
+						@endcan
 						
 					@livewire('evaluacion-table')
 				{{-- <div class="table-responsive">
@@ -42,7 +42,7 @@
 								<th>Eid</th>
 								<th>Title</th>
 								<th>Date</th>
-								<th>Status</th>
+								<th>Status</th>								
 																
 								@can('editar-evaluacion','borrar-evaluacion')
 								<th>ACCIONES</th>								
@@ -56,8 +56,11 @@
 								<td>{{ $row->eid }}</td>
 								<td>{{ $row->title }}</td>
 								<td>{{ $row->date }}</td>
-								<td>{{ $row->status }}</td>
-																
+								<td>
+									<div>
+										<livewire:toggle-button :model="$row" :field="'status'" key="{{ $row->id }}">
+									</div>
+								</td>																
 								@can('editar-evaluacion','borrar-evaluacion')
 								<td width="90">
 								<div class="btn-group">

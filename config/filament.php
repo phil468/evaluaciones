@@ -240,7 +240,8 @@ return [
             'have_inline_labels' => false,
         ],
         'footer' => [
-            'should_show_logo' => true,
+            'should_show_logo' => false,
+            // 'custom_content' => '<p>Custom footer content</p>',
         ],
         'max_content_width' => 'full',
         'notifications' => [

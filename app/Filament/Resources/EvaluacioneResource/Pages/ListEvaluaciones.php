@@ -7,7 +7,7 @@ use App\Filament\Actions\SendMassEmailAction;
 use Filament\Pages\Actions;
 use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\Pages\ListRecords;
-
+use Illuminate\Contracts\View\View;
 
 class ListEvaluaciones extends ListRecords
 {
@@ -23,6 +23,9 @@ class ListEvaluaciones extends ListRecords
         ];
     }
 
-
+    // protected function getFooter(): View
+    //     {
+    //         return view('footer');
+    //     }
 
 }

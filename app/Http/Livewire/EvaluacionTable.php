@@ -116,5 +116,10 @@ class EvaluacionTable extends LivewireDatatable
             ->excludeFromExport(),
         ];
     }
+    
+    public function edit($id)
+    {
+        $this->emit('edit', $id);
+    }
 
 }

@@ -316,7 +316,7 @@ return [
                 [
                     'text' => 'Seguimiento Evaluadores',
                     'url'  => 'seguimiento_evaluadores',
-                    'icon' => 'fas fa-tasks',
+                    'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-capacitacion',
                     'classes' => 'rounded-xl',
                 ],
@@ -324,8 +324,16 @@ return [
                 [
                     'text' => 'Seguimiento Evaluados',
                     'url'  => 'seguimiento_evaluados',
-                    'icon' => 'fas fa-tasks',
+                    'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-capacitacion',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Planes de accion',
+                    'url'  => 'planes-de-accion',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-planes-de-accion',
                     'classes' => 'rounded-xl',
                 ],
             ]
@@ -487,6 +495,14 @@ return [
                     'url'  => 'preguntas',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-modalidad',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Estados de Planes de accion',
+                    'url'  => 'estados-de-plan-de-accion',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-estados-de-plan-de-accion',
                     'classes' => 'rounded-xl',
                 ],
                 

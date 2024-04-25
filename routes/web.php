@@ -71,6 +71,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     Route::view('/evaluadores','livewire.evaluadores.index')->name('evaluadores')->middleware(['can:ver-empresa']);
     Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-empresa']);
+    Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
+    Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     
     Route::get('/evaluacion/{id}', function ($evaluacion_id) {
         $tipo_de_evaluacion_id = EvaluadorHasEvaluado::find($evaluacion_id)->evaluacion->tipo_de_evaluacion_id;

@@ -36,7 +36,7 @@ class Area extends Model
 
     public function gerencia()
     {
-        return $this->hasOne('App\Models\Gerencia', 'id', 'gerencia_id');
+        return $this->belongsTo(Gerencia::class, 'gerencia_id', 'id');
     }
     
     public function activos()

@@ -54,7 +54,7 @@ class Personal extends Model
     
     public function gerencia()
     {
-        return $this->hasOne('App\Models\Gerencia', 'id', 'gerencia_id');
+        return $this->area->gerencia()??null;
     }
 
     public function sede()
@@ -64,7 +64,7 @@ class Personal extends Model
     
     public function area()
     {
-        return $this->hasOne('App\Models\Area', 'id', 'area_id');
+        return $this->belongsTo(Area::class, 'area_id', 'id');
     }
     
     public function cargo()
