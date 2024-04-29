@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Imports\EvaluadoresImport;
+use App\Imports\EvaluadoresObjetivosImport;
 use App\Mail\EvaluadorNotification;
 use App\Models\Evaluacione;
 use Livewire\Component;
@@ -23,7 +24,7 @@ class Evaluadores extends Component
     public $selected_id, $keyWord, $evaluador_id, $evaluado_id, $evaluacion_id,
     $evaluadores,
     $evaluados,
-    $evaluaciones,$file;
+    $evaluaciones,$file,$file_objetivos;
 
     public $updateMode = false;
     public $createMode = false;
@@ -57,6 +58,22 @@ class Evaluadores extends Component
                 $this->resetInput();                
                
                 session()->flash('message', 'Evaluadores importado correctamente.');
+                $this->emit('closeModal');
+                $this->emit('alert');
+    }
+
+    
+    public function importar_objetivos()
+    {
+            $this->validate([
+                'file_objetivos' => 'required|file|mimes:xls,xlsx'    
+            ]);
+     
+                $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
+        
+                $this->resetInput();                
+               
+                session()->flash('message', 'Evaluadores de objetivos importado correctamente.');
                 $this->emit('closeModal');
                 $this->emit('alert');
     }

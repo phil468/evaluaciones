@@ -24,6 +24,7 @@ class Personal extends Model
         'apellido_materno',
         'empresa_id',
         'gerencia_id',
+        'subgerencia_id',
         'sede_id',
         'area_id',
         'cargo_id',
@@ -42,24 +43,32 @@ class Personal extends Model
         'planilla_id',
         'cesado',
         'fecha_cese',
-        'importado'
+        'importado',
+        'reporta_a'
     ];
 	
     protected $dates = ['deleted_at','fecha_ingreso','fecha_cese'];
 
     public function empresa()
     {
-        return $this->hasOne('App\Models\Empresa', 'id', 'empresa_id');
+        return $this->belongsTo(Empresa::class, 'empresa_id', 'id');
+         //) ('App\Models\Empresa', 'id', 'empresa_id');
     }
     
     public function gerencia()
     {
-        return $this->area->gerencia()??null;
+        return $this->belongsTo(Gerencia::class, 'gerencia_id', 'id');
+    }
+
+    public function subgerencia()
+    {
+        return $this->belongsTo(Subgerencia::class, 'subgerencia_id', 'id');
     }
 
     public function sede()
     {
-        return $this->hasOne('App\Models\Sede', 'id', 'sede_id');
+        return $this->belongsTo(Sede::class, 'sede_id', 'id');
+        // hasOne('App\Models\Sede', 'id', 'sede_id');
     }
     
     public function area()
@@ -88,6 +97,11 @@ class Personal extends Model
     public function user()
     {
         return $this->hasOne('App\Models\User', 'personal_id', 'id');
+    }
+
+    public function reporta_a()
+    {
+        return $this->hasOne('App\Models\Personal', 'id', 'reporta_a');
     }
     
     protected static function boot()

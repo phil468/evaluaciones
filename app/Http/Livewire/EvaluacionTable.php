@@ -92,6 +92,18 @@ class EvaluacionTable extends LivewireDatatable
 
     public function columns()
     {
+        // 'eid',
+        // 'title',
+        // 'date',
+        // 'status',
+        // 'nombre_para_mostrar',
+        // 'campania',
+        // 'mes',
+        // 'anio',
+        // 'fecha_inicio',
+        // 'fecha_fin',
+        // 'identificador',
+        // 'tipo_de_evaluacion_id',
         return [
             Column::name('evaluaciones.eid')->label('EID')->searchable()->filterable(),
             Column::name('evaluaciones.title')->label('Título')->searchable(),
@@ -106,6 +118,7 @@ class EvaluacionTable extends LivewireDatatable
             Column::name('evaluaciones.anio')->label('Año')->searchable(),
             DateColumn::name('evaluaciones.fecha_inicio')->label('Fecha de inicio')->searchable(),
             DateColumn::name('evaluaciones.fecha_fin')->label('Fecha de fin')->searchable(),
+            Column::name('evaluaciones.identificador')->label('Identificador')->searchable(),
             // Column::name('evaluaciones.identificador')->label('Identificador')->searchable(),
             // Para el campo JSON, puedes necesitar un tratamiento especial dependiendo de cómo quieras mostrar los datos
             Column::name('evaluaciones.tipo_de_evaluacion_id')->label('ID de Tipo de Evaluación')->searchable(),

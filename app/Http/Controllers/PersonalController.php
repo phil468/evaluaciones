@@ -161,9 +161,9 @@ class PersonalController extends Controller
                     
                     if ($personal->isDirty()) {
                         $personal->save();
-                        $message = $message.'Se ingresaron/actualizaron los datos del trabajador '.$personal->name.'.<br>';
+                        $message = $message.'Se ingresaron/actualizaron los datos del trabajador '.$personal->name.'.\n';
                     } else {
-                        $message = $message.'No se ingresaron/actualizaron los datos del trabajador '.$personal->name.'.<br>';
+                        $message = $message.'No se ingresaron/actualizaron los datos del trabajador '.$personal->name.'.\n';
                     }
 
                     if($personal) {

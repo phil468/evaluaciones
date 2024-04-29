@@ -65,6 +65,8 @@
             $('#indicacionesModal').modal('hide');
             $('#confirmacionModal').modal('hide');
             $('#graciasModal').modal('hide');
+            $('#createPlanDataModal').modal('hide');
+            $('#updatePlanDataModal').modal('hide');
         });
         
         window.livewire.on('openSeleccionarActivoModal', () => {

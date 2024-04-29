@@ -15,7 +15,7 @@ class PlanesDeAccion extends Model
 
     protected $table = 'planes_de_accion';
 
-    protected $fillable = ['encargado_id','empleado_id','competencia_id','tipo_de_proceso_id','proceso_id','fecha_de_revision','estado_id','gerencia_id','area_id','avance','name'];
+    protected $fillable = ['encargado_id','empleado_id','competencia_id','tipo_de_proceso_id','proceso_id','fecha_de_revision','estado_id','gerencia_id','area_id','avance','name','nombre_de_proceso_id'];
 
     public function competencia()
     {
@@ -48,6 +48,11 @@ class PlanesDeAccion extends Model
     public function encargado()
     {
         return $this->belongsTo('App\Models\Personal','encargado_id','id');
+    }
+
+    public function nombre_de_proceso()
+    {
+        return $this->belongsTo(Evaluacione::class, 'nombre_de_proceso','id');
     }
 
 	

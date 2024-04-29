@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title" id="createDataModalLabel">Nuevo Cargo</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                      <span aria-hidden="true close-btn">×</span>
                 </button>
             </div>

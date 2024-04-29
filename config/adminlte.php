@@ -294,6 +294,14 @@ return [
             'classes' => 'rounded-xl',
         ],
 
+        [
+            'text' => 'Planes de mejora',
+            'url'  => 'planes-de-mejora/ingreso',
+            'icon' => 'fas fa-pencil-alt',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+        ],
+
         ['text' => 'Seguimiento de Evaluaciones', 'can'  => ['ver-capacitacion'],
         'icon' => 'fas fa-tasks',
         'classes' => 'rounded-xl',

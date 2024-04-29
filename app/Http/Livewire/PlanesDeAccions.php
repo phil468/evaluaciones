@@ -18,18 +18,24 @@ class PlanesDeAccions extends Component
     use WithPagination;
 
 	protected $paginationTheme = 'bootstrap';
-    public $selected_id, $keyWord, $encargado_id, $empleado_id, $competencia_id, $tipo_de_proceso_id, $proceso_id, $fecha_de_revision, $estado_id, $gerencia_id, $area_id, $avance, $name;
+    public $selected_id, $keyWord, $encargado_id, $empleado_id, $competencia_id, $tipo_de_proceso_id, $proceso_id, $fecha_de_revision, $estado_id, $gerencia_id, $area_id, $avance, $name, $nombre_de_proceso_id;
     public $updateMode = false;
 
-public $competencias ;
-public $procesos 	;
-public $estados 		;
-public $gerencias 	;
-public $areas 		;
-public $personals 	;
+	public $competencias ;
+	public $procesos 	;
+	public $estados 		;
+	public $gerencias 	;
+	public $areas 		;
+	public $personals 	;
 	
-	public function mount()
+	public function mount($encargado_id=null,$empleado_id=null,$competencia_id=null,$tipo_de_proceso_id=null,$nombre_de_proceso_id=null)
 	{
+		$this->encargado_id = $encargado_id;
+		$this->empleado_id = $empleado_id;
+		$this->competencia_id = $competencia_id;
+		$this->tipo_de_proceso_id = $tipo_de_proceso_id;
+		$this->nombre_de_proceso_id = $nombre_de_proceso_id;
+
 		//$this->tipos_de_procesos => TipoDeProceso::orderBy('name','asc')->where('estado',1)->pluck('name','id'),
 			$this->competencias 	= Competencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
 			$this->procesos 		= Proceso::orderBy('name','asc')->where('estado',1)->pluck('name','id');
@@ -46,6 +52,12 @@ public $personals 	;
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.planes-de-accion.view', [
             'planesDeAccions' => PlanesDeAccion::latest()
+						->when($this->encargado_id, function ($query, $encargado_id) {
+							return $query->where('encargado_id', $encargado_id);
+						})
+						->when($this->empleado_id, function ($query, $empleado_id) {
+							return $query->where('empleado_id', $empleado_id);
+						})						
 						->orWhere('encargado_id', 'LIKE', $keyWord)
 						->orWhere('empleado_id', 'LIKE', $keyWord)
 						->orWhere('competencia_id', 'LIKE', $keyWord)

@@ -2,8 +2,10 @@
 
 namespace App\Imports;
 
+use App\Models\EncargadosPlanesDeAccion;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\EvaluadorHasEvaluadoObjetivo;
 use App\Models\Personal;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -11,7 +13,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class EvaluadoresImport implements ToCollection, WithHeadingRow
+class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
 {
     /**
     * @param array $row
@@ -27,7 +29,7 @@ class EvaluadoresImport implements ToCollection, WithHeadingRow
         {
             $dni_evaluador = trim($row["dni_evaluador"]);
             $dni_evaluado = trim($row["dni_evaluado"]);
-            $evaluacion = trim($row["identificador"]);
+            $evaluacion = '004';//trim($row["identificador"]);
             $cargo_de_evaluador =  trim($row['cargo_de_evaluador']);
             $area_de_evaluador =  trim($row['area_de_evaluador']);
             $gerencia_sub_gerencia_de_evaluador =  trim($row['gerencia_sub_gerencia_de_evaluador']);
@@ -68,9 +70,21 @@ class EvaluadoresImport implements ToCollection, WithHeadingRow
                 // continue;
                 // return null;
             } else { 
-                $record = EvaluadorHasEvaluado::updateOrCreate(
+                $record = EvaluadorHasEvaluadoObjetivo::updateOrCreate(
                     ['evaluador_id' => $evaluador->id,
                     'evaluado_id' => $evaluado->id],
+                    ['evaluacion_id' => $evaluacion->id,
+                    'cargo_de_evaluador' => $cargo_de_evaluador,
+                    'area_de_evaluador' => $area_de_evaluador,
+                    'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
+                    'cargo_de_evaluado' => $cargo_de_evaluado,
+                    'area_de_evaluado' => $area_de_evaluado,
+                    'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                    'realizado' => null]
+                );
+                $record = EncargadosPlanesDeAccion::updateOrCreate(
+                    ['encargado_id' => $evaluador->id,
+                    'empleado_id' => $evaluado->id],
                     ['evaluacion_id' => $evaluacion->id,
                     'cargo_de_evaluador' => $cargo_de_evaluador,
                     'area_de_evaluador' => $area_de_evaluador,

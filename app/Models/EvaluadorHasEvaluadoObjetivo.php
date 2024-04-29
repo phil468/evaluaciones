@@ -6,23 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EvaluadorHasEvaluado extends Model
+class EvaluadorHasEvaluadoObjetivo extends Model
 {
 	use HasFactory;
     use SoftDeletes;
 	
     public $timestamps = true;
 
-    protected $table = 'evaluador_has_evaluados';
+    protected $table = 'evaluador_has_evaluados_objetivos';
 
-    protected $fillable = ['evaluador_id','evaluado_id','evaluacion_id','realizado','tipo_de_evaluacion_id',
-    'cargo_de_evaluador',
-    'area_de_evaluador',
-    'gerencia_sub_gerencia_de_evaluador',
-    'cargo_de_evaluado',
-    'area_de_evaluado',
-    'gerencia_sub_gerencia_de_evaluado'
-];
+    protected $fillable = [
+        'evaluador_id',
+        'evaluado_id',
+        'evaluacion_id',
+        'realizado',
+        'tipo_de_evaluacion_id',
+        'cargo_de_evaluador',
+        'area_de_evaluador',
+        'gerencia_sub_gerencia_de_evaluador',
+        'cargo_de_evaluado',
+        'area_de_evaluado',
+        'gerencia_sub_gerencia_de_evaluado'
+    ];
 	
     public function evaluador()
     {

@@ -30,6 +30,11 @@
 									<i class="fa fa-file-import"></i> Importar (i)
 								</a>
 							</div>
+							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
+								<a title="Importar Obbjetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="i">
+									<i class="fa fa-file-import"></i> Importar Objetivos (i)
+								</a>
+							</div>
 							{{-- botón de enviar correo masivo, con mensaje de aceptacion --}}
 							<div class="btn btn-sm btn-default">
 								<a title="Enviar correo masivo" accesskey="e" wire:click="enviarCorreo">
@@ -45,6 +50,7 @@
 						@can('crear-evaluacion')
 						{{-- @include('livewire.evaluadores.create') --}}
 						@include('livewire.evaluadores.importar')
+						@include('livewire.evaluadores.importar_objetivos')
 						@endcan						
 						@can('editar-evaluacion')
 						@include('livewire.evaluadores.update')

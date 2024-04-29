@@ -28,7 +28,7 @@ Evaluacione extends Model
         'fecha_inicio',
         'fecha_fin',
         'identificador',
-        'tipo_de_evaluacion_id',
+        'tipo_de_evaluacion_id'
     ];
 
     protected $dates = ['date','fecha_inicio','fecha_fin'];
@@ -59,6 +59,10 @@ Evaluacione extends Model
         //solo correos
         return $this->evaluadores()->where('realizado',0)->get()->pluck('evaluador.correo_empresa');
         //return $this->evaluadores()->where('realizado',0)->get();
+    }
+
+    public function tipoDeEvaluacion() {
+        return $this->belongsTo(TipoDeEvaluacione::class,'tipo_de_evaluacion_id','id');
     }
 
     // public function evaluacione_has_preguntas()

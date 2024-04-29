@@ -21,6 +21,7 @@ class Area extends Model
         'idempresa_nisira',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         'idarea_nisira',
         'fechacreacion_nisira',
+        'subgerencia_id',
         'gerencia_id',
         'idccosto_nisira',
         'empresa_id',
@@ -37,6 +38,11 @@ class Area extends Model
     public function gerencia()
     {
         return $this->belongsTo(Gerencia::class, 'gerencia_id', 'id');
+    }
+
+    public function subgerencia()
+    {
+        return $this->belongsTo(Subgerencia::class, 'subgerencia_id', 'id');
     }
     
     public function activos()
