@@ -99,6 +99,62 @@
 									<i class="fa fa-arrow-left"></i> Volver
 								</a>
 						</div>
+						
+						<div class="table-responsive">
+							<table class="table table-striped table-hover table-sm">
+								<thead class="thead">
+									<tr> 
+										<th>ACCIONES</th>		
+										<th>#</th> 
+										<th>Descripción</th>
+										<th>Tipo De Proceso</th>
+										<th>Proceso</th>
+										<th>Encargado</th>
+										<th>Personal</th>
+										<th>Competencia</th>
+										<th>Fecha De Revision</th>
+										<th>Estado</th>
+										<th>Avance</th>
+										<th>Gerencia</th>
+										<th>Area</th>
+																		
+										{{-- @can('editar-planes-de-accion','borrar-planes-de-accion') --}}						
+										{{-- @endcan --}}
+									</tr>
+								</thead>
+								<tbody>
+									{{-- {{dd($planesDeAccions)}} --}}
+									@foreach($planesDeAccions as $row)
+									<tr>
+										
+										<td width="90">
+											<div class="btn-group">
+												<a data-toggle="modal" data-target="#updatePlanDataModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit_plan({{$row->id}})">Editar </a>
+												<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Planes De Accion : {{$row->name}}? \nPlanes De Accion borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy_plan({{$row->id}})"> Borrar </a> 
+											</div>
+										</td>
+											
+										<td>{{ $loop->iteration }}</td> 
+										<td>{{ $row->name }}</td>
+										<td>{{ $row->tipo_de_proceso->name ?? '' }}</td>
+										<td>{{ $row->proceso->name ?? '' }}</td>
+										<td>{{ $row->encargado->name ?? '' }}</td>
+										<td>{{ $row->empleado->name ?? '' }}</td>
+										<td>{{ $row->competencia->name ?? '' }}</td>
+										<td>{{ $row->fecha_de_revision ?? '' }}</td>
+										<td>{{ $row->estado->name ?? '' }}</td>
+										<td>{{ $row->avance }}%</td>
+										<td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
+										<td>{{ $row->empleado->area->name ?? '' }}</td>
+																		
+										{{-- @can('editar-planes-de-accion','borrar-planes-de-accion') --}}
+										{{-- @endcan --}}
+									@endforeach
+								</tbody>
+							</table>						
+							{{-- {{ $planesDeAccions->links() }} --}}
+							</div>
+						</div>
 						<div class="row">
 								
 						{{-- <div style="width: 800px"> --}}
@@ -106,61 +162,6 @@
 						{{-- </div> --}}
 						</div>
 						{{-- <div class="col-sm-6"> --}}
-							<div class="table-responsive">
-								<table class="table table-striped table-hover table-sm">
-									<thead class="thead">
-										<tr> 
-											<th>ACCIONES</th>		
-											<th>#</th> 
-											<th>Descripción</th>
-											<th>Tipo De Proceso</th>
-											<th>Proceso</th>
-											<th>Encargado</th>
-											<th>Personal</th>
-											<th>Competencia</th>
-											<th>Fecha De Revision</th>
-											<th>Estado</th>
-											<th>Avance</th>
-											<th>Gerencia</th>
-											<th>Area</th>
-																			
-											{{-- @can('editar-planes-de-accion','borrar-planes-de-accion') --}}						
-											{{-- @endcan --}}
-										</tr>
-									</thead>
-									<tbody>
-										{{-- {{dd($planesDeAccions)}} --}}
-										@foreach($planesDeAccions as $row)
-										<tr>
-											
-											<td width="90">
-												<div class="btn-group">
-													<a data-toggle="modal" data-target="#updatePlanDataModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit_plan({{$row->id}})">Editar </a>
-													<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Planes De Accion : {{$row->name}}? \nPlanes De Accion borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy_plan({{$row->id}})"> Borrar </a> 
-												</div>
-											</td>
-												
-											<td>{{ $loop->iteration }}</td> 
-											<td>{{ $row->name }}</td>
-											<td>{{ $row->tipo_de_proceso->name ?? '' }}</td>
-											<td>{{ $row->proceso->name ?? '' }}</td>
-											<td>{{ $row->encargado->name ?? '' }}</td>
-											<td>{{ $row->empleado->name ?? '' }}</td>
-											<td>{{ $row->competencia->name ?? '' }}</td>
-											<td>{{ $row->fecha_de_revision ?? '' }}</td>
-											<td>{{ $row->estado->name ?? '' }}</td>
-											<td>{{ $row->avance }}%</td>
-											<td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
-											<td>{{ $row->empleado->area->name ?? '' }}</td>
-																			
-											{{-- @can('editar-planes-de-accion','borrar-planes-de-accion') --}}
-											{{-- @endcan --}}
-										@endforeach
-									</tbody>
-								</table>						
-								{{-- {{ $planesDeAccions->links() }} --}}
-								</div>
-							</div>
 							
 						{{-- </div> --}}
 						</div>

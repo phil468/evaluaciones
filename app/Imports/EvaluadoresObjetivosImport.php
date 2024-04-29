@@ -70,7 +70,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                 // continue;
                 // return null;
             } else { 
-                $record = EvaluadorHasEvaluadoObjetivo::updateOrCreate(
+                $record = EvaluadorHasEvaluado::updateOrCreate(
                     ['evaluador_id' => $evaluador->id,
                     'evaluado_id' => $evaluado->id],
                     ['evaluacion_id' => $evaluacion->id,
@@ -79,6 +79,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                     'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
                     'cargo_de_evaluado' => $cargo_de_evaluado,
                     'area_de_evaluado' => $area_de_evaluado,
+                    'tipo_de_evaluacion_id' => '2',
                     'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
                     'realizado' => null]
                 );
