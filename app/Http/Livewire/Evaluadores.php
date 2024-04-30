@@ -44,7 +44,7 @@ class Evaluadores extends Component
 						->orWhere('evaluador_id', 'LIKE', $keyWord)
 						->orWhere('evaluado_id', 'LIKE', $keyWord)
 						->orWhere('evaluacion_id', 'LIKE', $keyWord)
-						->paginate(100),
+						->paginate(20),
         ]);
     }
 	
