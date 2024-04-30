@@ -40,7 +40,7 @@ class Evaluadores extends Component
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.evaluadores.view', [
             'evaluadorHasEvaluados' => EvaluadorHasEvaluado::latest()
-            ->orderBy('evaluador_Has_Evaluados.id', 'desc')
+            ->orderBy('evaluador_has_evaluados.id', 'desc')
 						->orWhere('evaluador_id', 'LIKE', $keyWord)
 						->orWhere('evaluado_id', 'LIKE', $keyWord)
 						->orWhere('evaluacion_id', 'LIKE', $keyWord)
