@@ -132,7 +132,29 @@ public function setAvance($competencia_id)
                             // ->when($this->empleado_ids, function ($query, $empleado_ids) {
                             //     return $query->whereIn('empleado_id', $empleado_ids);
                             // })
-                            ->paginate(10),
+                            // ->paginate(10)
+                            ,
+                'planesDeAccions' => PlanesDeAccion::latest()
+                            ->where('empleado_id', auth()->user()->personal->id)
+                            // ->when($this->encargado_id, function ($query, $encargado_id) {
+                            //     return $query->where('encargado_id', $encargado_id);
+                            // })
+                            // ->when($this->empleado_id, function ($query, $empleado_id) {
+                            //     return $query->where('empleado_id', $empleado_id);
+                            // })						
+                            // ->orWhere('encargado_id', 'LIKE', $keyWord)
+                            // ->orWhere('empleado_id', 'LIKE', $keyWord)
+                            // ->orWhere('competencia_id', 'LIKE', $keyWord)
+                            // ->orWhere('tipo_de_proceso_id', 'LIKE', $keyWord)
+                            // ->orWhere('proceso_id', 'LIKE', $keyWord)
+                            // ->orWhere('fecha_de_revision', 'LIKE', $keyWord)
+                            // ->orWhere('estado_id', 'LIKE', $keyWord)
+                            // ->orWhere('gerencia_id', 'LIKE', $keyWord)
+                            // ->orWhere('area_id', 'LIKE', $keyWord)
+                            // ->orWhere('avance', 'LIKE', $keyWord)
+                            // ->orWhere('name', 'LIKE', $keyWord)
+                            // ->paginate(10)
+                            ,
             ]);
         }
 

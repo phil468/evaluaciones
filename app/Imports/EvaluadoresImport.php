@@ -69,16 +69,20 @@ class EvaluadoresImport implements ToCollection, WithHeadingRow
                 // return null;
             } else { 
                 $record = EvaluadorHasEvaluado::updateOrCreate(
-                    ['evaluador_id' => $evaluador->id,
-                    'evaluado_id' => $evaluado->id],
-                    ['evaluacion_id' => $evaluacion->id,
-                    'cargo_de_evaluador' => $cargo_de_evaluador,
-                    'area_de_evaluador' => $area_de_evaluador,
-                    'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
-                    'cargo_de_evaluado' => $cargo_de_evaluado,
-                    'area_de_evaluado' => $area_de_evaluado,
-                    'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                    'realizado' => null]
+                    [
+                        'evaluador_id' => $evaluador->id,
+                        'evaluado_id' => $evaluado->id,
+                        'evaluacion_id' => $evaluacion->id
+                    ],
+                    [
+                        'cargo_de_evaluador' => $cargo_de_evaluador,
+                        'area_de_evaluador' => $area_de_evaluador,
+                        'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
+                        'cargo_de_evaluado' => $cargo_de_evaluado,
+                        'area_de_evaluado' => $area_de_evaluado,
+                        'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                        // 'realizado' => null
+                    ]
                 );
                 $message = $message . "Evaluador - Evaluado creado correctamente en la linea " . $index . "\n";
 

@@ -34,10 +34,10 @@
                                 <div class="h4 bold font-weight-bold">                        
                                     ¡Contamos contigo!
                                     {{--boton para ir a evaluaciones--}}
-                                    <br>
+                                    {{-- <br>
                                     <a class="btn btn-vanguard" href={{url('evaluaciones-de-desempeno')}}>
                                         Ir a Evaluaciones
-                                    </a>
+                                    </a> --}}
                                 </div>
                                 <br>
                                 <video 

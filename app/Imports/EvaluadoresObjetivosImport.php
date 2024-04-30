@@ -29,7 +29,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
         {
             $dni_evaluador = trim($row["dni_evaluador"]);
             $dni_evaluado = trim($row["dni_evaluado"]);
-            $evaluacion = '004';//trim($row["identificador"]);
+            $evaluacion = trim($row["identificador"]);
             $cargo_de_evaluador =  trim($row['cargo_de_evaluador']);
             $area_de_evaluador =  trim($row['area_de_evaluador']);
             $gerencia_sub_gerencia_de_evaluador =  trim($row['gerencia_sub_gerencia_de_evaluador']);
@@ -71,29 +71,34 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                 // return null;
             } else { 
                 $record = EvaluadorHasEvaluado::updateOrCreate(
-                    ['evaluador_id' => $evaluador->id,
-                    'evaluado_id' => $evaluado->id],
-                    ['evaluacion_id' => $evaluacion->id,
-                    'cargo_de_evaluador' => $cargo_de_evaluador,
-                    'area_de_evaluador' => $area_de_evaluador,
-                    'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
-                    'cargo_de_evaluado' => $cargo_de_evaluado,
-                    'area_de_evaluado' => $area_de_evaluado,
-                    'tipo_de_evaluacion_id' => '2',
-                    'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                    'realizado' => null]
+                    [
+                        'evaluador_id' => $evaluador->id,
+                        'evaluado_id' => $evaluado->id,
+                        'evaluacion_id' => $evaluacion->id,
+                    ],
+                    [
+                        'cargo_de_evaluador' => $cargo_de_evaluador,
+                        'area_de_evaluador' => $area_de_evaluador,
+                        'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
+                        'cargo_de_evaluado' => $cargo_de_evaluado,
+                        'area_de_evaluado' => $area_de_evaluado,
+                        'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                    ]
                 );
                 $record = EncargadosPlanesDeAccion::updateOrCreate(
-                    ['encargado_id' => $evaluador->id,
-                    'empleado_id' => $evaluado->id],
-                    ['evaluacion_id' => $evaluacion->id,
-                    'cargo_de_evaluador' => $cargo_de_evaluador,
-                    'area_de_evaluador' => $area_de_evaluador,
-                    'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
-                    'cargo_de_evaluado' => $cargo_de_evaluado,
-                    'area_de_evaluado' => $area_de_evaluado,
-                    'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                    'realizado' => null]
+                    [
+                        'encargado_id' => $evaluador->id,
+                        'empleado_id' => $evaluado->id,
+                        'evaluacion_id' => $evaluacion->id
+                    ],
+                    [
+                        'cargo_de_evaluador' => $cargo_de_evaluador,
+                        'area_de_evaluador' => $area_de_evaluador,
+                        'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
+                        'cargo_de_evaluado' => $cargo_de_evaluado,
+                        'area_de_evaluado' => $area_de_evaluado,
+                        'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                    ]
                 );
                 $message = $message . "Evaluador - Evaluado creado correctamente en la linea " . $index . "\n";
 
@@ -101,5 +106,6 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
 
         }
         return $message;
+        // return $message;
     }
 }

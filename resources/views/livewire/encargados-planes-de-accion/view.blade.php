@@ -1,4 +1,4 @@
-@section('title', __('Encargados Planes De Accions'))
+@section('title', __('Encargados Planes De Mejora'))
 <div class="container-fluid">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h4 class="h5">Lista Encargados Planes De Accion </h4>
+							<h4 class="h5">Planes De Mejora </h4>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -37,56 +37,127 @@
 						@include('livewire.encargados-planes-de-accion.update_plan')
 				<div class="table-responsive">
 					@isset($encargadosPlanesDeAccions)
-					<table class="table table-striped table-hover table-sm">
-						<thead class="thead">
-							<tr> 
-								{{-- <th>id</th> --}}
-								@if ($ingreso)
-									
-								@else
-								<th>Encargado Id</th>
-								@endif
-								<th>Empleado Id</th>
-								{{-- <th>Evaluacion Id</th> --}}
-								{{-- <th>Realizado</th> --}}
-																
-								@can('editar-encargados-planes-de-accion','borrar-encargados-planes-de-accion')
-								<th>ACCIONES</th>								
-								@endcan
-							</tr>
-						</thead>
-						<tbody>
-							@foreach($encargadosPlanesDeAccions as $row)
-							<tr>
-								{{-- <td>{{ $row->id }}</td>  --}}
-								@if ($ingreso)
-									
-								@else
-								<td>{{ $row->encargado->name }}</td>
-								@endif
-								<td>{{ $row->empleado->name }}</td>
-								{{-- <td>{{ $row->evaluacion_id }}</td> --}}
-								{{-- <td>{{ $row->realizado }}</td> --}}
-																
-								{{-- @can('editar-encargados-planes-de-accion','borrar-encargados-planes-de-accion') --}}
-								<td width="90">
-								<div class="btn-group">
-									<button class="btn btn-vanguard" data-toggle="tooltip" data-placement="top" title="Ver" wire:click="ver({{$row->id}})"><i class="fa fa-eye"></i></button>
-									@can('editar-encargados-planes-de-accion')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit_plan({{$row->id}})">Editar </a>
+					<div class="h5">Planes de accion de personal a cargo</div>
+						@if(count($encargadosPlanesDeAccions) == 0)
+							<div class="alert alert-default" role="alert">
+								No tiene registro de planes de acción pendientes de ingresar.
+							</div>
+						@else
+						<table class="table table-striped table-hover table-sm">
+							<thead class="thead">
+								<tr> 
+									{{-- <th>id</th> --}}
+									@if ($ingreso)
+										
+									@else
+									<th>Encargado</th>
+									@endif
+									<th>Personal</th>
+									{{-- <th>Evaluacion Id</th> --}}
+									{{-- <th>Realizado</th> --}}
+																	
+									@can('editar-encargados-planes-de-accion','borrar-encargados-planes-de-accion')
+									<th>ACCIONES</th>								
 									@endcan
-									@can('borrar-encargados-planes-de-accion')							 
-									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Encargados Planes De Accion : {{$row->name}}? \nEncargados Planes De Accions borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy_plan({{$row->id}})"> Borrar </a> 
-									@endcan  
-								</div>
-								</td>
-								{{-- @endcan --}}
-							@endforeach
-						</tbody>
-					</table>						
-					{{ $encargadosPlanesDeAccions->links() }}
-						
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($encargadosPlanesDeAccions as $row)
+								<tr>
+									{{-- <td>{{ $row->id }}</td>  --}}
+									@if ($ingreso)
+										
+									@else
+									<td>{{ $row->encargado->name }}</td>
+									@endif
+									<td>{{ $row->empleado->name }}</td>
+									{{-- <td>{{ $row->evaluacion_id }}</td> --}}
+									{{-- <td>{{ $row->realizado }}</td> --}}
+																	
+									{{-- @can('editar-encargados-planes-de-accion','borrar-encargados-planes-de-accion') --}}
+									<td width="90">
+									<div class="btn-group">
+										<button class="btn btn-vanguard" data-toggle="tooltip" data-placement="top" title="Ver" wire:click="ver({{$row->id}})"><i class="fa fa-eye"></i></button>
+										@can('editar-encargados-planes-de-accion')
+										<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit_plan({{$row->id}})">Editar </a>
+										@endcan
+										@can('borrar-encargados-planes-de-accion')							 
+										<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Encargados Planes De Accion : {{$row->name}}? \nEncargados Planes De Accions borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy_plan({{$row->id}})"> Borrar </a> 
+										@endcan  
+									</div>
+									</td>
+									{{-- @endcan --}}
+								@endforeach
+							</tbody>
+						</table>						
+						{{ $encargadosPlanesDeAccions->links() }}
+						@endif
 					@endisset
+
+					
+					@isset($planesDeAccions)
+					<div class="h5">Planes de accion propios</div>
+						@if(count($planesDeAccions) == 0)
+							<div class="alert alert-default" role="alert">
+								No tiene registro de planes de acción asignados a usted.
+							</div>
+						@else
+						<table class="table table-striped table-hover table-sm">
+							<thead class="thead">
+								<tr> 
+									<th>#</th> 
+									<th>Descripción</th>
+									<th>Tipo De Proceso</th>
+									<th>Proceso</th>
+									<th>Encargado</th>
+									<th>Personal</th>
+									<th>Competencia</th>
+									<th>Fecha De Revision</th>
+									<th>Estado</th>
+									<th>Avance</th>
+									<th>Gerencia</th>
+									<th>Area</th>
+																	
+									{{-- @can('editar-planes-de-accion','borrar-planes-de-accion')
+									<th>ACCIONES</th>								
+									@endcan --}}
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($planesDeAccions as $row)
+								<tr>
+									<td>{{ $loop->iteration }}</td> 
+									<td>{{ $row->name }}</td>
+									<td>{{ $row->tipo_de_proceso->name ?? '' }}</td>
+									<td>{{ $row->proceso->name ?? '' }}</td>
+									<td>{{ $row->encargado->name ?? '' }}</td>
+									<td>{{ $row->empleado->name ?? '' }}</td>
+									<td>{{ $row->competencia->name ?? '' }}</td>
+									<td>{{ $row->fecha_de_revision ?? '' }}</td>
+									<td>{{ $row->estado->name ?? '' }}</td>
+									<td>{{ $row->avance }}%</td>
+									<td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
+									<td>{{ $row->empleado->area->name ?? '' }}</td>
+																	
+									{{-- @can('editar-planes-de-accion','borrar-planes-de-accion')
+									<td width="90">
+									<div class="btn-group">
+										@can('editar-planes-de-accion')
+										<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
+										@endcan
+										@can('borrar-planes-de-accion')							 
+										<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Planes De Accion : {{$row->name}}? \nPlanes De Accion borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+										@endcan  
+									</div>
+									</td>
+									@endcan --}}
+								@endforeach
+							</tbody>
+						</table>						
+						{{-- {{ $planesDeAccions->links() }} --}}
+						@endif
+					@endisset
+
 					</div>
 
 					@isset($dashboard)

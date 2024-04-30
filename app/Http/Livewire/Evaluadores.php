@@ -10,6 +10,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Personal;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
@@ -38,6 +40,7 @@ class Evaluadores extends Component
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.evaluadores.view', [
             'evaluadorHasEvaluados' => EvaluadorHasEvaluado::latest()
+            ->orderBy('evaluador_Has_Evaluados.id', 'desc')
 						->orWhere('evaluador_id', 'LIKE', $keyWord)
 						->orWhere('evaluado_id', 'LIKE', $keyWord)
 						->orWhere('evaluacion_id', 'LIKE', $keyWord)
@@ -70,6 +73,9 @@ class Evaluadores extends Component
             ]);
      
                 $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
+                //mostrar mensaje que retorna de $cs
+                // dd($cs);
+                $this->crear_editar_usuarios();
         
                 $this->resetInput();                
                
@@ -215,6 +221,70 @@ class Evaluadores extends Component
 		    $this->emit('closeModal');
 			session()->flash('message', 'Evaluadores actualizado correctamente.');
         }
+    }
+
+    public function crear_editar_usuarios() {
+        $evaluadores = EvaluadorHasEvaluado::all();
+        foreach ($evaluadores as $e) {
+            $personal_evaluador = $e->evaluador;
+            $evaluado = $e->evaluado;
+            // $evaluacion = $evaluador->evaluacion;
+            $user_evaluador = $personal_evaluador->user??null;
+            $user_evaluado = $evaluado->user??null;
+            if ($user_evaluador == null) {
+                $user_evaluador = new User();
+
+                $correo = '@vanguardfresh.pe';
+
+                $personal = $personal_evaluador;
+            
+                if(!empty($personal)) {
+                    if (strpos(strtolower($personal->correo_personal), '@vanguardfresh.pe') !== false && strtolower($personal->correo_personal) != 'colaboradores@vanguardfresh.pe') {
+                        $correo = strtolower($personal->correo_personal);
+                    } else {
+                        $correo = strtolower(explode(" ", trim( str_replace('ñ','n',(str_replace('Ñ','n',$personal->nombres))) ))[0]).'.'
+                                .strtolower(str_replace(' ','',str_replace('ñ','n',(str_replace('Ñ','n',$personal->apellido_paterno))) ))
+                                .'@vanguardfresh.pe';
+                    }
+                }
+                $user_evaluador->name = explode(" ", $personal->nombres)[0].' '.$personal->apellido_paterno;
+                $user_evaluador->email = $correo;
+                $user_evaluador->password = Hash::make('123456');
+                $user_evaluador->personal_id = $personal_evaluador->id;
+                $user_evaluador->estado = $personal_evaluador->estado;
+                $user_evaluador->save();
+
+                $user_evaluador->assignRole('Personal');
+
+            }
+            if ($user_evaluado == null) {
+                $user_evaluado = new User();
+
+                $correo = '@vanguardfresh.pe';
+
+                $personal = $evaluado;
+            
+                if(!empty($personal)) {
+                    if (strpos(strtolower($personal->correo_personal), '@vanguardfresh.pe') !== false && strtolower($personal->correo_personal) != 'colaboradores@vanguardfresh.pe') {
+                        $correo = strtolower($personal->correo_personal);
+                    } else {
+                        $correo = strtolower(explode(" ", trim( str_replace('ñ','n',(str_replace('Ñ','n',$personal->nombres))) ))[0]).'.'
+                                .strtolower(str_replace(' ','',str_replace('ñ','n',(str_replace('Ñ','n',$personal->apellido_paterno))) ))
+                                .'@vanguardfresh.pe';
+                    }
+                }
+                $user_evaluado->name = explode(" ", $personal->nombres)[0].' '.$personal->apellido_paterno;
+
+                $user_evaluado->email = $correo;
+                $user_evaluado->password = Hash::make('123456');
+                $user_evaluado->personal_id = $evaluado->id;
+                $user_evaluado->estado = $evaluado->estado;
+                $user_evaluado->save();
+
+                $user_evaluado->assignRole('Personal');
+            }
+        }
+    
     }
 
     public function destroy($id)

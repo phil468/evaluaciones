@@ -31,96 +31,20 @@ class EvaluacionTable extends LivewireDatatable
 
     public $model = Evaluacione::class;
 
-    // public function columns()
-    // {
-    //     return [
-            
-    //         Column::callback('id,title', function ($id,$title) {
-    //             return view('table-actions-3', ['id' => $id, 'name'=>$title]);
-    //         })->unsortable()
-    //         ->label('Acciones')
-    //         ->excludeFromExport(),
-
-    //         // Column::name('evaluaciones.eid')->label('ID')->searchable()->filterable(),
-    //         Column::name('evaluaciones.eid')->label('ID')->searchable()->filterable(),
-    //         Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
-    //         // DateColumn::name('evaluaciones.date')->label('Fecha')->searchable()->filterable(),
-    //         Column::callback(['evaluaciones.date','evaluaciones.id'], function ($date,$id) {
-    //             return view('livewire.editable-date-column', 
-    //             [
-    //                 'value' => $date,
-    //                 'key' => $this->builder()->getModel()->getQualifiedKeyName(),
-    //                 'column' => 'date',
-    //                 'rowId' => $id,
-    //             ]
-    //         );
-    //         })
-    //         ->label('Fecha')
-    //         ->searchable()
-    //         ->filterable()
-    //         ->exportCallback(function ($date) {
-    //             $date = new \DateTime($date);
-    //             return $date->format('d/m/Y H:i:s');
-    //         }),
-
-            
-
-    //         Column::callback(['evaluaciones.status','evaluaciones.id'], function ($status, $id) {
-    //             return view('livewire.editable-status-column', //'livewire.toggle-button', 
-    //             [
-    //                 'value' => $status,
-    //                 'key' => $this->builder()->getModel()->getQualifiedKeyName(),
-    //                 'column' => 'status',
-    //                 'rowId' => $id,
-    //             ]);
-    //         })
-    //         ->label('Estado')
-    //         ->searchable()
-    //         ->filterable()
-    //         ->exportCallback(
-    //             function ($value) {
-    //                 return $value ? 'Activo' : 'Inactivo';
-    //             }
-    //         ),
-
-    //         // Column::delete()->label('Eliminar')->alignCenter()->excludeFromExport(),
-                       
-    //     ];
-
-    // }
-
-
     public function columns()
     {
-        // 'eid',
-        // 'title',
-        // 'date',
-        // 'status',
-        // 'nombre_para_mostrar',
-        // 'campania',
-        // 'mes',
-        // 'anio',
-        // 'fecha_inicio',
-        // 'fecha_fin',
-        // 'identificador',
-        // 'tipo_de_evaluacion_id',
         return [
             Column::name('evaluaciones.eid')->label('EID')->searchable()->filterable(),
             Column::name('evaluaciones.title')->label('Título')->searchable(),
             DateColumn::name('evaluaciones.date')->label('Fecha')->searchable(),
             BooleanColumn::name('evaluaciones.status')->label('Estado')->searchable(),
-            // DateColumn::name('evaluaciones.created_at')->label('Creado en')->searchable(),
-            // DateColumn::name('evaluaciones.updated_at')->label('Actualizado en')->searchable(),
-            // DateColumn::name('evaluaciones.deleted_at')->label('Eliminado en')->searchable(),
             Column::name('evaluaciones.nombre_para_mostrar')->label('Nombre para mostrar')->searchable(),
             Column::name('evaluaciones.campania')->label('Campaña')->searchable(),
             Column::name('evaluaciones.mes')->label('Mes')->searchable(),
             Column::name('evaluaciones.anio')->label('Año')->searchable(),
             DateColumn::name('evaluaciones.fecha_inicio')->label('Fecha de inicio')->searchable(),
             DateColumn::name('evaluaciones.fecha_fin')->label('Fecha de fin')->searchable(),
-            Column::name('evaluaciones.identificador')->label('Identificador')->searchable(),
-            // Column::name('evaluaciones.identificador')->label('Identificador')->searchable(),
-            // Para el campo JSON, puedes necesitar un tratamiento especial dependiendo de cómo quieras mostrar los datos
+            Column::name('evaluaciones.identificador')->label('Identificador')->searchable(),            
             Column::name('evaluaciones.tipo_de_evaluacion_id')->label('ID de Tipo de Evaluación')->searchable(),
             Column::callback('id,title', function ($id,$title) {
                 return view('table-actions-3', ['id' => $id, 'name'=>$title]);

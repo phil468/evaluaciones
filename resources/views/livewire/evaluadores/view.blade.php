@@ -24,15 +24,20 @@
 									<i class="fa fa-plus"></i> Nuevo (n)
 								</a>
 							</div>
-							{{-- botón de importar --}}
+							{{-- //boton para crear_editar_usuarios --}}
+							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createEditUsersModal">
+								<a title="Crear/Editar Usuarios" wire:click="crear_editar_usuarios">
+									<i class="fa fa-users"></i> Crear/Editar Usuarios (u)
+								</a>
+							</div>
 							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importDataModal">
 								<a title="Importar" data-toggle="modal" data-target="#importDataModal" accesskey="i">
 									<i class="fa fa-file-import"></i> Importar (i)
 								</a>
 							</div>
 							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
-								<a title="Importar Obbjetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="i">
-									<i class="fa fa-file-import"></i> Importar Objetivos (i)
+								<a title="Importar Obbjetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="o">
+									<i class="fa fa-file-import"></i> Importar Objetivos (o)
 								</a>
 							</div>
 							{{-- botón de enviar correo masivo, con mensaje de aceptacion --}}
@@ -72,7 +77,7 @@
 						<tbody>
 							@foreach($evaluadorHasEvaluados as $row)
 							<tr>
-								<td>{{ $loop->iteration }}</td> 
+								<td>{{ $row->id }}</td> 
 								<td>{{ $row->evaluador->name }}</td>
 								<td>{{ $row->evaluado->name }}</td>
 								<td>{{ $row->evaluacion->title }}</td>
@@ -102,7 +107,10 @@
 					</table>						
 					{{ $evaluadorHasEvaluados->links() }}
 					</div>
-				</div>
+				</div>	
+                <div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,cancel,importar_objetivos,store,importar,update">
+                    <x-loading-indicator />
+                </div>	
 			</div>
 		</div>
 	</div>
