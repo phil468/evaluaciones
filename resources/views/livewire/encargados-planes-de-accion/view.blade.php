@@ -38,7 +38,7 @@
 				<div class="table-responsive">
 					@isset($encargadosPlanesDeAccions)
 					<div class="h5">Planes de accion de personal a cargo</div>
-						@if(count($encargadosPlanesDeAccions) == 0)
+						@if($encargadosPlanesDeAccions)
 							<div class="alert alert-default" role="alert">
 								No tiene registro de planes de acción pendientes de ingresar.
 							</div>
@@ -90,14 +90,14 @@
 								@endforeach
 							</tbody>
 						</table>						
-						{{ $encargadosPlanesDeAccions->links() }}
+						{{-- {{ $encargadosPlanesDeAccions->links() }} --}}
 						@endif
 					@endisset
 
 					
 					@isset($planesDeAccions)
 					<div class="h5">Planes de accion propios</div>
-						@if(count($planesDeAccions) == 0)
+						@if(($planesDeAccions))
 							<div class="alert alert-default" role="alert">
 								No tiene registro de planes de acción asignados a usted.
 							</div>

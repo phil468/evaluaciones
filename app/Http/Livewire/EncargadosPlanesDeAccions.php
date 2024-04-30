@@ -132,7 +132,7 @@ public function setAvance($competencia_id)
                             // ->when($this->empleado_ids, function ($query, $empleado_ids) {
                             //     return $query->whereIn('empleado_id', $empleado_ids);
                             // })
-                            ->paginate(10)
+                            // ->paginate(10)
                             ,
                 'planesDeAccions' => PlanesDeAccion::latest()
                             ->where('empleado_id', auth()->user()->personal->id)
@@ -153,7 +153,7 @@ public function setAvance($competencia_id)
                             // ->orWhere('area_id', 'LIKE', $keyWord)
                             // ->orWhere('avance', 'LIKE', $keyWord)
                             // ->orWhere('name', 'LIKE', $keyWord)
-                            ->paginate(10)
+                            // ->paginate(10)
                             ,
             ]);
         }
