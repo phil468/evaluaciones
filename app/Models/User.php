@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -101,6 +102,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->roles()->first()->id;
     }
-
+    
+    public function canAccessFilament(): bool
+    {
+        return str_ends_with($this->email, '@vanguardfresh.pe') && $this->hasVerifiedEmail();
+    }
     
 }

@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
 <div class="col-md-12">
-    <div class="card">
+    <div class="card rounded-xl">
       <div class="card-header bg-primary">
         <h3 class="card-title">Crear Rol</h3>
       </div>
