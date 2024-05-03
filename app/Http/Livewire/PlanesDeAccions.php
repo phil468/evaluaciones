@@ -127,7 +127,7 @@ class PlanesDeAccions extends Component
         
         $this->resetInput();
 		$this->emit('closeModal');
-		session()->flash('message', 'Planes De Accion creado correctamente.');
+		session()->flash('message', 'Planes De Mejora creado correctamente.');
     }
 
     public function edit($id)
@@ -184,7 +184,7 @@ class PlanesDeAccions extends Component
             $this->resetInput();
             $this->updateMode = false;
 		    $this->emit('closeModal');
-			session()->flash('message', 'Planes De Accion actualizado correctamente.');
+			session()->flash('message', 'Planes De Mejora actualizado correctamente.');
         }
     }
 

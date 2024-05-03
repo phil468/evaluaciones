@@ -36,6 +36,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
             $cargo_de_evaluado =  trim($row['cargo_de_evaluado']);
             $area_de_evaluado =  trim($row['area_de_evaluado']);
             $gerencia_sub_gerencia_de_evaluado =  trim($row['gerencia_sub_gerencia_de_evaluado']);
+            $cantidad_requerida =  trim($row['cantidad_requerida']);
 
             $evaluador = Personal::where('dni',$dni_evaluador)->first();
             if(!$evaluador){
@@ -83,6 +84,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                         'cargo_de_evaluado' => $cargo_de_evaluado,
                         'area_de_evaluado' => $area_de_evaluado,
                         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                        'cantidad_requerida' => $cantidad_requerida
                     ]
                 );
                 $record = EncargadosPlanesDeAccion::updateOrCreate(
@@ -98,6 +100,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                         'cargo_de_evaluado' => $cargo_de_evaluado,
                         'area_de_evaluado' => $area_de_evaluado,
                         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                        'cantidad_requerida' => $cantidad_requerida
                     ]
                 );
                 $message = $message . "Evaluador - Evaluado creado correctamente en la linea " . $index . "\n";

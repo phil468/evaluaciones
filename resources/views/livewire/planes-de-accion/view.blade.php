@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Lista Planes De Accion </h4>
+							<h5 class="h5">Lista Planes De Mejora </h4>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -81,7 +81,7 @@
 									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-planes-de-accion')							 
-									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Planes De Accion : {{$row->name}}? \nPlanes De Accion borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Planes De Mejora : {{$row->name}}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
 									@endcan  
 								</div>
 								</td>

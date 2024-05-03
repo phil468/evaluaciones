@@ -26,7 +26,8 @@ class EncargadosPlanesDeAccion extends Model
         'gerencia_sub_gerencia_de_evaluador',
         'cargo_de_evaluado',
         'area_de_evaluado',
-        'gerencia_sub_gerencia_de_evaluado'
+        'gerencia_sub_gerencia_de_evaluado',
+        'cantidad_requerida'
     ];
 
     public function empleado()

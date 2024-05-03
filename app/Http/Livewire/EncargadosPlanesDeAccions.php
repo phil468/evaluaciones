@@ -126,13 +126,18 @@ public function setAvance($competencia_id)
         }
 
         if ($this->ingreso) {
+            // dd(auth()->user()->personal->id);
+            // $encargadosPlanesDeAccions = EncargadosPlanesDeAccion::latest()
+            // ->where('encargado_id', auth()->user()->personal->id)->get();
             return view('livewire.encargados-planes-de-accion.view', [
-                'encargadosPlanesDeAccions' => EncargadosPlanesDeAccion::latest()
-                            ->where('encargado_id', auth()->user()->personal->id)
+                'encargadosPlanesDeAccions' => 
+                EncargadosPlanesDeAccion::latest()
+            ->where('encargado_id', auth()->user()->personal->id)
+            // $encargadosPlanesDeAccions
                             // ->when($this->empleado_ids, function ($query, $empleado_ids) {
                             //     return $query->whereIn('empleado_id', $empleado_ids);
                             // })
-                            // ->paginate(10)
+                            ->paginate(10)
                             ,
                 'planesDeAccions' => PlanesDeAccion::latest()
                             ->where('empleado_id', auth()->user()->personal->id)
@@ -153,7 +158,7 @@ public function setAvance($competencia_id)
                             // ->orWhere('area_id', 'LIKE', $keyWord)
                             // ->orWhere('avance', 'LIKE', $keyWord)
                             // ->orWhere('name', 'LIKE', $keyWord)
-                            // ->paginate(10)
+                            ->paginate(10)
                             ,
             ]);
         }
@@ -207,7 +212,7 @@ public function setAvance($competencia_id)
         
         $this->resetInput();
 		$this->emit('closeModal');
-		session()->flash('message', 'Encargados Planes De Accion creado correctamente.');
+		session()->flash('message', 'Encargados Planes De Mejora creado correctamente.');
     }
 
     public function store_plan()
@@ -242,7 +247,7 @@ public function setAvance($competencia_id)
         
         $this->resetInput_plan();
 		$this->emit('closeModal');
-		session()->flash('message', 'Planes De Accion creado correctamente.');
+		session()->flash('message', 'Planes De Mejora creado correctamente.');
     }
 
     private function resetInput_plan()
@@ -318,7 +323,7 @@ public function setAvance($competencia_id)
             $this->resetInput_plan();
             $this->updateMode = false;
 		    $this->emit('closeModal');
-			session()->flash('message', 'Planes De Accion actualizado correctamente.');
+			session()->flash('message', 'Planes De Mejora actualizado correctamente.');
         }
     }
     
@@ -361,7 +366,7 @@ public function setAvance($competencia_id)
             $this->resetInput();
             $this->updateMode = false;
 		    $this->emit('closeModal');
-			session()->flash('message', 'Encargados Planes De Accion actualizado correctamente.');
+			session()->flash('message', 'Encargados Planes De Mejora actualizado correctamente.');
         }
     }
 
