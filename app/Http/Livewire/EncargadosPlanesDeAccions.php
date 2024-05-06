@@ -247,6 +247,7 @@ public function setAvance($competencia_id)
         
         $this->resetInput_plan();
 		$this->emit('closeModal');
+        // $this->dispatchBrowserEvent('closeModal');
 		session()->flash('message', 'Planes De Mejora creado correctamente.');
     }
 

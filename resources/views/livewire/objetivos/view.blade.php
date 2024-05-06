@@ -82,9 +82,11 @@
 								<th>Descripción</th>
 								<th>Tipo Objetivo</th>
 								<th>Resultado</th>
+								<th>Evidencia</th>
+								<th>Fecha de creación</th>
+								<th>Fecha de modificación</th>
 								{{-- <th>Evaluado Id</th>
 								<th>Evaluador Id</th> --}}
-								<th>Evidencia</th>
 																
 								@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 								<th>ACCIONES</th>								
@@ -98,9 +100,11 @@
 								<td>{{ $row->descripcion }}</td>
 								<td>{{ $row->tipo_objetivo->unidad.'('.$row->tipo_objetivo->simbolo.')' }}</td>
 								<td>{{ $row->resultado }}</td>
+								<td>{{ $row->evidencia }}</td>
+								<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
+								<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
 								{{-- <td>{{ $row->evaluado_id }}</td>
 								<td>{{ $row->evaluador_id }}</td> --}}
-								<td>{{ $row->evidencia }}</td>
 																
 								@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 								<td width="90">

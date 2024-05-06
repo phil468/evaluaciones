@@ -119,7 +119,7 @@
 									<table class="table table-striped table-bordered table-sm">
 										<thead class="thead">
 											<tr> 
-												<th class="text-center">ID</th> 
+												{{-- <th class="text-center">ID</th>  --}}
 												{{-- <th>Evaluador</th> --}}
 												<th class="text-center">EVALUADO</th>
 												<th class="text-center">CARGO</th>
@@ -133,7 +133,7 @@
 										<tbody>
 											@foreach($evaluadorHasEvaluados as $row)
 											<tr>
-												<td class="text-center">{{ $row->id}}</td> 
+												{{-- <td class="text-center">{{ $row->id}}</td>  --}}
 												{{-- <td>{{ $row->evaluador->name }}</td> --}}
 												<td class="text-center">{{ $row->evaluado->name }}</td>
 												<td class="text-center">{{ $row->evaluado->cargo->name }}</td>
@@ -165,7 +165,7 @@
 							@endif
 							@else
 								<div class="alert alert-default" role="alert">
-									No tiene registro de planes de acción pendientes de ingresar.
+									No tiene objetivos pendientes de ingresar.
 								</div>
 							@endif
 						@endisset

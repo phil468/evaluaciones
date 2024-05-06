@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class PlanesDeAccion extends Model
 {
 	use HasFactory;
     use SoftDeletes;
-	
+    // use AuditableTrait;
+
     public $timestamps = true;
 
     protected $table = 'planes_de_accion';

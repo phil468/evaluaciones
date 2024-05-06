@@ -64,7 +64,7 @@
 					<table class="table table-striped table-hover table-sm">
 						<thead class="thead">
 							<tr> 
-								<th>#</th> 
+								{{-- <th>#</th>  --}}
 								<th>Evaluador</th>
 								<th>Evaluado</th>
 								<th>Evaluación</th>
@@ -77,7 +77,7 @@
 						<tbody>
 							@foreach($evaluadorHasEvaluados as $row)
 							<tr>
-								<td>{{ $row->id }}</td> 
+								{{-- <td>{{ $row->id }}</td>  --}}
 								<td>{{ $row->evaluador->name }}</td>
 								<td>{{ $row->evaluado->name }}</td>
 								<td>{{ $row->evaluacion->title }}</td>

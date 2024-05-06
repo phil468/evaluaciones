@@ -47,7 +47,8 @@ class ObjetivosListaTable extends LivewireDatatable
         // Column::name('valor_numerico')->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
         // Column::name('evaluaciones.title')->label('Evaluación')->searchable()->filterable()->defaultSort('asc'),
         //Column::name('valor_texto')->label('Valor texto')->searchable()->filterable()->defaultSort('asc'),
-        //Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('updated_at')->label('Fecha de Modificación')->searchable()->filterable()->defaultSort('asc'),
 
         ];
         //
