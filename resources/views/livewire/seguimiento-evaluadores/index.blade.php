@@ -11,7 +11,7 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Evaluación')
+@section('title', 'Seguimiento Evaluadores')
 
 @section('content_header')
     <h1></h1>

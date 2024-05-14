@@ -39,7 +39,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     //Prueba domPDF
     // Route::get('/users/{user_id}/dompdf',[UserController::class,'dompdf'])->name('users.dompdf');
-
+    Route::view('/dashboard','livewire.dashboard.index')->name('dashboard')->middleware(['can:ver-dashboard']);
     Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
     Route::view('/areas','livewire.areas.index')->name('areas')->middleware(['can:ver-area']);
     Route::view('/capacitaciones','livewire.capacitaciones.index')->name('capacitaciones')->middleware(['can:ver-capacitacion']);
@@ -49,14 +49,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/capacitaciones/{capacitacion_id}/asistencia', function ($capacitacion_id) {
         return view('livewire.asistenciums.index')->with('capacitacion_id', $capacitacion_id);
     })->name('capacitaciones.asistencia')->middleware(['can:ver-capacitacion']);
-
     
-    // Route::get('/evaluacion/{id}', function ($evaluacion_id) {
-    //     return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
-    // })->name('evaluacionnumero')->middleware(['can:ver-capacitacion']);
-
-    // )->name('asistencia')->middleware(['can:ver-asistencia']);
-    // Route::view('/accesorios','livewire.accesorios.index')->name('accesorio')->middleware(['can:ver-accesorio']);
     Route::view('/cargos','livewire.cargos.index')->name('cargos')->middleware(['can:ver-cargo']);
     Route::view('/tipos_de_capacitaciones','livewire.tipo-de-capacitaciones.index')->name('tipo-de-capacitacion')->middleware(['can:ver-tipo-de-capacitacion']);//tipo_de_activos
     Route::view('/empresas','livewire.empresas.index')->name('empresas')->middleware(['can:ver-empresa']);
@@ -75,13 +68,41 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     
-    Route::get('/evaluacion/{id}', function ($evaluacion_id) {
-        $tipo_de_evaluacion_id = EvaluadorHasEvaluado::find($evaluacion_id)->evaluacion->tipo_de_evaluacion_id;
-        if ($tipo_de_evaluacion_id == 1) {
-            return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
-        } elseif ($tipo_de_evaluacion_id == 2) {
-            return view('livewire.objetivos.index')->with('evaluacion_id', $evaluacion_id);
+    Route::get('/evaluacion/{tipo_de_evaluacion_id}/{id}', function ($tipo_de_evaluacion_id,$evaluacion_id) {
+        $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('evaluador_has_evaluados.id',$evaluacion_id)
+            ->where('evaluador_has_evaluados.evaluador_id', auth()->user()->personal_id)
+            ->when($tipo_de_evaluacion_id == 1, function ($query) {
+                return $query->where('evaluador_has_evaluados.realizado', null);
+            })
+            ->leftJoin('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            ->where('evaluaciones.tipo_de_evaluacion_id',$tipo_de_evaluacion_id)
+            ->first();
+        if ($this->evaluadorHasEvaluado) {            
+            // $tipo_de_evaluacion_id = EvaluadorHasEvaluado::find($evaluacion_id)->evaluacion->tipo_de_evaluacion_id;
+            if ($tipo_de_evaluacion_id == 1) {
+                return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
+            } elseif ($tipo_de_evaluacion_id == 2) {
+                return view('livewire.objetivos.index')->with('evaluacion_id', $evaluacion_id);
+            }
+        } else {
+            $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('evaluador_has_evaluados.id',$evaluacion_id)
+            // ->where('evaluador_has_evaluados.evaluador_id', auth()->user()->personal_id)
+            // ->where('evaluador_has_evaluados.realizado', null)
+            ->leftJoin('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            ->where('evaluaciones.tipo_de_evaluacion_id',$tipo_de_evaluacion_id)
+            ->first();            
+            // dd($this->evaluadorHasEvaluado);
+            if ($this->evaluadorHasEvaluado) {
+                if ($this->evaluadorHasEvaluado->realizado == 1 && $this->evaluadorHasEvaluado->tipo_de_evaluacion_id == 1) {
+                    return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'Ya evaluó a este empleado');
+                } else if ($this->evaluadorHasEvaluado->evaluador_id != auth()->user()->personal_id) {
+                    return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'No tiene permisos para evaluar este personal');
+                }
+            } else {
+            return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'No se encuentra registrada esta evaluación');
+            }
         }
+
         // return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
     })->name('evaluacion.show')->middleware(['can:ver-evaluaciones-de-desempeno']);
 

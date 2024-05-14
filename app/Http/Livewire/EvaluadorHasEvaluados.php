@@ -18,7 +18,11 @@ class EvaluadorHasEvaluados extends Component
 
     public function mount($tipo_de_evaluacion_id)
     {
+        $error = session('error');
         $this->tipo_de_evaluacion_id = $tipo_de_evaluacion_id;
+        if ($error) {
+            session()->flash('error', $error);
+        }
     }
     
     public function render()

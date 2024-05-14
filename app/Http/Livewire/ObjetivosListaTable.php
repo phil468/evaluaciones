@@ -3,11 +3,9 @@
 namespace App\Http\Livewire;
 
 use App\Models\Objetivo;
-use App\Models\Respuesta;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use Mediconesystems\LivewireDatatables\BooleanColumn;
-// use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use OwenIt\Auditing\Models\Audit;
 
 class ObjetivosListaTable extends LivewireDatatable
 {
@@ -17,16 +15,15 @@ class ObjetivosListaTable extends LivewireDatatable
     public $numeroSerieValidado=true, $fileUpload;
     public $updateMode = false;
     public $export_name = 'Objetivos';
+    public $auditorias = [];
 
     public function builder()
     {
         return Objetivo::query()
         ->where('objetivos.deleted_at',null)->where('objetivos.deleted_at',null)
         ->leftJoin('tipo_de_objetivos','tipo_de_objetivos.id','=','objetivos.tipo_objetivo_id')
-        ->leftJoin('personal as evaluado','evaluado.id','=','objetivos.evaluado_id')
-        ->leftJoin('personal as evaluador','evaluador.id','=','objetivos.evaluador_id')
-        //cargo
-        // ->leftJoin('cargos','cargos.id','=','personal.cargo_id')
+        ->leftJoin('personal as evaluados','evaluados.id','=','objetivos.evaluado_id')
+        ->leftJoin('personal as evaluadores','evaluadores.id','=','objetivos.evaluador_id')
         ;
     }
 
@@ -35,22 +32,23 @@ class ObjetivosListaTable extends LivewireDatatable
     public function columns()
     {
         return [
-        Column::name('evaluador.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('evaluado.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
+        Column::callback(['id'], function ($id) {
+                return view('components.lupa-button', ['id' => $id]);
+            })->label('Ver historial')->alignCenter(),
+        Column::name('evaluadores.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('evaluados.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.descripcion')->label('Objetivo')->searchable()->filterable()->defaultSort('asc'),
         Column::name('tipo_de_objetivos.unidad')->label('Tipo de objetivo')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.evidencia')->label('Evidencia')->searchable()->filterable()->defaultSort('asc'),
-
-        // Column::name('cargos.name')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('preguntas.pregunta')->label('Pregunta')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('valor_numerico')->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('evaluaciones.title')->label('Evaluación')->searchable()->filterable()->defaultSort('asc'),
-        //Column::name('valor_texto')->label('Valor texto')->searchable()->filterable()->defaultSort('asc'),
         Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
         Column::name('updated_at')->label('Fecha de Modificación')->searchable()->filterable()->defaultSort('asc'),
-
         ];
-        //
+    }
+
+    public function mostrarAuditorias($id)
+    {
+        $this->auditorias = Audit::where('auditable_id', $id)->where('auditable_type', Objetivo::class)->get()->toArray();
+        $this->emit('enviarAuditorias', $this->auditorias);
     }
 }

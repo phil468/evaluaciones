@@ -75,7 +75,7 @@
 					</table>						
 					{{ $statuses->links() }}
 					</div>
-				</div>				
+				</div>
 				<div wire:loading wire:target="importar,exportar,create,edit,destroy">
 					<x-loading-indicator/>
 				</div>

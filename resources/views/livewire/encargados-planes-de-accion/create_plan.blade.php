@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div wire:ignore.self class="modal fade" id="createPlanDataModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="createDataModalLabel" aria-hidden="true">
+<div wire:ignore.self class="modal fade" id="createPlanDataModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">
@@ -57,7 +57,7 @@
             
             <div class="form-group">
                 <label for="competencia_id">Competencia</label>
-                <select disabled wire:model="competencia_id" class="form-control" id="competencia_id">
+                <select wire:model="competencia_id" class="form-control" id="competencia_id">
                     <option value="">Seleccionar Competencia</option>
                     @foreach($competencias as $index => $name)
                         <option value="{{ $index}}">{{ $name }}</option>

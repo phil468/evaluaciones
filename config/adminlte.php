@@ -48,8 +48,8 @@ return [
     'logo' => 'Vanguard	Perú &trade;',
     'logo_img' => 'img/icon/Vanguard-Intl-icon-blue-1cWeb-med.png',
     'logo_img_class' => 'brand-image',
-    'logo_img_xl' => 'img/icon/VanguardPeru-Sp-reverseWeb-med.png',    
-    'logo_img_xl_alt' => 'img/icon/VanguardPeru-Sp-2cWeb-med.png',
+    'logo_img_xl' => 'img/icon/Logotipo Horizontal - Grupo Vanguard Internacional - blanco.png',    
+    'logo_img_xl_alt' => 'img/icon/Logotipo Vertical - Grupo Vanguard Internacional.png',
     'logo_img_xl_class' => 'brand-image-xs',
     'logo_img_alt' => 'Vanguard',
 
@@ -314,13 +314,22 @@ return [
                     'classes' => 'rounded-xl',
                 ],
                     
-                    [
-                        'text' => 'Respuestas Ev. por Objetivos',
-                        'url'  => 'objetivos',
-                        'icon' => 'fas fa-list-ol',
-                        'can'  => 'ver-capacitacion',
-                        'classes' => 'rounded-xl',
-                    ],
+                [
+                    'text' => 'Respuestas Ev. por Objetivos',
+                    'url'  => 'objetivos',
+                    'icon' => 'fas fa-list-ol',
+                    'can'  => 'ver-capacitacion',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Planes de mejora',
+                    'url'  => 'planes-de-accion',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-planes-de-accion',
+                    'classes' => 'rounded-xl',
+                ],
+                
                 [
                     'text' => 'Seguimiento Evaluadores',
                     'url'  => 'seguimiento_evaluadores',
@@ -336,14 +345,15 @@ return [
                     'can'  => 'ver-capacitacion',
                     'classes' => 'rounded-xl',
                 ],
-
+                
                 [
-                    'text' => 'Planes de accion',
-                    'url'  => 'planes-de-accion',
-                    'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-planes-de-accion',
+                    'text' => 'Dashboard',
+                    'url'  => 'dashboard',
+                    'icon' => 'fas fa-list-ol',
+                    'can'  => 'ver-dashboard',
                     'classes' => 'rounded-xl',
                 ],
+                
             ]
         ],
 

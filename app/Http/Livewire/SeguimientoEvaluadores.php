@@ -2,9 +2,11 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\EvaluadorHasEvaluado;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Respuesta;
+use Illuminate\Support\Facades\Mail;
 
 class SeguimientoEvaluadores extends Component
 {
@@ -103,5 +105,35 @@ class SeguimientoEvaluadores extends Component
             $record = Respuesta::where('id', $id);
             $record->delete();
         }
+    }
+
+    public function enviarCorreoEvaluadores()
+    {
+        $lista_de_correos_de_evaluadores = array();
+        $evaluadores = EvaluadorHasEvaluado::
+        where('realizado','!=', 1)
+        ->orWhere('realizado', null)
+        ->select('evaluador_id','users.name as name','personal.correo_empresa as correo')
+        ->join('personal','evaluador_has_evaluados.evaluador_id','=','personal.id')
+        ->join('users','personal.id','=','users.personal_id')
+        ->distinct()
+        ->orderBy('evaluador_id')
+        ->get()->toArray();
+    
+        $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
+        // dd($evaluadores);
+        // Mail::to('john.delacruz@vanguardfresh.pe')->send(new \App\Mail\RecordatorioEvaluacion($evaluadores[0]->evaluador_id,));
+
+        foreach ($evaluadores as $evaluacion) {
+            // Aquí puedes enviar el correo. Asegúrate de tener una clase de correo creada.
+           // Mail::to($evaluacion->evaluador->correo_empresa)->send(new \App\Mail\RecordatorioEvaluacion($evaluacion->evaluador->email));
+            $lista_de_correos_de_evaluadores[] = $evaluacion['correo'];
+        }
+        Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($evaluadores[0]['name'],$evaluadores[0]['evaluador_id'],$lista_de_correos_de_evaluadores));
+
+        $message = 'Correos de prueba enviados correctamente, enviado a: '.$correo_de_prueba;
+        session()->flash('message', $message);
+
+        // return redirect()->back()->with('message', 'Correos enviados correctamente');
     }
 }

@@ -13,6 +13,15 @@ class ObjetivosLista extends Component
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $pregunta_id, $opcion_id, $valor_numerico, $valor_texto, $evaluado_id;
     public $updateMode = false;
+    public $auditorias = [];
+
+    protected $listeners = ['enviarAuditorias' => 'recibirAuditorias'];
+
+    public function recibirAuditorias($auditorias)
+    {
+        $this->auditorias = $auditorias;
+        $this->emit('openHistorialModal');
+    }
 
     public function render()
     {

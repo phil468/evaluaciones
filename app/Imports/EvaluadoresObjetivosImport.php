@@ -5,7 +5,6 @@ namespace App\Imports;
 use App\Models\EncargadosPlanesDeAccion;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
-use App\Models\EvaluadorHasEvaluadoObjetivo;
 use App\Models\Personal;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -37,6 +36,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
             $area_de_evaluado =  trim($row['area_de_evaluado']);
             $gerencia_sub_gerencia_de_evaluado =  trim($row['gerencia_sub_gerencia_de_evaluado']);
             $cantidad_requerida =  trim($row['cantidad_requerida']);
+            $valor_esperado =  trim($row['valor_esperado']);
 
             $evaluador = Personal::where('dni',$dni_evaluador)->first();
             if(!$evaluador){
@@ -84,7 +84,8 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                         'cargo_de_evaluado' => $cargo_de_evaluado,
                         'area_de_evaluado' => $area_de_evaluado,
                         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                        'cantidad_requerida' => $cantidad_requerida
+                        'cantidad_requerida' => $cantidad_requerida,
+                        'valor_esperado' => $valor_esperado
                     ]
                 );
                 $record = EncargadosPlanesDeAccion::updateOrCreate(
@@ -100,7 +101,8 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                         'cargo_de_evaluado' => $cargo_de_evaluado,
                         'area_de_evaluado' => $area_de_evaluado,
                         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                        'cantidad_requerida' => $cantidad_requerida
+                        'cantidad_requerida' => $cantidad_requerida,
+                        'valor_esperado' => $valor_esperado
                     ]
                 );
                 $message = $message . "Evaluador - Evaluado creado correctamente en la linea " . $index . "\n";

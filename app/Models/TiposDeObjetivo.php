@@ -16,4 +16,9 @@ class TiposDeObjetivo extends Model
         'simbolo',
     ];
 
+    public function getNameAttribute()
+    {
+        return $this->unidad.' ('.$this->simbolo.')';
+    }
+
 }

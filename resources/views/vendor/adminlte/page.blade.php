@@ -69,6 +69,10 @@
             $('#updatePlanDataModal').modal('hide');
         });
         
+        window.livewire.on('opencreatePlanDataModal', () => {
+            $('#createPlanDataModal').modal('show');
+        });
+        
         window.livewire.on('openSeleccionarActivoModal', () => {
             $('#seleccionarActivoModal').modal('show');
         });
@@ -92,6 +96,10 @@
         window.livewire.on('openGraciasModal', () => {
             $('#confirmacionModal').modal('hide');
             $('#graciasModal').modal('show');
+        });
+        
+        window.livewire.on('openHistorialModal', function () {
+            $('#auditoriaModal').modal('show');
         });
         
         window.livewire.on('limpiarFile', () => {

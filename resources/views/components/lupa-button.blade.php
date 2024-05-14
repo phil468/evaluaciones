@@ -1,0 +1,1 @@
+<button wire:click="mostrarAuditorias({{ $id }})">🔍</button>

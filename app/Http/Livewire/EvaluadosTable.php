@@ -6,10 +6,7 @@ use App\Models\EvaluadorHasEvaluado;
 use App\Models\Respuesta;
 use App\Models\TipoDeEvaluacione;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use Mediconesystems\LivewireDatatables\BooleanColumn;
-// use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
 
 class EvaluadosTable extends LivewireDatatable
 {
@@ -52,11 +49,9 @@ class EvaluadosTable extends LivewireDatatable
                     $total = EvaluadorHasEvaluado::where('evaluado_id',$value)
                     ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                     ->where('evaluaciones.tipo_de_evaluacion_id',$i)
-                    // ->where('evaluador_has_evaluados.realizado',1)
                     ->count();
 
                     if ($total > 0) {
-                        //mostrar una barra de progreso
                         $porcentaje = ($realizados/$total)*100;
                         $porcentaje = round($porcentaje,2);                
                         

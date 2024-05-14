@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación')
+{{-- @section('title', 'EVALUACIÓN DE DESEMPEÑO') --}}
 
 @section('content_header')
     <h1></h1>

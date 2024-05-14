@@ -1,4 +1,4 @@
-@section('title', __('Respuestas'))
+@section('title', __('Seguimiento de Objetivos'))
 <div class="container-fluid">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Respuestas </h4>
+							<h5 class="h5">Seguimiento de Objetivos</h4>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>

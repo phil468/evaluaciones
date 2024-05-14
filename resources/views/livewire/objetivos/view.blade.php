@@ -59,11 +59,11 @@
 						@can('ver-evaluaciones-de-desempeno')
 						<div class="float-right">
 							
-							(Máx.: 2 objetivos) <button class="btn rounded-xl btn-vanguard" 
+							(Requeridos: {{$cantidad_requerida}} objetivos) <button class="btn rounded-xl btn-vanguard" 
 							wire:click="create()" 
 							data-toggle="modal" 
 							data-target="#createDataModal"
-							@if ($objetivos->count() == 2)
+							@if ($objetivos->count() >= $cantidad_requerida)
 								disabled
 							@endif
 							>

@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class PlanesDeAccion extends Model
+class PlanesDeAccion extends Model implements Auditable
 {
 	use HasFactory;
     use SoftDeletes;
-    // use AuditableTrait;
+    use AuditableTrait;
 
     public $timestamps = true;
 
     protected $table = 'planes_de_accion';
 
-    protected $fillable = ['encargado_id','empleado_id','competencia_id','tipo_de_proceso_id','proceso_id','fecha_de_revision','estado_id','gerencia_id','area_id','avance','name','nombre_de_proceso_id'];
+    protected $fillable = ['encargado_id','empleado_id','competencia_id','tipo_de_proceso_id','proceso_id','fecha_de_revision','estado_id','gerencia_id','subgerencia_id','area_id','avance','name','nombre_de_proceso_id'];
 
     public function competencia()
     {
@@ -29,11 +30,18 @@ class PlanesDeAccion extends Model
     }
     public function gerencia()
     {
-        return $this->empleado->gerencia()??null;
+        return $this->belongsTo('App\Models\Gerencia', 'gerencia_id','id');
+        //return $this->empleado->gerencia()??null;
+    }
+    public function subgerencia()
+    {
+        return $this->belongsTo('App\Models\Subgerencia', 'subgerencia_id','id');
+        //return $this->empleado->subgerencia()??null;
     }
     public function area()
     {
-        return $this->empleado->area()??null;
+        return $this->belongsTo('App\Models\Area', 'area_id','id');
+        //return $this->empleado->area()??null;
     }
     public function empleado()
     {

@@ -37,49 +37,64 @@ $tipo_objetivo_id2;
 
     public function mount($evaluacion_id)
     {
-
             $this->evaluacion_id = $evaluacion_id;
         
             // Obtener el evaluadorHasEvaluado correspondiente al evaluacion_id
-            $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)->first();
-                
-            // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
-            $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
+            $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)
+            // ->where('evaluador_id', auth()->user()->personal_id)
+            // ->where('realizado', null)            
+            ->first();
 
-            if ($this->evaluacion->tipo_de_evaluacion_id == 2) {
-                $this->evaluacion_por_objetivos = true;
-                $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
-                // $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
-                // $this->]
-            } else {
+            // dd($this->evaluadorHasEvaluado);
+
+            // if ($this->evaluadorHasEvaluado == null) {
+            //     // $this->emit('closeModal');
+            //     // dd('redirect');
+            //     // return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id',1);
+            //     // return redirect()->to('/evaluaciones-de-desempeno/1');
+
+            //     $this->redirectTo = '/evaluaciones-de-desempeno/1';
+            // } else {
                 
-                if($this->evaluadorHasEvaluado->realizado == 1){
-                    $this->aceptado = true;
-                    $this->realizado = true;
-                }
-        
-                // Obtener las preguntas de la evaluacion con sus respectivas secciones
-                $this->preguntas = Pregunta::where('evaluacion_id',$this->evaluacion->id)->with('seccion'
-                )->orderBy('preguntas.numero_orden')->get()->toArray();
-        
-                // Inicializar los valores de las preguntas en 7
-                foreach ($this->preguntas as $key => $value) {
-                    $this->preguntas[$key]['valor'] = null;
-                }
-        
-                // Obtener el evaluador correspondiente al evaluadorHasEvaluado
-                $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
-        
-                // Obtener el evaluado correspondiente al evaluadorHasEvaluado
-                $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
-        
-                // Obtener las secciones unicas de la evaluacion
-                $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
-                $this->secciones = (array) $this->secciones;
-                $this->seccion_indexs = array_keys($this->secciones);
-                //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
-                // $this->seccion_index_select = count($this->seccion_indexs)-1;
-                $this->seccion_index_select = 0;
+                // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
+                $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
+    
+                if ($this->evaluacion->tipo_de_evaluacion_id == 2) {
+                    $this->evaluacion_por_objetivos = true;
+                    $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+                    // $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
+                    // $this->]
+                } else {
+                    
+                    if($this->evaluadorHasEvaluado->realizado == 1){
+                        $this->aceptado = true;
+                        $this->realizado = true;
+                    }
+            
+                    // Obtener las preguntas de la evaluacion con sus respectivas secciones
+                    $this->preguntas = Pregunta::where('evaluacion_id',$this->evaluacion->id)->with('seccion'
+                    )->orderBy('preguntas.numero_orden')->get()->toArray();
+            
+                    // Inicializar los valores de las preguntas en 7
+                    foreach ($this->preguntas as $key => $value) {
+                        $this->preguntas[$key]['valor'] = null;
+                    }
+            
+                    // Obtener el evaluador correspondiente al evaluadorHasEvaluado
+                    $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
+            
+                    // Obtener el evaluado correspondiente al evaluadorHasEvaluado
+                    $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+            
+                    // Obtener las secciones unicas de la evaluacion
+                    $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
+                    $this->secciones = (array) $this->secciones;
+                    $this->seccion_indexs = array_keys($this->secciones);
+                    //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
+                    // $this->seccion_index_select = count($this->seccion_indexs)-1;
+                    $this->seccion_index_select = 0;
+                
+            // }
                 
             }
             
@@ -87,6 +102,8 @@ $tipo_objetivo_id2;
 
     public function render()
     {
+        // return redirect()->to('/evaluaciones-de-desempeno/1');
+
         if ($this->evaluacion_por_objetivos) {
             
             return view('livewire.objetivos.index',
@@ -125,6 +142,11 @@ $tipo_objetivo_id2;
                 'porcentaje' => $porcentaje,
                 'label' => $label
             ]);
+        }
+
+        
+        if ($this->redirectTo) {
+            return redirect($this->redirectTo);
         }
     }
 

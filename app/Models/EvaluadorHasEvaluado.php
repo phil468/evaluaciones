@@ -22,7 +22,8 @@ class EvaluadorHasEvaluado extends Model
     'cargo_de_evaluado',
     'area_de_evaluado',
     'gerencia_sub_gerencia_de_evaluado'
-    ,'cantidad_requerida'
+    ,'cantidad_requerida',
+    'valor_esperado'
     
 ];
 	
@@ -41,10 +42,20 @@ class EvaluadorHasEvaluado extends Model
         return $this->belongsTo(Evaluacione::class,'evaluacion_id','id');
     }
 
+    public function objetivos()
+    {
+        return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id');
+    }
+
     // campo total_realizados 
     public function getTotalRealizadosAttribute()
     {
         return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->count();
+    }
+
+    public function getCantidadDeObjetivosRealizadosAttribute()
+    {
+        return $this->objetivos()->count();
     }
 
     

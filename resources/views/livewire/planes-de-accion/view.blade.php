@@ -6,11 +6,8 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Lista Planes De Mejora </h4>
+							<h5 class="h5">Planes De Mejora </h4>
 						</div>
-						{{--<div wire:poll.1s>
-							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
-						</div>--}}
 						@if (session()->has('message'))
 						<div wire:poll.4s class="btn btn-sm btn-success rounded-xl" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
@@ -25,18 +22,18 @@
 					</div>
 				</div>
 				
-				{{-- @foreach($procesos as $index => $name)
-					{{ $index}}>{{ $name }}
-				@endforeach --}}
-					{{-- {{dd($procesos)}} --}}
 				<div class="card-body">
+					
+					
 						@can('crear-planes-de-accion')
 						@include('livewire.planes-de-accion.create')
 						@endcan						
 						@can('editar-planes-de-accion')
 						@include('livewire.planes-de-accion.update')
 						@endcan
-				<div class="table-responsive">
+						
+					@livewire('planes-de-accion-table')
+				{{-- <div class="table-responsive">
 					<table class="table table-striped table-hover table-sm">
 						<thead class="thead">
 							<tr> 
@@ -91,7 +88,7 @@
 					</table>						
 					{{ $planesDeAccions->links() }}
 					</div>
-				</div>
+				</div> --}}
 			</div>
 		</div>
 	</div>
