@@ -177,11 +177,11 @@
                                 
                             </div>
 
-							{{-- <div wire.ignore class="chart-container" width="400" height="800" aria-label="Hello ARIA World" role="img">
+							<div wire.ignore class="chart-container" width="400" height="800" aria-label="Hello ARIA World" role="img">
                                 <canvas wire.ignore id="myChart">
 									<p>Falló la carga del gráfico</p>
 								</canvas>
-                            </div> --}}
+                            </div>
                         @endif
                     @endisset
 

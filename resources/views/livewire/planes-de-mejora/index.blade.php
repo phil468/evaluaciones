@@ -20,9 +20,9 @@
 @endisset
 
 
-@isset($dashboard)
+{{-- @isset($dashboard)
     @livewire('dashboard', ['personal_id' => $empleado_id, 'vista_personal' => true, 'title' => 'Dashboard del personal'])
-@endisset
+@endisset --}}
 
 @stop
 
