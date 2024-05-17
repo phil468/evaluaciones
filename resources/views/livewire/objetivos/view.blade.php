@@ -97,11 +97,21 @@
 									<td class="bg-info">GRUPAL</td>
 									<td>a-predefinida</td>
 									<td>40%</td>
-									<td>Resultados Financieros</td>
+									<td>            
+										<div class="form-group">
+										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
+										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
+										</div>
+									</td>
 									<td>30%</td>
 									<td>24%</td>
 									<td>36%</td>
-									<td>30%</td>
+									<td>
+										<div class="form-group">
+											{{-- <label for="valor">Valor</label> --}}
+											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled value="">
+										</div>
+									</td>
 									<td>100%</td>
 									<td>40.0%</td>
 								</tr>
@@ -109,11 +119,23 @@
 									<td class="bg-info">GRUPAL</td>
 									<td>b-predefinida</td>
 									<td>20%</td>
-									<td>Forecast</td>
+
+									<td>            
+										<div class="form-group">
+										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
+										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
+										</div>
+									</td>
 									<td>90%</td>
 									<td>72%</td>
 									<td>108%</td>
-									<td>30%</td>
+
+									<td>
+										<div class="form-group">
+											{{-- <label for="valor">Valor</label> --}}
+											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
+										</div>
+									</td>
 									<td>0.0%</td>
 									<td>0.0%</td>
 								</tr>
@@ -121,11 +143,23 @@
 									<td class="bg-info">GRUPAL</td>
 									<td>c-predefinida</td>
 									<td>20%</td>
-									<td>Estadísticas de producción</td>
+
+									<td>            
+										<div class="form-group">
+										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
+										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
+										</div>
+									</td>
 									<td>4,228,416.00</td>
 									<td>3,382,732.80</td>
 									<td>5,074,099.20</td>
-									<td>4228416.00</td>
+
+									<td>
+										<div class="form-group">
+											{{-- <label for="valor">Valor</label> --}}
+											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
+										</div>
+									</td>
 									<td>100%</td>
 									<td>20.0%</td>
 								</tr>
@@ -133,11 +167,23 @@
 									<td class="bg-primary">INDIVIDUAL</td>
 									<td>Individual 1</td>
 									<td>10%</td>
-									<td></td>
+
+									<td>            
+										<div class="form-group">
+										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
+										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
+										</div>
+									</td>
 									<td>85.00</td>
 									<td>68.00</td>
 									<td>102.00</td>
-									<td>70.00</td>
+
+									<td>
+										<div class="form-group">
+											{{-- <label for="valor">Valor</label> --}}
+											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
+										</div>
+									</td>
 									<td>82%</td>
 									<td>8.235%</td>
 								</tr>
@@ -145,20 +191,34 @@
 									<td class="bg-primary">INDIVIDUAL</td>
 									<td>Individual 2</td>
 									<td>10%</td>
-									<td></td>
+
+									<td>            
+										<div class="form-group">
+										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
+										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
+										</div>
+									</td>
 									<td>85.00</td>
 									<td>68.00</td>
 									<td>102.00</td>
-									<td>70.00</td>
+
+									<td>
+										<div class="form-group">
+											{{-- <label for="valor">Valor</label> --}}
+											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
+										</div>
+									</td>
 									<td>82%</td>
 									<td>8.20%</td>
 								</tr>
 								<tr>
-									<td colspan="9" class="text-right">Subtotal</td>
+									<td colspan="8" class="text-right"></td>
+									<td colspan="1" class="text-right">Subtotal</td>
 									<td>76%</td>
 								</tr>
 								<tr>
-									<td colspan="9" class="text-right">Total Real</td>
+									<td colspan="8" class="text-right"></td>
+									<td colspan="1" class="text-right">Total Real</td>
 									<td>0.00%</td>
 								</tr>
 								<!-- Resto de las filas -->
@@ -171,7 +231,7 @@
 						</div>						 --}}
 					@else
 						
-					<table class="table table-striped table-hover table-sm">
+					{{-- <table class="table table-striped table-hover table-sm">
 						<thead class="thead">
 							<tr> 
 								<th>#</th> 
@@ -181,8 +241,6 @@
 								<th>Evidencia</th>
 								<th>Fecha de creación</th>
 								<th>Fecha de modificación</th>
-								{{-- <th>Evaluado Id</th>
-								<th>Evaluador Id</th> --}}
 																
 								@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 								<th>ACCIONES</th>								
@@ -199,8 +257,6 @@
 								<td>{{ $row->evidencia }}</td>
 								<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
 								<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
-								{{-- <td>{{ $row->evaluado_id }}</td>
-								<td>{{ $row->evaluador_id }}</td> --}}
 																
 								@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 								<td width="90">
@@ -216,7 +272,7 @@
 								@endcan
 							@endforeach
 						</tbody>
-					</table>
+					</table> --}}
 					@endif
 					
 					<br>
@@ -233,7 +289,6 @@
 							</li>
 						</ol>
 					</div>
-					{{-- {{ $objetivos->links() }} --}}
 					</div>
 				</div>
                 <div wire:loading wire:target="store,update,create,edit,destroy">

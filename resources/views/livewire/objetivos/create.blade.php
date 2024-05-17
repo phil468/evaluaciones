@@ -55,11 +55,11 @@
             </div>
             <div class="form-group">
                 <label for="minimo">Mínimo 80%</label>
-                <input type="number" value="24%" class="form-control" id="minimo" placeholder="Mínimo 80%" disabled>
+                <input type="text" value="24%" class="form-control" id="minimo" placeholder="Mínimo 80%" disabled>
             </div>
             <div class="form-group">
                 <label for="maximo">Máximo 120%</label>
-                <input type="number" value="36%" class="form-control" id="maximo" placeholder="Máximo 120%" disabled>
+                <input type="text" value="36%" class="form-control" id="maximo" placeholder="Máximo 120%" disabled>
             </div>
             <div class="form-group">
                 <label for="valor">Valor</label>
