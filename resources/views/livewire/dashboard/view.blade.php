@@ -1,4 +1,4 @@
-@section('title', __('Dashboard'))
+{{-- @section('title', __('Dashboard')) --}}
 <div class="container-fluid">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
@@ -6,7 +6,10 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h4 class='h5'>Dashboard</h4>
+							<h4 class='h5'>
+								{{$title}}
+								{{-- Dashboard								 --}}
+							</h4>
 						</div>
 						<div class="bottom-0 right-0 p-3 position-fixed z-index-3" style="z-index: 0; right: 0; bottom: 6em; opacity: 0.90;">
 							@if (session()->has('message'))
@@ -22,6 +25,7 @@
 				</div>
 				
 				<div class="card-body">
+					@if (!$vista_personal)
 						<div class="row">
 							<div class="form-group col-md-4 col-sm-4" wire:ignore>
 								<label for="gerencia_sub_gerencia_de_evaluado">Gerencia/Subgerencia</label>
@@ -42,6 +46,14 @@
 									@endforeach											 --}}
 								</select>
 							</div>
+							
+							{{-- <div class="form-group col-md-4 col-sm-4" wire:ignore>
+								<label for="evaluado">Personal</label>
+								<select name="evaluado" class="form-control" multiple class="form-control" id="evaluado" placeholder="Areas">
+									<option value="">Seleccione</option>
+								</select>
+							</div> --}}
+							
 							{{-- <div class="form-group col-md-4 col-sm-4" wire:ignore>
 								<label for="area_id">Área</label>
 								<select name="area_id" class="form-control" wire:model.defer="area_id" multiple class="form-control" id="area_id" placeholder="Área">
@@ -85,9 +97,12 @@
 								<button type="button" wire:click.prevent="generar_grafica()" class="align-bottom btn btn-primary close-modal w-100 h-100">Actualizar Gráfica</button>
 							</div> --}}
 						</div>
+					@else
+						
+					@endif
 						<div class="col-sm-12">
 							
-								<canvas wire.ignore id="myChart"
+								<canvas wire.ignore id="chart"
 								@if (!$mostrar_grafica)
 									style="display:none;"
 								@endif>
@@ -126,7 +141,7 @@
 
 Chart.defaults.font.size = 16;
 
-var ctx = document.getElementById('myChart');
+var ctx = document.getElementById('chart');
 var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
 var data = {!! json_encode($this->secciones->pluck('promedio')) !!};
 var valor_esperado_data = {!! json_encode($this->secciones->pluck('valor_esperado')) !!};
@@ -282,7 +297,6 @@ const chart = new Chart(ctx, {
 				removeItemButton: true,
 				itemSelectText: 'Seleccione',
 				noChoicesText: 'No hay opciones para elegir',
-				// items: 
 			});
 
 			select.setChoices(@json($area_de_evaluados), 'value', 'label', true);

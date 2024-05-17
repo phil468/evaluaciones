@@ -1,4 +1,4 @@
-@section('title', __('Encargados Planes De Mejora'))
+{{-- @section('title', __('Encargados Planes De Mejora')) --}}
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -13,16 +13,26 @@
                                 style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }}
                             </div>
                         @endif
-                        <div>
+                        {{-- <div>
                             <input wire:model='keyWord' type="text" class="form-control" name="search"
                                 id="search" placeholder="Buscar">
-                        </div>
+                        </div> --}}
                         @can('crear-encargados-planes-de-accion')
                             <div class="btn btn-sm btn-default rounded-xl" data-toggle="modal"
                                 data-target="#createDataModal">
                                 <i class="fa fa-plus"></i> Nuevo
                             </div>
                         @endcan
+                        @isset($dashboard)
+                        @if ($dashboard)
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
+                                    class="btn btn-xl btn-default rounded-xl">
+                                    <i class="fa fa-arrow-left"></i> Volver
+                                </a>
+                            </div>
+                            @endif
+                        @endisset
                     </div>
                 </div>
 
@@ -78,17 +88,17 @@
 
                     @isset($dashboard)
                         @if ($dashboard)
-                            <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-4">
+                            <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-2">
                                 <div class="float-left h5">
                                     PERSONAL: {{ $nombreEmpleado }}
                                 </div>
-                                <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
-                                    class="btn btn-xl btn-vanguard rounded-xl">
+                                {{-- <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
+                                    class="btn btn-xl btn-default rounded-xl">
                                     <i class="fa fa-arrow-left"></i> Volver
-                                </a>
+                                </a> --}}
                             </div>
 
-                            <div class="float-right">
+                            <div class="float-right mb-4">
 							
                                 (Requeridos: {{$cantidad_requerida}} planes) <button class="btn rounded-xl btn-vanguard" 
                                 wire:click="openModal()" 
@@ -103,71 +113,84 @@
                                 <br>
                             </div>
                             
+
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover table-sm">
-                                    <thead class="thead">
-                                        <tr>
-                                            <th>ACCIONES</th>
-                                            <th>#</th>
-                                            <th>Descripción</th>
-                                            <th>Tipo De Proceso</th>
-                                            <th>Proceso</th>
-                                            <th>Encargado</th>
-                                            <th>Personal</th>
-                                            <th>Competencia</th>
-                                            <th>Fecha De Revision</th>
-                                            <th>Estado</th>
-                                            <th>Avance</th>
-                                            <th>Gerencia</th>
-                                            <th>Area</th>
-                                            <th>Fecha de Creación</th>
-                                            <th>Fecha de Modificación</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($planesDeAccions as $row)
+
+                                @if ($planesDeAccions->count() == 0)
+                                    <div class="alert alert-info rounded-2xl" role="alert">
+                                        No hay registro de planes de acción ingresados
+                                    </div>
+                                @else
+                                    <table class="table table-striped table-hover table-sm">
+                                        <thead class="thead">
                                             <tr>
+                                                <th>ACCIONES</th>
+                                                <th>#</th>
+                                                <th>Descripción</th>
+                                                <th>Tipo De Proceso</th>
+                                                <th>Proceso</th>
+                                                <th>Encargado</th>
+                                                <th>Personal</th>
+                                                <th>Competencia</th>
+                                                <th>Fecha De Revision</th>
+                                                <th>Estado</th>
+                                                <th>Avance</th>
+                                                <th>Gerencia</th>
+                                                <th>Area</th>
+                                                <th>Fecha de Creación</th>
+                                                <th>Fecha de Modificación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($planesDeAccions as $row)
+                                                <tr>
 
-                                                <td width="90">
-                                                    <div class="btn-group">
-                                                        <a data-toggle="modal" data-target="#updatePlanDataModal"
-                                                            class="btn btn-sm btn-primary rounded-xl"
-                                                            wire:click="edit_plan({{ $row->id }})">Editar </a>
-                                                        <a class="btn btn-sm btn-danger rounded-xl"
-                                                            onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
-                                                            wire:click="destroy_plan({{ $row->id }})"> Borrar </a>
-                                                    </div>
-                                                </td>
+                                                    <td width="90">
+                                                        <div class="btn-group">
+                                                            <a data-toggle="modal" data-target="#updatePlanDataModal"
+                                                                class="btn btn-sm btn-primary rounded-xl"
+                                                                wire:click="edit_plan({{ $row->id }})">Editar </a>
+                                                            <a class="btn btn-sm btn-danger rounded-xl"
+                                                                onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
+                                                                wire:click="destroy_plan({{ $row->id }})"> Borrar </a>
+                                                        </div>
+                                                    </td>
 
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $row->name }}</td>
-                                                <td>{{ $row->tipo_de_proceso->name ?? '' }}</td>
-                                                <td>{{ $row->proceso->name ?? '' }}</td>
-                                                <td>{{ $row->encargado->name ?? '' }}</td>
-                                                <td>{{ $row->empleado->name ?? '' }}</td>
-                                                <td>{{ $row->competencia->name ?? '' }}</td>
-                                                <td>{{ $row->fecha_de_revision ?? '' }}</td>
-                                                <td>{{ $row->estado->name ?? '' }}</td>
-                                                <td>{{ $row->avance }}%</td>
-                                                <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
-                                                <td>{{ $row->empleado->area->name ?? '' }}</td>
-                                                <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
-                                                <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $row->name }}</td>
+                                                    <td>{{ $row->tipo_de_proceso->name ?? '' }}</td>
+                                                    <td>{{ $row->proceso->name ?? '' }}</td>
+                                                    <td>{{ $row->encargado->name ?? '' }}</td>
+                                                    <td>{{ $row->empleado->name ?? '' }}</td>
+                                                    <td>{{ $row->competencia->name ?? '' }}</td>
+                                                    <td>{{ $row->fecha_de_revision ?? '' }}</td>
+                                                    <td>{{ $row->estado->name ?? '' }}</td>
+                                                    <td>{{ $row->avance }}%</td>
+                                                    <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
+                                                    <td>{{ $row->empleado->area->name ?? '' }}</td>
+                                                    <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
+                                                    <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @endif
+                                
                             </div>
 
-							<div wire.ignore class="chart-container" width="400" height="800" aria-label="Hello ARIA World" role="img">
+							{{-- <div wire.ignore class="chart-container" width="400" height="800" aria-label="Hello ARIA World" role="img">
                                 <canvas wire.ignore id="myChart">
 									<p>Falló la carga del gráfico</p>
 								</canvas>
-                            </div>
+                            </div> --}}
                         @endif
                     @endisset
 
                 </div>
+
+                
             </div>
+
+
             <div wire:loading
                 wire:target="store,update,create,edit,destroy,store_plan,update_plan,create_plan,edit_plan,destroy_plan">
                 <x-loading-indicator />
@@ -258,11 +281,8 @@
                                         @endisset
                                     @endif
                                 @endisset
-
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             @endif
@@ -424,5 +444,5 @@
 		</script>
 			
 		@endif
-    @endpush
+    @endpush  
 </div>

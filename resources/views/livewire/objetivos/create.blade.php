@@ -19,12 +19,12 @@
                 <input wire:model="evaluador_id" type="text" class="form-control" id="evaluador_id" placeholder="Evaluador Id">@error('evaluador_id') <span class="error text-danger">{{ $message }}</span> @enderror
             </div> --}}
             <div class="form-group">
-                <label for="descripcion">Descripcion*</label>
+                <label for="descripcion">Meta*</label>
                 <textarea wire:model.defer="descripcion" type="text" class="form-control" id="descripcion" placeholder="Descripcion"> </textarea>@error('descripcion') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
             <div class="form-group">
                 <label for="tipo_objetivo_id">Tipo de Objetivo*</label>
-                <select class="form-control" id="tipo_objetivo_id" wire:model="tipo_objetivo_id">
+                <select class="form-control" id="tipo_objetivo_id" wire:model="tipo_objetivo_id" value="2" disabled>
                     <option value="">Seleccione un tipo de objetivo</option>
                     @foreach ($tipos_objetivo as $tipo)
                         <option value="{{ $tipo->id }}">{{ $tipo->unidad.'('.$tipo->simbolo.')' }}</option>
@@ -37,10 +37,43 @@
                 <label for="resultado">Resultado</label>
                 <input wire:model="resultado" type="numeric" class="form-control" id="resultado" placeholder="Resultado" disabled>@error('resultado') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
+
+            <div class="form-group">
+                <label for="participacion">% Participac.</label>
+                <input type="text" class="form-control" value="40%" id="participacion" placeholder="% Participac." disabled>
+            </div>
+            
             <div class="form-group">
                 <label for="evidencia">Evidencia (Máx: 10MB)</label>
                 <input wire:model="evidencia" type="file" class="form-control" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
+
+
+            <div class="form-group">
+                <label for="resultadoEsperado">Result. Anterior / Esperado</label>
+                <input type="text" value="30%" class="form-control" id="resultadoEsperado" placeholder="Result. Anterior / Esperado" disabled>
+            </div>
+            <div class="form-group">
+                <label for="minimo">Mínimo 80%</label>
+                <input type="number" value="24%" class="form-control" id="minimo" placeholder="Mínimo 80%" disabled>
+            </div>
+            <div class="form-group">
+                <label for="maximo">Máximo 120%</label>
+                <input type="number" value="36%" class="form-control" id="maximo" placeholder="Máximo 120%" disabled>
+            </div>
+            <div class="form-group">
+                <label for="valor">Valor</label>
+                <input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
+            </div>
+            <div class="form-group">
+                <label for="logroSTI">% Logr. STI</label>
+                <input type="number" class="form-control" id="logroSTI" placeholder="% Logr. STI" disabled>
+            </div>
+            <div class="form-group">
+                <label for="pesoPond">Peso Pond.</label>
+                <input type="number" class="form-control" id="pesoPond" placeholder="Peso Pond." disabled>
+            </div>
+
 
                 </form>
             </div>

@@ -16,18 +16,15 @@ class Objetivos extends Component
     public $selected_id, $keyWord, $resultado, $evaluado_id, $evaluador_id, $tipo_objetivo_id, $descripcion, $evidencia;
     public $updateMode = false;
     public $evaluador_has_evaluado_id, $evaluador, $evaluado, $evaluador_has_evaluado, $cantidad_requerida;
-
+    public $objetivos_precargados = [];
+    
     public function mount($evaluador_has_evaluado_id)
     {        
 		$this->evaluador_has_evaluado_id = $evaluador_has_evaluado_id;
 		$this->evaluador_has_evaluado = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->id;//get()->first();
-        // dd($this->evaluador_has_evaluado);
         $this->evaluador = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->evaluador()->get()->first();
-        // dd($this->evaluador);
         $this->evaluado = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->evaluado()->get()->first();
-        // dd($this->evaluado);
 
-        //  dd(EvaluadorHasEvaluado::where('id',$evaluador_has_evaluado_id)->get());
         $this->cantidad_requerida = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->cantidad_requerida;
     }
 

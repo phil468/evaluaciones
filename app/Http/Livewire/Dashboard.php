@@ -18,10 +18,21 @@ class Dashboard extends Component
     $area_de_evaluado=[],
     $gerencia_sub_gerencia_de_evaluado=[],
     $mostrar_grafica = null,
-    $rangos=[];
+    $rangos=[],
+    $personal_id=[],
+    $vista_personal=false,
+    $title=null;
 
-    public function mount($personal_id=null)
+    public function mount($personal_id=null, $vista_personal=false, $title=null)
     {
+        if($personal_id) {
+        $this->personal_id = [$personal_id];
+        
+        // dd($personal_id, $vista_personal, $title);
+        }
+        $this->vista_personal = $vista_personal;
+        $this->title = $title;
+        
         $this->gerencia_sub_gerencia_de_evaluados = 
         EvaluadorHasEvaluado::orderBy('gerencia_sub_gerencia_de_evaluado')->pluck('gerencia_sub_gerencia_de_evaluado', 'gerencia_sub_gerencia_de_evaluado')->toArray();
         
@@ -34,6 +45,7 @@ class Dashboard extends Component
 
     public function render()
     {
+        // dd($this->secciones);
         return view('livewire.dashboard.view');
     }
 
@@ -83,6 +95,9 @@ class Dashboard extends Component
             })
             ->when(($this->gerencia_sub_gerencia_de_evaluado), function ($query, $gerencia_sub_gerencia_de_evaluado) {
             $query->whereIn('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado', $this->gerencia_sub_gerencia_de_evaluado);
+            })
+            ->when(($this->personal_id), function ($query, $personal_id) {
+            $query->whereIn('respuestas.evaluado_id', $this->personal_id);
             })
             ->get();
 

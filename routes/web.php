@@ -78,7 +78,6 @@ Route::group(['middleware'  =>  ['auth']],function(){
             ->where('evaluaciones.tipo_de_evaluacion_id',$tipo_de_evaluacion_id)
             ->first();
         if ($this->evaluadorHasEvaluado) {            
-            // $tipo_de_evaluacion_id = EvaluadorHasEvaluado::find($evaluacion_id)->evaluacion->tipo_de_evaluacion_id;
             if ($tipo_de_evaluacion_id == 1) {
                 return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
             } elseif ($tipo_de_evaluacion_id == 2) {
@@ -86,12 +85,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
             }
         } else {
             $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('evaluador_has_evaluados.id',$evaluacion_id)
-            // ->where('evaluador_has_evaluados.evaluador_id', auth()->user()->personal_id)
-            // ->where('evaluador_has_evaluados.realizado', null)
             ->leftJoin('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
             ->where('evaluaciones.tipo_de_evaluacion_id',$tipo_de_evaluacion_id)
             ->first();            
-            // dd($this->evaluadorHasEvaluado);
             if ($this->evaluadorHasEvaluado) {
                 if ($this->evaluadorHasEvaluado->realizado == 1 && $this->evaluadorHasEvaluado->tipo_de_evaluacion_id == 1) {
                     return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'Ya evaluó a este empleado');
@@ -102,18 +98,16 @@ Route::group(['middleware'  =>  ['auth']],function(){
             return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'No se encuentra registrada esta evaluación');
             }
         }
-
-        // return view('livewire.evaluacion.index')->with('evaluacion_id', $evaluacion_id);
     })->name('evaluacion.show')->middleware(['can:ver-evaluaciones-de-desempeno']);
 
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-empresa']);
     Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-empresa']);
     Route::get('/planes-de-mejora/{ingreso}', function ($ingreso) {
-        return view('livewire.encargados-planes-de-accion.index')->with('ingreso', $ingreso);
+        return view('livewire.planes-de-mejora.index')->with('ingreso', $ingreso);
     })->name('planes-de-mejora.ingreso')->middleware(['can:ver-evaluaciones-de-desempeno']);
 
     Route::get('/planes-de-mejora/{dashboard}/{empleado_id}', function ($dashboard, $empleado_id) {
-        return view('livewire.encargados-planes-de-accion.index')->with('dashboard', $dashboard)->with('empleado_id', $empleado_id);
+        return view('livewire.planes-de-mejora.index')->with('dashboard', $dashboard)->with('empleado_id', $empleado_id);
     })->name('planes-de-mejora')->middleware(['can:ver-evaluaciones-de-desempeno']);
 
     Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-empresa']);

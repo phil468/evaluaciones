@@ -59,7 +59,7 @@
 						@can('ver-evaluaciones-de-desempeno')
 						<div class="float-right">
 							
-							(Requeridos: {{$cantidad_requerida}} objetivos) <button class="btn rounded-xl btn-vanguard" 
+							(Requeridos: {{$cantidad_requerida}} objetivos) <button class="mb-4 btn rounded-xl btn-vanguard" 
 							wire:click="create()" 
 							data-toggle="modal" 
 							data-target="#createDataModal"
@@ -75,11 +75,107 @@
 
 						<br>
 				<div class="table-responsive">
+					{{-- @if ($grupal) --}}
+					@if (1)
+						<table class="table table-striped table-hover table-sm">
+							<thead class="thead">
+								<tr>
+									<th></th>
+									<th class="text-center text-white bg-vanguard">Metas</th>
+									<th class="text-center text-white bg-vanguard">% Participac.</th>
+									<th class="text-center text-white bg-vanguard">Evidencias</th>
+									<th class="text-center text-white bg-vanguard">Result. Anterior / Esperado</th>
+									<th class="text-center text-white bg-vanguard">Mínimo 80%</th>
+									<th class="text-center text-white bg-vanguard">Máximo 120%</th>
+									<th class="text-center text-white bg-vanguard">Valor</th>
+									<th class="text-center text-white bg-vanguard">% Logr. STI</th>
+									<th class="text-center text-white bg-vanguard">Peso Pond.</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="bg-info">GRUPAL</td>
+									<td>a-predefinida</td>
+									<td>40%</td>
+									<td>Resultados Financieros</td>
+									<td>30%</td>
+									<td>24%</td>
+									<td>36%</td>
+									<td>30%</td>
+									<td>100%</td>
+									<td>40.0%</td>
+								</tr>
+								<tr>
+									<td class="bg-info">GRUPAL</td>
+									<td>b-predefinida</td>
+									<td>20%</td>
+									<td>Forecast</td>
+									<td>90%</td>
+									<td>72%</td>
+									<td>108%</td>
+									<td>30%</td>
+									<td>0.0%</td>
+									<td>0.0%</td>
+								</tr>
+								<tr>
+									<td class="bg-info">GRUPAL</td>
+									<td>c-predefinida</td>
+									<td>20%</td>
+									<td>Estadísticas de producción</td>
+									<td>4,228,416.00</td>
+									<td>3,382,732.80</td>
+									<td>5,074,099.20</td>
+									<td>4228416.00</td>
+									<td>100%</td>
+									<td>20.0%</td>
+								</tr>
+								<tr>
+									<td class="bg-primary">INDIVIDUAL</td>
+									<td>Individual 1</td>
+									<td>10%</td>
+									<td></td>
+									<td>85.00</td>
+									<td>68.00</td>
+									<td>102.00</td>
+									<td>70.00</td>
+									<td>82%</td>
+									<td>8.235%</td>
+								</tr>
+								<tr>
+									<td class="bg-primary">INDIVIDUAL</td>
+									<td>Individual 2</td>
+									<td>10%</td>
+									<td></td>
+									<td>85.00</td>
+									<td>68.00</td>
+									<td>102.00</td>
+									<td>70.00</td>
+									<td>82%</td>
+									<td>8.20%</td>
+								</tr>
+								<tr>
+									<td colspan="9" class="text-right">Subtotal</td>
+									<td>76%</td>
+								</tr>
+								<tr>
+									<td colspan="9" class="text-right">Total Real</td>
+									<td>0.00%</td>
+								</tr>
+								<!-- Resto de las filas -->
+							</tbody>
+						</table>		
+					@endif
+					@if ($objetivos->count() == 0)
+						{{-- <div class="alert alert-info" role="alert">
+							No hay objetivos registrados
+						</div>						 --}}
+					@else
+						
 					<table class="table table-striped table-hover table-sm">
 						<thead class="thead">
 							<tr> 
 								<th>#</th> 
-								<th>Descripción</th>
+								<th>Metas</th>
 								<th>Tipo Objetivo</th>
 								<th>Resultado</th>
 								<th>Evidencia</th>
@@ -121,6 +217,7 @@
 							@endforeach
 						</tbody>
 					</table>
+					@endif
 					
 					<br>
 					<div>

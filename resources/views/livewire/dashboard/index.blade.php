@@ -8,7 +8,7 @@
 
 @section('content')
 
-@livewire('dashboard')
+@livewire('dashboard', ['title' => 'Dashboard General'])
 
 @stop
 
