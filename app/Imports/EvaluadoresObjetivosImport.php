@@ -36,7 +36,9 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
             $area_de_evaluado =  trim($row['area_de_evaluado']);
             $gerencia_sub_gerencia_de_evaluado =  trim($row['gerencia_sub_gerencia_de_evaluado']);
             $cantidad_requerida =  trim($row['cantidad_requerida']);
-            $valor_esperado =  trim($row['valor_esperado']);
+            $valor_esperado =  isset($row['valor_esperado']) ? trim($row['valor_esperado']) : '' ;
+            $jerarquia = trim($row['jerarquia']);
+            $grupal = trim($row['grupal']);
 
             $evaluador = Personal::where('dni',$dni_evaluador)->first();
             if(!$evaluador){
@@ -85,7 +87,9 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                         'area_de_evaluado' => $area_de_evaluado,
                         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
                         'cantidad_requerida' => $cantidad_requerida,
-                        'valor_esperado' => $valor_esperado
+                        'valor_esperado' => $valor_esperado,
+                        'jerarquia' => $jerarquia,
+                        'grupal' => $grupal == 'SI' ? 1 : 0
                     ]
                 );
                 $record = EncargadosPlanesDeAccion::updateOrCreate(
