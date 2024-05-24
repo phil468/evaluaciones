@@ -3,7 +3,12 @@
 	<div class="row justify-content-center">
 		<div class="col-md-12">
             <div class="card rounded-xl">
-                <div class="text-white card-header bg-vanguard rounded-t-xl">
+                <div class="text-white card-header bg-vanguard rounded-t-xl"
+				{{-- style="background-image: linear-gradient(90deg, #568ba5 0%, #500aa0 100%);" --}}
+				@if (!$showHeader)
+				hidden					
+				@endif				
+				>
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
 							<h4 class='h5'>
@@ -100,8 +105,8 @@
 					@else
 						
 					@endif
+					<div class="row">
 						<div class="col-sm-12">
-							
 								<canvas wire.ignore id="chart"
 								@if (!$mostrar_grafica)
 									style="display:none;"
@@ -116,11 +121,15 @@
 								
 								@endif
 								@if ($mostrar_grafica === false)
-									<div class="alert alert-info" role="alert">
+									<p class="mb-2 h5">
+										Promedio total por competencia										
+									</p>
+									<div class="alert alert-default rounded-2xl" role="alert">
 										No se encontró información
 									</div>
 								@endif
-						</div>			
+						</div>
+					</div>			
 						<div wire:loading.delay.long wire:target="generar_grafica">
 							<x-loading-indicator/>
 						</div>
@@ -130,8 +139,8 @@
    
     @once
         @push('js')
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+            <script src="{{ asset('js/chart.js')}}"></script>
+            <script src="{{ asset('js/chartjs-plugin-datalabels@2.js')}}"></script>
         @endpush
     @endonce
     
@@ -139,126 +148,154 @@
 
     <script>
 
-Chart.defaults.font.size = 16;
+		Chart.defaults.font.size = 16;
 
-var ctx = document.getElementById('chart');
-var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
-var data = {!! json_encode($this->secciones->pluck('promedio')) !!};
-var valor_esperado_data = {!! json_encode($this->secciones->pluck('valor_esperado')) !!};
-// var seccion_ids = {!! json_encode($this->secciones->pluck('seccion_id')) !!};
+		var ctx = document.getElementById('chart');
+		var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
+		var data = {!! json_encode($this->secciones->pluck('promedio')) !!};
+		var valor_esperado_data = {!! json_encode($this->secciones->pluck('valor_esperado')) !!};
+		var seccion_ids = {!! json_encode($this->secciones->pluck('seccion_id')) !!};
+		var accion_de_click = null;
 
-labels.forEach((value, index) => {
-	labels[index] = labels[index] + ' ('+data[index]+')';
-});
+		labels.forEach((value, index) => {
+			labels[index] = labels[index] + ' ('+data[index]+')';
+		});
 
-// Add a line with the value from Livewire
+		// Add a line with the value from Livewire
 
-var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
+		var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
 
-const chart = new Chart(ctx, {
-	data: {
-		labels: labels,
-		datasets: [{
-			type: 'bar',
-			label: 'Promedio de competencia',
-			data: data,
-			// data_id: seccion_ids,
-			backgroundColor: backgroundColors,
-			borderWidth: 1,
-			order:1,
-			usePointStyle: false,
-			pointStyle: 'rect',
-		},{
-			type: 'line',
-			borderWidth: 2,
-			label: 'Valor mínimo esperado ({{ number_format($this->valor_esperado,2) }})',//
-			data: valor_esperado_data,
-			datalabels: {
-				display: false,
-			},
-			borderColor: '#b3b3b3',
-			backgroundColor: 'transparent',
-			borderDash: [5, 5],
-			usePointStyle: true,
-			pointStyle: 'line',
-			pointRadius: 2,
-			order:2
-		}]
-	},
-	plugins: [ChartDataLabels],
-	options: {
-		legend: {
-			labels: {
-				usePointStyle: true,
-			}
-		},
-		scales: {
-				y: {
-					title: {
-					display: true,
-					text: 'Competencias',
+		var borderColors = data.map((value) => 'rgba(0, 0, 0, 0.0)');
+		var borderWidths = data.map((value) => 0);
+
+		var sortedData = [...data].sort((a, b) => a - b);
+		var lowestValues = sortedData.slice(0, 2);
+        var secciones_bajas = [];
+
+		if (!{!!json_encode($this->ingresar_plan)!!}) {
+		    accion_de_click = null;
+		} else {
+		    accion_de_click = function(event, array) {
+					if (array.length > 0) {
+						var index = array[0].index;
+						if (lowestValues.includes(data[index])) {
+							var seccion_id = this.data.datasets[0].data_id[index];
+							Livewire.emit('setValues', seccion_id);
+						}
+					}
+				};
+				data.forEach((value, index) => {
+					if (lowestValues.includes(value)) {
+						borderColors[index] = 'rgba(255, 99, 132, 1)';
+						borderWidths[index] = 2;
+						labels[index] = labels[index] + ' (Bajo)';
+						
+						// hacer un array de las secciones más bajas
+						secciones_bajas.push(seccion_ids[index]);
+					} else {
+						borderColors[index] = 'rgba(0, 0, 0, 0.0)';
+						borderWidths[index] = 0;
+					}
+				});
+		}
+
+		const chart = new Chart(ctx, {
+			data: {
+				labels: labels,
+				datasets: [{
+					type: 'bar',
+					label: 'Promedio de competencia',
+					data: data,
+					data_id: seccion_ids,
+					backgroundColor: backgroundColors,
+					borderColor: borderColors,
+					borderWidth: borderWidths,
+					order:1,
+					usePointStyle: false,
+					pointStyle: 'rect',
+				},{
+					type: 'line',
+					borderWidth: 2,
+					label: 'Valor mínimo esperado ({{ number_format($this->valor_esperado,2) }})',//
+					data: valor_esperado_data,
+					datalabels: {
+						display: false,
 					},
-				},
-				x: {
-					title: {
-					display: true,
-					text: 'Resultado'
-					},
-					min: 0.00,
-					max: 10.00,
-					ticks: {
-					stepSize: 1.00
-					},
-				}
-				},
-		layout:{
-			padding: {
-				left: 20,
-				right: 80,
-				top: 20,
-				bottom: 20
-			}
-		},
-		indexAxis: 'y',
-		// onClick: function(event, array) {
-		// 	if (array.length > 0) {
-		// 		var index = array[0].index;
-		// 		if (lowestValues.includes(data[index])) {
-		// 			var seccion_id = this.data.datasets[0].data_id[index];
-		// 			Livewire.emit('setValues', seccion_id);
-		// 		}
-		// 	}
-		// },
-		plugins : {
-			legend: {
-				display: true,
-				position: 'top',
-				labels: {
+					borderColor: '#b3b3b3',
+					backgroundColor: 'transparent',
+					borderDash: [5, 5],
 					usePointStyle: true,
+					pointStyle: 'line',
+					pointRadius: 0,
+					order:2
+				}]
+			},
+			plugins: [ChartDataLabels],
+			options: {
+				legend: {
+					labels: {
+						usePointStyle: true,
+					}
 				},
-			},
-			tooltip : {
-				enabled: true,
-			},
-			datalabels: {
-				align: 'end',
-				anchor: 'end',
-			  },
-			title: {
-				display: true,
-				text: 'Promedio total por competencia',
-				// text: document.querySelector('.chart-footer').innerHTML,
-				html: true,
-				font: {
-					size: 18
-				}
-			}
+				scales: {
+						y: {
+							title: {
+							display: true,
+							text: 'Competencias',
+							},
+						},
+						x: {
+							title: {
+							display: true,
+							text: 'Resultado'
+							},
+							min: 0.00,
+							max: 10.00,
+							ticks: {
+							stepSize: 1.00
+							},
+						}
+						},
+				layout:{
+					padding: {
+						left: 20,
+						right: 80,
+						top: 20,
+						bottom: 20
+					}
+				},
+				indexAxis: 'y',
+				onClick: accion_de_click,
+				plugins : {
+					legend: {
+						display: true,
+						position: 'top',
+						labels: {
+							usePointStyle: true,
+						},
+					},
+					tooltip : {
+						enabled: true,
+					},
+					datalabels: {
+						align: 'end',
+						anchor: 'end',
+					},
+					title: {
+						display: true,
+						text: 'Promedio total por competencia',
+						// text: document.querySelector('.chart-footer').innerHTML,
+						html: true,
+						font: {
+							size: 18
+						}
+					}
 
-		},
-		
-	}
-});
-		
+				},
+				
+			}
+		});
+				
 
         Livewire.on('dataUpdated', (promedios,nombres,colores) => {
             chart.data.datasets[0].data = promedios;

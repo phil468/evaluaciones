@@ -24,6 +24,7 @@ class ObjetivosListaTable extends LivewireDatatable
         ->leftJoin('tipo_de_objetivos','tipo_de_objetivos.id','=','objetivos.tipo_objetivo_id')
         ->leftJoin('personal as evaluados','evaluados.id','=','objetivos.evaluado_id')
         ->leftJoin('personal as evaluadores','evaluadores.id','=','objetivos.evaluador_id')
+        ->leftjoin('evaluador_has_evaluados','evaluador_has_evaluados.id','=','objetivos.evaluador_has_evaluado_id' )
         ;
     }
 
@@ -41,8 +42,13 @@ class ObjetivosListaTable extends LivewireDatatable
         Column::name('tipo_de_objetivos.unidad')->label('Tipo de objetivo')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.evidencia')->label('Evidencia')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('evaluador_has_evaluados.cargo_de_evaluado')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('evaluador_has_evaluados.area_de_evaluado')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado')->label('Gerencia/Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('evaluador_has_evaluados.jerarquia')->label('Jerarquía')->searchable()->filterable()->defaultSort('asc'),
         Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
         Column::name('updated_at')->label('Fecha de Modificación')->searchable()->filterable()->defaultSort('asc'),
+
         ];
     }
 

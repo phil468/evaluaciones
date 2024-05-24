@@ -98,26 +98,32 @@
                                 </a> --}}
                             </div>
 
-                            <div class="float-right mb-4">
-							
-                                (Requeridos: {{$cantidad_requerida}} planes) <button class="btn rounded-xl btn-vanguard" 
-                                wire:click="openModal()" 
-                                data-toggle="modal" 
-                                data-target="#createPlanDataModal"
-                                @if ($planesDeAccions->count() >= $cantidad_requerida)
-                                    disabled
-                                @endif
-                                >
-                                <i class="fa fa-plus"></i>  Nuevo
-                                </button>
-                                <br>
+                            <div class="float-right mb-2">
+                                <p class="text-right align">
+                                    <button class="btn rounded-xl btn-vanguard" 
+                                    wire:click="openModal()" 
+                                    data-toggle="modal" 
+                                    data-target="#createPlanDataModal"
+                                    @if ($planesDeAccions->count() >= $cantidad_requerida)
+                                        disabled
+                                    @endif
+                                    >
+                                    <i class="fa fa-plus"></i>  Nuevo
+                                    </button>
+                                </p>
+                                <p>
+                                    (Requeridos: {{$cantidad_requerida}} planes)
+                                </p>
                             </div>
+                            {{-- <div class="float-right mb-2">
+                                (Requeridos: {{$cantidad_requerida}} planes)
+                            </div> --}}
                             
 
                             <div class="table-responsive">
 
                                 @if ($planesDeAccions->count() == 0)
-                                    <div class="alert alert-info rounded-2xl" role="alert">
+                                    <div class="alert alert-default rounded-2xl" role="alert">
                                         No hay registro de planes de acción ingresados
                                     </div>
                                 @else
@@ -176,20 +182,10 @@
                                 @endif
                                 
                             </div>
-
-							<div wire.ignore class="chart-container" width="400" height="800" aria-label="Hello ARIA World" role="img">
-                                <canvas wire.ignore id="myChart">
-									<p>Falló la carga del gráfico</p>
-								</canvas>
-                            </div>
                         @endif
                     @endisset
-
                 </div>
-
-                
             </div>
-
 
             <div wire:loading
                 wire:target="store,update,create,edit,destroy,store_plan,update_plan,create_plan,edit_plan,destroy_plan">
@@ -211,10 +207,10 @@
                                     <div wire:poll.4s class="btn btn-sm btn-success rounded-xl"
                                         style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
                                 @endif
-                                <div>
+                                {{-- <div>
                                     <input wire:model='keyWord' type="text" class="form-control" name="search"
                                         id="search" placeholder="Buscar">
-                                </div>
+                                </div> --}}
                                 @can('crear-encargados-planes-de-accion')
                                     <div class="btn btn-sm btn-default rounded-xl" data-toggle="modal"
                                         data-target="#createDataModal">
@@ -289,6 +285,7 @@
         @endisset
 
     </div>
+   
     @once
         @push('js')
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -310,6 +307,7 @@
 			// Add a line with the value from Livewire
 			
 			var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
+            
 			var borderColors = data.map((value) => 'rgba(75, 192, 192, 1)');
 
 			var sortedData = [...data].sort((a, b) => a - b);
@@ -321,9 +319,7 @@
 					borderColors[index] = 'rgba(255, 99, 132, 1)';
 					labels[index] = labels[index] + ' (Bajo)';
                     // hacer un array
-                    // secciones_bajas[] = seccion_ids[index];
                     secciones_bajas.push(seccion_ids[index]);
-
 				} else {
 					borderColors[index] = 'rgba(0, 0, 0, 0.1)';
 				}
@@ -445,4 +441,5 @@
 			
 		@endif
     @endpush  
+    
 </div>

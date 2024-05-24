@@ -35,7 +35,7 @@
                             
                             <div class="col-md-6">
                                 <h5 class='h5'>Cargo:</h5>
-                                <p>{{ $evaluado->cargo->name ?? 'No identificado' }}</p>
+                                <p>{{ $evaluadorHasEvaluado->cargo_de_evaluado ?? 'No identificado' }}</p>
                             </div>
                         </div>
                         <br>

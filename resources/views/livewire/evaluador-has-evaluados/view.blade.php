@@ -88,7 +88,9 @@
                                                         </p>
 
                                                         <div class="mb-2 card-subtitle text-muted">
-                                                            {{ $row->evaluado->cargo->name }}</div>
+                                                            {{-- {{ $row->evaluado->cargo->name }} --}}
+                                                            {{ $row->cargo_de_evaluado }}
+                                                        </div>
                                                         <p class="mb-1 card-text">
                                                             {{ ucfirst(strtolower($row->evaluacion->nombre_para_mostrar)) }}
                                                         </p>
@@ -147,7 +149,10 @@
                                             @foreach ($evaluadorHasEvaluados as $row)
                                                 <tr>
                                                     <td class="text-center">{{ $row->evaluado->name }}</td>
-                                                    <td class="text-center">{{ $row->evaluado->cargo->name }}</td>
+                                                    <td class="text-center">
+                                                        {{ $row->cargo_de_evaluado }}
+                                                        {{-- {{ $row->evaluado->cargo->name }} --}}
+                                                    </td>
                                                     <td class="text-center">
                                                         {{ ucfirst(strtolower($row->evaluacion->nombre_para_mostrar)) }}
                                                     </td>
@@ -174,7 +179,6 @@
                                                                     class="badge badge-primary badge-pill"
                                                                     style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">
                                                                     PENDIENTE
-
                                                                     @if ($tipo_de_evaluacion_id == 2)
                                                                         ({{ $row->cantidad_de_objetivos_realizados . '/' . $row->cantidad_requerida }})
                                                                     @endif

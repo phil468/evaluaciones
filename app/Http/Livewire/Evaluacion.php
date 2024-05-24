@@ -26,12 +26,12 @@ class Evaluacion extends Component
     public $evaluacion_por_objetivos = false;
 
     public
-$descripcion1,
-$cantidad1,
-$tipo_objetivo_id1,
-$descripcion2,
-$cantidad2,
-$tipo_objetivo_id2;
+    $descripcion1,
+    $cantidad1,
+    $tipo_objetivo_id1,
+    $descripcion2,
+    $cantidad2,
+    $tipo_objetivo_id2;
 
     protected $listeners = ['guardar' => 'guardar'];
 
@@ -105,7 +105,6 @@ $tipo_objetivo_id2;
         // return redirect()->to('/evaluaciones-de-desempeno/1');
 
         if ($this->evaluacion_por_objetivos) {
-            
             return view('livewire.objetivos.index',
             [
                 'tipos_objetivo' => TiposDeObjetivo::all(),

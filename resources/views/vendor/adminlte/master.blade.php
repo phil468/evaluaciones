@@ -32,7 +32,9 @@
 
         <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-        <link rel="stylesheet" href="https://use.typekit.net/jfl4jsk.css">
+        <link rel="stylesheet" href={{ asset('css/jfl4jsk.css') }}
+        {{-- "https://use.typekit.net/jfl4jsk.css" --}}
+        >
     @else
         <link rel="stylesheet" href="{{ mix(config('adminlte.laravel_mix_css_path', 'css/app.css')) }}">
     @endif
@@ -49,18 +51,26 @@
         @endif
     @endif
       
-    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
 
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"> --}}
     
     {{-- Custom Stylesheets (post AdminLTE) --}}
     @yield('adminlte_css')
-    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href=
+    "{{ asset('css/bootstrap4-toggle.min.css') }}"
+    {{-- "https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"  --}}
+    rel="stylesheet">
+    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+     --}}
+     <link href="{{ asset('css/tailwind.min.css') }}" rel="stylesheet">
+
+    {{-- <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet"> --}}
   
     <link
     rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+    href="{{ asset('css/choices.min.css') }}"
+    {{-- "https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" --}}
   />
   
     {{-- Favicon --}}
@@ -158,10 +168,16 @@
 
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
-    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script src=
+    "{{ asset('js/bootstrap4-toggle.min.js')}}"
+    {{-- "https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js" --}}
+    ></script>
 
     <!-- Include Choices JavaScript (latest) -->
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src=
+    "{{ asset('js/choices.min.js')}}"
+    {{-- "https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js" --}}
+    ></script>
 </body>
 
 </html>

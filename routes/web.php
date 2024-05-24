@@ -101,6 +101,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     })->name('evaluacion.show')->middleware(['can:ver-evaluaciones-de-desempeno']);
 
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-empresa']);
+
+    Route::view('/objetivos-precargados','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
+
     Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-empresa']);
     Route::get('/planes-de-mejora/{ingreso}', function ($ingreso) {
         return view('livewire.planes-de-mejora.index')->with('ingreso', $ingreso);

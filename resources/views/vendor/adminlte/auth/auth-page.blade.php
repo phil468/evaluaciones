@@ -54,7 +54,7 @@
                 @endif --}}
 
                 {{-- Card Body --}}
-                <div class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95" style="border-radius: 10px">
+                <div class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95">
                     <div class="{{ $auth_type ?? 'login' }}-logo mt-2 mb-4">
                         <a href="{{ $dashboard_url }}">
                             <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}" height="100">

@@ -6,8 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">EVALUACIÓN POR OBJETIVOS
-							</h4>
+							<h5 class="h5">EVALUACIÓN POR OBJETIVOS</h5>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -40,7 +39,8 @@
 						@include('livewire.objetivos.create')
 						@endcan						
 						@can('ver-evaluaciones-de-desempeno')
-						@include('livewire.objetivos.update')
+						{{-- @include('livewire.objetivos.update') --}}
+						@include('livewire.objetivos.update_v2')
 						@endcan
 						
 						{{-- @include('livewire.evaluacion.gracias') --}}
@@ -53,226 +53,276 @@
                             
                             <div class="col-md-6">
                                 <h5 class='h5'>Cargo:</h5>
-                                <p>{{ $evaluado->cargo->name ?? 'No identificado' }}</p>
+                                <p>{{ $evaluador_has_evaluado->cargo_de_evaluado ?? 'No identificado' }}</p>
                             </div>
                         </div>
 						@can('ver-evaluaciones-de-desempeno')
 						<div class="float-right">
-							
-							(Requeridos: {{$cantidad_requerida}} objetivos) <button class="mb-4 btn rounded-xl btn-vanguard" 
-							wire:click="create()" 
-							data-toggle="modal" 
-							data-target="#createDataModal"
-							@if ($objetivos->count() >= $cantidad_requerida)
-								disabled
+							@if (!$evaluador_has_evaluado->grupal && $primera_fase_activa)
+								(Requeridos: {{$cantidad_requerida}} objetivos) 
+								
+								<button
+								title="Nuevo"
+								class="mb-4 btn rounded-xl btn-vanguard" 
+								wire:click="edit(0)" 
+								data-toggle="modal" 
+								data-target="#updateModal"
+								@if ($objetivos->count() >= $cantidad_requerida)
+									disabled
+								@endif
+								>
+								{{-- <a title="Nuevo" data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-default rounded-xl" wire:click="edit(0)"> --}}
+
+								<i class="fa fa-plus"></i> Nuevo
+								</button>
+								<br>
 							@endif
-							>
-							<i class="fa fa-plus"></i>  Nuevo
-							</button>
-							<br>
 						</div>
 						@endcan
 
 						<br>
 				<div class="table-responsive">
-					{{-- @if ($grupal) --}}
 					@if (1)
+						@if ($objetivos->count() == 0)
+							<div class="alert alert-info" role="alert">
+								No hay objetivos registrados
+							</div>
+						@else
+							
 						<table class="table table-striped table-hover table-sm">
 							<thead class="thead">
 								<tr>
-									<th></th>
+									{{-- <th class="text-center text-white bg-vanguard">#</th>  --}}
+									<th class="text-center text-white bg-vanguard"></th>
+									{{-- <th>Meta</th> --}}
+									{{-- <th>% De Participación</th> --}}
+									{{-- <th>Evidencias</th> --}}
+									{{-- <th>Tipo de Objetivo</th> --}}
+									{{-- <th>Resultado Anterior/Esperado</th> --}}
+									{{-- <th>Mínimo</th> --}}
+									{{-- <th>Máximo</th> --}}
+									{{-- <th>Valor</th> --}}
+									{{-- <th>Porcentaje De Logro Sti</th> --}}
+									{{-- <th>Peso Ponderado</th> --}}
+									{{-- <th>Evaluación</th> --}}
+									
 									<th class="text-center text-white bg-vanguard">Metas</th>
 									<th class="text-center text-white bg-vanguard">% Participac.</th>
 									<th class="text-center text-white bg-vanguard">Evidencias</th>
+									<th class="text-center text-white bg-vanguard">Tipo de Objetivo</th>
 									<th class="text-center text-white bg-vanguard">Result. Anterior / Esperado</th>
-									<th class="text-center text-white bg-vanguard">Mínimo 80%</th>
-									<th class="text-center text-white bg-vanguard">Máximo 120%</th>
+									<th class="text-center text-white bg-vanguard">Mínimo {{ $evaluador_has_evaluado->evaluacion->minimo}}%</th>
+									<th class="text-center text-white bg-vanguard">Máximo {{ $evaluador_has_evaluado->evaluacion->maximo}}%</th>
+									{{-- <th class="text-center text-white bg-vanguard">Evaluación</th> --}}
 									<th class="text-center text-white bg-vanguard">Valor</th>
 									<th class="text-center text-white bg-vanguard">% Logr. STI</th>
 									<th class="text-center text-white bg-vanguard">Peso Pond.</th>
+									<th class="text-center text-white bg-vanguard">Evaluación</th>
+									
+									{{-- <th>#</th> 
+									<th>Metas</th>
+									<th>Tipo Objetivo</th>
+									<th>Resultado</th>
+									<th>Evidencia</th> --}}
+									<th class="text-center text-white bg-vanguard">Fecha de creación</th>
+									<th class="text-center text-white bg-vanguard">Fecha de modificación</th>
+																	
+									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
+									@if ($primera_fase_activa)
+										<th class="text-center text-white bg-vanguard">ACCIONES</th>
+									@endif
+									@endcan
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td class="bg-info">GRUPAL</td>
-									<td>a-predefinida</td>
-									<td>40%</td>
-									<td>            
-										<div class="form-group">
-										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
-										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
-										</div>
-									</td>
-									<td>30%</td>
-									<td>24%</td>
-									<td>36%</td>
-									<td>
-										<div class="form-group">
-											{{-- <label for="valor">Valor</label> --}}
-											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled value="">
-										</div>
-									</td>
-									<td>100%</td>
-									<td>40.0%</td>
-								</tr>
-								<tr>
-									<td class="bg-info">GRUPAL</td>
-									<td>b-predefinida</td>
-									<td>20%</td>
+								@foreach($objetivos as $index => $row)
+								<div wire:key="objetivoss-field-{{ $row->id }}">
 
-									<td>            
-										<div class="form-group">
-										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
-										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
-										</div>
-									</td>
-									<td>90%</td>
-									<td>72%</td>
-									<td>108%</td>
+								<tr class="text-center">
+									@if ($row->grupal)
+										<td class="bg-info">GRUPAL</td>
+									@else
+										<td class="bg-primary">INDIVIDUAL</td>
+									@endif
+									{{-- <td>{{ $loop->iteration }}</td> --}}
+									{{-- <td>{{ $row->grupal? 'Sí' : 'No' }}</td> --}}
+								<td 
+								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
+								>{{ $row->meta }}</td>
+								<td>{{ $row->porcentaje_de_participacion}}%</td>
+								<td>
+									@if ($segunda_fase_activa)
+										<button 
+										class="rounded-full btn btn-vanguard" 
+										wire:click="openModal"										
+										data-toggle="modal" 
+										data-target="#evidenciaModal"
+										>
+											<i class="fa fa-plus"></i>
+										</button>
+									@else
+										<button 
+										disabled
+										class="rounded-full btn btn-vanguard" 
+										wire:click="openModal"										
+										data-toggle="modal" 
+										data-target="#evidenciaModal"
+										>
+											<i class="fa fa-plus"></i>
+										</button>
+										@if ($primera_fase_activa)
 
-									<td>
-										<div class="form-group">
-											{{-- <label for="valor">Valor</label> --}}
-											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
-										</div>
-									</td>
-									<td>0.0%</td>
-									<td>0.0%</td>
-								</tr>
-								<tr>
-									<td class="bg-info">GRUPAL</td>
-									<td>c-predefinida</td>
-									<td>20%</td>
-
-									<td>            
-										<div class="form-group">
-										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
-										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
-										</div>
-									</td>
-									<td>4,228,416.00</td>
-									<td>3,382,732.80</td>
-									<td>5,074,099.20</td>
-
-									<td>
-										<div class="form-group">
-											{{-- <label for="valor">Valor</label> --}}
-											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
-										</div>
-									</td>
-									<td>100%</td>
-									<td>20.0%</td>
-								</tr>
-								<tr>
-									<td class="bg-primary">INDIVIDUAL</td>
-									<td>Individual 1</td>
-									<td>10%</td>
-
-									<td>            
-										<div class="form-group">
-										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
-										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
-										</div>
-									</td>
-									<td>85.00</td>
-									<td>68.00</td>
-									<td>102.00</td>
-
-									<td>
-										<div class="form-group">
-											{{-- <label for="valor">Valor</label> --}}
-											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
-										</div>
-									</td>
-									<td>82%</td>
-									<td>8.235%</td>
-								</tr>
-								<tr>
-									<td class="bg-primary">INDIVIDUAL</td>
-									<td>Individual 2</td>
-									<td>10%</td>
-
-									<td>            
-										<div class="form-group">
-										{{-- <label for="evidencia">Evidencia (Máx: 10MB)</label> --}}
-										<input wire:model="evidencia" type="file" class="form-control" style="max-width: 200px" id="evidencia" placeholder="Evidencia" disabled>@error('evidencia') <span class="error text-danger">{{ $message }}</span> @enderror
-										</div>
-									</td>
-									<td>85.00</td>
-									<td>68.00</td>
-									<td>102.00</td>
-
-									<td>
-										<div class="form-group">
-											{{-- <label for="valor">Valor</label> --}}
-											<input type="number" class="form-control" id="valor" placeholder="Valor" disabled>
-										</div>
-									</td>
-									<td>82%</td>
-									<td>8.20%</td>
-								</tr>
-								<tr>
-									<td colspan="8" class="text-right"></td>
-									<td colspan="1" class="text-right">Subtotal</td>
-									<td>76%</td>
-								</tr>
-								<tr>
-									<td colspan="8" class="text-right"></td>
-									<td colspan="1" class="text-right">Total Real</td>
-									<td>0.00%</td>
-								</tr>
-								<!-- Resto de las filas -->
-							</tbody>
-						</table>		
-					@endif
-					@if ($objetivos->count() == 0)
-						{{-- <div class="alert alert-info" role="alert">
-							No hay objetivos registrados
-						</div>						 --}}
-					@else
-						
-					{{-- <table class="table table-striped table-hover table-sm">
-						<thead class="thead">
-							<tr> 
-								<th>#</th> 
-								<th>Metas</th>
-								<th>Tipo Objetivo</th>
-								<th>Resultado</th>
-								<th>Evidencia</th>
-								<th>Fecha de creación</th>
-								<th>Fecha de modificación</th>
-																
-								@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
-								<th>ACCIONES</th>								
-								@endcan
-							</tr>
-						</thead>
-						<tbody>
-							@foreach($objetivos as $row)
-							<tr>
-								<td>{{ $loop->iteration }}</td> 
-								<td>{{ $row->descripcion }}</td>
-								<td>{{ $row->tipo_objetivo->unidad.'('.$row->tipo_objetivo->simbolo.')' }}</td>
-								<td>{{ $row->resultado }}</td>
-								<td>{{ $row->evidencia }}</td>
-								<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
-								<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
-																
-								@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
-								<td width="90">
-								<div class="btn-group">
-									@can('ver-evaluaciones-de-desempeno')
-									<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-sm btn-vanguard" wire:click="edit({{$row->id}})">Editar </a>
-									@endcan
-									@can('ver-evaluaciones-de-desempeno')							 
-									<a class="btn rounded-xl btn-sm btn-danger" onclick="confirm('Confirma borrar Objetivo : {{$row->descripcion}}? \nObjetivos borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
-									@endcan  
-								</div>
+										@else
+											@foreach ($row->evidencias as $evidencia)
+												<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
+											@endforeach	
+									@endif
+									@endif
+																		
 								</td>
-								@endcan
-							@endforeach
-						</tbody>
-					</table> --}}
+
+								@if($isOpen)
+								<div wire:ignore.self class="modal fade" id="evidenciaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="evidenciaModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-xl" role="document">
+										<div class="text-white modal-header bg-vanguard rounded-t-2xl">
+											<h5 class="h5 modal-title" id="updateModalLabel">
+												Cargar Evidencia
+											</h5>
+											<button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
+												<span wire:click.prevent="cancel()" aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											
+											<div class="rounded-2xl modal-content">
+												<h2>Cargar Evidencia</h2>
+												<form wire:submit.prevent="uploadEvidencia">
+													<input type="file" wire:model="evidencia_subir">
+													<button type="submit">Subir</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+								@endif
+
+								<td 
+								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
+								>
+									{{ $row->tipo_objetivo ? $row->tipo_objetivo->unidad.'('.$row->tipo_objetivo->simbolo.')' : '' }}
+								</td>
+								<td 
+								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
+								>
+									{{ 
+										$row->tipo_objetivo ? 
+											($row->tipo_objetivo->id == 2 ? 
+												($row->resultado_anterior_o_esperado).'%' 
+											: 	($row->tipo_objetivo->id == 1 ? 
+													number_format($row->resultado_anterior_o_esperado, 2, '.', ',')
+												: $row->resultado_anterior_o_esperado)
+												)
+										: $row->resultado_anterior_o_esperado 
+									}}
+								</td>
+								<td>
+									{{-- {{ ($row->minimo).'%' }} --}}
+
+									{{ 
+										$row->tipo_objetivo ? 
+											($row->tipo_objetivo->id == 2 ? 
+												($row->minimo).'%' 
+											: 	($row->tipo_objetivo->id == 1 ? 
+													number_format($row->minimo, 2, '.', ',')
+												: $row->minimo)
+												)
+										: $row->minimo 
+									}}
+									
+								</td>
+								<td>
+									{{-- {{ ($row->maximo).'%' }} --}}
+
+									{{ 
+										$row->tipo_objetivo ? 
+											($row->tipo_objetivo->id == 2 ? 
+												($row->maximo).'%' 
+											: 	($row->tipo_objetivo->id == 1 ? 
+													number_format($row->maximo, 2, '.', ',')
+												: $row->maximo)
+												)
+										: $row->maximo 
+									}}
+									
+								</td>
+								
+								<td>
+									@if ($segunda_fase_activa)
+									{{--Formulario para ingresar valor--}}
+									<div class="form-group">
+										{{-- <label for="valor">Valor</label> --}}
+										<input type="number" class="form-control" id="valor_actualizado" placeholder="Valor" 
+										wire:dirty.class="border-red-500" 
+										{{-- wire:model.lazy="objetivoss.{{$index}}.valor" --}}
+										wire:change="store_valor({{$index}})" 
+										value="{{ $row->valor }}"
+										>
+										{{-- {{$objetivoss[$index]->valor}} --}}
+										@error('objetivoss.{{$index}}.valor') <span class="error text-danger">{{ $message }}</span> @enderror
+									</div>
+									@else
+										@if ($primera_fase_activa)
+											{{--Formulario para ingresar valor--}}
+											<div class="form-group">
+												{{-- <label for="valor">Valor</label> --}}
+												<input disabled type="number" class="form-control" id="valor" placeholder="Valor" value="{{ $row->valor }}">
+											</div>
+										@else
+												{{ $row->valor }}
+											@endif
+									@endif
+									{{-- wire loading--}}
+									<div wire:loading wire:target="store_valor({{$row->id}})">
+										Actualizando
+									</div>
+									{{-- {{ $row->valor }} --}}
+								</td>
+								<td>{{ $row->porcentaje_de_logro_STI }}</td>
+								<td>{{ $row->peso_ponderado }}</td>
+
+								<td>{{ $row->evaluacion->title ?? '' }}</td>
+								
+									{{-- <td>{{ $row->descripcion }}</td>
+									<td>{{ $row->tipo_objetivo->unidad.'('.$row->tipo_objetivo->simbolo.')' }}</td>
+									<td>{{ $row->resultado }}</td>
+									<td>{{ $row->evidencia }}</td> --}}
+									<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
+									<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
+																	
+									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
+									@if ($primera_fase_activa)
+										<td width="90">
+											@if (!$row->grupal)
+												<div class="btn-group">
+													@can('ver-evaluaciones-de-desempeno')
+													<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-sm btn-vanguard" wire:click="edit({{$row->id}})">Editar </a>
+													@endcan
+													@can('ver-evaluaciones-de-desempeno')							 
+													<a class="btn rounded-xl btn-sm btn-danger" onclick="confirm('Confirma borrar Objetivo : {{$row->descripcion}}? \nObjetivos borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+													@endcan  
+												</div>
+											@else
+												
+											@endif
+										</td>
+									@endif
+									@endcan
+								</div>
+
+								@endforeach
+							</tbody>
+						</table>
+						@endif		
 					@endif
 					
 					<br>

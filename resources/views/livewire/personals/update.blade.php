@@ -11,7 +11,7 @@
                         Actualizar Personal
                 @endif
                 </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click="cancel()" aria-hidden="true">×</span>
                 </button>
             </div>
@@ -196,7 +196,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" wire:click="cancel()" class="btn btn-secondary" }
+                <button type="button" wire:click="cancel()" class="btn btn-secondary" 
                 data-dismiss="modal"
                 >Cerrar</button>
 

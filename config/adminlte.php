@@ -103,12 +103,12 @@ return [
     |
     */
 
-    'classes_auth_card' => 'card-primary',
+    'classes_auth_card' => 'card-primary rounded-2xl',
     'classes_auth_header' => '',
-    'classes_auth_body' => '',
-    'classes_auth_footer' => 'bg-primary',
+    'classes_auth_body' => 'rounded-2xl',
+    'classes_auth_footer' => 'bg-primary rounded-b-2xl',
     'classes_auth_icon' => '',
-    'classes_auth_btn' => 'btn-flat btn-primary',
+    'classes_auth_btn' => 'btn-flat btn-primary rounded-pill',
 
     /*
     |--------------------------------------------------------------------------
@@ -523,7 +523,15 @@ return [
                     'can'  => 'ver-estados-de-plan-de-accion',
                     'classes' => 'rounded-xl',
                 ],
-                
+                                
+                [
+                    'text' => 'Ojetivos Precargados',
+                    'url'  => 'objetivos-precargados',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-objetivos-precargados',
+                    'classes' => 'rounded-xl',
+                ],
+
                 // [
                 //     'text' => 'Opciones',
                 //     'url'  => 'opciones',

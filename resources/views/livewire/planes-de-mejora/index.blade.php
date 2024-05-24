@@ -16,13 +16,20 @@
 
 
 @isset($ingreso)
-    @livewire('dashboard', ['personal_id' => auth()->user()->personal_id, 'vista_personal' => true, 'title' => 'Dashboard Propio'])
+    @livewire('dashboard', ['personal_id' => auth()->user()->personal_id, 'vista_personal' => true, 'title' => 'Resultados de evaluación'])
 @endisset
 
 
-{{-- @isset($dashboard)
-    @livewire('dashboard', ['personal_id' => $empleado_id, 'vista_personal' => true, 'title' => 'Dashboard del personal'])
-@endisset --}}
+@isset($dashboard)
+    @livewire('dashboard', 
+    [
+        'personal_id' => $empleado_id, 
+        'vista_personal' => true, 
+        'title' => 'Dashboard del personal', 
+        'ingresar_plan' => true, 
+        'showHeader' => false
+    ])
+@endisset
 
 @stop
 

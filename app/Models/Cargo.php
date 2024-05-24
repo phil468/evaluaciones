@@ -21,4 +21,9 @@ class Cargo extends Model
     {
         $this->attributes['name'] = mb_strtoupper(trim($value));
     }
+
+    public function getNameAttribute($value)
+    {
+        return mb_strtoupper(trim($value));
+    }
 }

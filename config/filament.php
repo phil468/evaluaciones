@@ -100,6 +100,8 @@ return [
     | register pages from. You may also register pages here.
     |
     */
+    // 'register_theme' => Filament\the::class,
+
 
     'pages' => [
         'namespace' => 'App\\Filament\\Pages',

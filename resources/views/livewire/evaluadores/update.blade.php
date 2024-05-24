@@ -12,7 +12,7 @@
                 @endif
 
                 </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click.prevent="cancel()" aria-hidden="true">×</span>
                 </button>
             </div>
@@ -29,35 +29,35 @@
                             Actualizando Vista ...
                         </div>
 
-					<input type="hidden" wire:model="selected_id">
-                    <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-4">
-                        <label for="evaluador_id">Evaluador</label>
-                        <div wire:ignore>
-                            <select name="evaluador_id" class="form-control" id="evaluador_id"
-                                {{-- placeholder="Empresas" --}}>
-                            </select>
+                        <input type="hidden" wire:model="selected_id">
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-4">
+                            <label for="evaluador_id">Evaluador</label>
+                            <div wire:ignore>
+                                <select name="evaluador_id" class="form-control" id="evaluador_id"
+                                    {{-- placeholder="Empresas" --}}>
+                                </select>
+                            </div>
+                            @error('evaluador_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        @error('evaluador_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-4">
-                        <label for="evaluado_id">Evaluados</label>
-                        <div wire:ignore>
-                            <select name="evaluado_id" class="form-control" id="evaluado_id"
-                            {{-- multiple --}}
-                                {{-- placeholder="Empresas" --}}>
-                            </select>
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-4">
+                            <label for="evaluado_id">Evaluados</label>
+                            <div wire:ignore>
+                                <select name="evaluado_id" class="form-control" id="evaluado_id"
+                                {{-- multiple --}}
+                                    {{-- placeholder="Empresas" --}}>
+                                </select>
+                            </div>
+                            @error('evaluado_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        @error('evaluado_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-4">
-                        <label for="evaluacion_id">Evaluación</label>
-                        <div wire:ignore>
-                            <select name="evaluacion_id" class="form-control" id="evaluacion_id"
-                                {{-- placeholder="Empresas" --}}>
-                            </select>
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-4">
+                            <label for="evaluacion_id">Evaluación</label>
+                            <div wire:ignore>
+                                <select name="evaluacion_id" class="form-control" id="evaluacion_id"
+                                    {{-- placeholder="Empresas" --}}>
+                                </select>
+                            </div>
+                            @error('evaluacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        @error('evaluacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                    </div>
 
                     </div>
                 </form>

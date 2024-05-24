@@ -15,6 +15,7 @@ use App\Models\Proceso;
 use App\Models\RangosDePlanDeAccion;
 use App\Models\Respuesta;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 class EncargadosPlanesDeAccions extends Component
 {
@@ -28,28 +29,17 @@ class EncargadosPlanesDeAccions extends Component
     public $secciones;
     public $dashboard;
     public $nombreEmpleado;
-public $competencias ;
-public $procesos 	;
-public $estados 		;
-public $gerencias 	;
-public $areas 		;
-public $personals 	;
-public $competencia_id;
-public $proceso_id;
-public $estado_id;
-public $name,$fecha_de_revision,$avance,$tipo_de_proceso_id,$gerencia_id,$area_id;
-public $valor_esperado=7.5,$cantidad_requerida, $secciones_bajas=[];
-// 'encargado_id' => $this-> encargado_id,
-// 'empleado_id' => $this-> empleado_id,
-// 'competencia_id' => $this-> competencia_id,
-// 'tipo_de_proceso_id' => $this-> tipo_de_proceso_id,
-// 'proceso_id' => $this-> proceso_id,
-// 'fecha_de_revision' => $this-> fecha_de_revision,
-// 'estado_id' => $this-> estado_id,
-// 'gerencia_id' => $this-> gerencia_id,
-// 'area_id' => $this-> area_id,
-// 'avance' => $this-> avance,
-// 'name' => $this-> name
+    public $competencias;
+    public $procesos;
+    public $estados;
+    public $gerencias;
+    public $areas;
+    public $personals;
+    public $competencia_id;
+    public $proceso_id;
+    public $estado_id;
+    public $name,$fecha_de_revision,$avance,$tipo_de_proceso_id,$gerencia_id,$area_id;
+    public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
 
 protected $listeners = [
     'setCompetenciaId' => 'setCompetenciaId'
@@ -80,7 +70,6 @@ public function setValues($seccion_id)
     $this->emit('opencreatePlanDataModal');
 }
 
-
 public function setSeccionesBajas($seccion_id)
 {
     $this->secciones_bajas = $seccion_id;
@@ -89,7 +78,7 @@ public function setSeccionesBajas($seccion_id)
 public function openModal()
 {
     // $this->competencia_id = $seccion_id;
-    $this->competencias = Competencia::orderBy('name','asc')->where('estado',1)->whereIn('id',[])->pluck('name','id');
+    // $this->competencias = Competencia::orderBy('name','asc')->where('estado',1)->whereIn('id',[])->pluck('name','id');
     $this->estado_id = 1;
     $this->avance = 0;
     $this->emit('opencreatePlanDataModal');
@@ -103,7 +92,6 @@ public function openModal()
         $this->gerencias 		= Gerencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
         $this->areas 			= Area::orderBy('name','asc')->where('estado',1)->pluck('name','id');
         $this->personals 		= Personal::orderBy('name','asc')->where('id',$empleado_id)->orWhere('id',auth()->user()->personal->id)
-        // ->where('estado',1)
         ->pluck('name','id');
 
         if ($ingreso == 'ingreso') {
@@ -120,21 +108,18 @@ public function openModal()
             $this->empleado_id = $empleado_id;
             $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
             $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida;
-
-            //"7.5";
             $this->secciones = Respuesta::with('pregunta.seccion')
-            ->select(
-                'preguntas.seccion_id',
-                'secciones.name as nombre', 
-                DB::raw($this->valor_esperado.' as valor_esperado'),
-                DB::raw('ROUND(avg(valor_numerico), 2) as promedio')
-                )
-                ->join('preguntas', 'respuestas.pregunta_id', '=', 'preguntas.id')
-                ->join('secciones', 'preguntas.seccion_id', '=', 'secciones.id')
-                ->groupBy('preguntas.seccion_id')
-                ->where('respuestas.evaluado_id', $this->empleado_id)
-                ->get();
-                
+                ->select(
+                    'preguntas.seccion_id',
+                    'secciones.name as nombre', 
+                    DB::raw($this->valor_esperado.' as valor_esperado'),
+                    DB::raw('ROUND(avg(valor_numerico), 2) as promedio')
+                    )
+                    ->join('preguntas', 'respuestas.pregunta_id', '=', 'preguntas.id')
+                    ->join('secciones', 'preguntas.seccion_id', '=', 'secciones.id')
+                    ->groupBy('preguntas.seccion_id')
+                    ->where('respuestas.evaluado_id', $this->empleado_id)
+                    ->get();
 
             if (count($this->secciones) > 0)
             {
@@ -152,7 +137,6 @@ public function openModal()
                 $this->secciones->prepend($overallRow);
             }
 
-
             $rangos = RangosDePlanDeAccion::where('estado', 1)->orderBy('rango_mayor')->get();
             $valores = $rangos->pluck('rango_mayor')->toArray();
             $colores = $rangos->pluck('color')->toArray();
@@ -166,9 +150,6 @@ public function openModal()
             
                 return $respuesta;
             });
-
-            // dd( $this->secciones);
-
         }
     }
 
@@ -223,6 +204,7 @@ public function openModal()
     {
         $this->resetInput_plan();
         $this->updateMode = false;
+        // return redirect()->route(Route::currentRouteName());
     }
 	
     private function resetInput()
@@ -286,9 +268,10 @@ public function openModal()
         ]);
         
         $this->resetInput_plan();
-		$this->emit('closeModal');        
-        $this->emit('dataUpdated');
+		$this->emit('closeModal');
+        // $this->emit('dataUpdated');
 		session()->flash('message', 'Planes De Mejora creado correctamente.');
+        return redirect()->route(Route::currentRouteName());
     }
 
     private function resetInput_plan()
@@ -317,6 +300,7 @@ public function openModal()
 		$this->name = $record-> name;
 		
         $this->updateMode = true;
+        // return redirect()->route(Route::currentRouteName());
     }
 
     
@@ -327,6 +311,7 @@ public function openModal()
             $record = PlanesDeAccion::where('id', $id);
             $record->delete();
         }
+        return redirect()->route(Route::currentRouteName());
     }
 
     public function update_plan()

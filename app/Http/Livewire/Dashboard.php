@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\EncargadosPlanesDeAccion;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\RangosDePlanDeAccion;
 use App\Models\Respuesta;
@@ -21,20 +22,28 @@ class Dashboard extends Component
     $rangos=[],
     $personal_id=[],
     $vista_personal=false,
-    $title=null;
+    $ingresar_plan=false,
+    $title=null,
+    $showHeader=true,
+    $empleado_id=null;
 
-    public function mount($personal_id=null, $vista_personal=false, $title=null)
+    public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true)
     {
         if($personal_id) {
-        $this->personal_id = [$personal_id];
-        
-        // dd($personal_id, $vista_personal, $title);
+            $this->personal_id = [$personal_id];
+            $this->empleado_id = $personal_id;
+            $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
         }
+
         $this->vista_personal = $vista_personal;
         $this->title = $title;
+        $this->ingresar_plan = $ingresar_plan;
+        $this->showHeader = $showHeader;
         
         $this->gerencia_sub_gerencia_de_evaluados = 
-        EvaluadorHasEvaluado::orderBy('gerencia_sub_gerencia_de_evaluado')->pluck('gerencia_sub_gerencia_de_evaluado', 'gerencia_sub_gerencia_de_evaluado')->toArray();
+        EvaluadorHasEvaluado::orderBy('gerencia_sub_gerencia_de_evaluado')
+        ->pluck('gerencia_sub_gerencia_de_evaluado', 'gerencia_sub_gerencia_de_evaluado')
+        ->toArray();
         
         $this->areas();
 
@@ -45,14 +54,12 @@ class Dashboard extends Component
 
     public function render()
     {
-        // dd($this->secciones);
         return view('livewire.dashboard.view');
     }
 
     public function updatedGerenciaSubGerenciaDeEvaluado()
     {
         $this->areas();
-
         $this->actualizarAreaSelects();
     }
 
@@ -79,6 +86,8 @@ class Dashboard extends Component
 
     public function datos_promedio()
     {
+        // $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
+
         $this->secciones = Respuesta::with('pregunta.seccion')
             ->select(
             'preguntas.seccion_id as seccion_id',
@@ -91,36 +100,35 @@ class Dashboard extends Component
             ->join('evaluador_has_evaluados', 'respuestas.evaluado_id', '=', 'evaluador_has_evaluados.evaluado_id')
             ->groupBy('preguntas.seccion_id')
             ->when(($this->area_de_evaluado), function ($query, $area_de_evaluado) {
-            $query->whereIn('evaluador_has_evaluados.area_de_evaluado', $this->area_de_evaluado);
+                $query->whereIn('evaluador_has_evaluados.area_de_evaluado', $this->area_de_evaluado);
             })
             ->when(($this->gerencia_sub_gerencia_de_evaluado), function ($query, $gerencia_sub_gerencia_de_evaluado) {
-            $query->whereIn('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado', $this->gerencia_sub_gerencia_de_evaluado);
+                $query->whereIn('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado', $this->gerencia_sub_gerencia_de_evaluado);
             })
             ->when(($this->personal_id), function ($query, $personal_id) {
-            $query->whereIn('respuestas.evaluado_id', $this->personal_id);
+                $query->whereIn('respuestas.evaluado_id', $this->personal_id);
             })
             ->get();
 
-            if (count($this->secciones) > 0)
-            {
-                // Calculate overall average
-                $overallAverage = round($this->secciones->avg('promedio'), 2);
-        
-                // Add a row for overall average
-                $overallRow = (object) [
-                    'seccion_id' => 0,
-                    'nombre' => 'PROMEDIO',
-                    'valor_esperado' => $this->valor_esperado,
-                    'promedio' => $overallAverage,
-                ];
-        
-                $this->secciones->prepend($overallRow);
-            }
+        if (count($this->secciones) > 0)
+        {
+            // Calculate overall average
+            $overallAverage = round($this->secciones->avg('promedio'), 2);
+            
+            // Add a row for overall average
+            $overallRow = (object) [
+                'seccion_id' => 0,
+                'nombre' => 'PROMEDIO',
+                'valor_esperado' => $this->valor_esperado,
+                'promedio' => $overallAverage,
+            ];
+            
+            $this->secciones->prepend($overallRow);
+        }
 
         $rangos = RangosDePlanDeAccion::where('estado', 1)->orderBy('rango_mayor')->get();
         $valores = $rangos->pluck('rango_mayor')->toArray();
         $colores = $rangos->pluck('color')->toArray();
-
         $this->secciones = $this->secciones->map(function ($respuesta) use ($valores, $colores) {
             for ($i = 0; $i < count($valores); $i++) {
                 if ($respuesta->promedio < $valores[$i]) {
