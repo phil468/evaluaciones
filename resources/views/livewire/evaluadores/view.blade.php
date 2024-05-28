@@ -37,7 +37,7 @@
 							</div>
 							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
 								<a title="Importar Obbjetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="o">
-									<i class="fa fa-file-import"></i> Importar Objetivos (o)
+									<i class="fa fa-file-import"></i> Importar Eval. Objetivos (o)
 								</a>
 							</div>
 							{{-- botón de enviar correo masivo, con mensaje de aceptacion --}}

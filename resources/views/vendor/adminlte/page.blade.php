@@ -58,6 +58,7 @@
             $('#updateRegistroModal').modal('hide');
             $('#updateActivoModal').modal('hide');
             $('#importDataModal').modal('hide');
+            $('#importObjetivosDataModal').modal('hide');
             $('#firmaModal').modal('hide');
             $('#seleccionarActivoModal').modal('hide');
             $('#resultadoModal').modal('hide');
