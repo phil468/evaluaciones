@@ -26,13 +26,13 @@
 							</div>
 							{{-- //boton para crear_editar_usuarios --}}
 							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createEditUsersModal">
-								<a title="Crear/Editar Usuarios" wire:click="crear_editar_usuarios">
+								<a title="Crear/Editar Usuarios" wire:click="crear_editar_usuarios" accesskey="u">
 									<i class="fa fa-users"></i> Crear/Editar Usuarios (u)
 								</a>
 							</div>
 							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importDataModal">
-								<a title="Importar" data-toggle="modal" data-target="#importDataModal" accesskey="i">
-									<i class="fa fa-file-import"></i> Importar (i)
+								<a title="Importar" data-toggle="modal" data-target="#importDataModal" accesskey="d">
+									<i class="fa fa-file-import"></i> Importar Eval. Desempeño (d)
 								</a>
 							</div>
 							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
@@ -42,7 +42,7 @@
 							</div>
 							{{-- botón de enviar correo masivo, con mensaje de aceptacion --}}
 							<div class="btn btn-sm btn-default">
-								<a title="Enviar correo masivo" accesskey="e" wire:click="enviarCorreo">
+								<a title="Enviar correo masivo" accesskey="e" wire:click="enviarCorreo" accesskey="e">
 									<i class="fa fa-envelope"></i> Enviar correo masivo (e)
 								</a>
 							</div>

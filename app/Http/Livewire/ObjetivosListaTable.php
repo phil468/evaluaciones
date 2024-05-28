@@ -38,36 +38,56 @@ class ObjetivosListaTable extends LivewireDatatable
             })->label('Ver historial')->alignCenter(),
         Column::name('evaluadores.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluados.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('evaluador_has_evaluados.cargo_de_evaluado')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.meta')->label('Meta')->searchable()->filterable()->defaultSort('asc'),
-        Column::callback(['id'], function ($id) {
-                return 'Evidencias';
-            },[],'evidencias')->label('Evidencias')->alignCenter(),
+        Column::callback(['objetivos.porcentaje_de_participacion','objetivos.tipo_objetivo_id'], function ($porcentaje_de_participacion,$tipo_objetivo_id) {
+                return ($porcentaje_de_participacion * 100).'%';
+            })->label('Porcentaje de participación')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::name('tipo_de_objetivos.unidad')->label('Tipo de objetivo')->searchable()->filterable()->defaultSort('asc'),
+
         Column::callback(['objetivos.resultado_anterior_o_esperado','objetivos.tipo_objetivo_id'], function ($resultado_anterior_o_esperado,$tipo_objetivo_id) {
             if ($tipo_objetivo_id == 2) { // si es porcentaje
-                return ($resultado_anterior_o_esperado/100);
+                return ($resultado_anterior_o_esperado * 100).'%';
             } else {
                 return $resultado_anterior_o_esperado;
             }
-                // return view('components.resultado-anterior-o-esperado', ['resultado_anterior_o_esperado' => $resultado_anterior_o_esperado]);
-            })->label('Resultado anterior o esperado')->alignCenter(),
-        Column::name('objetivos.resultado_anterior_o_esperado')->label('Resultado anterior o esperado')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('objetivos.porcentaje_de_participacion')->label('Porcentaje de participación')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('objetivos.porcentaje_de_logro_STI')->label('Porcentaje de logro STI')->searchable()->filterable()->defaultSort('asc'),
+            })->label('Resultado anterior o esperado')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
 
-        Column::name('objetivos.minimo')->label('Mínimo')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('objetivos.maximo')->label('Máximo')->searchable()->filterable()->defaultSort('asc'),
+        Column::callback(['objetivos.minimo','objetivos.tipo_objetivo_id'], function ($minimo,$tipo_objetivo_id) {
+            if ($tipo_objetivo_id == 2) { // si es porcentaje
+                return ($minimo * 100).'%';
+            } else {
+                return $minimo;
+            }
+            })->label('Mínimo')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
+    
+        Column::callback(['objetivos.maximo','objetivos.tipo_objetivo_id'], function ($maximo,$tipo_objetivo_id) {
+            if ($tipo_objetivo_id == 2) { // si es porcentaje
+                return ($maximo * 100).'%';
+            } else {
+                return $maximo;
+            }
+            })->label('Máximo')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
+
+            
         Column::name('objetivos.valor')->label('Valor')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::callback(['objetivos.porcentaje_de_logro_STI','objetivos.tipo_objetivo_id'], function ($porcentaje_de_logro_STI,$tipo_objetivo_id) {
+            return $porcentaje_de_logro_STI ? ($porcentaje_de_logro_STI * 100).'%' : '';
+        })->label('Porcentaje de logro STI')->searchable()->filterable()->defaultSort('asc'),
 
         Column::name('objetivos.peso_ponderado')->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
 
-        Column::name('objetivos.descripcion')->label('Objetivo')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('tipo_de_objetivos.unidad')->label('Tipo de objetivo')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('objetivos.evidencia')->label('Evidencia')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('evaluador_has_evaluados.cargo_de_evaluado')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('evaluador_has_evaluados.area_de_evaluado')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado')->label('Gerencia/Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('evaluador_has_evaluados.jerarquia')->label('Jerarquía')->searchable()->filterable()->defaultSort('asc'),
+        // Column::name('objetivos.descripcion')->label('Objetivo')->searchable()->filterable()->defaultSort('asc'),
+        // Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),
+        // Column::callback(['id'], function ($id) {
+        //     return 'Evidencias';
+        // },[],'evidencias')->label('Evidencias')->alignCenter(),        
+        
+        // Column::name('evaluador_has_evaluados.area_de_evaluado')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
+        // Column::name('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado')->label('Gerencia/Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
+        // Column::name('evaluador_has_evaluados.jerarquia')->label('Jerarquía')->searchable()->filterable()->defaultSort('asc'),
         Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
         Column::name('updated_at')->label('Fecha de Modificación')->searchable()->filterable()->defaultSort('asc'),
 

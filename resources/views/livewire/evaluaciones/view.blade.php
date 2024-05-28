@@ -82,7 +82,7 @@
 			</div>
 		</div>
 	</div>
-	<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,cancel,importar_objetivos,store,importar,update">
+	<div wire:loading wire:target="create,edit,crear_editar_usuarios,enviarCorreo,importar_objetivos,importar">
 		<x-loading-indicator />
 	</div>	
 </div>
