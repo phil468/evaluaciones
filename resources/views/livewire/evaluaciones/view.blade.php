@@ -27,7 +27,7 @@
 				
 				<div class="card-body">					
 						@can('crear-evaluacion')
-						@include('livewire.evaluaciones.create')
+						{{-- @include('livewire.evaluaciones.create') --}}
 						@endcan						
 						@can('editar-evaluacion')
 						@include('livewire.evaluaciones.update')
@@ -82,4 +82,7 @@
 			</div>
 		</div>
 	</div>
+	<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,cancel,importar_objetivos,store,importar,update">
+		<x-loading-indicator />
+	</div>	
 </div>

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Evaluacione;
+use App\Models\TipoDeEvaluacione;
 use Illuminate\Support\Facades\Notification;
 
 class Evaluaciones extends Component
@@ -12,7 +13,27 @@ class Evaluaciones extends Component
     use WithPagination;
 
 	protected $paginationTheme = 'bootstrap';
-    public $selected_id, $keyWord, $eid, $title, $date, $status;
+    public $selected_id, $keyWord, $eid, $title, $date, $status,
+    $nombre_para_mostrar,
+    $campania,
+    $mes,
+    $anio,
+    $fecha_inicio,
+    $fecha_fin,
+    $identificador,
+    $tipo_de_evaluacion_id,
+    $minimo,
+    $maximo,
+    $fecha_inicio_primera_fase_matricula,
+    $fecha_fin_primera_fase_matricula,
+    $fecha_inicio_segunda_fase,
+    $fecha_fin_segunda_fase,
+    $tipos;
+
+    // protected $rules = [
+    //     'title' => 'required',
+
+    // ];
     public $updateMode = false;
     
 	protected $listeners = [
@@ -20,8 +41,14 @@ class Evaluaciones extends Component
 		'selectedUpdated' => 'updateSelected'
     ];
 
+    public function mount()
+    {
+        $this->tipos = TipoDeEvaluacione::get();
+    }
+
     public function render()
     {
+        $this->tipos = TipoDeEvaluacione::get();
         $evaluadores = 
                 Evaluacione::
                 select('evaluaciones.title', 'personal.correo_empresa as correo')
@@ -36,8 +63,6 @@ class Evaluaciones extends Component
                 // ->where('evaluaciones.id', $recordatorio->id_evaluacion)
                 ->groupBy('personal.correo_empresa')
                 ->get()->pluck('correo_empresa');
-            
-               
 
                 //enviar notificacion a todos estos correos
     
@@ -85,7 +110,6 @@ class Evaluaciones extends Component
     public function store()
     {
         $this->validate([
-            'title' => 'required',
         ]);
 
         Evaluacione::create([ 
@@ -109,29 +133,119 @@ class Evaluaciones extends Component
 		$this->title = $record-> title;
 		$this->date = $record-> date;
 		$this->status = $record-> status;
-		
+        $this->nombre_para_mostrar = $record->nombre_para_mostrar;
+        $this->campania = $record->campania;
+        $this->mes = $record->mes;
+        $this->anio = $record->anio;
+        $this->fecha_inicio = $record->fecha_inicio ? $record->fecha_inicio->format('Y-m-d') : '';
+        $this->fecha_fin = $record->fecha_fin ? $record->fecha_fin->format('Y-m-d') : '';
+        $this->identificador = $record->identificador;
+        $this->tipo_de_evaluacion_id = $record->tipo_de_evaluacion_id;
+        $this->minimo = $record->minimo;
+        $this->maximo = $record->maximo;
+        $this->fecha_inicio_primera_fase_matricula = $record->fecha_inicio_primera_fase_matricula ? $record->fecha_inicio_primera_fase_matricula->format('Y-m-d') :'';
+        $this->fecha_fin_primera_fase_matricula = $record->fecha_fin_primera_fase_matricula ? $record->fecha_fin_primera_fase_matricula->format('Y-m-d') : '';
+        $this->fecha_inicio_segunda_fase = $record->fecha_inicio_segunda_fase ? $record->fecha_inicio_segunda_fase->format('Y-m-d') : '';
+        $this->fecha_fin_segunda_fase = $record->fecha_fin_segunda_fase ? $record->fecha_fin_segunda_fase->format('Y-m-d') : '';
+        $this->tipos = $record->tipos;
+
         $this->updateMode = true;
     }
 
     public function update()
     {
-        $this->validate([
-            'title' => 'required',
-        ]);
-
-        if ($this->selected_id) {
-			$record = Evaluacione::find($this->selected_id);
-            $record->update([ 
-			'eid' => $this-> eid,
-			'title' => $this-> title,
-			'date' => $this-> date,
-			'status' => $this-> status
+        if($this->tipo_de_evaluacion_id == 2)
+        {
+            $this->validate([
+                'tipo_de_evaluacion_id' => 'required',
+                // 'eid' => 'required',
+                'title' => 'required',
+                // 'date' => 'required',
+                'status' => 'required',
+                'nombre_para_mostrar' => 'required',
+                'campania' => 'required',
+                // 'mes' => 'required',
+                // 'anio' => 'required',
+                //fecha inicio menor o igual fecha final
+                //fechoa_fin mayor o igual a fecha inicio
+                'fecha_inicio' => 'required|before_or_equal:fecha_fin',
+                'fecha_fin' => 'required|after_or_equal:fecha_inicio',
+                // 'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
+                'minimo'=>'required_if:tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
+                'maximo'=>'required_if:tipo_de_evaluacion_id,2|numeric|gt:minimo|',
+                'fecha_inicio_primera_fase_matricula' => 'required_if:tipo_de_evaluacion_id,2',
+                'fecha_fin_primera_fase_matricula' => 'required_if:tipo_de_evaluacion_id,2',
+                'fecha_inicio_segunda_fase' => 'required_if:tipo_de_evaluacion_id,2',
+                'fecha_fin_segunda_fase' => 'required_if:tipo_de_evaluacion_id,2'
             ]);
-
+        } else {
+            $this->validate([
+                'tipo_de_evaluacion_id' => 'required',
+                // 'eid' => 'required',
+                'title' => 'required',
+                // 'date' => 'required',
+                'status' => 'required',
+                'nombre_para_mostrar' => 'required',
+                'campania' => 'required',
+                // 'mes' => 'required',
+                // 'anio' => 'required',
+                //fecha inicio menor o igual fecha final
+                //fechoa_fin mayor o igual a fecha inicio
+                'fecha_inicio' => 'required|before_or_equal:fecha_fin',
+                'fecha_fin' => 'required|after_or_equal:fecha_inicio',
+                // 'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
+            ]);
+        }
+        // $this->validate([
+        //     'tipo_de_evaluacion_id' => 'required',
+        //     // 'eid' => 'required',
+        //     'title' => 'required',
+        //     // 'date' => 'required',
+        //     'status' => 'required',
+        //     'nombre_para_mostrar' => 'required',
+        //     'campania' => 'required',
+        //     // 'mes' => 'required',
+        //     // 'anio' => 'required',
+        //     //fecha inicio menor o igual fecha final
+        //     //fechoa_fin mayor o igual a fecha inicio
+        //     'fecha_inicio' => 'required|before_or_equal:fecha_fin',
+        //     'fecha_fin' => 'required|after_or_equal:fecha_inicio',
+        //     // 'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
+        //     'minimo'=>'required_if:tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
+        //     'maximo'=>'required_if:tipo_de_evaluacion_id,2|numeric|gt:minimo|',
+        //     'fecha_inicio_primera_fase_matricula' => 'required_if:tipo_de_evaluacion_id,2',
+        //     'fecha_fin_primera_fase_matricula' => 'required_if:tipo_de_evaluacion_id,2',
+        //     'fecha_inicio_segunda_fase' => 'required_if:tipo_de_evaluacion_id,2',
+        //     'fecha_fin_segunda_fase' => 'required_if:tipo_de_evaluacion_id,2'
+        // ]);
+    
+        if ($this->selected_id) {
+            $record = Evaluacione::find($this->selected_id);
+            $record->update([ 
+                'eid' => $this->eid,
+                'title' => $this->title,
+                'date' => $this->date,
+                'status' => $this->status,
+                'nombre_para_mostrar' => $this->nombre_para_mostrar,
+                'campania' => $this->campania,
+                'mes' => $this->mes,
+                'anio' => $this->anio,
+                'fecha_inicio' => $this->fecha_inicio,
+                'fecha_fin' => $this->fecha_fin,
+                'identificador' => $this->identificador,
+                'tipo_de_evaluacion_id' => $this->tipo_de_evaluacion_id,
+                'minimo' => $this->minimo,
+                'maximo' => $this->maximo,
+                'fecha_inicio_primera_fase_matricula' => $this->fecha_inicio_primera_fase_matricula,
+                'fecha_fin_primera_fase_matricula' => $this->fecha_fin_primera_fase_matricula,
+                'fecha_inicio_segunda_fase' => $this->fecha_inicio_segunda_fase,
+                'fecha_fin_segunda_fase' => $this->fecha_fin_segunda_fase,
+            ]);
+    
             $this->resetInput();
             $this->updateMode = false;
-		    $this->emit('closeModal');
-			session()->flash('message', 'Evaluacione actualizado correctamente.');
+            $this->emit('closeModal');
+            session()->flash('message', 'Evaluacion actualizada correctamente.');
         }
     }
 

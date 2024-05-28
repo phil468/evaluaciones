@@ -27,8 +27,19 @@
                                             <option value=0>NO</option>
                                     </select>
                                 </div>
+                                <div class="form-group col-sm-12 col-md-12 col-lg-8 col-xl-6">
+                                    <label for="evaluacion_id">Evaluación*</label>
+                                    <select class="form-control" id="evaluacion_id" wire:model="evaluacion_id">
+                                        @foreach ($evaluaciones as $eval)
+                                            <option value="{{ $eval->id }}">{{ $eval->title }}</option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input wire:model.defer="evaluacion_id" type="text" class="form-control" id="evaluacion_id" placeholder="Evaluacion"> --}}
+                                    @error('evaluacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                         </div>
+                        
                         
                             @if(isset($grupal) && $grupal == 1)
                                 <div class="form-group col-sm-12 col-md-12 col-lg-8 col-xl-6">
@@ -69,7 +80,7 @@
                                 <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
                                     <label for="resultado_anterior_o_esperado">Resultado Anterior/Esperado*</label>
                                     <div class="input-group">
-                                        <input inputmode="decimal" wire:loading.attr="disabled" wire:target="tipo_objetivo_id" wire:model.defer="resultado_anterior_o_esperado" type="number" class="form-control" id="resultado_anterior_o_esperado" placeholder="Resultado Anterior O Esperado">
+                                        <input inputmode="decimal" wire:loading.attr="disabled" wire:target="tipo_objetivo_id" wire:model="resultado_anterior_o_esperado" type="number" class="form-control" id="resultado_anterior_o_esperado" placeholder="Resultado Anterior O Esperado">
                                         <div class="input-group-append">
                                             <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
                                                 {{$simbolo}}
@@ -84,24 +95,34 @@
                             @endif
                             
                             <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                <label for="minimo">Mínimo*</label>
+                                <label for="minimo">Mínimo {{$minimo_evaluacion}}%</label>
                                 <div class="input-group">
-                                    <input wire:model.defer="minimo" inputmode="decimal" min="0" type="number" class="form-control" id="minimo" placeholder="Minimo">
+                                    <input disabled wire:model.defer="minimo" inputmode="decimal" min="0" type="number" class="form-control" id="minimo" placeholder="Minimo">
                                     <div class="input-group-append">
-                                        <span class="input-group-text">%</span>
+                                        <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
+                                            {{$simbolo}}
+                                        </span>
+                                        <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
+                                            <i>Actualizando...</i>
+                                        </span>
                                     </div>
-                                    @error('minimo') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
+                                @error('minimo') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                <label for="maximo">Máximo*</label>
+                                <label for="maximo">Máximo {{$maximo_evaluacion}}% </label>
                                 <div class="input-group">
-                                    <input wire:model.defer="maximo" inputmode="decimal" min="0" type="number" class="form-control" id="maximo" placeholder="Maximo">
+                                    <input disabled wire:model.defer="maximo" inputmode="decimal" min="0" type="number" class="form-control" id="maximo" placeholder="Maximo">
                                     <div class="input-group-append">
-                                        <span class="input-group-text">%</span>
+                                        <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
+                                            {{$simbolo}}
+                                        </span>
+                                        <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
+                                            <i>Actualizando...</i>
+                                        </span>
                                     </div>
-                                    @error('maximo') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
+                                @error('maximo') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div>
                             {{-- <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
                                 <label for="valor">Valor</label>
@@ -115,16 +136,15 @@
                                 <label for="peso_ponderado">Peso Ponderado</label>
                                 <input wire:model.defer="peso_ponderado" type="text" class="form-control" id="peso_ponderado" placeholder="Peso Ponderado">@error('peso_ponderado') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div> --}}
+                            
                             <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                <label for="evaluacion_id">Evaluación*</label>
-                                <select class="form-control" id="evaluacion_id" wire:model="evaluacion_id">
-                                    @foreach ($evaluaciones as $eval)
-                                        <option value="{{ $eval->id }}">{{ $eval->title }}</option>
-                                    @endforeach
+                                <label for="tipo_de_jerarquia_id">Tipo de Jerarquia*</label>
+                                <select class="form-control" id="tipo_de_jerarquia_id" wire:model="tipo_de_jerarquia_id">
+                                        <option value=1>TIPO 1</option>
+                                        <option value=2>TIPO 2</option>
                                 </select>
-                                {{-- <input wire:model.defer="evaluacion_id" type="text" class="form-control" id="evaluacion_id" placeholder="Evaluacion"> --}}
-                                @error('evaluacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div>
+                            
                                             </fieldset>
                 </form>
             </div>

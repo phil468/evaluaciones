@@ -21,7 +21,7 @@ class Objetivo extends Model implements Auditable
     protected $fillable = [
         'resultado','evaluado_id','evaluador_id','tipo_objetivo_id','descripcion','evidencia','evaluador_has_evaluado_id',
         'meta','grupal','porcentaje_de_participacion','evidencias','resultado_anterior_o_esperado','minimo','maximo','valor',
-        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id'
+        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id','objetivo_precargado_id'
     ];
 	
     public function tipo_objetivo()

@@ -5,9 +5,9 @@
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">
                 <h5 class="h5 modal-title" id="updateModalLabel">
                     @if ($this->selected_id == 0)                    
-                    Nuevo Objetivos Precargado
+                    Nuevo Objetivos
                     @else
-                    Actualizar Objetivos Precargado
+                    Actualizar Objetivos
                     @endif
                 </h5>
                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">

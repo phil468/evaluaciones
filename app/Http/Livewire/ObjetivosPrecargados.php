@@ -18,6 +18,9 @@ class ObjetivosPrecargados extends Component
     public $updateMode = false;
 	public $tipos_objetivo=[];
 	public $evaluaciones=[];
+	public $minimo_evaluacion, $maximo_evaluacion;
+
+	public $tipo_de_jerarquia_id;
 
 	protected $rules = 
 	[
@@ -26,9 +29,10 @@ class ObjetivosPrecargados extends Component
 		'tipo_objetivo_id' => 'required_if:grupal,1',
 		'resultado_anterior_o_esperado' => 'required_if:grupal,1',
 		'porcentaje_de_participacion' => 'required|numeric|between:0,100',
-		'minimo'=>'required|numeric|lt:maximo|gt:0',
-		'maximo'=>'required|numeric|gt:minimo|',
+		'minimo'=>'required_if:grupal,1|exclude_if:grupal,0|numeric|lt:maximo|gt:0',
+		'maximo'=>'required_if:grupal,1|exclude_if:grupal,0|numeric|gt:minimo|',
 		'evaluacion_id' => 'required',
+		'tipo_de_jerarquia_id' => 'required'
 	];
 
 	protected $validationAttributes = 
@@ -41,6 +45,7 @@ class ObjetivosPrecargados extends Component
 		'minimo'=>'Mínimo',
 		'maximo'=>'Máximo',
 		'evaluacion_id' => 'Evaluación',
+		'tipo_de_jerarquia_id' => 'Tipo de Jerarquía',
 	];
 
 	protected $messages = [
@@ -58,6 +63,33 @@ class ObjetivosPrecargados extends Component
 		$this->tipos_objetivo = TiposDeObjetivo::all();
 		$this->evaluaciones = Evaluacione::evaluacionPorObjetivos()->activa()->get();
 	}
+
+	public function calcular_maximo() {
+		$this->maximo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->maximo_evaluacion / 100.00 : 0.00;
+		// dd($this-> resultado_anterior_o_esperado);
+	}
+
+	public function calcular_minimo() {
+		$this->minimo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->minimo_evaluacion / 100.00 : 0.00;
+		// dd($this->minimo);
+	}
+	
+	public function updatedTipoObjetivoId($value)
+	{
+		if ($value == null) {
+			$this->simbolo = '';
+			return;
+		}
+		$this->tipo_objetivo_id = $value;
+		$tipo_objetivo = TiposDeObjetivo::find($value);
+		$this->simbolo = $tipo_objetivo->simbolo;
+	}
+
+	public function updatedResultadoAnteriorOEsperado($value)
+	{
+        $this->calcular_minimo();
+        $this->calcular_maximo();
+    }
 
     public function render() {
 		$keyWord = '%'.$this->keyWord .'%';
@@ -79,17 +111,6 @@ class ObjetivosPrecargados extends Component
                         // 'tipos_objetivo' => TiposDeObjetivo::all(),
         ]);
     }
-
-	public function updatedTipoObjetivoId($value)
-	{
-		if ($value == null) {
-			$this->simbolo = '';
-			return;
-		}
-		$this->tipo_objetivo_id = $value;
-		$tipo_objetivo = TiposDeObjetivo::find($value);
-		$this->simbolo = $tipo_objetivo->simbolo;
-	}
 
     public function cancel()
     {
@@ -113,15 +134,19 @@ class ObjetivosPrecargados extends Component
 		$this->peso_ponderado = null;
 		$this->evaluacion_id = null;
 		$this->simbolo = null;
+		$this->tipo_de_jerarquia_id = null;
     }
 
-	public function create_v2() 
+	public function create() 
 	{
 		$this->selected_id = 0; 
 		$this->grupal = 1;
 		$this->tipo_objetivo_id = $this->tipos_objetivo[0]->id;
 		$this->simbolo = TiposDeObjetivo::find($this->tipo_objetivo_id)->simbolo;
 		$this->evaluacion_id = $this->evaluaciones[0]->id;
+		$this->minimo_evaluacion = $this->evaluacion[0]->mínimo;
+		$this->maximo_evaluacion = $this->evaluacion[0]->maximo;
+		$this->tipo_de_jerarquia_id = 1;
 	}
     
 	public function evaluarGrupal()
@@ -130,6 +155,11 @@ class ObjetivosPrecargados extends Component
 			$this->meta = null;
 			$this->tipo_objetivo_id = null;
 			$this->resultado_anterior_o_esperado = null;
+			$this->minimo = NULL;
+			$this->maximo = NULL;
+		} else {	
+			$this->calcular_minimo();
+			$this->calcular_maximo();
 		}
 	}
 
@@ -152,7 +182,8 @@ class ObjetivosPrecargados extends Component
 			'valor' => $this-> valor,
 			'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
 			'peso_ponderado' => $this-> peso_ponderado,
-			'evaluacion_id' => $this-> evaluacion_id
+			'evaluacion_id' => $this-> evaluacion_id,
+			'tipo_de_jerarquia_id' => $this-> tipo_de_jerarquia_id
         ]);
         
         $this->resetInput();
@@ -183,7 +214,10 @@ class ObjetivosPrecargados extends Component
 			$this->porcentaje_de_logro_STI = $record-> porcentaje_de_logro_STI;
 			$this->peso_ponderado = $record-> peso_ponderado;
 			$this->evaluacion_id = $record-> evaluacion_id;
+			$this->minimo_evaluacion = Evaluacione::find($record-> evaluacion_id)->minimo;
+			$this->maximo_evaluacion = Evaluacione::find($record-> evaluacion_id)->maximo;
 			$this->simbolo = $record->tipo_objetivo->simbolo??null;
+			$this->tipo_de_jerarquia_id = $record->tipo_de_jerarquia_id;
 			
 		} else {
 			$this->create();
@@ -197,24 +231,28 @@ class ObjetivosPrecargados extends Component
         );
 
 		$this->evaluarGrupal();
+
+		// dd($this->tipo_objetivo_id, $this->resultado_anterior_o_esperado, $this->minimo, $this->maximo);
 		
         if ($this->selected_id) {
 			$record = ObjetivosPrecargado::find($this->selected_id);
             $record->update([ 
-			'meta' => $this-> meta,
-			'grupal' => $this-> grupal,
-			'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
-			'evidencias' => $this-> evidencias,
-			'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,
-			'tipo_objetivo_id' => $this-> tipo_objetivo_id,
-			'minimo' => $this-> minimo,
-			'maximo' => $this-> maximo,
-			'valor' => $this-> valor,
-			'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
-			'peso_ponderado' => $this-> peso_ponderado,
-			'evaluacion_id' => $this-> evaluacion_id
+				'meta' => $this-> meta,
+				'grupal' => $this-> grupal,
+				'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
+				'evidencias' => $this-> evidencias,
+				'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,
+				'tipo_objetivo_id' => $this-> tipo_objetivo_id,
+				'minimo' => $this-> minimo,
+				'maximo' => $this-> maximo,
+				'valor' => $this-> valor,
+				'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
+				'peso_ponderado' => $this-> peso_ponderado,
+				'evaluacion_id' => $this-> evaluacion_id,
+				'tipo_de_jerarquia_id' => $this-> tipo_de_jerarquia_id
             ]);
 
+			// dd($record);
 			$this->resetInput();
 			$this->resetValidation();
             $this->updateMode = false;

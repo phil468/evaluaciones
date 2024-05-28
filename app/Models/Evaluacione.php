@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class 
-Evaluacione extends Model
+class Evaluacione extends Model
 {
 	use HasFactory;
     use SoftDeletes;
@@ -41,7 +40,7 @@ Evaluacione extends Model
         'date',
         'fecha_inicio',
         'fecha_fin',
-        'fecha_segunda_fase',
+        'fecha_inicio_segunda_fase',
         'fecha_fin_segunda_fase',
         'fecha_inicio_primera_fase_matricula',
         'fecha_fin_primera_fase_matricula',

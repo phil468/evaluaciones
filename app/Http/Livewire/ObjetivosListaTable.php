@@ -38,6 +38,28 @@ class ObjetivosListaTable extends LivewireDatatable
             })->label('Ver historial')->alignCenter(),
         Column::name('evaluadores.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluados.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('objetivos.meta')->label('Meta')->searchable()->filterable()->defaultSort('asc'),
+        Column::callback(['id'], function ($id) {
+                return 'Evidencias';
+            },[],'evidencias')->label('Evidencias')->alignCenter(),
+        Column::callback(['objetivos.resultado_anterior_o_esperado','objetivos.tipo_objetivo_id'], function ($resultado_anterior_o_esperado,$tipo_objetivo_id) {
+            if ($tipo_objetivo_id == 2) { // si es porcentaje
+                return ($resultado_anterior_o_esperado/100);
+            } else {
+                return $resultado_anterior_o_esperado;
+            }
+                // return view('components.resultado-anterior-o-esperado', ['resultado_anterior_o_esperado' => $resultado_anterior_o_esperado]);
+            })->label('Resultado anterior o esperado')->alignCenter(),
+        Column::name('objetivos.resultado_anterior_o_esperado')->label('Resultado anterior o esperado')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('objetivos.porcentaje_de_participacion')->label('Porcentaje de participación')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('objetivos.porcentaje_de_logro_STI')->label('Porcentaje de logro STI')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::name('objetivos.minimo')->label('Mínimo')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('objetivos.maximo')->label('Máximo')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('objetivos.valor')->label('Valor')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::name('objetivos.peso_ponderado')->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
+
         Column::name('objetivos.descripcion')->label('Objetivo')->searchable()->filterable()->defaultSort('asc'),
         Column::name('tipo_de_objetivos.unidad')->label('Tipo de objetivo')->searchable()->filterable()->defaultSort('asc'),
         Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),

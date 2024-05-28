@@ -17,7 +17,7 @@ class ObjetivosPrecargado extends Model
 
     protected $fillable = [
         'meta','grupal','porcentaje_de_participacion','evidencias','resultado_anterior_o_esperado','tipo_objetivo_id','minimo','maximo','valor',
-        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id'];
+        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id','tipo_de_jerarquia_id'];
 	
     public function tipo_objetivo()
     {
@@ -43,30 +43,53 @@ class ObjetivosPrecargado extends Model
     // set y get de minimo
     public function setMinimoAttribute($value)
     {
-        $this->attributes['minimo'] = ($value/100);
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            $this->attributes['minimo'] = ($value/100);
+        } else {
+            $this->attributes['minimo'] = $value;
+        }
+
+        // $this->attributes['minimo'] = ($value/100);
     }
 
     public function getMinimoAttribute($value)
     {
-        return ($value*100);
+        
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            return ($value*100);
+        } else {
+            return $value;
+        }
+        // return ($value*100);
     }
 
     // set y get de maximo
     public function setMaximoAttribute($value)
     {
-        $this->attributes['maximo'] = ($value/100);
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            $this->attributes['maximo'] = ($value/100);
+        } else {
+            $this->attributes['maximo'] = $value;
+        }
+        
+        // $this->attributes['maximo'] = ($value/100);
     }
 
     public function getMaximoAttribute($value)
     {
-        return ($value*100);
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            return ($value*100);
+        } else {
+            return $value;
+        }
+        // return ($value*100);
     }
 
     // set y get de resultado_anterior_o_esperado
     public function setResultadoAnteriorOEsperadoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['resultado_anterior_o_esperado'] = ($value/100);
+            $this->attributes['resultado_anterior_o_esperado'] = ($value/100.00);
         } else {
             $this->attributes['resultado_anterior_o_esperado'] = $value;
         }

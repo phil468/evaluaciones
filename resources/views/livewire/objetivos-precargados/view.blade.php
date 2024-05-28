@@ -39,13 +39,16 @@
 						<thead class="thead">
 							<tr class="text-center"> 
 								<th>#</th> 
+								<th>Tipo de Jerarquia</th>
 								<th>Grupal</th>
 								<th>Meta</th>
 								<th>% De Participación</th>
 								{{-- <th>Evidencias</th> --}}
 								<th>Tipo de Objetivo</th>
 								<th>Resultado Anterior/Esperado</th>
+								<th>% Mínimo</th>
 								<th>Mínimo</th>
+								<th>% Máximo</th>
 								<th>Máximo</th>
 								{{-- <th>Valor</th> --}}
 								{{-- <th>Porcentaje De Logro Sti</th> --}}
@@ -61,6 +64,7 @@
 							@foreach($objetivosPrecargados as $row)
 							<tr class="text-center">
 								<td>{{ $loop->iteration }}</td> 
+								<td>{{ 'TIPO '.$row->tipo_de_jerarquia_id  }}</td>
 								<td>{{ $row->grupal? 'Sí' : 'No' }}</td>
 								<td @class(['table-secondary' => !($row->grupal)])>{{ $row->meta }}</td>
 								<td>{{ $row->porcentaje_de_participacion}}%</td>
@@ -80,8 +84,35 @@
 										: $row->resultado_anterior_o_esperado 
 									}}
 								</td>
-								<td>{{ ($row->minimo).'%' }}</td>
-								<td>{{ ($row->maximo).'%' }}</td>
+								<td>{{ $row->evaluacion->minimo }} %</td>
+								<td @class(['table-secondary' => !($row->grupal)])>
+																	{{ 
+										$row->tipo_objetivo ? 
+											($row->tipo_objetivo->id == 2 ? 
+												($row->minimo).'%' 
+											: 	($row->tipo_objetivo->id == 1 ? 
+													number_format($row->minimo, 2, '.', ',')
+												: $row->minimo)
+												)
+										: $row->minimo 
+									}}
+									
+								</td>
+								<td>{{ $row->evaluacion->maximo }} %</td>
+								<td @class(['table-secondary' => !($row->grupal)])>
+									{{ 
+										$row->tipo_objetivo ? 
+											($row->tipo_objetivo->id == 2 ? 
+												($row->maximo).'%' 
+											: 	($row->tipo_objetivo->id == 1 ? 
+													number_format($row->maximo, 2, '.', ',')
+												: $row->maximo)
+												)
+										: $row->maximo 
+									}}
+									
+									{{-- {{ ($row->maximo).'%' }} --}}
+									</td>
 								{{-- <td>{{ $row->valor }}</td> --}}
 								{{-- <td>{{ $row->porcentaje_de_logro_STI }}</td> --}}
 								{{-- <td>{{ $row->peso_ponderado }}</td> --}}
@@ -105,7 +136,7 @@
 					{{ $objetivosPrecargados->links() }}
 					</div>
 				</div>
-                <div wire:loading wire:target="create,destroy">
+                <div wire:loading wire:target="create,destroy,edit,save,cancel,store,update">
                     <x-loading-indicator />
                 </div>	
 			</div>

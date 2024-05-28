@@ -173,9 +173,11 @@
 										@if ($primera_fase_activa)
 
 										@else
+										@if ($row->evidencias)
 											@foreach ($row->evidencias as $evidencia)
 												<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
 											@endforeach	
+										@endif
 									@endif
 									@endif
 																		

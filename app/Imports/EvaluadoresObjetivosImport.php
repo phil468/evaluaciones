@@ -5,6 +5,8 @@ namespace App\Imports;
 use App\Models\EncargadosPlanesDeAccion;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Objetivo;
+use App\Models\ObjetivosPrecargado;
 use App\Models\Personal;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -24,6 +26,10 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
         // dd($rows);
         // mostrar en un mensaje de texto el resultado detallado de la importación de cada linea
         $message="";
+        
+        $objetivos_precargados_tipo_1 = ObjetivosPrecargado::where('tipo_de_jerarquia_id','=','1')->get();
+        $objetivos_precargados_tipo_2 = ObjetivosPrecargado::where('tipo_de_jerarquia_id','=','2')->get();
+
         foreach ($rows as $index=>$row) 
         {
             $dni_evaluador = trim($row["dni_evaluador"]);
@@ -63,12 +69,14 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
             }
 
             $evaluacion = Evaluacione::where('identificador',$evaluacion)->first();
+
             //create or update
 
             /// si no trae vacio 
             if(!$evaluador || !$evaluado || !$evaluacion){
                 $message = $message . "Error en la linea " . $index . " " . "No se encontro el evaluador, evaluado o evaluacion" . "\n";
-                
+                            
+            // dd($evaluado,$evaluador,$evaluacion);
                 //pasar al siguiente registro del foreach 
                 // continue;
                 // return null;
@@ -92,6 +100,67 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow
                         'grupal' => $grupal == 'SI' ? 1 : 0
                     ]
                 );
+            
+
+                if ($jerarquia == 2)
+                {
+                    foreach ($objetivos_precargados_tipo_1 as $objetivo_precargado) {
+                        // dd($objetivo_precargado->id);
+                        Objetivo::updateOrCreate([
+                                'evaluado_id' => $record-> evaluado_id,
+                                'evaluador_id' => $record-> evaluador_id,
+                                'objetivo_precargado_id' => $objetivo_precargado->id,
+                        ],[
+                                'evaluador_has_evaluado_id' => $record->id,
+                                'meta' => $objetivo_precargado-> meta,
+                                'grupal' => $objetivo_precargado-> grupal,
+                                'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
+                                // 'evidencias' => $this-> evidencias,
+                                'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
+                                'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
+                                'minimo' => $objetivo_precargado-> evaluacion -> minimo,
+                                'maximo' => $objetivo_precargado-> evaluacion -> maximo,
+                                'valor' => $objetivo_precargado-> valor,
+                                'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
+                                'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
+                                'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
+
+                        ]);
+                    }
+                    // dd('creado jer 2');
+                }
+                
+                if ($jerarquia == 5)
+                {
+                    
+                // dd('llego aqui 5');
+                    foreach ($objetivos_precargados_tipo_2 as $objetivo_precargado) {
+                        Objetivo::updateOrCreate([
+                                'evaluado_id' => $record-> evaluado_id,
+                                'evaluador_id' => $record-> evaluador_id,
+                                'objetivo_precargado_id' => $objetivo_precargado->id,
+                            ],[
+                                'evaluador_has_evaluado_id' => $record->id,
+                                'meta' => $objetivo_precargado-> meta,
+                                'grupal' => $objetivo_precargado-> grupal,
+                                'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
+                                // 'evidencias' => $this-> evidencias,
+                                'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
+                                'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
+                                'minimo' => $objetivo_precargado-> evaluacion -> minimo,
+                                'maximo' => $objetivo_precargado-> evaluacion -> maximo,
+                                'valor' => $objetivo_precargado-> valor,
+                                'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
+                                'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
+                
+                                'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
+
+                        ]);
+                    }
+                    // dd('creado jer 5');
+                }
+
+
                 $record = EncargadosPlanesDeAccion::updateOrCreate(
                     [
                         'encargado_id' => $evaluador->id,
