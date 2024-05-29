@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">EVALUACIÓN POR OBJETIVOS</h5>
+							<h5 class="h5">EVALUACIÓN POR RESULTADOS</h5>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>

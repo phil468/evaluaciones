@@ -11,7 +11,7 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Respuesta de Evaluación por Objetivos')
+@section('title', 'Respuesta de Evaluación por Resultados')
 
 @section('content_header')
     <h1></h1>

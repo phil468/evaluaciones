@@ -85,7 +85,7 @@
                                     class="d-none"
                                 @endif
                         >
-                        Opciones de evaluación por objetivos
+                        Opciones de evaluación por resultados
                             <div class="row">
                                 <div class="form-group col-sm-12 col-md-12 col-lg-8 col-xl-6">
                                     <label for="minimo">Mínimo</label>

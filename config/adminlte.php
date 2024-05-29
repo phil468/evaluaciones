@@ -287,7 +287,7 @@ return [
         ],
 
         [
-            'text' => 'Ev. de Desempeño por objetivos',
+            'text' => 'Ev. de Desempeño por Resultados',
             'url'  => 'evaluaciones-de-desempeno/2',
             'icon' => 'fas fa-pencil-alt',
             'can'  => 'ver-evaluaciones-de-desempeno',
@@ -315,7 +315,7 @@ return [
                 ],
                     
                 [
-                    'text' => 'Respuestas Ev. por Objetivos',
+                    'text' => 'Respuestas Ev. por Resultados',
                     'url'  => 'objetivos',
                     'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-capacitacion',

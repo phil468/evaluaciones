@@ -15,8 +15,8 @@
                         <div class="float-left">
 
                             @if ($tipo_de_evaluacion_id == 2)
-                                <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR OBJETIVOS</h5>
-                                @section('title', __('EVALUACIÓN DE DESEMPEÑO POR OBJETIVOS'))
+                                <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR RESULTADOS</h5>
+                                @section('title', __('EVALUACIÓN DE DESEMPEÑO POR RESULTADOS'))
                             @endif
                             @if ($tipo_de_evaluacion_id == 1)
                                 <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR COMPETENCIA</h5>

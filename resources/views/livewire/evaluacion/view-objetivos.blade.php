@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <h4 class="h4">EVALUACIÓN POR OBJETIVOS</h4>
+                            <h4 class="h4">EVALUACIÓN POR RESULTADOS</h4>
                         </div>
                         @if ($errors->any())
                             <div wire:poll.4s class="btn btn-sm btn-danger" style="margin-top:0px; margin-bottom:0px;">
