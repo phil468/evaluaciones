@@ -75,9 +75,9 @@ video {
         <span>Iniciar sesión</span>
     </a>
 </div>
+<button onclick="mostrarOcultarFormularioSesionLocal()" style="display: none;" accesskey="f">Mostrar Formulario de Sesion Local</button>
 
     <form action="{{ $login_url }}" method="post" style="display: none;">
-        <button onclick="mostrarOcultarFormularioSesionLocal()" style="display: none;" accesskey="n">Mostrar Formulario de Sesion Local</button>
         <br>
         <hr>
         <div class="mt-2 text-center h5">

@@ -42,10 +42,11 @@
                                 <br>
                                 <video 
                                 class="video-background-content" 
-                                src="{{asset('img/evaluacion/VIDEO BIENVENIDA - ED 2024 Vanguard Perú.mp4')}}"
+                                src="{{asset('img/evaluacion/Video_concientizacion_ED_2024_Vanguard_Peru.mp4')}}"
                                 autoplay="true"
-                                muted="true" 
+                                {{-- muted="true"  --}}
                                 loop="true"
+                                volume="0.5"
                                 ></video>
                                 <br>
                             </div>
