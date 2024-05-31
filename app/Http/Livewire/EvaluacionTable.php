@@ -42,7 +42,7 @@ class EvaluacionTable extends LivewireDatatable
 
             
             Column::callback('id,title', function ($id,$title) {
-                return view('table-actions-3', ['id' => $id, 'name'=>$title]);
+                return view('table-actions-4', ['id' => $id, 'name'=>$title]);
             })->unsortable()
             ->label('Acciones')
             ->excludeFromExport(),

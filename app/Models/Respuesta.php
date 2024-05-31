@@ -18,6 +18,12 @@ class Respuesta extends Model
 
     protected $fillable = ['pregunta_id','opcion_id','valor_numerico','valor_texto','evaluado_id'];
 	
+    protected $casts = [
+        'evaluado_id' => 'encrypted',
+        'pregunta_id' => 'encrypted',
+        'valor_numerico' => 'encrypted',
+    ];
+
     public function pregunta()
     {
         return $this->belongsTo(Pregunta::class,'pregunta_id','id');
@@ -42,5 +48,6 @@ class Respuesta extends Model
     {
         return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)->first()->gerencia_sub_gerencia_de_evaluado;
     }
+   
     
 }

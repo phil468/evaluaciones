@@ -18,7 +18,11 @@
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
 						</div> --}}
 						@can('crear-evaluacion')
-						<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
+						<div title="Nuevo" data-toggle="modal" 
+						{{-- data-target="#updateModal"  --}}
+						class="btn btn-sm btn-default rounded-xl" wire:click="edit(0)">
+
+						{{-- <div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal"> --}}
 						<i class="fa fa-plus"></i>  Nuevo
 						</div>
 						@endcan
@@ -82,7 +86,7 @@
 			</div>
 		</div>
 	</div>
-	<div wire:loading wire:target="create,edit,crear_editar_usuarios,enviarCorreo,importar_objetivos,importar">
+	<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,importar_objetivos,importar">
 		<x-loading-indicator />
 	</div>	
 </div>

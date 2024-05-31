@@ -12,7 +12,7 @@
 						@endif
 					</div>
 				</div>
-				<div class="card-body">					
+				<div class="card-body">
 					@livewire('respuestas-table')
 				</div>
 			</div>

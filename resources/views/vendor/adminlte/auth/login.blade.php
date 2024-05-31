@@ -54,13 +54,36 @@ video {
                 cambio.type = "password";
                 $('.icon-password').removeClass('fa fa-eye').addClass('fa fa-eye-slash');
             }
-        }        
+        }
+    
+    function mostrarOcultarFormularioSesionLocal(){
+        var formulario = document.querySelector('form');
+        if(formulario.style.display == "none"){
+            formulario.style.display = "block";
+        }else{
+            formulario.style.display = "none";
+        }
+    }
 
     </script>
 @stop
 
 @section('auth_body')
-    <form action="{{ $login_url }}" method="post">
+<div class="text-center">
+    <a href="{{ url('/auth/redirect') }}" class="btn btn-primary btn-lg">
+        <span><i class="fab fa-windows"></i></span>
+        <span>Iniciar sesión</span>
+    </a>
+</div>
+
+    <form action="{{ $login_url }}" method="post" style="display: none;">
+        <button onclick="mostrarOcultarFormularioSesionLocal()" style="display: none;" accesskey="n">Mostrar Formulario de Sesion Local</button>
+        <br>
+        <hr>
+        <div class="mt-2 text-center h5">
+            Inicio de Sesión Local
+        </div>
+            
         @csrf
 
         {{-- Email field --}}
@@ -121,6 +144,14 @@ video {
                 </button>
             </div>
         </div>
+        @if($password_reset_url)
+        <p class="my-0">
+            <a href="{{ $password_reset_url }}" class="btn btn-link">
+                {{ __('adminlte::adminlte.i_forgot_my_password') }}
+            </a>
+        </p>
+        @endif
+        <hr>
 
     </form>
 @stop
@@ -129,7 +160,7 @@ video {
     {{-- Password reset link --}}
     @if($password_reset_url)
         <p class="my-0">
-            <a href="{{ $password_reset_url }}">
+            <a href="{{ $password_reset_url }}" class="d-none" >
                 {{ __('adminlte::adminlte.i_forgot_my_password') }}
             </a>
         </p>

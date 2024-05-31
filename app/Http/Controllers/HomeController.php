@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Laravel\Socialite\Facades\Socialite;
 
 class HomeController extends Controller
 {
@@ -25,4 +26,10 @@ class HomeController extends Controller
     {
         return view('dash.index');
     }
+
+    // public function redirectToAzure()
+    // {
+    //     return Socialite::driver('azure')->redirect();
+    // }
+
 }

@@ -1,5 +1,5 @@
     <div class="btn-group">
-        <a title="Editar" data-toggle="modal" data-target="#updateModal" class="btn btn-primary" wire:click="edit({{$id}})"><i class="fa fa-edit"></i></a>
+        <a title="Editar" data-toggle="modal" data-target="#updateModal" class="btn btn-vanguard" wire:click="edit({{$id}})"><i class="fa fa-edit"></i></a>
 
         <a title="Agregar Personal" 
         class="btn btn-info"

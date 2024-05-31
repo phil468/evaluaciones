@@ -52,6 +52,8 @@ class ObjetivosPrecargados extends Component
 		'meta.required_if' => 'El campo Meta es obligatorio cuando Objetivo grupal es SÍ.',
 		'tipo_objetivo_id.required_if' => 'El campo Tipo de objetivo es obligatorio cuando Objetivo grupal es SÍ.',
 		'resultado_anterior_o_esperado.required_if' => 'El campo Resultado anterior o esperado es obligatorio cuando Objetivo grupal es SÍ.',
+		'minimo.required_if' => 'El campo Resultado mínimo es obligatorio cuando Objetivo grupal es SÍ / Ingrese valor a Resultado Anterior/Esperado',
+		'maximo.required_if' => 'El campo Resultado máximo es obligatorio cuando Objetivo grupal es SÍ / Ingrese valor a Resultado Anterior/Esperado',
 	];
 
 	// public function updated($meta)
@@ -114,7 +116,7 @@ class ObjetivosPrecargados extends Component
 
     public function cancel()
     {
-        $this->resetInput();
+		$this->resetInput();
 		$this->resetValidation();
         $this->updateMode = false;
     }
@@ -144,8 +146,8 @@ class ObjetivosPrecargados extends Component
 		$this->tipo_objetivo_id = $this->tipos_objetivo[0]->id;
 		$this->simbolo = TiposDeObjetivo::find($this->tipo_objetivo_id)->simbolo;
 		$this->evaluacion_id = $this->evaluaciones[0]->id;
-		$this->minimo_evaluacion = $this->evaluacion[0]->mínimo;
-		$this->maximo_evaluacion = $this->evaluacion[0]->maximo;
+		$this->minimo_evaluacion = $this->evaluaciones[0]->mínimo;
+		$this->maximo_evaluacion = $this->evaluaciones[0]->maximo;
 		$this->tipo_de_jerarquia_id = 1;
 	}
     

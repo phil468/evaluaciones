@@ -6,7 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
 use App\Models\Asignacione;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\User;
+use Laravel\Socialite\Facades\Socialite;
 use Livewire\Livewire;
+use GuzzleHttp\Client;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +29,57 @@ use Livewire\Livewire;
 // });
 
 //Ruta HOME:
+// Route::get('/connect', [App\Http\Controllers\HomeController::class,'redirectToAzure']);
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('azure')
+    // ->scopes([
+    //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/Contacts.Read',
+    //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/User.ReadBasic.All'
+    //     ]) // Solicita el ámbito específico
+    ->redirect();
+});
+ 
+Route::get('/auth/callback', function () {
+    $user = Socialite::driver('azure')->user();
+
+    $localUser = User::where('email', $user->email)->first();
+
+    //he agregado el atributo employeeNumber
+
+    if (!$localUser) {
+        // El usuario no existe, crea un nuevo usuario
+        $localUser = User::create([
+            'name' => $user->name,
+            'email' => $user->email,
+            // puedes agregar más campos aquí si los necesitas
+        ]);
+    }
+
+    // Inicia sesión con el usuario
+    Auth::login($localUser, true);
+
+    // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/me/contacts');
+    // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/users');
+    // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/users');
+
+
+    // dd($response->json());
+
+    // Redirige al usuario a la página de inicio o a donde quieras
+    return redirect('/');
+});
+
+Route::get('/auth/logout', function () {
+    Auth::guard()->logout();
+        
+    $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login')); // reemplaza con tu URL de redirección
+    return redirect()->away($azureLogoutUrl);
+    // $request->session()->flush();
+    // $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login'));
+    // return redirect($azureLogoutUrl);
+});
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/personal/importar/{numero}', [App\Http\Controllers\PersonalController::class,'actualizarPersonalNisira'])->name('personal.actualizar');
 Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\PersonalController::class,'actualizarEstadoParaTodos'])->name('personal.actualizarEstadoParaTodos');

@@ -103,6 +103,10 @@
             $('#auditoriaModal').modal('show');
         });
         
+        window.livewire.on('openUpdateModal', function () {
+            $('#updateModal').modal('show');
+        });
+        
         window.livewire.on('limpiarFile', () => {
             // console.log('Se limpia campo con id File')
             document.getElementById('file').value = null;

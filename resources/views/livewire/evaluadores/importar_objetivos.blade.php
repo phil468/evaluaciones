@@ -1,8 +1,8 @@
 <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="importObjetivosDataModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-       <div class="modal-content">
-            <div class="modal-header bg-primary">
+        <div class="rounded-2xl modal-content">
+            <div class="text-white modal-header bg-vanguard rounded-t-2xl">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="float-left">
                         <h5 class="modal-title" id="updateModalLabel">Importar Evaluadores Objetivos</h5>
@@ -20,7 +20,9 @@
                         <input type="file" wire:model.defer="file_objetivos" class="form-control-file" id="file_objetivos" >
                         @error('file_objetivos') <span class="error text-danger">{{ $message }}</span> @enderror
                     </div>
-                    <button wire:click="importar_objetivos" wire:loading.attr="disabled" class="btn btn-primary close-modal">Importar</button>
+                    <div class="float-right">
+                        <button wire:click="importar_objetivos" wire:loading.attr="disabled" class="btn btn-vanguard close-modal rounded-xl">Importar</button>
+                    </div>
                 </form>
             </div>
        </div>

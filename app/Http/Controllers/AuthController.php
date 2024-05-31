@@ -26,4 +26,5 @@ class AuthController extends Controller
         return $this->respondWithToken(JWTAuth::refresh());
     }
 
+
 }

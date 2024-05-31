@@ -16,6 +16,7 @@ class Respuestas extends Component
 
     public function render()
     {
+            // dd(Respuesta::first()->evaluado_id);
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.respuestas.view', [
             'respuestas' => Respuesta::latest()

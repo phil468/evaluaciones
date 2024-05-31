@@ -64,7 +64,7 @@ class Evaluaciones extends Component
     ];
 
 	protected $listeners = [
-        'edit',
+        'edit' => 'edit',
 		'selectedUpdated' => 'updateSelected'
     ];
 
@@ -149,6 +149,7 @@ class Evaluaciones extends Component
     public function cancel()
     {
         $this->resetInput();
+		$this->resetValidation();
         $this->updateMode = false;
     }
 	
@@ -158,6 +159,20 @@ class Evaluaciones extends Component
 		$this->title = null;
 		$this->date = null;
 		$this->status = null;
+        $this->nombre_para_mostrar = null;
+        $this->campania = null;
+        $this->mes = null;
+        $this->anio = null;
+        $this->fecha_inicio = null;
+        $this->fecha_fin = null;
+        $this->identificador = null;
+        $this->tipo_de_evaluacion_id = null;
+        $this->minimo = null;
+        $this->maximo = null;
+        $this->fecha_inicio_primera_fase_matricula = null;
+        $this->fecha_fin_primera_fase_matricula = null;
+        $this->fecha_inicio_segunda_fase = null;
+        $this->fecha_fin_segunda_fase = null;
     }
 
     public function create() {
@@ -167,26 +182,41 @@ class Evaluaciones extends Component
 
     public function store()
     {
-        // $this->rules = $this->rules();
-
         $this->validate();
 
         $this->limpiar_fecha_tipo_de_evaluacion();
 
         Evaluacione::create([ 
-			'eid' => $this-> eid,
-			'title' => $this-> title,
-			'date' => $this-> date,
-			'status' => $this-> status
+            'eid' => $this->eid,
+            'title' => $this->title,
+            'date' => $this->date,
+            'status' => $this->status,
+            'nombre_para_mostrar' => $this->nombre_para_mostrar,
+            'campania' => $this->campania,
+            'mes' => $this->mes,
+            'anio' => $this->anio,
+            'fecha_inicio' => $this->fecha_inicio,
+            'fecha_fin' => $this->fecha_fin,
+            'identificador' => $this->identificador,
+            'tipo_de_evaluacion_id' => $this->tipo_de_evaluacion_id,
+            'minimo' => $this->minimo,
+            'maximo' => $this->maximo,
+            'fecha_inicio_primera_fase_matricula' => $this->fecha_inicio_primera_fase_matricula,
+            'fecha_fin_primera_fase_matricula' => $this->fecha_fin_primera_fase_matricula,
+            'fecha_inicio_segunda_fase' => $this->fecha_inicio_segunda_fase,
+            'fecha_fin_segunda_fase' => $this->fecha_fin_segunda_fase,
         ]);
-        
+    
         $this->resetInput();
-		$this->emit('closeModal');
-		session()->flash('message', 'Evaluacione creado correctamente.');
+        $this->updateMode = false;
+        $this->emit('closeModal');
+        session()->flash('message', 'Evaluacion creado correctamente.');
+
     }
 
     public function edit($id)
     {
+        $this->emit('openUpdateModal');
 		if ($id != 0) {
 			$this->resetValidation();
 			$this->resetInput();
@@ -217,7 +247,7 @@ class Evaluaciones extends Component
 			$this->resetValidation();
 			$this->resetInput();
 			$this->selected_id = 0; 
-			// $this->estado=true;
+			$this->status=true;
 		}
 
         $this->updateMode = true;
@@ -319,4 +349,5 @@ class Evaluaciones extends Component
             $record->delete();
         }
     }
+
 }

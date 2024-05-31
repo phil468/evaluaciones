@@ -2,7 +2,7 @@
 <div class="btn-group">
         {{-- @canany(['editar-personal']) --}}
             <a title="Editar" data-toggle="modal" 
-            data-target="#updateModal" 
+            {{-- data-target="#updateModal"  --}}
             class="btn btn-vanguard" wire:click="edit({{$id}})"><i class="fa fa-edit"></i></a>
         {{-- @endcan --}}
         {{-- @canany(['borrar-personal']) --}}

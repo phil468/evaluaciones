@@ -19,29 +19,29 @@
 						</div> --}}
 						@can('crear-evaluacion')
 						<div class="float-right">
-							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
+							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
 								<a title="Nuevo" data-toggle="modal" data-target="#updateModal" wire:click="edit(0)" accesskey="n">
 									<i class="fa fa-plus"></i> Nuevo (n)
 								</a>
 							</div>
 							{{-- //boton para crear_editar_usuarios --}}
-							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createEditUsersModal">
+							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#createEditUsersModal">
 								<a title="Crear/Editar Usuarios" wire:click="crear_editar_usuarios" accesskey="u">
 									<i class="fa fa-users"></i> Crear/Editar Usuarios (u)
 								</a>
 							</div>
-							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importDataModal">
+							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#importDataModal">
 								<a title="Importar" data-toggle="modal" data-target="#importDataModal" accesskey="d">
 									<i class="fa fa-file-import"></i> Importar Eval. Desempeño (d)
 								</a>
 							</div>
-							<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
+							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
 								<a title="Importar Obbjetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="o">
 									<i class="fa fa-file-import"></i> Importar Eval. Objetivos (o)
 								</a>
 							</div>
 							{{-- botón de enviar correo masivo, con mensaje de aceptacion --}}
-							<div class="btn btn-sm btn-default">
+							<div class="mb-1 btn btn-sm btn-default">
 								<a title="Enviar correo masivo" accesskey="e" wire:click="enviarCorreo" accesskey="e">
 									<i class="fa fa-envelope"></i> Enviar correo masivo (e)
 								</a>

@@ -3,13 +3,21 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">
-                <h5 class="h5 modal-title" id="updateModalLabel">
+                <h5 class="h5 modal-title" id="updateModalLabel" wire:loading.remove>
                     @if ($this->selected_id == 0)                    
-                    Nuevo Objetivos Precargado
+                    Nuevo
                     @else
-                    Actualizar Objetivos Precargado
+                    Actualizar
                     @endif
+                    Objetivos Precargado
                 </h5>
+
+                <div wire:loading wire:target="edit,store,update" class="text-white spinner-border" role="status">
+                    <span class="sr-only">Cargando...</span>
+                </div>
+                <div wire:loading wire:target="edit,store,update" class="ml-2 h5">
+                    Cargando...                    
+                </div>
                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click.prevent="cancel()" aria-hidden="true">×</span>
                 </button>
@@ -17,6 +25,7 @@
             <div class="modal-body">
                 <form>
                     <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled">
+
                         <input type="hidden" wire:model="selected_id">
                         <div class="col-12">
                             <div class="row">
@@ -144,20 +153,19 @@
                                         <option value=2>TIPO 2</option>
                                 </select>
                             </div>
-                            
-                                            </fieldset>
+                    </fieldset>
                 </form>
             </div>
             <div class="modal-footer">
                 
-                <button type="button" wire:click="cancel()" class="btn btn-secondary rounded-xl" 
-                data-dismiss="modal"
-                >Cerrar</button>
+                <button type="button" wire:target="edit,store,update" wire:loading.attr="disabled" wire:click="cancel()" class="btn btn-secondary rounded-xl" data-dismiss="modal">
+                    Cerrar
+                </button>
 
                 @if ($this->selected_id == 0)                    
-                    <button type="button" wire:loading.attr="disabled" wire:click.prevent="store()" class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
+                    <button type="button" wire:target="edit,store,update" wire:loading.attr="disabled" wire:click.prevent="store()" class="btn btn-lg btn-vanguard rounded-xl close-modal">Guardar</button>
                 @else
-                    <button type="button" wire:loading.attr="disabled" wire:click.prevent="update()" class="btn btn-vanguard rounded-xl">Guardar</button>
+                    <button type="button" wire:target="edit,store,update" wire:loading.attr="disabled" wire:click.prevent="update()" class="btn btn-lg btn-vanguard rounded-xl">Guardar</button>
                 @endif
                 
                 {{-- <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary rounded-xl" data-dismiss="modal">Cerrar</button>

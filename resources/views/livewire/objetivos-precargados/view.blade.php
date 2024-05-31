@@ -32,7 +32,7 @@
 						@include('livewire.objetivos-precargados.create')
 						@endcan						 --}}
 						@can('editar-objetivos-precargados')
-						@include('livewire.objetivos-precargados.update')
+							@include('livewire.objetivos-precargados.update')
 						@endcan
 				<div class="table-responsive">
 					<table class="table table-striped table-hover table-sm">
@@ -136,7 +136,7 @@
 					{{ $objetivosPrecargados->links() }}
 					</div>
 				</div>
-                <div wire:loading wire:target="create,destroy,edit,save,cancel,store,update">
+                <div wire:loading wire:target="destroy,save">
                     <x-loading-indicator />
                 </div>	
 			</div>
