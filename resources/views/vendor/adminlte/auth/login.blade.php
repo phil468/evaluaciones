@@ -23,7 +23,8 @@
 <style>
 body {
     
-    background-image: url('/img/evaluacion/login-10s.mp4');
+    background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}');
+    /* url('/img/evaluacion/login-10s.mp4'); */
     background-size: cover;
     background-repeat: no-repeat;
     /* background-color: #568ca5!important; */
