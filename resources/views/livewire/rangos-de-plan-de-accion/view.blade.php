@@ -64,7 +64,7 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-rangos-de-plan-de-accion')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-rangos-de-plan-de-accion')							 
 									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Rangos De Plan De Accion : {{$row->name}}? \nRangos De Plan De Accions borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 

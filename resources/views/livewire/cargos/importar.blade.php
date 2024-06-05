@@ -1,9 +1,8 @@
 <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="importDataModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-       <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+       <div class="rounded-2xl modal-content">
+            <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="float-left">
                         <h5 class="modal-title" id="updateModalLabel">Importar Cargos</h5>
                     </div>

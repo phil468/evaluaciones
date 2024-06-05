@@ -20,7 +20,6 @@
     <div class="video-background" style="background-image: url('https://carontestudio.com/img/contacto.jpg');">
         <video class="video-background-content" src="{{asset('img/evaluacion/login-10s.mp4')}}" autoplay="true" muted="true" loop="true"></video>
     </div>
-    
 
     <div class="body-bg d-flex h-100 w-100 justify-content-center ">
         <div class="{{ $auth_type ?? 'login' }}-box ">

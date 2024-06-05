@@ -122,7 +122,7 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-objetivos-precargados')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-objetivos-precargados')							 
 									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Objetivos Precargado : {{$row->name}}? \nObjetivos Precargados borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 

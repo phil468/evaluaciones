@@ -65,7 +65,7 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-planilla')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary" wire:click="edit({{$row->id}})">Editar </a>
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-planilla')							 
 									<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Planilla : {{$row->name}}? \nPlanillas borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 

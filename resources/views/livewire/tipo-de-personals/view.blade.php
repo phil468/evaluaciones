@@ -60,7 +60,7 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-tipoDePersonal')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary" wire:click="edit({{$row->id}})">Editar </a>
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-tipoDePersonal')							 
 									<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Tipo De Personal : {{$row->name}}? \nTipo De Personals borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 

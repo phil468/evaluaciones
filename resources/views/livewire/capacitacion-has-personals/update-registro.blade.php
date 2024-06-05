@@ -1,9 +1,8 @@
 <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="updateRegistroModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
-       <div class="modal-content">
-            <div class="modal-header bg-primary">
-                
+       <div class="rounded-2xl modal-content">
+            <div class="text-white modal-header bg-vanguard rounded-t-2xl">                
                 <h5 class="modal-title" id="updateModalLabel">
                 @if ($this->selected_id == 0)                    
                         Nuevo Personal

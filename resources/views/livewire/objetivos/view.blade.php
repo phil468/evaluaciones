@@ -58,7 +58,7 @@
                         </div>
 						@can('ver-evaluaciones-de-desempeno')
 						<div class="float-right">
-							@if (!$evaluador_has_evaluado->grupal && $primera_fase_activa)
+							@if ($evaluador_has_evaluado->jerarquia == 1 && $primera_fase_activa)
 								(Requeridos: {{$cantidad_requerida}} objetivos) 
 								
 								<button
@@ -108,7 +108,6 @@
 									
 									<th class="text-center text-white bg-vanguard">Metas</th>
 									<th class="text-center text-white bg-vanguard">% Participac.</th>
-									<th class="text-center text-white bg-vanguard">Evidencias</th>
 									<th class="text-center text-white bg-vanguard">Tipo de Objetivo</th>
 									<th class="text-center text-white bg-vanguard">Result. Anterior / Esperado</th>
 									<th class="text-center text-white bg-vanguard">Mínimo {{ $evaluador_has_evaluado->evaluacion->minimo}}%</th>
@@ -117,6 +116,7 @@
 									<th class="text-center text-white bg-vanguard">Valor</th>
 									<th class="text-center text-white bg-vanguard">% Logr. STI</th>
 									<th class="text-center text-white bg-vanguard">Peso Pond.</th>
+									<th class="text-center text-white bg-vanguard">Evidencias</th>
 									<th class="text-center text-white bg-vanguard">Evaluación</th>
 									
 									{{-- <th>#</th> 
@@ -150,38 +150,6 @@
 								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
 								>{{ $row->meta }}</td>
 								<td>{{ $row->porcentaje_de_participacion}}%</td>
-								<td>
-									@if ($segunda_fase_activa)
-										<button 
-										class="rounded-full btn btn-vanguard" 
-										wire:click="openModal"										
-										data-toggle="modal" 
-										data-target="#evidenciaModal"
-										>
-											<i class="fa fa-plus"></i>
-										</button>
-									@else
-										<button 
-										disabled
-										class="rounded-full btn btn-vanguard" 
-										wire:click="openModal"										
-										data-toggle="modal" 
-										data-target="#evidenciaModal"
-										>
-											<i class="fa fa-plus"></i>
-										</button>
-										@if ($primera_fase_activa)
-
-										@else
-										@if ($row->evidencias)
-											@foreach ($row->evidencias as $evidencia)
-												<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
-											@endforeach	
-										@endif
-									@endif
-									@endif
-																		
-								</td>
 
 								@if($isOpen)
 								<div wire:ignore.self class="modal fade" id="evidenciaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="evidenciaModalLabel" aria-hidden="true">
@@ -291,6 +259,41 @@
 								</td>
 								<td>{{ $row->porcentaje_de_logro_STI }}</td>
 								<td>{{ $row->peso_ponderado }}</td>
+								<td>
+									@if ($segunda_fase_activa)
+										<button 
+										class="rounded-full btn btn-vanguard" 
+										wire:click="openModal"										
+										data-toggle="modal" 
+										data-target="#evidenciaModal"
+										>
+											<i class="fa fa-plus"></i>
+										</button>
+									@else
+										<button 
+										disabled
+										class="rounded-full btn btn-vanguard" 
+										wire:click="openModal"										
+										data-toggle="modal" 
+										data-target="#evidenciaModal"
+										>
+											<i class="fa fa-plus"></i>
+										</button>
+
+										@if ($primera_fase_activa)
+
+										@else
+
+										@if ($row->evidencias)
+											@foreach ($row->evidencias as $evidencia)
+												<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
+											@endforeach	
+										@endif
+										
+									@endif
+									@endif
+																		
+								</td>
 
 								<td>{{ $row->evaluacion->title ?? '' }}</td>
 								

@@ -60,7 +60,7 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-opcione')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary" wire:click="edit({{$row->id}})">Editar </a>
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-opcione')							 
 									<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Opcione : {{$row->name}}? \nOpciones borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 

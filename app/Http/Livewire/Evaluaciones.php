@@ -6,7 +6,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Evaluacione;
 use App\Models\TipoDeEvaluacione;
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\Rule as ValidationRule;
 
 class Evaluaciones extends Component
 {
@@ -30,37 +32,55 @@ class Evaluaciones extends Component
     $fecha_fin_segunda_fase,
     $tipos;
 
-    // protected $rules = [
-    //     'title' => 'required',
-
-    // ];
     public $updateMode = false;
     
     protected $rules = [
         'tipo_de_evaluacion_id' => 'required',
-            // 'eid' => 'required',
-            'title' => 'required',
-            // 'date' => 'required',
-            'status' => 'required',
-            'nombre_para_mostrar' => 'required',
-            'campania' => 'required',
-            // 'mes' => 'required',
-            // 'anio' => 'required',
-            //fecha inicio menor o igual fecha final
-            //fechoa_fin mayor o igual a fecha inicio
-            'fecha_inicio' => 'required|before_or_equal:fecha_fin',
-            'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-            // 'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
-            'minimo'=>'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
-            'maximo'=>'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|numeric|gt:minimo|',
-            'fecha_inicio_primera_fase_matricula' => 
-            'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|before_or_equal:fecha_fin|before_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_inicio',
-            'fecha_fin_primera_fase_matricula' => 
-            'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_primera_fase_matricula|before_or_equal:fecha_fin|before_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_inicio',
-            'fecha_inicio_segunda_fase' => 
-            'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio|before_or_equal:fecha_fin_segunda_fase',
-            'fecha_fin_segunda_fase' => 
-            'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio'
+        'title' => 'required',
+        'status' => 'required',
+        'nombre_para_mostrar' => 'required',
+        'campania' => 'required',
+        'fecha_inicio' => 'required|before_or_equal:fecha_fin',
+        'fecha_fin' => 'required|after_or_equal:fecha_inicio',
+        'minimo' => 'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
+        'maximo'=>'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|numeric|gt:minimo|',
+        'fecha_inicio_primera_fase_matricula' => 
+        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|before_or_equal:fecha_fin|before_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_inicio',
+        'fecha_fin_primera_fase_matricula' => 
+        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_primera_fase_matricula|before_or_equal:fecha_fin|before_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_inicio',
+        'fecha_inicio_segunda_fase' => 
+        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio|before_or_equal:fecha_fin_segunda_fase',
+        'fecha_fin_segunda_fase' => 
+        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio'
+    ];
+
+    protected $validationAttributes = 
+	[
+        'tipo_de_evaluacion_id' => 'Tipo de evaluación',
+        'title' => 'Título',
+        'status' => 'Estado',
+        'nombre_para_mostrar' => 'Nombre para mostrar',
+        'campania' => 'Campaña',
+        'fecha_inicio' => 'Fecha de inicio',
+        'fecha_fin' => 'Fecha de fin',
+        'minimo'=>'Mínimo',
+        'maximo'=>'Máximo',
+        'fecha_inicio_primera_fase_matricula' => 'Fecha de inicio de la primera fase (Matrícula)',
+        'fecha_fin_primera_fase_matricula' => 'Fecha de fin de la primera fase (Matrícula)',
+        'fecha_inicio_segunda_fase' => 'Fecha de inicio de la segunda fase',
+        'fecha_fin_segunda_fase' => 'Fecha de fin de la segunda fase',
+    
+	];
+
+    protected $messages = [
+        'fecha_inicio.before_or_equal' => 'La fecha de inicio debe ser menor o igual a la fecha de fin.',
+        'fecha_fin.after_or_equal' => 'La fecha de fin debe ser mayor o igual a la fecha de inicio.',
+        'minimo.required_if' => 'El campo Resultado mínimo es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
+        'maximo.required_if' => 'El campo Resultado máximo es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
+        'fecha_inicio_primera_fase_matricula.required_if' => 'El campo Fecha de inicio de la primera fase (Matrícula) es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
+        'fecha_fin_primera_fase_matricula.required_if' => 'El campo Fecha de fin de la primera fase (Matrícula) es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
+        'fecha_inicio_segunda_fase.required_if' => 'El campo Fecha de inicio de la segunda fase es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
+        'fecha_fin_segunda_fase.required_if' => 'El campo Fecha de fin de la segunda fase es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
     ];
 
 	protected $listeners = [
@@ -71,78 +91,42 @@ class Evaluaciones extends Component
     public function mount()
     {
         $this->tipos = TipoDeEvaluacione::get();
-        // $this->rules = $this->rules();
     }
-    // public function rules()
-    // {
-    //      return [
-    //         'tipo_de_evaluacion_id' => 'required',
-    //         // 'eid' => 'required',
-    //         'title' => 'required',
-    //         // 'date' => 'required',
-    //         'status' => 'required',
-    //         'nombre_para_mostrar' => 'required',
-    //         'campania' => 'required',
-    //         // 'mes' => 'required',
-    //         // 'anio' => 'required',
-    //         //fecha inicio menor o igual fecha final
-    //         //fechoa_fin mayor o igual a fecha inicio
-    //         'fecha_inicio' => 'required|before_or_equal:fecha_fin',
-    //         'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-    //         'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
-    //         'minimo'=>'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
-    //         'maximo'=>'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|numeric|gt:minimo|',
-    //         'fecha_inicio_primera_fase_matricula' => 
-    //         'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|before_or_equal:fecha_fin|before_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_inicio',
-    //         'fecha_fin_primera_fase_matricula' => 
-    //         'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_primera_fase_matricula|before_or_equal:fecha_fin|before_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_inicio',
-    //         'fecha_inicio_segunda_fase' => 
-    //         'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio|before_or_equal:fecha_fin_segunda_fase',
-    //         'fecha_fin_segunda_fase' => 
-    //         'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio'
-    //     ];
-    //     // dd('hola');
-    // }
 
     public function render()
     {
         $this->tipos = TipoDeEvaluacione::get();
-        $evaluadores = 
-                Evaluacione::
-                select('evaluaciones.title', 'personal.correo_empresa as correo')
-                ->join('evaluador_has_evaluados', 'evaluaciones.id', '=', 'evaluador_has_evaluados.evaluacion_id')
-                ->join('personal', 'evaluador_has_evaluados.evaluador_id', '=', 'personal.id')
-        //        ->pluck('personal.correo_empresa,personal.correo_empresa')
-                ->whereNull('evaluador_has_evaluados.realizado')
-                ->whereNull('evaluador_has_evaluados.deleted_at')
-                ->whereNull('evaluaciones.deleted_at')
-                ->whereNull('personal.deleted_at')
-                ->where('evaluaciones.status', 1)
-                // ->where('evaluaciones.id', $recordatorio->id_evaluacion)
-                ->groupBy('personal.correo_empresa')
-                ->get()->pluck('correo_empresa');
+        $evaluadores = Evaluacione::select('evaluaciones.title', 'personal.correo_empresa as correo')
+        ->join('evaluador_has_evaluados', 'evaluaciones.id', '=', 'evaluador_has_evaluados.evaluacion_id')
+        ->join('personal', 'evaluador_has_evaluados.evaluador_id', '=', 'personal.id')
+        ->whereNull('evaluador_has_evaluados.realizado')
+        ->whereNull('evaluador_has_evaluados.deleted_at')
+        ->whereNull('evaluaciones.deleted_at')
+        ->whereNull('personal.deleted_at')
+        ->where('evaluaciones.status', 1)
+        ->groupBy('personal.correo_empresa')
+        ->get()->pluck('correo_empresa');
 
                 //enviar notificacion a todos estos correos
     
                 // Aquí debes obtener los usuarios a los que quieres enviar la notificación
                 // Por ejemplo, si tienes una relación en tu modelo Evaluacion que se llama usuarios:
-                //$usuarios = $evaluacion->usuarios;
+                // $usuarios = $evaluacion->usuarios;
     
-                
                 foreach ($evaluadores as $correo) {
                     Notification::route('mail', $correo)->notify(new \App\Notifications\RecordatorioNotification());
                 }
-        // $recordatorios = \App\Models\Recordatorio::whereDate('fecha', '')->get();
 
+        // $recordatorios = \App\Models\Recordatorio::whereDate('fecha', '')->get();
 
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.evaluaciones.view', [
             'evaluaciones' => Evaluacione::latest()
-						->orWhere('eid', 'LIKE', $keyWord)
-						->orWhere('title', 'LIKE', $keyWord)
-						->orWhere('date', 'LIKE', $keyWord)
-						->orWhere('status', 'LIKE', $keyWord)
-						->paginate(10),
+            ->orWhere('eid', 'LIKE', $keyWord)
+			->orWhere('title', 'LIKE', $keyWord)
+			->orWhere('date', 'LIKE', $keyWord)
+			->orWhere('status', 'LIKE', $keyWord)
+			->paginate(10),
         ]);
     }
 	
@@ -182,7 +166,9 @@ class Evaluaciones extends Component
 
     public function store()
     {
-        $this->validate();
+        $rules = $this->rules;
+        $rules['identificador'] = 'required|unique:evaluaciones,identificador';
+        $this->validate($rules);
 
         $this->limpiar_fecha_tipo_de_evaluacion();
 
@@ -264,51 +250,9 @@ class Evaluaciones extends Component
 
     public function update()
     {
-        // $this->rules = $this->rules();
-
-        // if($this->tipo_de_evaluacion_id == 2)
-        // {
-            $this->validate();
-        // } else {
-        //     $this->validate([
-        //         'tipo_de_evaluacion_id' => 'required',
-        //         // 'eid' => 'required',
-        //         'title' => 'required',
-        //         // 'date' => 'required',
-        //         'status' => 'required',
-        //         'nombre_para_mostrar' => 'required',
-        //         'campania' => 'required',
-        //         // 'mes' => 'required',
-        //         // 'anio' => 'required',
-        //         //fecha inicio menor o igual fecha final
-        //         //fechoa_fin mayor o igual a fecha inicio
-        //         'fecha_inicio' => 'required|before_or_equal:fecha_fin',
-        //         'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-        //         // 'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
-        //     ]);
-        // }
-        // $this->validate([
-        //     'tipo_de_evaluacion_id' => 'required',
-        //     // 'eid' => 'required',
-        //     'title' => 'required',
-        //     // 'date' => 'required',
-        //     'status' => 'required',
-        //     'nombre_para_mostrar' => 'required',
-        //     'campania' => 'required',
-        //     // 'mes' => 'required',
-        //     // 'anio' => 'required',
-        //     //fecha inicio menor o igual fecha final
-        //     //fechoa_fin mayor o igual a fecha inicio
-        //     'fecha_inicio' => 'required|before_or_equal:fecha_fin',
-        //     'fecha_fin' => 'required|after_or_equal:fecha_inicio',
-        //     // 'identificador' => 'required|unique:evaluaciones,identificador,',$this->selected_id,
-        //     'minimo'=>'required_if:tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
-        //     'maximo'=>'required_if:tipo_de_evaluacion_id,2|numeric|gt:minimo|',
-        //     'fecha_inicio_primera_fase_matricula' => 'required_if:tipo_de_evaluacion_id,2',
-        //     'fecha_fin_primera_fase_matricula' => 'required_if:tipo_de_evaluacion_id,2',
-        //     'fecha_inicio_segunda_fase' => 'required_if:tipo_de_evaluacion_id,2',
-        //     'fecha_fin_segunda_fase' => 'required_if:tipo_de_evaluacion_id,2'
-        // ]);
+        $rules = $this->rules;
+        $rules['identificador'] = 'required|unique:evaluaciones,identificador,'.$this->selected_id;
+        $this->validate($rules);
 
         $this->limpiar_fecha_tipo_de_evaluacion();
     

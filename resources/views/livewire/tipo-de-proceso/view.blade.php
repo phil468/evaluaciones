@@ -56,7 +56,7 @@
 								<td width="90">
 								<div class="btn-group">
 									@can('editar-tipo-de-proceso')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
 									@endcan
 									@can('borrar-tipo-de-proceso')							 
 									<a class="btn btn-sm btn-danger rounded-xl" onclick="confirm('Confirma borrar Tipo De Proceso : {{$row->name}}? \nTipo De Procesos borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 

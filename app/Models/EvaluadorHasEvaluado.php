@@ -15,19 +15,20 @@ class EvaluadorHasEvaluado extends Model
 
     protected $table = 'evaluador_has_evaluados';
 
-    protected $fillable = ['evaluador_id','evaluado_id','evaluacion_id','realizado','tipo_de_evaluacion_id',
-    'cargo_de_evaluador',
-    'area_de_evaluador',
-    'gerencia_sub_gerencia_de_evaluador',
-    'cargo_de_evaluado',
-    'area_de_evaluado',
-    'gerencia_sub_gerencia_de_evaluado'
-    ,'cantidad_requerida',
-    'valor_esperado',
-    'jerarquia',
-    'grupal'
-    
-];
+    protected $fillable = [
+        'evaluador_id','evaluado_id','evaluacion_id','realizado',
+        'tipo_de_evaluacion_id',
+        'cargo_de_evaluador',
+        'area_de_evaluador',
+        'gerencia_sub_gerencia_de_evaluador',
+        'cargo_de_evaluado',
+        'area_de_evaluado',
+        'gerencia_sub_gerencia_de_evaluado',
+        'cantidad_requerida',
+        'valor_esperado',
+        'jerarquia',
+        'grupal'
+    ];
 	
     public function evaluador()
     {

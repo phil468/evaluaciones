@@ -158,6 +158,24 @@ class Evaluacione extends Model
         return $query->where('status',2);
     }
 
+    public function scopeNoIniciada($query) {
+        return $query->where('fecha_inicio','>',now());
+    }
+
+    //scope que devuelvan evaluaciones que tengan fecha_fin menor igual al día de hoy
+    public function scopeVencida($query) {
+        return $query->where('fecha_fin','<',now()->startOfDay());
+    }
+
+    //scope que devuelvan evaluaciones que tengan fecha_fin mayor al día de hoy
+    public function scopeVigente($query) {
+        return $query->where('fecha_fin','>=',now()->startOfDay())->where('fecha_inicio','<=',now()->startOfDay());
+    }
+
+    public function scopePorId($query,$id) {
+        return $query->where('id',$id);
+    }
+
     public function scopePorTipo($query,$tipo) {
         return $query->where('tipo_de_evaluacion_id',$tipo);
     }

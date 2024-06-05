@@ -44,9 +44,10 @@
                                 class="video-background-content" 
                                 src="{{asset('img/evaluacion/Video_concientizacion_ED_2024_Vanguard_Peru.mp4')}}"
                                 autoplay="true"
+                                controls="true"
                                 {{-- muted="true"  --}}
                                 loop="true"
-                                volume="0.5"
+                                id="myVideo"
                                 ></video>
                                 <br>
                             </div>
@@ -95,4 +96,8 @@
 
 @section('js')
     <script> console.log('Hi!'); </script>
+    <script>
+        var video = document.getElementById("myVideo");
+        video.volume = 0.25;
+    </script>
 @stop

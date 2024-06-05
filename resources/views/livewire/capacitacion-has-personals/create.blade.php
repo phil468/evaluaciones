@@ -1,9 +1,8 @@
 <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="createDataModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="createDataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h5 class="modal-title" id="createDataModalLabel">Nuevo Capacitacion Has Personal</h5>
+        <div class="rounded-2xl modal-content">
+            <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <h5 class="modal-title" id="createDataModalLabel">Nuevo Capacitacion Has Personal</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                      <span aria-hidden="true close-btn">×</span>
                 </button>

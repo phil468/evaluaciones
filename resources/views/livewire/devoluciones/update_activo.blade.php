@@ -1,9 +1,8 @@
 <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="updateActivoModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateActivoModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-       <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h5 class="modal-title" id="updateModalLabel">Editar devolución de Activo</h5>
+       <div class="rounded-2xl modal-content">
+            <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <h5 class="modal-title" id="updateModalLabel">Editar devolución de Activo</h5>
                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                     <span wire:click.prevent="cancel_activo()" aria-hidden="true">×</span>
                 </button>

@@ -6,7 +6,7 @@
 				<div class="card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h4 class="text-white h4">Lista Evaluaciones </h4>
+							<h5 class="text-white h5">Lista Evaluaciones</h5>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -86,7 +86,7 @@
 			</div>
 		</div>
 	</div>
-	<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,importar_objetivos,importar">
+	<div wire:loading wire:target="crear_editar_usuarios,enviarCorreo,importar_objetivos,importar">
 		<x-loading-indicator />
 	</div>	
 </div>

@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Evaluaciones a realizar </h4>
+							<h5 class="h5">Evaluadores</h5>
 						</div>
 						{{--<div wire:poll.1s>
 							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
@@ -36,7 +36,7 @@
 								</a>
 							</div>
 							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#importObjetivosDataModal">
-								<a title="Importar Obbjetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="o">
+								<a title="Importar Objetivos" data-toggle="modal" data-target="#importObjetivosDataModal" accesskey="o">
 									<i class="fa fa-file-import"></i> Importar Eval. Objetivos (o)
 								</a>
 							</div>
@@ -46,12 +46,21 @@
 									<i class="fa fa-envelope"></i> Enviar correo masivo (e)
 								</a>
 							</div>
+
+							{{--Eliminar Objetivos--}}
+							<div class="mb-1 btn btn-sm btn-default">
+								<a title="Eliminar Evaluaciones por Objetivos no iniciadas" accesskey="x" wire:click="eliminarObjetivos">
+									<i class="fa fa-trash"></i> Eliminar Eval. por Objetivos no iniciadas (x)
+								</a>
+							</div>
 						</div>
 						@endcan
 					</div>
 				</div>
 				
 				<div class="card-body">
+					@livewire('evaluaciones-evaluadores-table')
+
 						@can('crear-evaluacion')
 						{{-- @include('livewire.evaluadores.create') --}}
 						@include('livewire.evaluadores.importar')
@@ -60,54 +69,54 @@
 						@can('editar-evaluacion')
 						@include('livewire.evaluadores.update')
 						@endcan
-				<div class="table-responsive">
-					<table class="table table-striped table-hover table-sm">
-						<thead class="thead">
-							<tr> 
-								{{-- <th>#</th>  --}}
-								<th>Evaluador</th>
-								<th>Evaluado</th>
-								<th>Evaluación</th>
-																
-								{{-- @can('editar-evaluacion','borrar-evaluacion') --}}
-								<th>ACCIONES</th>								
-								{{-- @endcan --}}
-							</tr>
-						</thead>
-						<tbody>
-							@foreach($evaluadorHasEvaluados as $row)
-							<tr>
-								{{-- <td>{{ $row->id }}</td>  --}}
-								<td>{{ $row->evaluador->name }}</td>
-								<td>{{ $row->evaluado->name }}</td>
-								<td>{{ $row->evaluacion->title }}</td>
-								
-								{{-- <td width="90">
-									@if ($row->realizado)
-										Evaluación realizada
-									@else										
-										<a href="{{ route('evaluacion.show', $row->id) }}" class="btn btn-sm btn-primary">Evaluar </a>
-									@endif
-								</td> --}}
+					<div class="table-responsive">
+						<table class="table table-striped table-hover table-sm">
+							<thead class="thead">
+								<tr> 
+									{{-- <th>#</th>  --}}
+									<th>Evaluador</th>
+									<th>Evaluado</th>
+									<th>Evaluación</th>
+																	
+									{{-- @can('editar-evaluacion','borrar-evaluacion') --}}
+									<th>ACCIONES</th>								
+									{{-- @endcan --}}
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($evaluadorHasEvaluados as $row)
+								<tr>
+									{{-- <td>{{ $row->id }}</td>  --}}
+									<td>{{ $row->evaluador->name }}</td>
+									<td>{{ $row->evaluado->name }}</td>
+									<td>{{ $row->evaluacion->title }}</td>
+									
+									{{-- <td width="90">
+										@if ($row->realizado)
+											Evaluación realizada
+										@else										
+											<a href="{{ route('evaluacion.show', $row->id) }}" class="btn btn-sm btn-vanguard rounded-xl">Evaluar </a>
+										@endif
+									</td> --}}
 
-								@can('editar-evaluacion','borrar-evaluacion')
-								<td width="90">
-								<div class="btn-group">
-									@can('editar-evaluacion')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-primary" wire:click="edit({{$row->id}})">Editar </a>
+									@can('editar-evaluacion','borrar-evaluacion')
+									<td width="90">
+									<div class="btn-group">
+										@can('editar-evaluacion')
+										<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
+										@endcan
+										@can('borrar-evaluacion')							 
+										<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Evaluador Has Evaluado : {{$row->name}}? \nEvaluador Has Evaluados borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+										@endcan  
+									</div>
+									</td>
 									@endcan
-									@can('borrar-evaluacion')							 
-									<a class="btn btn-sm btn-danger" onclick="confirm('Confirma borrar Evaluador Has Evaluado : {{$row->name}}? \nEvaluador Has Evaluados borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
-									@endcan  
-								</div>
-								</td>
-								@endcan
-							@endforeach
-						</tbody>
-					</table>						
-					{{ $evaluadorHasEvaluados->links() }}
-					</div>
-				</div>	
+								@endforeach
+							</tbody>
+						</table>						
+						{{ $evaluadorHasEvaluados->links() }}
+						</div>
+					</div>	
                 <div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,cancel,importar_objetivos,store,importar,update">
                     <x-loading-indicator />
                 </div>	

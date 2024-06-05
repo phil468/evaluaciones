@@ -26,7 +26,22 @@ class Evaluadores extends Component
     public $selected_id, $keyWord, $evaluador_id, $evaluado_id, $evaluacion_id,
     $evaluadores,
     $evaluados,
-    $evaluaciones,$file,$file_objetivos;
+    $evaluaciones,
+
+    $cargo_de_evaluador,
+    $area_de_evaluador,
+    $gerencia_sub_gerencia_de_evaluador,
+    $cargo_de_evaluado,
+    $area_de_evaluado,
+    $gerencia_sub_gerencia_de_evaluado,
+    $cantidad_requerida,
+    $valor_esperado,
+    $jerarquia,
+    
+    
+    $file,$file_objetivos
+    ,$tipo_de_evaluacion_objetivos_id
+    ;
 
     public $updateMode = false;
     public $createMode = false;
@@ -35,53 +50,69 @@ class Evaluadores extends Component
 
     protected $listeners = ['edit' => 'edit'];
     
+    public function mount() 
+    {
+        $this->tipo_de_evaluacion_objetivos_id = 2;
+    }
     public function render()
     {
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.evaluadores.view', [
             'evaluadorHasEvaluados' => EvaluadorHasEvaluado::latest()
             ->orderBy('evaluador_has_evaluados.id', 'desc')
-						->orWhere('evaluador_id', 'LIKE', $keyWord)
-						->orWhere('evaluado_id', 'LIKE', $keyWord)
-						->orWhere('evaluacion_id', 'LIKE', $keyWord)
-						->paginate(20),
+			->orWhere('evaluador_id', 'LIKE', $keyWord)
+			->orWhere('evaluado_id', 'LIKE', $keyWord)
+			->orWhere('evaluacion_id', 'LIKE', $keyWord)
+			->paginate(20),
         ]);
     }
 	
+    public function eliminarObjetivos()
+    {
+        $evaluaciones_por_objetivos_no_iniciadas = Evaluacione::evaluacionPorObjetivos()->noIniciada()->get();
+
+        foreach ($evaluaciones_por_objetivos_no_iniciadas as $e) {
+            $evaluadores = $e->evaluadores();
+            foreach ($evaluadores as $e) {
+                $e->objetivos()->delete();
+            }
+            $e->evaluadores()->delete();
+        }
+        session()->flash('message', 'Se eliminaron los objetivos y los registros correctamente.');
+        $this->emit('closeModal');
+    }
         
     public function importar()
     {
-            $this->validate([
-                'file' => 'required|file|mimes:xls,xlsx'
-    
-            ]);
+        $this->validate([
+            'file' => 'required|file|mimes:xls,xlsx'
+        ]);
      
-                $cs =  Excel::import(new EvaluadoresImport, $this->file);
+        $cs =  Excel::import(new EvaluadoresImport, $this->file);
+
+        $this->resetInput();                
         
-                $this->resetInput();                
-               
-                session()->flash('message', 'Evaluadores importado correctamente.');
-                $this->emit('closeModal');
-                $this->emit('alert');
+        session()->flash('message', 'Evaluadores importado correctamente.');
+        $this->emit('closeModal');
+        $this->emit('alert');
     }
 
     
     public function importar_objetivos()
     {
-            $this->validate([
-                'file_objetivos' => 'required|file|mimes:xls,xlsx'    
-            ]);
-     
-                $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
-                //mostrar mensaje que retorna de $cs
-                // dd($cs);
-                $this->crear_editar_usuarios();
-        
-                $this->resetInput();                
-               
-                session()->flash('message', 'Evaluadores de objetivos importado correctamente.');
-                $this->emit('closeModal');
-                $this->emit('alert');
+        $this->validate([
+            'file_objetivos' => 'required|file|mimes:xls,xlsx'    
+        ]);
+
+            $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
+            //mostrar mensaje que retorna de $cs
+            // dd($cs);
+            $this->crear_editar_usuarios();
+                    $this->resetInput();                
+           
+            session()->flash('message', 'Evaluadores de objetivos importado correctamente.');
+            $this->emit('closeModal');
+            $this->emit('alert');
     }
 
     //Enviar correo de notificación
@@ -140,6 +171,17 @@ class Evaluadores extends Component
 		$this->evaluador_id = null;
 		$this->evaluado_id = null;
 		$this->evaluacion_id = null;
+        $this->cargo_de_evaluador = null;
+        $this->area_de_evaluador = null;
+        $this->gerencia_sub_gerencia_de_evaluador = null;
+        $this->cargo_de_evaluado = null;
+        $this->area_de_evaluado = null;
+        $this->gerencia_sub_gerencia_de_evaluado = null;
+        $this->cantidad_requerida = null;
+        $this->valor_esperado = null;
+        $this->jerarquia = null;
+        $this->file = null;
+        $this->file_objetivos = null;
     }
 
     public function create() {
@@ -156,6 +198,8 @@ class Evaluadores extends Component
             'evaluador_id' => 'required',
             'evaluado_id' => 'required',
             'evaluacion' => 'required',
+
+
         ]);
 
         EvaluadorHasEvaluado::create([ 
@@ -184,6 +228,7 @@ class Evaluadores extends Component
             $this->evaluador_id = $record-> evaluador_id;
             $this->evaluado_id = $record-> evaluado_id;
             $this->evaluacion_id = $record-> evaluacion_id;
+
             
             $this->updateMode = true;
 		} else {

@@ -154,7 +154,7 @@
                                                     <td width="90">
                                                         <div class="btn-group">
                                                             <a data-toggle="modal" data-target="#updatePlanDataModal"
-                                                                class="btn btn-sm btn-primary rounded-xl"
+                                                                class="btn btn-sm btn-vanguard rounded-xl"
                                                                 wire:click="edit_plan({{ $row->id }})">Editar </a>
                                                             <a class="btn btn-sm btn-danger rounded-xl"
                                                                 onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
