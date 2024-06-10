@@ -44,13 +44,24 @@
                                 class="video-background-content" 
                                 src="{{asset('img/evaluacion/Video_concientizacion_ED_2024_Vanguard_Peru.mp4')}}"
                                 autoplay="true"
-                                controls="true"
-                                {{-- muted="true"  --}}
+                                {{-- controls="false" --}}
+                                muted="true"
                                 loop="true"
                                 id="myVideo"
                                 ></video>
                                 <br>
+                                {{--boton de silenciar--}}
+                                
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <button onclick="silenciar()" class="btn btn-vanguard rounded-full" id="silenciar">
+                                {{--iconos dinamicos--}}
+                                            <i class="fas fa-volume-up"></i>
+                                            {{-- <i class="fas fa-volume-mute"></i> --}}
+                                    </button>
+                                </div>
                             </div>
+                            
+                            
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <img src="{{ asset('img/evaluacion/fondo_de_bienvenida_2.png') }}" class="" alt="Responsive image">
                             </div>                            
@@ -91,6 +102,9 @@
             border-style: solid;
             border-radius: 12px;
         }
+
+        
+        
     </style>
 @stop
 
@@ -98,6 +112,24 @@
     <script> console.log('Hi!'); </script>
     <script>
         var video = document.getElementById("myVideo");
-        video.volume = 0.25;
+        //quita mute
+        video.muted = false;      
+        
+        video.volume = 0.05;
+        //ocultar el control dedesargar del video
+        
+        //silenciar
+        function silenciar() {
+            if (video.muted) {
+                video.muted = false;
+                //cambiar icono de boton silenciar
+                document.getElementById("silenciar").innerHTML = '<i class="fas fa-volume-up"></i>';
+            } else {
+                video.muted = true;
+                //cambiar icono de boton silenciar
+                document.getElementById("silenciar").innerHTML = '<i class="fas fa-volume-mute"></i>';
+            }
+        }
+        
     </script>
 @stop

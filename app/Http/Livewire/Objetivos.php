@@ -82,7 +82,6 @@ class Objetivos extends Component
 
         $this->objetivoss = Objetivo::latest()->where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->get();
 
-
         // $this->cargo = EvaluadorHasEvaluado::where('evaluador_has_evaluado_id',$evaluador_has_evaluado_id);
     }
 
@@ -277,7 +276,7 @@ class Objetivos extends Component
 
                 'meta' => $this-> meta,
                 'grupal' => $this-> grupal,
-                'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
+                // 'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
                 // 'evidencias' => $this-> evidencias,
                 'tipo_objetivo_id' => $this-> tipo_objetivo_id,
                 'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,
@@ -310,31 +309,6 @@ class Objetivos extends Component
             $this->emit('closeModal');
             session()->flash('message', 'No se registraron objetivos. Acabó la fecha de registros');
         }
-
-        // $this->validate([
-        //     'descripcion' => 'required|string|max:200',
-        //     'tipo_objetivo_id' => 'required',
-        // ]);
-
-        // Objetivo::create([ 
-		// 	'resultado' => $this-> resultado,
-		// 	'evaluado_id' => $this-> evaluado->id,
-		// 	'evaluador_id' => $this-> evaluador->id,
-		// 	'tipo_objetivo_id' => $this-> tipo_objetivo_id,
-		// 	'descripcion' => $this-> descripcion,
-		// 	'evidencia' => $this-> evidencia,
-        //     'evaluador_has_evaluado_id' => $this->evaluador_has_evaluado_id,
-        // ]);
-        
-        // // $this->cantidad_requerida = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->cantidad_requerida;
-
-        // if (Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->count() == $this->cantidad_requerida) {
-        //     EvaluadorHasEvaluado::find($this->evaluador_has_evaluado_id)->update(['realizado' => '1']);
-        // }
-
-        // $this->resetInput();
-		// $this->emit('closeModal');
-		// session()->flash('message', 'Objetivo creado correctamente.');
     }
 
     public function store_valor($index) {
@@ -375,20 +349,7 @@ class Objetivos extends Component
 
                 $objetivo->save();
             }
-        // }
 
-        // $record = Objetivo::find($id);
-        // $record->update([ 
-        //     'valor' => $this-> valor,
-        //     'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
-        //     'peso_ponderado' => $this-> peso_ponderado,
-        // ]);
-
-        // $this->resetInput();
-        // $this->resetValidation();
-        // $this->updateMode = false;
-        // $this->emit('closeModal');
-        // session()->flash('message', 'Objetivo actualizado correctamente.');
     }
 
     public function edit($id)
@@ -458,7 +419,7 @@ class Objetivos extends Component
 
                     'meta' => $this-> meta,
                     'grupal' => $this-> grupal,
-                    'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
+                    // 'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
                     // 'evidencias' => $this-> evidencias,
                     'tipo_objetivo_id' => $this-> tipo_objetivo_id,
                     'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,

@@ -16,11 +16,11 @@
 
                             @if ($tipo_de_evaluacion_id == 2)
                                 <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR RESULTADOS</h5>
-                                @section('title', __('EVALUACIÓN DE DESEMPEÑO POR RESULTADOS'))
+                                @section('title', __('Evaluación de Desempeño por Resultados'))
                             @endif
                             @if ($tipo_de_evaluacion_id == 1)
                                 <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR COMPETENCIA</h5>
-                                @section('title', __('EVALUACIÓN DE DESEMPEÑO POR COMPETENCIA'))
+                                @section('title', __('Evaluación de Desempeño por Competencia'))
                             @endif
 
                         </div>
@@ -103,7 +103,7 @@
                                                                 href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                     class="badge badge-secondary badge-pill"
                                                                     style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                    EDITAR
+                                                                    REALIZADO
                                                                     ({{ $row->cantidad_de_objetivos_realizados . '/' . $row->cantidad_requerida }})
                                                                     <i class="far fa-hand-point-up"></i></span>
                                                             </a>
@@ -116,10 +116,11 @@
                                                         <a
                                                             href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                 class="badge badge-primary badge-pill"
-                                                                style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                PENDIENTE
+                                                                style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
+                                                                REGISTRADOS
+                                                                {{-- {{ dd($row->cantidad_de_objetivos_registrados) }} --}}
                                                                 @if ($tipo_de_evaluacion_id == 2)
-                                                                    ({{ $row->cantidad_de_objetivos_realizados . '/' . $row->cantidad_requerida }})
+                                                                    ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})
                                                                 @endif
                                                                 @if ($tipo_de_evaluacion_id == 1)
                                                                 @endif
@@ -165,7 +166,7 @@
                                                                     href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                         class="badge badge-secondary badge-pill"
                                                                         style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                        EDITAR
+                                                                        REALIZADO
                                                                         ({{ $row->cantidad_de_objetivos_realizados . '/' . $row->cantidad_requerida }})
                                                                         <i class="far fa-hand-point-up"></i></span> </a>
                                                             @endif
@@ -177,10 +178,10 @@
                                                             <a
                                                                 href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                     class="badge badge-primary badge-pill"
-                                                                    style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                    PENDIENTE
+                                                                    style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
+                                                                    REGISTRADOS
                                                                     @if ($tipo_de_evaluacion_id == 2)
-                                                                        ({{ $row->cantidad_de_objetivos_realizados . '/' . $row->cantidad_requerida }})
+                                                                        ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})
                                                                     @endif
                                                                     @if ($tipo_de_evaluacion_id == 1)
                                                                     @endif

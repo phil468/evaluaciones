@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Objetivo;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use OwenIt\Auditing\Models\Audit;
 
 class ObjetivosListaTable extends LivewireDatatable
@@ -35,7 +36,7 @@ class ObjetivosListaTable extends LivewireDatatable
         return [
         Column::callback(['id'], function ($id) {
                 return view('components.lupa-button', ['id' => $id]);
-            })->label('Ver historial')->alignCenter(),
+            })->label('Ver historial')->alignCenter()->excludeFromExport(),
         Column::name('evaluadores.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluados.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluador_has_evaluados.cargo_de_evaluado')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
@@ -99,4 +100,15 @@ class ObjetivosListaTable extends LivewireDatatable
         $this->auditorias = Audit::where('auditable_id', $id)->where('auditable_type', Objetivo::class)->get()->toArray();
         $this->emit('enviarAuditorias', $this->auditorias);
     }
+
+    public function export()
+    {
+        $this->forgetComputed();
+
+        $export = new DatatableExport($this->getExportResultsSet());
+
+        $export->setFileName('Resultados.xlsx');
+        return $export->download();
+    }
+
 }

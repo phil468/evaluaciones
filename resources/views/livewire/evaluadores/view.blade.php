@@ -40,19 +40,25 @@
 									<i class="fa fa-file-import"></i> Importar Eval. Objetivos (o)
 								</a>
 							</div>
-							{{-- botón de enviar correo masivo, con mensaje de aceptacion --}}
 							<div class="mb-1 btn btn-sm btn-default">
 								<a title="Enviar correo masivo" accesskey="e" wire:click="enviarCorreo" accesskey="e">
 									<i class="fa fa-envelope"></i> Enviar correo masivo (e)
 								</a>
 							</div>
 
-							{{--Eliminar Objetivos--}}
 							<div class="mb-1 btn btn-sm btn-default">
 								<a title="Eliminar Evaluaciones por Objetivos no iniciadas" accesskey="x" wire:click="eliminarObjetivos">
 									<i class="fa fa-trash"></i> Eliminar Eval. por Objetivos no iniciadas (x)
 								</a>
 							</div>
+							{{--Eliminar Evaluacion de Desempeño---}}
+
+							<div class="mb-1 btn btn-sm btn-default">
+								<a title="Eliminar Evaluaciones por Desempeño no iniciadas" accesskey="x" wire:click="eliminarEvaluacionPorDesempeno">
+									<i class="fa fa-trash"></i> Eliminar Eval. por Desempeño no iniciadas (x)
+								</a>
+							</div>
+							
 						</div>
 						@endcan
 					</div>
@@ -69,35 +75,25 @@
 						@can('editar-evaluacion')
 						@include('livewire.evaluadores.update')
 						@endcan
-					<div class="table-responsive">
+					{{-- <div class="table-responsive">
 						<table class="table table-striped table-hover table-sm">
 							<thead class="thead">
 								<tr> 
-									{{-- <th>#</th>  --}}
 									<th>Evaluador</th>
 									<th>Evaluado</th>
 									<th>Evaluación</th>
 																	
-									{{-- @can('editar-evaluacion','borrar-evaluacion') --}}
 									<th>ACCIONES</th>								
-									{{-- @endcan --}}
 								</tr>
 							</thead>
 							<tbody>
 								@foreach($evaluadorHasEvaluados as $row)
 								<tr>
-									{{-- <td>{{ $row->id }}</td>  --}}
 									<td>{{ $row->evaluador->name }}</td>
 									<td>{{ $row->evaluado->name }}</td>
 									<td>{{ $row->evaluacion->title }}</td>
 									
-									{{-- <td width="90">
-										@if ($row->realizado)
-											Evaluación realizada
-										@else										
-											<a href="{{ route('evaluacion.show', $row->id) }}" class="btn btn-sm btn-vanguard rounded-xl">Evaluar </a>
-										@endif
-									</td> --}}
+
 
 									@can('editar-evaluacion','borrar-evaluacion')
 									<td width="90">
@@ -116,7 +112,7 @@
 						</table>						
 						{{ $evaluadorHasEvaluados->links() }}
 						</div>
-					</div>	
+					</div>	 --}}
                 <div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,cancel,importar_objetivos,store,importar,update">
                     <x-loading-indicator />
                 </div>	

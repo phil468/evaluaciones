@@ -71,11 +71,11 @@
                         </div> --}}
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="fecha_inicio">Fecha Inicio*</label>
-                            <input wire:model="fecha_inicio" type="date" class="form-control" id="fecha_inicio" placeholder="Fecha Inicio">@error('fecha_inicio') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <input wire:model="fecha_inicio" type="datetime-local" class="form-control" id="fecha_inicio" placeholder="Fecha Inicio">@error('fecha_inicio') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="fecha_fin">Fecha Fin*</label>
-                            <input wire:model="fecha_fin" type="date" class="form-control" id="fecha_fin" placeholder="Fecha Fin">@error('fecha_fin') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <input wire:model="fecha_fin" type="datetime-local" class="form-control" id="fecha_fin" placeholder="Fecha Fin">@error('fecha_fin') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="identificador">Identificador*</label>
@@ -124,19 +124,19 @@
                                 </div>
                                 <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                     <label for="fecha_inicio_primera_fase_matricula">Fecha Inicio Primera Fase Matrícula*</label>
-                                    <input wire:model="fecha_inicio_primera_fase_matricula" type="date" class="form-control" id="fecha_inicio_primera_fase_matricula" placeholder="Fecha Inicio Primera Fase Matrícula">@error('fecha_inicio_primera_fase_matricula') <span class="error text-danger">{{ $message }}</span> @enderror
+                                    <input wire:model="fecha_inicio_primera_fase_matricula" type="datetime-local" class="form-control" id="fecha_inicio_primera_fase_matricula" placeholder="Fecha Inicio Primera Fase Matrícula">@error('fecha_inicio_primera_fase_matricula') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                     <label for="fecha_fin_primera_fase_matricula">Fecha Fin Primera Fase Matrícula*</label>
-                                    <input wire:model="fecha_fin_primera_fase_matricula" type="date" class="form-control" id="fecha_fin_primera_fase_matricula" placeholder="Fecha Fin Primera Fase Matrícula">@error('fecha_fin_primera_fase_matricula') <span class="error text-danger">{{ $message }}</span> @enderror
+                                    <input wire:model="fecha_fin_primera_fase_matricula" type="datetime-local" class="form-control" id="fecha_fin_primera_fase_matricula" placeholder="Fecha Fin Primera Fase Matrícula">@error('fecha_fin_primera_fase_matricula') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                     <label for="fecha_inicio_segunda_fase">Fecha Inicio Segunda Fase*</label>
-                                    <input wire:model="fecha_inicio_segunda_fase" type="date" class="form-control" id="fecha_inicio_segunda_fase" placeholder="Fecha Inicio Segunda Fase">@error('fecha_inicio_segunda_fase') <span class="error text-danger">{{ $message }}</span> @enderror
+                                    <input wire:model="fecha_inicio_segunda_fase" type="datetime-local" class="form-control" id="fecha_inicio_segunda_fase" placeholder="Fecha Inicio Segunda Fase">@error('fecha_inicio_segunda_fase') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                     <label for="fecha_fin_segunda_fase">Fecha Fin Segunda Fase*</label>
-                                    <input wire:model="fecha_fin_segunda_fase" type="date" class="form-control" id="fecha_fin_segunda_fase" placeholder="Fecha Fin Segunda Fase">@error('fecha_fin_segunda_fase') <span class="error text-danger">{{ $message }}</span> @enderror
+                                    <input wire:model="fecha_fin_segunda_fase" type="datetime-local" class="form-control" id="fecha_fin_segunda_fase" placeholder="Fecha Fin Segunda Fase">@error('fecha_fin_segunda_fase') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>
                         </div>

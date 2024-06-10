@@ -21,7 +21,7 @@ class Objetivo extends Model implements Auditable
     protected $fillable = [
         'resultado','evaluado_id','evaluador_id','tipo_objetivo_id','descripcion','evidencia','evaluador_has_evaluado_id',
         'meta','grupal','porcentaje_de_participacion','evidencias','resultado_anterior_o_esperado','minimo','maximo','valor',
-        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id','objetivo_precargado_id'
+        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id','objetivo_precargado_id','estado_id'
     ];
 	
     public function tipo_objetivo()
@@ -43,58 +43,98 @@ class Objetivo extends Model implements Auditable
     {
         return $this->belongsTo(Evaluacione::class, 'evaluacion_id','id');
     }
+
+    public function evaluador_has_evaluado()
+    {
+        return $this->belongsTo(EvaluadorHasEvaluado::class, 'evaluador_has_evaluado_id','id');
+    }
+
+    public function scopeRegistrados()
+    {
+        return $this->where('estado_id',1);
+    }
+
+    public function scopeRegistradosCont($id)
+    {
+        return $this->where('estado_id',1)->where('evaluador_has_evaluado_id',$id);
+    }
+
+    public function scopeRegistradosContEvaluado($id)
+    {
+        return $this->where('estado_id',1)->where('evaluado_id',$id);
+    }
+
+    public function scopeRegistradosContEvaluador($id)
+    {
+        return $this->where('estado_id',1)->where('evaluador_id',$id);
+    }
     
-        // set y get de porcentaje_de_participacion
-        public function setPorcentajeDeParticipacionAttribute($value)
-        {
-            $this->attributes['porcentaje_de_participacion'] = ($value/100);
-        }
-    
+    // set y get de porcentaje_de_participacion
+    public function setPorcentajeDeParticipacionAttribute($value)
+    {
+        $this->attributes['porcentaje_de_participacion'] = ($value/100);
+    }
         public function getPorcentajeDeParticipacionAttribute($value)
-        {
-            return ($value*100);
-        }
+    {
+        return ($value*100);
+    }
     
-        // set y get de minimo
-        public function setMinimoAttribute($value)
-        {
+    // set y get de minimo
+    public function setMinimoAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
             $this->attributes['minimo'] = ($value/100);
+        } else {
+            $this->attributes['minimo'] = $value;
         }
-    
-        public function getMinimoAttribute($value)
-        {
+    }
+
+    public function getMinimoAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
             return ($value*100);
+        } else {
+            return $value;
         }
-    
-        // set y get de maximo
-        public function setMaximoAttribute($value)
-        {
+    }
+
+    // set y get de maximo
+    public function setMaximoAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
             $this->attributes['maximo'] = ($value/100);
+        } else {
+            $this->attributes['maximo'] = $value;
         }
-    
-        public function getMaximoAttribute($value)
-        {
+    }
+
+    public function getMaximoAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
             return ($value*100);
+        } else {
+            return $value;
         }
+    }
     
-        // set y get de resultado_anterior_o_esperado
-        public function setResultadoAnteriorOEsperadoAttribute($value)
-        {
-            if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-                $this->attributes['resultado_anterior_o_esperado'] = ($value/100);
-            } else {
-                $this->attributes['resultado_anterior_o_esperado'] = $value;
-            }
+    // set y get de resultado_anterior_o_esperado
+    public function setResultadoAnteriorOEsperadoAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            $this->attributes['resultado_anterior_o_esperado'] = ($value/100);
+        } else {
+            $this->attributes['resultado_anterior_o_esperado'] = $value;
         }
+    }
     
-        public function getResultadoAnteriorOEsperadoAttribute($value)
-        {
-            if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-                return ($value*100);
-            } else {
-                return $value;
-            }
+    public function getResultadoAnteriorOEsperadoAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            return ($value*100);
+        } else {
+            return $value;
         }
+    }
 
     // public function evaluador_has_evaluado()
     // {

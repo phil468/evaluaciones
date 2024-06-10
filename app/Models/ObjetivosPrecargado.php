@@ -48,8 +48,6 @@ class ObjetivosPrecargado extends Model
         } else {
             $this->attributes['minimo'] = $value;
         }
-
-        // $this->attributes['minimo'] = ($value/100);
     }
 
     public function getMinimoAttribute($value)
@@ -60,7 +58,6 @@ class ObjetivosPrecargado extends Model
         } else {
             return $value;
         }
-        // return ($value*100);
     }
 
     // set y get de maximo
@@ -71,8 +68,6 @@ class ObjetivosPrecargado extends Model
         } else {
             $this->attributes['maximo'] = $value;
         }
-        
-        // $this->attributes['maximo'] = ($value/100);
     }
 
     public function getMaximoAttribute($value)
@@ -82,7 +77,6 @@ class ObjetivosPrecargado extends Model
         } else {
             return $value;
         }
-        // return ($value*100);
     }
 
     // set y get de resultado_anterior_o_esperado

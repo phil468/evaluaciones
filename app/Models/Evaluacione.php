@@ -57,12 +57,12 @@ class Evaluacione extends Model
         // dd($this->fecha_inicio_primera_fase_matricula <= now());
         // dd(now()->startOfDay());
         // dd($this->fecha_fin_primera_fase_matricula);
-        return $this->fecha_inicio_primera_fase_matricula <= now() && $this->fecha_fin_primera_fase_matricula->endOfDay() >= now() && $this->tipo_de_evaluacion_id == 2;
+        return $this->fecha_inicio_primera_fase_matricula <= now() && $this->fecha_fin_primera_fase_matricula >= now() && $this->tipo_de_evaluacion_id == 2;
     }
 
     public function getSegundaFaseActivaAttribute()
     {
-        return $this->fecha_inicio_segunda_fase <= now() && $this->fecha_fin_segunda_fase->endOfDay() >= now() && $this->tipo_de_evaluacion_id == 2;
+        return $this->fecha_inicio_segunda_fase <= now() && $this->fecha_fin_segunda_fase >= now() && $this->tipo_de_evaluacion_id == 2;
     }
 
     public function preguntas() {
@@ -164,12 +164,12 @@ class Evaluacione extends Model
 
     //scope que devuelvan evaluaciones que tengan fecha_fin menor igual al día de hoy
     public function scopeVencida($query) {
-        return $query->where('fecha_fin','<',now()->startOfDay());
+        return $query->where('fecha_fin','<',now());
     }
 
     //scope que devuelvan evaluaciones que tengan fecha_fin mayor al día de hoy
     public function scopeVigente($query) {
-        return $query->where('fecha_fin','>=',now()->startOfDay())->where('fecha_inicio','<=',now()->startOfDay());
+        return $query->where('fecha_fin','>=',now())->where('fecha_inicio','<=',now());
     }
 
     public function scopePorId($query,$id) {

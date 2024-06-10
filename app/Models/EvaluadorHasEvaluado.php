@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Livewire\Objetivos;
+use App\Models\Objetivo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,8 +29,11 @@ class EvaluadorHasEvaluado extends Model
         'cantidad_requerida',
         'valor_esperado',
         'jerarquia',
-        'grupal'
+        'grupal',
+
     ];
+
+    protected $appends = ['cantidad_de_objetivos_registrados'];
 	
     public function evaluador()
     {
@@ -58,9 +63,20 @@ class EvaluadorHasEvaluado extends Model
 
     public function getCantidadDeObjetivosRealizadosAttribute()
     {
-        return $this->objetivos()->count();
+        // return $this->objetivos()->registrados()->count();
+        return Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        // ->where('estado_id',1)
+        ->get()
+        ->count();
     }
 
-    
+    public function getCantidadDeObjetivosRegistradosAttribute()
+    {
+        // dd(Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        // ->where('estado_id',1)->get());
+        return Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        ->where('estado_id',1)->get()
+        ->count();
+    }
     
 }

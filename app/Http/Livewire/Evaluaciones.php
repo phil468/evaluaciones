@@ -218,16 +218,24 @@ class Evaluaciones extends Component
             $this->campania = $record->campania;
             $this->mes = $record->mes;
             $this->anio = $record->anio;
-            $this->fecha_inicio = $record->fecha_inicio ? $record->fecha_inicio->format('Y-m-d') : '';
-            $this->fecha_fin = $record->fecha_fin ? $record->fecha_fin->format('Y-m-d') : '';
+            $this->fecha_inicio = $record->fecha_inicio ? 
+            date('Y-m-d\TH:i', strtotime($record->fecha_inicio)) 
+            : '';
+            $this->fecha_fin = $record->fecha_fin ? 
+            date('Y-m-d\TH:i', strtotime($record->fecha_fin)) 
+            : '';
             $this->identificador = $record->identificador;
             $this->tipo_de_evaluacion_id = $record->tipo_de_evaluacion_id;
             $this->minimo = $record->minimo;
             $this->maximo = $record->maximo;
-            $this->fecha_inicio_primera_fase_matricula = $record->fecha_inicio_primera_fase_matricula ? $record->fecha_inicio_primera_fase_matricula->format('Y-m-d') :'';
-            $this->fecha_fin_primera_fase_matricula = $record->fecha_fin_primera_fase_matricula ? $record->fecha_fin_primera_fase_matricula->format('Y-m-d') : '';
-            $this->fecha_inicio_segunda_fase = $record->fecha_inicio_segunda_fase ? $record->fecha_inicio_segunda_fase->format('Y-m-d') : '';
-            $this->fecha_fin_segunda_fase = $record->fecha_fin_segunda_fase ? $record->fecha_fin_segunda_fase->format('Y-m-d') : '';
+            $this->fecha_inicio_primera_fase_matricula = $record->fecha_inicio_primera_fase_matricula 
+            ? date('Y-m-d\TH:i', strtotime($record->fecha_inicio_primera_fase_matricula)) :'';
+            $this->fecha_fin_primera_fase_matricula = $record->fecha_fin_primera_fase_matricula 
+            ? date('Y-m-d\TH:i', strtotime($record->fecha_fin_primera_fase_matricula)) : '';
+            $this->fecha_inicio_segunda_fase = $record->fecha_inicio_segunda_fase 
+            ? date('Y-m-d\TH:i', strtotime($record->fecha_inicio_segunda_fase)) : '';
+            $this->fecha_fin_segunda_fase = $record->fecha_fin_segunda_fase 
+            ? date('Y-m-d\TH:i', strtotime($record->fecha_fin_segunda_fase)) : '';
             $this->tipos = $record->tipos;
 		} else {
 			$this->resetValidation();

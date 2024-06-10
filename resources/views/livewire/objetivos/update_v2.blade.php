@@ -51,9 +51,9 @@
                                 <label for="porcentaje_de_participacion">Porcentaje De Participación*</label>
                                 <div class="input-group">
                                     <input 
-                                    @if (!$primera_fase_activa)
+                                    {{-- @if (!$primera_fase_activa) --}}
                                        disabled
-                                   @endif
+                                   {{-- @endif --}}
                                    inputmode="decimal" wire:model.defer="porcentaje_de_participacion" type="number" class="form-control" id="porcentaje_de_participacion" placeholder="Porcentaje De Participacion">
                                     <div class="input-group-append">
                                         <span class="input-group-text">%</span>

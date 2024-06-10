@@ -93,7 +93,12 @@
 							<thead class="thead">
 								<tr>
 									{{-- <th class="text-center text-white bg-vanguard">#</th>  --}}
-									<th class="text-center text-white bg-vanguard"></th>
+									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
+									@if ($primera_fase_activa)
+										<th class="text-center text-white bg-vanguard">Editar</th>
+									@endif
+									@endcan
+									<th class="text-center text-white bg-vanguard">Tipo</th>
 									{{-- <th>Meta</th> --}}
 									{{-- <th>% De Participación</th> --}}
 									{{-- <th>Evidencias</th> --}}
@@ -127,18 +132,37 @@
 									<th class="text-center text-white bg-vanguard">Fecha de creación</th>
 									<th class="text-center text-white bg-vanguard">Fecha de modificación</th>
 																	
-									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
-									@if ($primera_fase_activa)
-										<th class="text-center text-white bg-vanguard">ACCIONES</th>
-									@endif
-									@endcan
 								</tr>
 							</thead>
 							<tbody>
 								@foreach($objetivos as $index => $row)
 								<div wire:key="objetivoss-field-{{ $row->id }}">
 
-								<tr class="text-center">
+								<tr class="text-center align-middle">
+																										
+									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
+									@if ($primera_fase_activa)
+										<td width="90" class="align-middle">
+											@if (!$row->grupal)
+												<div class="btn-group">
+													@can('ver-evaluaciones-de-desempeno')
+													<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-vanguard" wire:click="edit({{$row->id}})">
+														{{--icono--}}
+														<i class="fa fa-edit"></i>
+														{{-- Editar  --}}
+													</a>
+													@endcan
+													{{-- @can('ver-evaluaciones-de-desempeno')							 
+													<a class="btn rounded-xl btn-sm btn-danger" onclick="confirm('Confirma borrar Objetivo : {{$row->descripcion}}? \nObjetivos borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
+													@endcan   --}}
+												</div>
+											@else
+												
+											@endif
+										</td>
+									@endif
+									@endcan
+
 									@if ($row->grupal)
 										<td class="bg-info">GRUPAL</td>
 									@else
@@ -146,6 +170,9 @@
 									@endif
 									{{-- <td>{{ $loop->iteration }}</td> --}}
 									{{-- <td>{{ $row->grupal? 'Sí' : 'No' }}</td> --}}
+								
+
+								
 								<td 
 								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
 								>{{ $row->meta }}</td>
@@ -303,25 +330,7 @@
 									<td>{{ $row->evidencia }}</td> --}}
 									<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
 									<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
-																	
-									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
-									@if ($primera_fase_activa)
-										<td width="90">
-											@if (!$row->grupal)
-												<div class="btn-group">
-													@can('ver-evaluaciones-de-desempeno')
-													<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-sm btn-vanguard" wire:click="edit({{$row->id}})">Editar </a>
-													@endcan
-													@can('ver-evaluaciones-de-desempeno')							 
-													<a class="btn rounded-xl btn-sm btn-danger" onclick="confirm('Confirma borrar Objetivo : {{$row->descripcion}}? \nObjetivos borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
-													@endcan  
-												</div>
-											@else
-												
-											@endif
-										</td>
-									@endif
-									@endcan
+
 								</div>
 
 								@endforeach

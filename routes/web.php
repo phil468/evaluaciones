@@ -67,7 +67,7 @@ Route::get('/auth/callback', function () {
     // dd($response->json());
 
     // Redirige al usuario a la página de inicio o a donde quieras
-    return redirect('/');
+    return redirect(route('dash.index'));
 });
 
 Route::get('/auth/logout', function () {

@@ -122,7 +122,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                     ]
                 );
 
-                if ($jerarquia == 1)
+                if ($jerarquia == 2)
                 {
                     foreach ($objetivos_precargados_tipo_1 as $objetivo_precargado) {
                         // dd($objetivo_precargado->id);
@@ -144,13 +144,12 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                                 'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
                                 'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
                                 'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-
                         ]);
                     }
                     // dd('creado jer 2');
                 }
                 
-                if ($jerarquia == 2)
+                if ($jerarquia == 5)
                 {
                     
                 // dd('llego aqui 5');
@@ -173,7 +172,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                                 'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
                                 'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
                                 'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-
+                                'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
                         ]);
                     }
                     // dd('creado jer 5');

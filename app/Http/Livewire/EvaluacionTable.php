@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Respuesta;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Mediconesystems\LivewireDatatables\Action;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
@@ -59,13 +60,43 @@ class EvaluacionTable extends LivewireDatatable
             // Column::name('evaluaciones.mes')->label('Mes')->searchable(),
             // Column::name('evaluaciones.anio')->label('Año')->searchable(),
 
-            DateColumn::name('evaluaciones.fecha_inicio')->label('Fecha de inicio')->searchable(),
-            DateColumn::name('evaluaciones.fecha_fin')->label('Fecha de fin')->searchable(),
             
-            DateColumn::name('evaluaciones.fecha_inicio_primera_fase_matricula')->label('Fecha de inicio de la primera fase (Matrícula)')->searchable(),
-            DateColumn::name('evaluaciones.fecha_fin_primera_fase_matricula')->label('Fecha de fin de la primera fase de (Matrícula)')->searchable(),
-            DateColumn::name('evaluaciones.fecha_inicio_segunda_fase')->label('Fecha de inicio de la segunda fase (Resultado)')->searchable(),
-            DateColumn::name('evaluaciones.fecha_fin_segunda_fase')->label('Fecha de fin de la segunda fase (Resultado)')->searchable(),
+            // TextColumn::make('')
+            //     ->dateTime(),::name('evaluaciones.fecha_inicio')->label('Fecha de inicio')->searchable(),
+            // DateTimeColumn::name('evaluaciones.fecha_fin')->label('Fecha de fin')->searchable(),
+
+            Column::callback('evaluaciones.fecha_inicio', function ($fecha_inicio) {
+                return $fecha_inicio ? (new DateTime($fecha_inicio))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha de inicio')->searchable(),
+            // name('evaluaciones.fecha_inicio')
+            // ->label('Fecha de inicio')->searchable(),
+            Column::callback('evaluaciones.fecha_fin', function ($fecha_fin) {
+                return $fecha_fin ? (new DateTime($fecha_fin))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha de fin')->searchable(),
+
+            Column::callback('evaluaciones.fecha_inicio_primera_fase_matricula', function ($fecha_inicio_primera_fase_matricula) {
+                return $fecha_inicio_primera_fase_matricula ? (new DateTime($fecha_inicio_primera_fase_matricula))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha de inicio de la primera fase (Matrícula)')->searchable(),
+
+            Column::callback('evaluaciones.fecha_fin_primera_fase_matricula', function ($fecha_fin_primera_fase_matricula) {
+                return $fecha_fin_primera_fase_matricula ? (new DateTime($fecha_fin_primera_fase_matricula))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha de fin de la primera fase de (Matrícula)')->searchable(),
+
+            Column::callback('evaluaciones.fecha_inicio_segunda_fase', function ($fecha_inicio_segunda_fase) {
+                return $fecha_inicio_segunda_fase ? (new DateTime($fecha_inicio_segunda_fase))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha de inicio de la segunda fase (Resultado)')->searchable(),
+
+            Column::callback('evaluaciones.fecha_fin_segunda_fase', function ($fecha_fin_segunda_fase) {
+                return $fecha_fin_segunda_fase ? (new DateTime($fecha_fin_segunda_fase))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha de fin de la segunda fase (Resultado)')->searchable(),
+
+            // name('evaluaciones.fecha_fin')
+            // ->label('Fecha de fin')->searchable(),
+            
+            // Column::name('evaluaciones.fecha_inicio_primera_fase_matricula')->label('Fecha de inicio de la primera fase (Matrícula)')->searchable(),
+            // Column::name('evaluaciones.fecha_fin_primera_fase_matricula')->label('Fecha de fin de la primera fase de (Matrícula)')->searchable(),
+            // Column::name('evaluaciones.fecha_inicio_segunda_fase')->label('Fecha de inicio de la segunda fase (Resultado)')->searchable(),
+            // Column::name('evaluaciones.fecha_fin_segunda_fase')->label('Fecha de fin de la segunda fase (Resultado)')->searchable(),
 
             // Column::name('evaluaciones.minimo')
             // ->callback('evaluaciones.minimo',
