@@ -71,7 +71,10 @@ video {
 
 @section('auth_body')
 <div class="text-center">
-    <a href="{{ url('/auth/redirect') }}" class="btn btn-primary btn-lg">
+    <a 
+    href = "#"
+    {{-- href="{{ url('/auth/redirect') }}"  --}}
+    class="btn btn-primary btn-lg">
         <span><i class="fab fa-windows"></i></span>
         <span>Iniciar sesión</span>
     </a>
