@@ -78,7 +78,9 @@ video {
 </div>
 <button onclick="mostrarOcultarFormularioSesionLocal()" style="display: none;" accesskey="f">Mostrar Formulario de Sesion Local</button>
 
-    <form action="{{ $login_url }}" method="post" style="display: none;">
+    <form action="{{ $login_url }}" method="post" 
+    {{-- style="display: none;" --}}
+    >
         <br>
         <hr>
         <div class="mt-2 text-center h5">
