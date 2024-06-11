@@ -78,5 +78,14 @@ class EvaluadorHasEvaluado extends Model
         ->where('estado_id',1)->get()
         ->count();
     }
+
+    public function getCantidadDeObjetivosNoRegistradosAttribute()
+    {
+        // dd(Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        // ->where('estado_id',1)->get());
+        return Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        ->where('estado_id',null)->get()
+        ->count();
+    }
     
 }

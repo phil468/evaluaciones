@@ -117,12 +117,13 @@
                                                             href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                 class="badge badge-primary badge-pill"
                                                                 style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                REGISTRADOS
-                                                                {{-- {{ dd($row->cantidad_de_objetivos_registrados) }} --}}
+                                                                
                                                                 @if ($tipo_de_evaluacion_id == 2)
+                                                                REGISTRADOS
                                                                     ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})
                                                                 @endif
                                                                 @if ($tipo_de_evaluacion_id == 1)
+                                                                PENDIENTE
                                                                 @endif
 
                                                                 <i class="far fa-hand-point-up"></i>
@@ -179,11 +180,13 @@
                                                                 href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                     class="badge badge-primary badge-pill"
                                                                     style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                    REGISTRADOS
+                                                                    
                                                                     @if ($tipo_de_evaluacion_id == 2)
+                                                                        REGISTRADOS
                                                                         ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})
                                                                     @endif
                                                                     @if ($tipo_de_evaluacion_id == 1)
+                                                                        PENDIENTE
                                                                     @endif
 
                                                                     <i class="far fa-hand-point-up"></i>

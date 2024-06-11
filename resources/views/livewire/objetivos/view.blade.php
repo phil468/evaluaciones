@@ -93,12 +93,12 @@
 							<thead class="thead">
 								<tr>
 									{{-- <th class="text-center text-white bg-vanguard">#</th>  --}}
+									<th class="text-center text-white bg-vanguard">Tipo</th>
 									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 									@if ($primera_fase_activa)
 										<th class="text-center text-white bg-vanguard">Editar</th>
 									@endif
 									@endcan
-									<th class="text-center text-white bg-vanguard">Tipo</th>
 									{{-- <th>Meta</th> --}}
 									{{-- <th>% De Participación</th> --}}
 									{{-- <th>Evidencias</th> --}}
@@ -139,7 +139,17 @@
 								<div wire:key="objetivoss-field-{{ $row->id }}">
 
 								<tr class="text-center align-middle">
-																										
+									
+
+									@if ($row->grupal)
+										<td class="bg-info">GRUPAL</td>
+									@else
+										<td class="bg-primary">INDIVIDUAL</td>
+									@endif
+									{{-- <td>{{ $loop->iteration }}</td> --}}
+									{{-- <td>{{ $row->grupal? 'Sí' : 'No' }}</td> --}}
+								
+																	
 									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 									@if ($primera_fase_activa)
 										<td width="90" class="align-middle">
@@ -162,16 +172,6 @@
 										</td>
 									@endif
 									@endcan
-
-									@if ($row->grupal)
-										<td class="bg-info">GRUPAL</td>
-									@else
-										<td class="bg-primary">INDIVIDUAL</td>
-									@endif
-									{{-- <td>{{ $loop->iteration }}</td> --}}
-									{{-- <td>{{ $row->grupal? 'Sí' : 'No' }}</td> --}}
-								
-
 								
 								<td 
 								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
@@ -255,6 +255,10 @@
 								
 								<td>
 									@if ($segunda_fase_activa)
+									{{-- QUE SE LEVANTE UN MODAL PARA INGRESAR EL VALOR --}}
+
+									
+
 									{{--Formulario para ingresar valor--}}
 									<div class="form-group">
 										{{-- <label for="valor">Valor</label> --}}
@@ -276,7 +280,7 @@
 											</div>
 										@else
 												{{ $row->valor }}
-											@endif
+										@endif
 									@endif
 									{{-- wire loading--}}
 									<div wire:loading wire:target="store_valor({{$row->id}})">

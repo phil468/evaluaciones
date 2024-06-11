@@ -15,7 +15,7 @@
                         @endif
 
                         <div class="float-right">
-                            	<a type="button" class="btn btn-default rounded-xl" href="{{url('/evaluaciones-de-desempeno/1')}}" >Volver</a>
+                            <a type="button" class="btn btn-default rounded-xl" href="{{url('/evaluaciones-de-desempeno/1')}}" >Volver</a>
                         </div>
                     </div>
                 </div>
