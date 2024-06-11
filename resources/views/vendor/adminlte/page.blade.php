@@ -52,6 +52,7 @@
     @stack('js')
     @yield('js')
     <script type="text/javascript">
+        
         window.livewire.on('closeModal', () => {
             $('#createDataModal').modal('hide');
             $('#updateModal').modal('hide');
@@ -126,4 +127,4 @@
             $('.dropdown-toggle').dropdown();
         });
     </script>
-@stop
+@stop 

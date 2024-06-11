@@ -37,7 +37,7 @@ Route::get('/auth/redirect', function () {
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/Contacts.Read',
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/User.ReadBasic.All'
     //     ]) // Solicita el ámbito específico
-    ->redirect();
+    ->redirect(route('dash.index'));
 });
  
 Route::get('/auth/callback', function () {
