@@ -170,7 +170,9 @@
                                                     <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
                                                     <td>{{ $row->fecha_de_revision ?? '' }}</td>
-                                                    <td>{{ $row->estado->name ?? '' }}</td>
+                                                    <td style="
+                                                    background-color: {{ $row->estado->color ?? '' }};
+                                                    " >{{ $row->estado->name ?? '' }}</td>
                                                     <td>{{ $row->avance }}%</td>
                                                     <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
                                                     <td>{{ $row->empleado->area->name ?? '' }}</td>

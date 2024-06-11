@@ -41,6 +41,9 @@
 						@can('ver-evaluaciones-de-desempeno')
 						{{-- @include('livewire.objetivos.update') --}}
 						@include('livewire.objetivos.update_v2')
+						@include('livewire.objetivos.updateValor')
+						@include('livewire.objetivos.evidencias')
+
 						@endcan
 						
 						{{-- @include('livewire.evaluacion.gracias') --}}
@@ -122,6 +125,7 @@
 									<th class="text-center text-white bg-vanguard">% Logr. STI</th>
 									<th class="text-center text-white bg-vanguard">Peso Pond.</th>
 									<th class="text-center text-white bg-vanguard">Evidencias</th>
+									<th class="text-center text-white bg-vanguard">Estado</th>
 									<th class="text-center text-white bg-vanguard">Evaluación</th>
 									
 									{{-- <th>#</th> 
@@ -178,7 +182,7 @@
 								>{{ $row->meta }}</td>
 								<td>{{ $row->porcentaje_de_participacion}}%</td>
 
-								@if($isOpen)
+								{{-- @if($isOpen)
 								<div wire:ignore.self class="modal fade" id="evidenciaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="evidenciaModalLabel" aria-hidden="true">
 									<div class="modal-dialog modal-xl" role="document">
 										<div class="text-white modal-header bg-vanguard rounded-t-2xl">
@@ -201,7 +205,7 @@
 										</div>
 									</div>
 								</div>
-								@endif
+								@endif --}}
 
 								<td 
 								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
@@ -256,21 +260,10 @@
 								<td>
 									@if ($segunda_fase_activa)
 									{{-- QUE SE LEVANTE UN MODAL PARA INGRESAR EL VALOR --}}
+									<a type="button" class="btn btn-link" data-toggle="modal" data-target="#actualizarValorModal" wire:click="openModadActualizarValor({{$row->id}})">
+										{{ $row->valor??'Ingresar Valor' }}
+									</a>
 
-									
-
-									{{--Formulario para ingresar valor--}}
-									<div class="form-group">
-										{{-- <label for="valor">Valor</label> --}}
-										<input type="number" class="form-control" id="valor_actualizado" placeholder="Valor" 
-										wire:dirty.class="border-red-500" 
-										{{-- wire:model.lazy="objetivoss.{{$index}}.valor" --}}
-										wire:change="store_valor({{$index}})" 
-										value="{{ $row->valor }}"
-										>
-										{{-- {{$objetivoss[$index]->valor}} --}}
-										@error('objetivoss.{{$index}}.valor') <span class="error text-danger">{{ $message }}</span> @enderror
-									</div>
 									@else
 										@if ($primera_fase_activa)
 											{{--Formulario para ingresar valor--}}
@@ -291,10 +284,45 @@
 								<td>{{ $row->porcentaje_de_logro_STI }}</td>
 								<td>{{ $row->peso_ponderado }}</td>
 								<td>
+
+									{{-- {{dd($row->evidencias()->get())}} --}}
+									@foreach ($row->evidencias()->get() as $evidencia)
+									{{-- {{dd($row->evidencias()->first())}} --}}
+									<div class="btn-group mb-2" role="group" aria-label="Basic example">
+
+										<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
+											{{--icono--}}
+											{{-- Descargar --}}
+											{{ $evidencia->name }}
+											{{-- <i class="fa fa-download"></i> --}}
+										</a>
+										
+										<button class="btn btn-danger" wire:click="deleteEvidencia({{$evidencia->id}})" 
+											onclick="confirm('Confirma borrar Evidencia : {{$row->name}}? \nLas Evidencias eliminadas no pueden ser recuperados!')||event.stopImmediatePropagation()"
+											>
+											{{--icono--}}
+											{{-- Quitar --}}
+											<i class="fa fa-trash"></i>
+										</button>
+										</button>
+									</div> <br>
+
+									@endforeach
+
+									{{-- @if (isset($row->evidencias()))
+										@foreach ($row->evidencias as $evidencia)
+											<a href="{{ asset('storage/'.$evidencia->name) }}" target="_blank">{{ $evidencia->name }}</a>
+											<button class="btn btn-danger" wire:click="quitarEvidencia({{$evidencia->id}})">Quitar</button>
+										@endforeach											
+									@else
+										
+									@endif --}}
+								
+
 									@if ($segunda_fase_activa)
 										<button 
 										class="rounded-full btn btn-vanguard" 
-										wire:click="openModal"										
+										wire:click="openModalEvidencias({{$row->id}})"										
 										data-toggle="modal" 
 										data-target="#evidenciaModal"
 										>
@@ -304,7 +332,7 @@
 										<button 
 										disabled
 										class="rounded-full btn btn-vanguard" 
-										wire:click="openModal"										
+										{{-- wire:click="openModalEvidencias"										 --}}
 										data-toggle="modal" 
 										data-target="#evidenciaModal"
 										>
@@ -315,15 +343,33 @@
 
 										@else
 
-										@if ($row->evidencias)
-											@foreach ($row->evidencias as $evidencia)
-												<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
-											@endforeach	
+											@if ($row->evidencias)
+												@foreach ($row->evidencias as $evidencia)
+													<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
+													{{--boton quitar evidencia--}}
+													<button class="btn btn-danger" wire:click="quitarEvidencia({{$evidencia->id}})">Quitar</button>
+												@endforeach	
+											@endif
+											
 										@endif
-										
-									@endif
 									@endif
 																		
+								</td>
+
+								<td>
+									{{--estado--}}
+									
+										
+										@if (!$row->estado_id)
+											<span class="badge badge-danger">No Registrado</span>
+										@endif
+										@if ($row->estado_id == 1)
+											<span class="badge badge-warning">Registrado</span>
+										@endif
+										@if ($row->estado_id == 2)
+											<span class="badge badge-success">Realizado</span>
+										@endif
+									
 								</td>
 
 								<td>{{ $row->evaluacion->title ?? '' }}</td>

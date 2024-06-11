@@ -269,9 +269,10 @@ public function openModal()
         
         $this->resetInput_plan();
 		$this->emit('closeModal');
+        // dd('hola');
         // $this->emit('dataUpdated');
 		session()->flash('message', 'Planes De Mejora creado correctamente.');
-        return redirect()->route(Route::currentRouteName());
+        // return redirect()->route(Route::currentRouteName());
     }
 
     private function resetInput_plan()
@@ -311,7 +312,7 @@ public function openModal()
             $record = PlanesDeAccion::where('id', $id);
             $record->delete();
         }
-        return redirect()->route(Route::currentRouteName());
+        // return redirect()->route(Route::currentRouteName());
     }
 
     public function update_plan()

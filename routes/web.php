@@ -90,6 +90,9 @@ Route::get('/tipodetrabajador/importar/{empresa}/{val}', [App\Http\Controllers\T
 Auth::routes();
 
 Route::group(['middleware'  =>  ['auth']],function(){
+
+    Route::get('/download/{id}', 'EvidenciaController@download')->name('download');
+
     Route::resource('roles',RolController::class);
 
     //Prueba domPDF

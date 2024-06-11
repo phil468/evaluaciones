@@ -9,10 +9,12 @@ use Livewire\WithPagination;
 use App\Models\Objetivo;
 use App\Models\ObjetivoHasEvidencia;
 use App\Models\TiposDeObjetivo;
+use Livewire\WithFileUploads;
 
 class Objetivos extends Component
 {
     use WithPagination;
+    use WithFileUploads;
 
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $resultado, $evaluado_id, $evaluador_id, $tipo_objetivo_id, $descripcion, $evidencia;
@@ -29,6 +31,8 @@ class Objetivos extends Component
     public $primera_fase_activa, $segunda_fase_activa, $minimo_evaluacion, $maximo_evaluacion;
 
     public $objetivoss;
+
+    public $valor_actualizado;
 
 	protected $rules = 
 	[
@@ -85,6 +89,104 @@ class Objetivos extends Component
         // $this->cargo = EvaluadorHasEvaluado::where('evaluador_has_evaluado_id',$evaluador_has_evaluado_id);
     }
 
+    public function actualizarValor($id)
+    {
+        $this->validate(
+            [
+                'valor_actualizado' => 'required|numeric',
+            ], 
+            [
+                'valor_actualizado.required' => 'El campo Valor es obligatorio.',
+                'valor_actualizado.numeric' => 'El campo Valor debe ser numérico.',
+            ]
+        );
+
+        $this->calcular_porcentaje_de_logro_STI();
+        $this->calcular_peso_ponderado();
+        
+        $record = Objetivo::find($this->selected_id);
+        $record->update([ 
+            'valor' => $this->valor_actualizado*1.00,
+            'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
+            'peso_ponderado' => $this-> peso_ponderado,
+        ]);
+
+        $this->valor_actualizado = null;
+        $this->selected_id = null;
+
+        $this->evaluarActualizarObjetivo($id);
+        
+        $this->resetInput();
+        $this->resetValidation();
+        $this->emit('closeModal');
+        session()->flash('message', 'Actualizado correctamente.');
+    }
+
+    public function evaluarActualizarObjetivo($id) {
+        // evaluar si objetivo tiene valor y evidencias y cambiar estado a 2
+        $objetivo = Objetivo::find($id);
+        // dd($objetivo->valor, ($objetivo->evidencias()->get()->count() ));
+        if ($objetivo->valor && $objetivo->evidencias()->get()->count() > 0) {
+            $objetivo->update(['estado_id' => 2]);
+        } elseif (!($objetivo->valor) || $objetivo->evidencias()->get()->count() <= 0)
+        {
+            $objetivo->update(['estado_id' => 1]);
+        }
+    }
+
+    public function openModadActualizarValor($id)
+    {
+        $record = Objetivo::findOrFail($id);
+
+        $this->selected_id = $id; 
+        $this->evaluado_id = $record-> evaluado_id;
+        $this->evaluador_id = $record-> evaluador_id;
+        $this->evaluacion_id = $record-> evaluacion_id;
+
+        $this->meta = $record-> meta;
+        $this->grupal = $record-> grupal;
+        $this->porcentaje_de_participacion = $record-> porcentaje_de_participacion;
+        $this->evidencias = $record-> evidencias;
+        $this->resultado_anterior_o_esperado = $record-> resultado_anterior_o_esperado;
+        $this->tipo_objetivo_id = $record-> tipo_objetivo_id;
+        $this->minimo = $record-> minimo;
+        $this->maximo = $record-> maximo;
+        $this->valor = $record-> valor;
+        $this->valor_actualizado = $record-> valor;
+        $this->porcentaje_de_logro_STI = $record-> porcentaje_de_logro_STI;
+        $this->peso_ponderado = $record-> peso_ponderado;
+        $this->evaluacion_id = $record-> evaluacion_id;
+        $this->simbolo = $record->tipo_objetivo->simbolo??null;
+
+        $this->minimo_evaluacion = $this->evaluador_has_evaluado->evaluacion->minimo;
+        $this->maximo_evaluacion = $this->evaluador_has_evaluado->evaluacion->maximo;
+
+        $this->emit('actualizarValorModal');
+    }
+
+    public function openModalEvidencias($id) {
+        $this->selected_id = $id;
+        $this->emit('openModalEvidencias');
+    }
+
+    public function cancel_actualizar_valor()
+    {
+        $this->resetInput();
+        $this->resetValidation();
+        $this->selected_id = null;
+        $this->valor_actualizado = null;
+        $this->emit('closeModal');
+    }
+
+    public function cancel_evidencias()
+    {
+        $this->resetInput();
+        $this->resetValidation();
+        $this->selected_id = null;
+        $this->evidencia_subir = null;
+        $this->emit('closeModal');
+    }
+
     public function evaluar_fases()
     {
         $this->primera_fase_activa = $this->evaluador_has_evaluado->evaluacion->primera_fase_activa;
@@ -132,20 +234,38 @@ class Objetivos extends Component
 
     public $evidencia_subir;
 
-    public function uploadEvidencia()
+    public function uploadEvidencia($id)
     {
-        $validatedData = $this->validate([
+        $this->validate([
             'evidencia_subir' => 'required|file|max:1024', // 1MB Max
         ]);
+
+        $name = pathinfo($this->evidencia_subir->getClientOriginalName(), PATHINFO_FILENAME).'_' . time() . '.' . $this->evidencia_subir->getClientOriginalExtension();
 
         $evidenciaName = $this->evidencia_subir->store('evidencias', 'public');
 
         ObjetivoHasEvidencia::create([
-            'objetivo_id' => $this->objetivo_id,
-            'evidencia' => $evidenciaName,
+            'objetivo_id' => $id,
+            'ruta' => $evidenciaName,
+            'name' => $name,
         ]);
 
+        $this->evidencia_subir = null;
+        $this->evaluarActualizarObjetivo($id);
+        $this->emit('closeModal');
+        session()->flash('message', 'Evidencia subida correctamente.');
+
+
         $this->isOpen = false;
+    }
+
+    public function deleteEvidencia($id)
+    {
+        $evidencia = ObjetivoHasEvidencia::find($id);
+        $evidencia->delete();
+        $this->evaluarActualizarObjetivo($evidencia->objetivo_id);
+        $this->emit('closeModal');
+        session()->flash('message', 'Evidencia eliminada correctamente.');
     }
 
     public function render()
@@ -226,10 +346,7 @@ class Objetivos extends Component
 
     public function calcular_minimo()
     {
-        // dd($this-> resultado_anterior_o_esperado);
-
         $this->minimo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->minimo_evaluacion / 100 : 0;
-        // dd($this->minimo);
     }
 
     public function calcular_maximo()
@@ -238,12 +355,20 @@ class Objetivos extends Component
     }
 
     public function calcular_porcentaje_de_logro_STI() {
+        // dd($this->valor,0);
+
             if ($this->valor > $this->maximo) {
+                // dd($this->valor,1);
+
                 $this->porcentaje_de_logro_STI = $this->maximo_evaluacion;
             }
             else if ($this->valor >= $this->minimo) {
+                // dd($this->valor, $this->minimo, 2);
+
                 $this->porcentaje_de_logro_STI = $this->resultado_anterior_o_esperado !=0 ? ($this->valor/$this->resultado_anterior_o_esperado)*100 : 0;
             } else {
+                // dd($this->valor,3);
+
                 $this->porcentaje_de_logro_STI = 0;
             }
     }

@@ -50,6 +50,31 @@
             <livewire:styles />
         @endif
     @endif
+
+    <style>
+        [wire\:loading], [wire\:loading\.delay], [wire\:loading\.inline-block], [wire\:loading\.inline], [wire\:loading\.block], [wire\:loading\.flex], [wire\:loading\.table], [wire\:loading\.grid], [wire\:loading\.inline-flex] {
+            display: none;
+        }
+    
+        [wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short], [wire\:loading\.delay\.long], [wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest] {
+            display:none;
+        }
+    
+        [wire\:offline] {
+            display: none;
+        }
+    
+        [wire\:dirty]:not(textarea):not(input):not(select) {
+            display: none;
+        }
+    
+        input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {
+            animation-duration: 50000s;
+            animation-name: livewireautofill;
+        }
+    
+        @keyframes livewireautofill { from {} }
+    </style>
       
     <script src="{{ asset('js/alpine.min.js') }}" defer></script>
 
@@ -158,6 +183,9 @@
         <script src="{{ mix(config('adminlte.laravel_mix_js_path', 'js/app.js')) }}"></script>
     @endif
 
+    
+    <script src="{{ asset('vendor/livewire/livewire.js?id=90730a3b0e7144480175')}}"></script>
+
     {{-- Livewire Script --}}
     @if(config('adminlte.livewire'))
         @if(app()->version() >= 7)
@@ -167,7 +195,7 @@
         @endif
     @endif
 
-    {{-- Custom Scripts --}}
+
     @yield('adminlte_js')
     <script src=
     "{{ asset('js/bootstrap4-toggle.min.js')}}"

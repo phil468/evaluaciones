@@ -49,6 +49,11 @@ class Objetivo extends Model implements Auditable
         return $this->belongsTo(EvaluadorHasEvaluado::class, 'evaluador_has_evaluado_id','id');
     }
 
+    public function evidencias()
+    {
+        return $this->hasMany(ObjetivoHasEvidencia::class, 'objetivo_id','id');
+    }
+
     public function scopeRegistrados()
     {
         return $this->where('estado_id',1);
@@ -150,5 +155,28 @@ class Objetivo extends Model implements Auditable
     // {
     //     return $this->resultado??'';
     // }
+
+    
+
+    // set y get de resultado_anterior_o_esperado
+    public function setValorAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            $this->attributes['resultado_anterior_o_esperado'] = ($value/100.00);
+        } else {
+            $this->attributes['resultado_anterior_o_esperado'] = $value;
+        }
+    }
+
+    public function getValorAttribute($value)
+    {
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            return ($value*100);
+        } else {
+            return $value;
+        }
+    }
+
+    
 
 }

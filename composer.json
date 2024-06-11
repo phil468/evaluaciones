@@ -10,7 +10,7 @@
         "filament/filament": "*",
         "flightsadmin/crudgenerator": "^0.0.4",
         "flightsadmin/livewire-crud": "^0.0.17",
-        "fruitcake/laravel-cors": "^2.0",
+        "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "itsgoingd/clockwork": "^5.1",
         "jeroennoten/laravel-adminlte": "^3.8",

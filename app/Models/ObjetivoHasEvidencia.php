@@ -15,6 +15,6 @@ class ObjetivoHasEvidencia extends Model
 
     protected $table = 'objetivo_has_evidencias';
 
-    protected $fillable = ['objetivo_id','name','estado'];
+    protected $fillable = ['objetivo_id','ruta','name','estado'];
 	
 }
