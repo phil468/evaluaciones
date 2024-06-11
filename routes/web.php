@@ -37,7 +37,7 @@ Route::get('/auth/redirect', function () {
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/Contacts.Read',
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/User.ReadBasic.All'
     //     ]) // Solicita el ámbito específico
-    ->redirect(route('dash.index'));
+    ->redirect('/home');
 });
  
 Route::get('/auth/callback', function () {
@@ -67,20 +67,24 @@ Route::get('/auth/callback', function () {
     // dd($response->json());
 
     // Redirige al usuario a la página de inicio o a donde quieras
-    return redirect(route('dash.index'));
+    return redirect('/home');
+    //return redirect(route('dash.index'));
+
 });
 
-Route::get('/auth/logout', function () {
+Route::get('/logout', function () {
     Auth::guard()->logout();
+    return redirect('/login');
         
-    $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login')); // reemplaza con tu URL de redirección
-    return redirect()->away($azureLogoutUrl);
+    // $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login')); // reemplaza con tu URL de redirección
+    // return redirect()->away($azureLogoutUrl);
     // $request->session()->flush();
     // $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login'));
     // return redirect($azureLogoutUrl);
 });
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/personal/importar/{numero}', [App\Http\Controllers\PersonalController::class,'actualizarPersonalNisira'])->name('personal.actualizar');
 Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\PersonalController::class,'actualizarEstadoParaTodos'])->name('personal.actualizarEstadoParaTodos');
 Route::get('/planilla/importar/{empresa}/{val}', [App\Http\Controllers\PlanillaController::class,'upsert'])->name('planilla.upsert');
