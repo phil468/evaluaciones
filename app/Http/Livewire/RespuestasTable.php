@@ -77,7 +77,7 @@ class RespuestasTable extends LivewireDatatable
                 ->where('evaluador_has_evaluados.deleted_at',null)
                 ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
                 ->first();
-                return $cargo_de_evaluado->cargo_de_evaluado;
+                return $cargo_de_evaluado->cargo_de_evaluado ?? '';
             },[],'1')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
 
             Column::callback(['respuestas.evaluado_id'], function ($id) {
@@ -86,7 +86,7 @@ class RespuestasTable extends LivewireDatatable
                 ->where('evaluador_has_evaluados.deleted_at',null)
                 ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
                 ->first();
-                return $area_de_evaluado->area_de_evaluado;
+                return $area_de_evaluado->area_de_evaluado ?? '';
             },[],'2')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
             
             Column::callback(['respuestas.evaluado_id'], function ($id) {
@@ -95,7 +95,7 @@ class RespuestasTable extends LivewireDatatable
                 ->where('evaluador_has_evaluados.deleted_at',null)
                 ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
                 ->first();
-                return $gerencia_sub_gerencia_de_evaluado->gerencia_sub_gerencia_de_evaluado;
+                return $gerencia_sub_gerencia_de_evaluado->gerencia_sub_gerencia_de_evaluado ?? '';
             },[],'3')->label('Gerencia/Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
             
             Column::callback(['respuestas.evaluado_id'], function ($id) {
@@ -104,7 +104,7 @@ class RespuestasTable extends LivewireDatatable
                 ->where('evaluador_has_evaluados.deleted_at',null)
                 ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
                 ->first();
-                return $jerarquia->jerarquia;
+                return $jerarquia->jerarquia ?? '';
             },[],'4')->label('Jerarquia')->searchable()->filterable()->defaultSort('asc')
             // ->exportCallback(function(){
             //     return '1';
