@@ -5,7 +5,7 @@
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="float-left">
-                        <h5 class="modal-title" id="updateModalLabel">Importar Evaluadores Objetivos</h5>
+                        <h5 class="modal-title" id="updateModalLabel">Importar Evaluadores de Evaluación de Desempeño por Objetivos</h5>
                     </div>
                 </div>
                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">

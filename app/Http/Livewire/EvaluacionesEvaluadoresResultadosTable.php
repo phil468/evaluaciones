@@ -14,7 +14,7 @@ use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
-class EvaluacionesEvaluadoresTable extends LivewireDatatable
+class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
 {
     public $hideable = 'inline';
     public $exportable = true;
@@ -32,6 +32,7 @@ class EvaluacionesEvaluadoresTable extends LivewireDatatable
         ->leftJoin('personal as evaluador','evaluador.id','=','evaluador_has_evaluados.evaluador_id')
         ->leftJoin('personal as evaluado','evaluado.id','=','evaluador_has_evaluados.evaluado_id')
         ->leftJoin('evaluaciones','evaluaciones.id','=','evaluador_has_evaluados.evaluacion_id')
+        ->where('evaluaciones.tipo_de_evaluacion_id',TipoDeEvaluacione::RESULTADOS)
         ;
     }
 

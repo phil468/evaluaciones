@@ -11,6 +11,10 @@ class TipoDeEvaluacione extends Model
 	use HasFactory;
     use SoftDeletes;
 	
+    // constante competencias
+    const COMPETENCIAS = 1;
+    const RESULTADOS = 2;
+
     public $timestamps = true;
 
     protected $table = 'tipo_de_evaluaciones';

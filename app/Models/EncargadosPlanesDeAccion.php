@@ -28,7 +28,8 @@ class EncargadosPlanesDeAccion extends Model
         'area_de_evaluado',
         'gerencia_sub_gerencia_de_evaluado',
         'cantidad_requerida',
-        'valor_esperado'
+        'valor_esperado',
+        'jerarquia'
     ];
 
     public function empleado()
