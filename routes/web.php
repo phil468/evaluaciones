@@ -81,7 +81,7 @@ Route::get('/logout', function () {
     // $request->session()->flush();
     // $azureLogoutUrl = Socialite::driver('azure')->getLogoutUrl(route('login'));
     // return redirect($azureLogoutUrl);
-});
+})->name('logout');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
@@ -95,7 +95,7 @@ Auth::routes();
 
 Route::group(['middleware'  =>  ['auth']],function(){
 
-    Route::get('/download/{id}', 'EvidenciaController@download')->name('download');
+    Route::get('/download/{id}', [App\Http\Controllers\EvidenciaController::class,'download'])->name('download');
 
     Route::resource('roles',RolController::class);
 

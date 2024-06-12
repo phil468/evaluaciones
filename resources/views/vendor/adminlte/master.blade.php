@@ -45,36 +45,11 @@
     {{-- Livewire Styles --}}
     @if(config('adminlte.livewire'))
         @if(app()->version() >= 7)
-            {{-- @livewireStyles --}}
+            @livewireStyles
         @else
-            {{-- <livewire:styles /> --}}
+            <livewire:styles />
         @endif
     @endif
-
-    <style>
-        [wire\:loading], [wire\:loading\.delay], [wire\:loading\.inline-block], [wire\:loading\.inline], [wire\:loading\.block], [wire\:loading\.flex], [wire\:loading\.table], [wire\:loading\.grid], [wire\:loading\.inline-flex] {
-            display: none;
-        }
-    
-        [wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short], [wire\:loading\.delay\.long], [wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest] {
-            display:none;
-        }
-    
-        [wire\:offline] {
-            display: none;
-        }
-    
-        [wire\:dirty]:not(textarea):not(input):not(select) {
-            display: none;
-        }
-    
-        input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {
-            animation-duration: 50000s;
-            animation-name: livewireautofill;
-        }
-    
-        @keyframes livewireautofill { from {} }
-    </style>
       
     <script src="{{ asset('js/alpine.min.js') }}" defer></script>
 
@@ -183,93 +158,18 @@
         <script src="{{ mix(config('adminlte.laravel_mix_js_path', 'js/app.js')) }}"></script>
     @endif
 
-    
-    <script src="/vendor/livewire/livewire.js" data-turbo-eval="false" data-turbolinks-eval="false" ></script>
-    <script data-turbo-eval="false" data-turbolinks-eval="false" >
-        if (window.livewire) {
-            // console.warn('Livewire: It looks like Livewire\'s @livewireScripts JavaScript assets have already been loaded. Make sure you aren\'t loading them twice.')
-        }
-    
-        window.livewire = new Livewire();
-        window.livewire.devTools(true);
-        window.Livewire = window.livewire;
-        window.livewire_app_url = '';
-        window.livewire_token = 'SxMppNgv7Ss8GgJEQkCSEAygiNnkvV1cZtpkoXQr';
-    
-        /* Make sure Livewire loads first. */
-        if (window.Alpine) {
-            /* Defer showing the warning so it doesn't get buried under downstream errors. */
-            document.addEventListener("DOMContentLoaded", function () {
-                setTimeout(function() {
-                    // console.warn("Livewire: It looks like AlpineJS has already been loaded. Make sure Livewire\'s scripts are loaded before Alpine.\\n\\n Reference docs for more info: http://laravel-livewire.com/docs/alpine-js")
-                })
-            });
-        }
-    
-        /* Make Alpine wait until Livewire is finished rendering to do its thing. */
-        window.deferLoadingAlpine = function (callback) {
-            window.addEventListener('livewire:load', function () {
-                callback();
-            });
-        };
-    
-        let started = false;
-    
-        window.addEventListener('alpine:initializing', function () {
-            if (! started) {
-                window.livewire.start();
-    
-                started = true;
-            }
-        });
-    
-        document.addEventListener("DOMContentLoaded", function () {
-            if (! started) {
-                window.livewire.start();
-    
-                started = true;
-            }
-        });
-    </script>
-                    
-        
-    
-    
-                <script type="text/javascript">
-        function mostrarPassword(){
-                var cambio = document.getElementById("password");
-                if(cambio.type == "password"){
-                    cambio.type = "text";
-                    $('.icon-password').removeClass('fa fa-eye-slash').addClass('fa fa-eye');
-                }else{
-                    cambio.type = "password";
-                    $('.icon-password').removeClass('fa fa-eye').addClass('fa fa-eye-slash');
-                }
-            }
-        
-        function mostrarOcultarFormularioSesionLocal(){
-            var formulario = document.querySelector('form');
-            if(formulario.style.display == "none"){
-                formulario.style.display = "block";
-            }else{
-                formulario.style.display = "none";
-            }
-        }
-    
-        </script>
-    
-
     {{-- Livewire Script --}}
     @if(config('adminlte.livewire'))
         @if(app()->version() >= 7)
-            {{-- @livewireScripts --}}
+            @livewireScripts
         @else
-            {{-- <livewire:scripts /> --}}
+            <livewire:scripts />
         @endif
     @endif
-    
-    {{-- Fin Livewire Script --}}
 
+    <script src=
+    "{{ asset('js/bootstrap4-toggle.min.js')}}"
+    ></script>
 
     @yield('adminlte_js')
     <script src=

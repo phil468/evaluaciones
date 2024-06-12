@@ -25,11 +25,11 @@
         "pharaonic/livewire-select2": "^1.2",
         "psr/simple-cache": "1.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "socialiteproviders/microsoft": "^4.3",
-        "socialiteproviders/microsoft-azure": "^5.2",
+        "socialiteproviders/microsoft": "^4.2.2",
+        "socialiteproviders/microsoft-azure": "^5.1.0",
         "socialiteproviders/zoho": "^4.1",
         "spatie/laravel-permission": "^5.5",
-        "tymon/jwt-auth": "^1.0@dev",
+        "tymon/jwt-auth": "^1.0.2",
         "victorybiz/laravel-simple-select": "^1.5"
     },
     "require-dev": {

@@ -44,6 +44,7 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         $this->auditlogin($user);
+        redirect('/home');
     }
 
     function auditlogin($user){

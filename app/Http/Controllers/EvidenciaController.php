@@ -10,8 +10,8 @@ class EvidenciaController extends Controller
 {
     //
     public function download($id)
-        {
-            $evidencia = ObjetivoHasEvidencia::findOrFail($id);
-            return Storage::download($evidencia->ruta, $evidencia->name);
-        }
+    {
+        $evidencia = ObjetivoHasEvidencia::findOrFail($id);
+        return Storage::download($evidencia->ruta, $evidencia->name);
+    }
 }
