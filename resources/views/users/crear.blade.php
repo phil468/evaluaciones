@@ -3,14 +3,14 @@
 @section('title', 'Crear Usuario')
 
 @section('content_header')
-    <h1>Crear Usuario</h1>
+    <h1></h1>
 @stop
 
 @section('content')
     <div class="row">
 <div class="col-md-12">
-    <div class="card rounded-xl">
-      <div class="card-header bg-primary">
+	<div class="card rounded-xl">
+		<div class="text-white card-header bg-vanguard rounded-t-xl">
         <h3 class="card-title">Crear Usuario</h3>
       </div>
       <!-- /.card-header -->
@@ -88,8 +88,8 @@
 		</div>		
 		
         <div class="mb-3">	 
-		  <button type="submit" class="mb-3 btn btn-primary">Crear Usuario</button>
-		  <a class="mb-3 btn btn-success" href="{{route('users.index')}}">Regresar</a>
+			<a class="mb-3 btn btn-default btn-sm" href="{{route('users.index')}}">Regresar</a>
+		  	<button type="submit" class="mb-3 btn btn-vanguard">Crear Usuario</button>
 		</div>
 		{!! Form::close() !!}                        
       </div>
