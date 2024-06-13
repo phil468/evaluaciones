@@ -41,7 +41,7 @@ class Objetivos extends Component
 	[
 		'grupal' => 'required',
 		'meta' => 'required|max:500',
-		'tipo_objetivo_id' => 'required',
+		'tipo_objetivo_id' => 'required|min:1',
 		'resultado_anterior_o_esperado' => 'required',
 		'porcentaje_de_participacion' => 'required|numeric|between:0,100',
         'evaluado_id' => 'required',
@@ -510,13 +510,12 @@ class Objetivos extends Component
             $this->evaluador_id = $record-> evaluador_id;
             $this->evaluacion_id = $record-> evaluacion_id;
 
-
 			$this->meta = $record-> meta;
 			$this->grupal = $record-> grupal;
 			$this->porcentaje_de_participacion = $record-> porcentaje_de_participacion;
 			$this->evidencias = $record-> evidencias;
 			$this->resultado_anterior_o_esperado = $record-> resultado_anterior_o_esperado;
-			$this->tipo_objetivo_id = $record-> tipo_objetivo_id;
+			$this->tipo_objetivo_id = $record-> tipo_objetivo_id??null;     
 			$this->minimo = $record-> minimo;
 			$this->maximo = $record-> maximo;
 			$this->valor = $record-> valor;

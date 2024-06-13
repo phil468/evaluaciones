@@ -71,6 +71,7 @@
                                        disabled
                                    @endif
                                    class="form-control" id="tipo_objetivo_id" wire:model="tipo_objetivo_id">
+                                            <option value="">Seleccionar Tipo de Objetivo</option>
                                         @foreach ($tipos_objetivo as $tipo)
                                             <option value="{{ $tipo->id }}">{{ $tipo->name }}</option>
                                         @endforeach
