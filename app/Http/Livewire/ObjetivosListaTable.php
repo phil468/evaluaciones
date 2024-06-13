@@ -31,12 +31,36 @@ class ObjetivosListaTable extends LivewireDatatable
 
     public $model = Objetivo::class;
 
+    
+    public function rowClasses($row, $loop)
+    {
+        return 'divide-x divide-gray-100 text-sm text-gray-900 ' . 
+        (
+            $this->rowIsSelected($row) ? 'bg-blue-100' : 
+                ($row->{'estado.name'} == 'REGISTRADO' ? 'bg-yellow-100' : 
+                    ($row->{'estado.name'} == 'REALIZADO' ? 'bg-green-100' : 
+                        ($loop->even ? 'bg-red-100' : 'bg-red-100')
+                    )
+                )
+        );
+    }
+
     public function columns()
     {
         return [
+
+        // Column::name('id')->label('ID')->filterable()->defaultSort('asc'),
+
         Column::callback(['id'], function ($id) {
                 return view('components.lupa-button', ['id' => $id]);
             })->label('Ver historial')->alignCenter()->excludeFromExport(),
+
+        //COLUMNA ESTADO DE OBJETIVO
+        Column::name('estado.name')->label('Estado')->searchable()->filterable()->defaultSort('asc'),
+        // Column::name('estado.color')->label('Estado Color')->searchable()->filterable()->defaultSort('asc')->hide(),
+        // Column::callback(['estado_id'], function ($estado_id) {
+        //     return view('components.estado', ['estado_id' => $estado_id]);
+        // })->label('Estado')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluadores.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluados.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluador_has_evaluados.cargo_de_evaluado')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),

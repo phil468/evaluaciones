@@ -54,6 +54,11 @@ class Objetivo extends Model implements Auditable
         return $this->hasMany(ObjetivoHasEvidencia::class, 'objetivo_id','id');
     }
 
+    public function estado()
+    {
+        return $this->belongsTo(EstadosDeObjetivo::class, 'estado_id','id');
+    }
+
     public function scopeRegistrados()
     {
         return $this->where('estado_id',1);
