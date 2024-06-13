@@ -124,9 +124,15 @@
 									<p class="mb-2 h5">
 										Promedio total por competencia										
 									</p>
-									<div class="alert alert-default rounded-2xl" role="alert">
-										No se encontró información
-									</div>
+									@if (!$this->evaluacionPorCompetenciasFinalizada)
+										<div class="alert alert-default rounded-2xl" role="alert">
+											Una vez finalizada la evaluación por competencias se mostrarán la gráfica.
+										</div>
+									@else
+										<div class="alert alert-default rounded-2xl" role="alert">
+											No se encontró información
+										</div>
+									@endif
 								@endif
 						</div>
 					</div>			

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\EncargadosPlanesDeAccion;
+use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\RangosDePlanDeAccion;
 use App\Models\Respuesta;
@@ -25,10 +26,20 @@ class Dashboard extends Component
     $ingresar_plan=false,
     $title=null,
     $showHeader=true,
-    $empleado_id=null;
+    $empleado_id=null,
+    $evaluacionPorCompetenciasFinalizada=false;
 
     public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true)
     {
+        $evaluaciones = Evaluacione::where('tipo_de_evaluacion_id', 1)->vigente()->get();
+
+        if ($evaluaciones->count() > 0) {
+            // session()->flash('message', 'Aún No Finaliza la Evaluación por Competencias.');
+            $this->evaluacionPorCompetenciasFinalizada = false;
+        } else {
+            $this->evaluacionPorCompetenciasFinalizada = true;
+        }
+
         if($personal_id) {
             $this->personal_id = [$personal_id];
             $this->empleado_id = $personal_id;
@@ -172,6 +183,11 @@ $respuestas
             return $respuesta;
         });
 
-        $this->mostrar_grafica = count($this->secciones) > 0;
+        if($this->evaluacionPorCompetenciasFinalizada) {
+            $this->mostrar_grafica = count($this->secciones) > 0;
+        } else {
+            $this->mostrar_grafica = false;
+        }
+            // If there are sections to show, display the chart (otherwise, hide it
     }
 }

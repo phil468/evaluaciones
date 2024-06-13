@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EncargadosPlanesDeAccion;
 use App\Models\EstadosDePlanDeAccion;
+use App\Models\Evaluacione;
 use App\Models\Gerencia;
 use App\Models\Personal;
 use App\Models\PlanesDeAccion;
@@ -40,6 +41,7 @@ class EncargadosPlanesDeAccions extends Component
     public $estado_id;
     public $name,$fecha_de_revision,$avance,$tipo_de_proceso_id,$gerencia_id,$area_id;
     public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
+    public $evaluacionPorCompetenciasFinalizada=false;
 
 protected $listeners = [
     'setCompetenciaId' => 'setCompetenciaId'
@@ -86,6 +88,15 @@ public function openModal()
 
     public function mount($ingreso = null, $empleado_id = null, $dashboard = null)
     {
+        $evaluaciones = Evaluacione::where('tipo_de_evaluacion_id', 1)->vigente()->get();
+
+        if ($evaluaciones->count() > 0) {
+            // session()->flash('message', 'Aún No Finaliza la Evaluación por Competencias.');
+            $this->evaluacionPorCompetenciasFinalizada = false;
+        } else {
+            $this->evaluacionPorCompetenciasFinalizada = true;
+        }
+
         $this->competencias 	= Competencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
         $this->procesos 		= Proceso::orderBy('name','asc')->where('estado',1)->pluck('name','id');
         $this->estados 			= EstadosDePlanDeAccion::orderBy('name','asc')->where('estado',1)->pluck('name','id');

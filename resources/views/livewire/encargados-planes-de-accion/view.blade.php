@@ -57,7 +57,7 @@
                                                         <th>Encargado</th>
                                                     @endif
                                                     <th>Personal</th>
-                                                    <th>Planes</th>
+                                                    <th>Planes ingresados</th>
 	                                                <th>ACCIONES</th>
                                                 </tr>
                                             </thead>
@@ -73,12 +73,21 @@
                                                             {{ $row->planes_de_accion_empleado->count() }} / {{ $row->cantidad_requerida }}
                                                         </td>
  														<td width="90">
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-vanguard" data-toggle="tooltip"
-                                                                    data-placement="top" title="Ver"
-                                                                    wire:click="ver({{ $row->id }})"><i
-                                                                        class="fa fa-eye"></i></button>
-                                                            </div>
+                                                            @if ($evaluacionPorCompetenciasFinalizada)
+                                                                <div class="btn-group">
+                                                                    <button class="rounded-xl btn btn-vanguard" data-toggle="tooltip"
+                                                                        data-placement="top" title="Ver"
+                                                                        wire:click="ver({{ $row->id }})"><i
+                                                                            class="fa fa-eye"></i></button>
+                                                                </div>
+                                                            @else
+                                                            <button class="rounded-xl btn btn-vanguard" data-toggle="tooltip"
+                                                                        data-placement="top" title="Evaluaciones aun no están finalizadas" disabled
+                                                                        
+                                                                        ><i
+                                                                            class="fa fa-eye"></i></button>
+                                                                            <br>
+                                                            @endif
                                                         </td>
                                                 @endforeach
                                             </tbody>
