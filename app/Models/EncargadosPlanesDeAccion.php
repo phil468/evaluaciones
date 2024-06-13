@@ -47,6 +47,17 @@ class EncargadosPlanesDeAccion extends Model
         return $this->belongsTo(Evaluacione::class, 'evaluacion_id','id');
     }
 
+    public function planes_de_accion_encargado()
+    {
+        return $this->hasMany(PlanesDeAccion::class, 'encargado_id','id');
+    }
+
+
+    public function planes_de_accion_empleado()
+    {
+        return $this->hasMany(PlanesDeAccion::class, 'empleado_id','empleado_id');
+    }
+
 
 	
 }

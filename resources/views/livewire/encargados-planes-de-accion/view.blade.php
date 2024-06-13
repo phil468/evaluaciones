@@ -57,6 +57,7 @@
                                                         <th>Encargado</th>
                                                     @endif
                                                     <th>Personal</th>
+                                                    <th>Planes</th>
 	                                                <th>ACCIONES</th>
                                                 </tr>
                                             </thead>
@@ -68,6 +69,9 @@
                                                             <td>{{ $row->encargado->name }}</td>
                                                         @endif
                                                         <td>{{ $row->empleado->name }}</td>
+                                                        <td>    
+                                                            {{ $row->planes_de_accion_empleado->count() }} / {{ $row->cantidad_requerida }}
+                                                        </td>
  														<td width="90">
                                                             <div class="btn-group">
                                                                 <button class="btn btn-vanguard" data-toggle="tooltip"
