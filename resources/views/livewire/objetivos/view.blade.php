@@ -99,7 +99,7 @@
 									<th class="text-center text-white bg-vanguard">Tipo</th>
 									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 									@if ($primera_fase_activa)
-										<th class="text-center text-white bg-vanguard">Editar</th>
+										<th class="text-white bg-vanguard">Editar</th>
 									@endif
 									@endcan
 									{{-- <th>Meta</th> --}}
@@ -142,7 +142,7 @@
 								@foreach($objetivos as $index => $row)
 								<div wire:key="objetivoss-field-{{ $row->id }}">
 
-								<tr class="text-center align-middle">
+								<tr class="text-center">
 									
 
 									@if ($row->grupal)
@@ -156,7 +156,7 @@
 																	
 									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
 									@if ($primera_fase_activa)
-										<td width="90" class="align-middle">
+										<td width="90" class="">
 											@if (!$row->grupal)
 												<div class="btn-group">
 													@can('ver-evaluaciones-de-desempeno')
@@ -261,7 +261,25 @@
 									@if ($segunda_fase_activa)
 									{{-- QUE SE LEVANTE UN MODAL PARA INGRESAR EL VALOR --}}
 									<a type="button" class="btn btn-link" data-toggle="modal" data-target="#actualizarValorModal" wire:click="openModadActualizarValor({{$row->id}})">
-										{{ $row->valor??'Ingresar Valor' }}
+										{{ 
+										
+										
+											$row->valor
+											?
+
+											($row->tipo_objetivo ? 
+											($row->tipo_objetivo->id == 2 ? 
+												($row->valor).'%' 
+											: 	($row->tipo_objetivo->id == 1 ? 
+													number_format($row->valor, 2, '.', ',')
+												: $row->valor)
+												)
+											: $row->valor )
+
+
+											
+											:'Ingresar Valor' 
+										}}
 									</a>
 
 									@else
@@ -281,14 +299,14 @@
 									</div>
 									{{-- {{ $row->valor }} --}}
 								</td>
-								<td>{{ $row->porcentaje_de_logro_STI }}</td>
-								<td>{{ $row->peso_ponderado }}</td>
+								<td>{{ $row->porcentaje_de_logro_STI.'%' }}</td>
+								<td>{{ $row->peso_ponderado.'%' }}</td>
 								<td>
 
 									{{-- {{dd($row->evidencias()->get())}} --}}
 									@foreach ($row->evidencias()->get() as $evidencia)
 									{{-- {{dd($row->evidencias()->first())}} --}}
-									<div class="btn-group mb-2" role="group" aria-label="Basic example">
+									<div class="mb-2 btn-group" role="group" aria-label="Basic example">
 
 										<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
 											{{--icono--}}
@@ -385,6 +403,23 @@
 
 								@endforeach
 							</tbody>
+							{{--footer con promedio total que es la suma de promedios--}}
+							@if ($segunda_fase_activa)
+
+								<tfoot>
+									<tr>
+										<td colspan="9" class="text-right">Subtotal</td>
+										<td class="text-center text-white bg-vanguard">{{ $subtotal.'%' }}</td>
+										<td colspan="5"></td>
+									</tr>
+									
+									<tr>
+										<td colspan="9" class="text-right">Total Real</td>
+										<td class="text-center text-white bg-vanguard">{{ $total.'%' }}</td>
+										<td colspan="5"></td>
+									</tr>
+								</tfoot>
+							@endif
 						</table>
 						@endif		
 					@endif

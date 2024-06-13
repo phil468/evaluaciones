@@ -87,5 +87,24 @@ class EvaluadorHasEvaluado extends Model
         ->where('estado_id',null)->get()
         ->count();
     }
+
+    
+    public function getCantidadDeObjetivosCompletadosAttribute()
+    {
+        // dd(Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        // ->where('estado_id',1)->get());
+        return Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        ->where('estado_id',2)->get()
+        ->count();
+    }
+
+    public function getCantidadDeObjetivosNoCompletadosAttribute()
+    {
+        // dd(Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        // ->where('estado_id',1)->get());
+        return Objetivo::where('evaluador_has_evaluado_id',$this->id)
+        ->where('estado_id',null)->get()
+        ->count();
+    }
     
 }

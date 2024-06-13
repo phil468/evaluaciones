@@ -119,8 +119,16 @@
                                                                 style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
                                                                 
                                                                 @if ($tipo_de_evaluacion_id == 2)
-                                                                REGISTRADOS
-                                                                    ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})
+
+                                                                    @if ($row->evaluacion->primera_fase_activa)
+                                                                    REGISTRADOS
+                                                                        ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})                                                                    
+                                                                    @endif
+                                                                    @if ($row->evaluacion->segunda_fase_activa)
+                                                                    COMPLETADOS
+                                                                        ({{ $row->cantidad_de_objetivos_completados . '/' . $row->cantidad_de_objetivos_realizados }})
+                                                                    @endif
+                                                                
                                                                 @endif
                                                                 @if ($tipo_de_evaluacion_id == 1)
                                                                 PENDIENTE

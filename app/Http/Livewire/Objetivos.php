@@ -31,6 +31,9 @@ class Objetivos extends Component
     public $primera_fase_activa, $segunda_fase_activa, $minimo_evaluacion, $maximo_evaluacion;
 
     public $objetivoss;
+    public $objetivos;
+    public $subtotal;
+    public $total;
 
     public $valor_actualizado;
 
@@ -91,6 +94,7 @@ class Objetivos extends Component
 
     public function actualizarValor($id)
     {
+        
         $this->validate(
             [
                 'valor_actualizado' => 'required|numeric',
@@ -101,9 +105,12 @@ class Objetivos extends Component
             ]
         );
 
+        $this->valor = $this->valor_actualizado;
         $this->calcular_porcentaje_de_logro_STI();
         $this->calcular_peso_ponderado();
         
+        // dd($this->valor_actualizado, $this->porcentaje_de_logro_STI, $this->peso_ponderado);
+
         $record = Objetivo::find($this->selected_id);
         $record->update([ 
             'valor' => $this->valor_actualizado*1.00,
@@ -274,11 +281,24 @@ class Objetivos extends Component
         
         $this->objetivoss =Objetivo::latest()->where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->get();
 
+        $this->objetivos = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)
+        ->orderByDesc('grupal')
+        ->get();
+
+        $this->subtotal = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->sum('peso_ponderado');
+        if ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->maximo) {
+            $this->total = $this->evaluador_has_evaluado->evaluacion->maximo;
+        } elseif ($this->total >= $this->evaluador_has_evaluado->evaluacion->minimo) {
+            $this->total = $this->subtotal;
+        } else {
+            $this->total = 0.00;
+        }
+
         $keyWord = '%'.$this->keyWord .'%';
         return view('livewire.objetivos.view', [
-            'objetivos' => Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)
-                        ->orderByDesc('grupal')
-                        ->get(),
+            // 'objetivos' => Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)
+            //             ->orderByDesc('grupal')
+            //             ->get(),
                         // 'tipos_objetivo' => TiposDeObjetivo::all(),
         ]);
     }
@@ -532,6 +552,7 @@ class Objetivos extends Component
             $this->validate(
             );   
 
+            // dd($this-> resultado_anterior_o_esperado*1.00);
             // $this->evaluarGrupal();
             
             if ($this->selected_id) {
@@ -547,21 +568,25 @@ class Objetivos extends Component
                     // 'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
                     // 'evidencias' => $this-> evidencias,
                     'tipo_objetivo_id' => $this-> tipo_objetivo_id,
-                    'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,
+                    'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado*1.00,
+                    
                     'minimo' => $this-> minimo,
                     'maximo' => $this-> maximo,
                     'valor' => $this-> valor,
                     'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
                     'peso_ponderado' => $this-> peso_ponderado,
 
-                    'evaluacion_id' => $this-> evaluacion_id
+                    'evaluacion_id' => $this-> evaluacion_id,
+                    'estado_id' => 1,
                 ]);
+
+                // dd( $record);
 
                 $this->resetInput();
                 $this->resetValidation();
                 $this->updateMode = false;
                 $this->emit('closeModal');
-                session()->flash('message', 'Objetivos Precargado actualizado correctamente.');
+                session()->flash('message', 'Objetivos actualizado correctamente.');
             }
 
         } else {

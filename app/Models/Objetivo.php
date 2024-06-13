@@ -162,9 +162,9 @@ class Objetivo extends Model implements Auditable
     public function setValorAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['resultado_anterior_o_esperado'] = ($value/100.00);
+            $this->attributes['valor'] = ($value/100.00);
         } else {
-            $this->attributes['resultado_anterior_o_esperado'] = $value;
+            $this->attributes['valor'] = $value;
         }
     }
 
