@@ -6,6 +6,7 @@ use App\Http\Livewire\Evaluacion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 
 class Respuesta extends Model
 {
@@ -29,6 +30,12 @@ class Respuesta extends Model
         return $this->belongsTo(Pregunta::class,'pregunta_id','id');
     }
 
+    // public function pregunta()
+    // {
+    //     $pregunta_id = Crypt::decryptString($this->attributes['pregunta_id']);
+    //     return $this->belongsTo(Pregunta::class, $pregunta_id, 'id');
+    // }
+
     public function evaluado()
     {
         return $this->belongsTo(Personal::class,'evaluado_id','id');
@@ -48,6 +55,26 @@ class Respuesta extends Model
     {
         return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)->first()->gerencia_sub_gerencia_de_evaluado;
     }
+
+    // //desencripto el valor numerico
+    // public function getValorNumericoAttribute($value)
+    // {
+    //     return Crypt::decryptString($value);
+    // }
+
+    // //desencripto el valor numerico
+    // public function getPreguntaIdAttribute($value)
+    // {
+    //     return Crypt::decryptString($value);
+    // }
+
+    // //desencripto el valor numerico
+    // public function getEvaluadoIdAttribute($value)
+    // {
+    //     return Crypt::decryptString($value);
+    // }
+
+
    
     
 }

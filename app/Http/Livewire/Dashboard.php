@@ -88,27 +88,58 @@ class Dashboard extends Component
     {
         // $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
 
-        $this->secciones = Respuesta::with('pregunta.seccion')
-            ->select(
-            'preguntas.seccion_id as seccion_id',
-            'secciones.name as nombre',
-            DB::raw($this->valor_esperado . ' as valor_esperado'),
-            DB::raw('ROUND(avg(valor_numerico), 2) as promedio')
-            )
-            ->join('preguntas', 'respuestas.pregunta_id', '=', 'preguntas.id')
-            ->join('secciones', 'preguntas.seccion_id', '=', 'secciones.id')
-            ->join('evaluador_has_evaluados', 'respuestas.evaluado_id', '=', 'evaluador_has_evaluados.evaluado_id')
-            ->groupBy('preguntas.seccion_id')
-            ->when(($this->area_de_evaluado), function ($query, $area_de_evaluado) {
-                $query->whereIn('evaluador_has_evaluados.area_de_evaluado', $this->area_de_evaluado);
-            })
-            ->when(($this->gerencia_sub_gerencia_de_evaluado), function ($query, $gerencia_sub_gerencia_de_evaluado) {
-                $query->whereIn('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado', $this->gerencia_sub_gerencia_de_evaluado);
-            })
-            ->when(($this->personal_id), function ($query, $personal_id) {
-                $query->whereIn('respuestas.evaluado_id', $this->personal_id);
-            })
-            ->get();
+        // $this->secciones = Respuesta::with('pregunta.seccion')
+        //     ->select(
+        //     'preguntas.seccion_id as seccion_id',
+        //     'secciones.name as nombre',
+        //     DB::raw($this->valor_esperado . ' as valor_esperado'),
+        //     DB::raw('ROUND(avg(valor_numerico), 2) as promedio')
+        //     )
+        //     ->join('preguntas', 'respuestas.pregunta_id', '=', 'preguntas.id')
+        //     ->join('secciones', 'preguntas.seccion_id', '=', 'secciones.id')
+        //     ->join('evaluador_has_evaluados', 'respuestas.evaluado_id', '=', 'evaluador_has_evaluados.evaluado_id')
+        //     ->groupBy('preguntas.seccion_id')
+        //     ->when(($this->area_de_evaluado), function ($query, $area_de_evaluado) {
+        //         $query->whereIn('evaluador_has_evaluados.area_de_evaluado', $this->area_de_evaluado);
+        //     })
+        //     ->when(($this->gerencia_sub_gerencia_de_evaluado), function ($query, $gerencia_sub_gerencia_de_evaluado) {
+        //         $query->whereIn('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado', $this->gerencia_sub_gerencia_de_evaluado);
+        //     })
+        //     ->when(($this->personal_id), function ($query, $personal_id) {
+        //         $query->whereIn('respuestas.evaluado_id', $this->personal_id);
+        //     })
+        //     ->get();
+
+        $respuestas = Respuesta::with('pregunta.seccion','evaluado')->get();
+
+            
+$this->secciones = 
+$respuestas
+->when(!empty($this->area_de_evaluado), function ($collection) {
+    return $collection->filter(function ($respuesta) {
+        return in_array($respuesta->evaluado->area_de_evaluado, $this->area_de_evaluado);
+    });
+})
+->when(!empty($this->gerencia_sub_gerencia_de_evaluado), function ($collection) {
+    return $collection->filter(function ($respuesta) {
+        return in_array($respuesta->evaluado->gerencia_sub_gerencia_de_evaluado, $this->gerencia_sub_gerencia_de_evaluado);
+    });
+})
+->when(!empty($this->personal_id), function ($collection) {
+    return $collection->filter(function ($respuesta) {
+        return in_array($respuesta->evaluado->id, $this->personal_id);
+    });
+})
+->groupBy('pregunta.seccion_id')->map(function ($respuestasPorSeccion) {
+    return [
+        'seccion_id' => $respuestasPorSeccion->first()->pregunta->seccion_id,
+        'nombre' => $respuestasPorSeccion->first()->pregunta->seccion->name,
+        'valor_esperado' => $this->valor_esperado,
+        'promedio' => round($respuestasPorSeccion->avg('valor_numerico'), 2),
+    ];
+});
+
+// dd($this->secciones);
 
         if (count($this->secciones) > 0)
         {
@@ -130,6 +161,7 @@ class Dashboard extends Component
         $valores = $rangos->pluck('rango_mayor')->toArray();
         $colores = $rangos->pluck('color')->toArray();
         $this->secciones = $this->secciones->map(function ($respuesta) use ($valores, $colores) {
+            $respuesta = (object) $respuesta;
             for ($i = 0; $i < count($valores); $i++) {
                 if ($respuesta->promedio < $valores[$i]) {
                     $respuesta->color = $colores[$i];

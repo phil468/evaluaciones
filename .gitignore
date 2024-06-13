@@ -23,3 +23,4 @@ resources/views/emails/verification-code/error.blade.php
 resources/views/emails/verification-code/success.blade.php
 resources/views/emails/verification-code/verification.blade.php
 app/Http/Controllers/VerificationController.php
+config/livewire.php
