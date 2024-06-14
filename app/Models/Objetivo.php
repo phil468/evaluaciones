@@ -68,6 +68,11 @@ class Objetivo extends Model implements Auditable
     {
         return $this->where('estado_id',1)->where('evaluador_has_evaluado_id',$id);
     }
+    
+    public function scopeNoRegistradosCont($id)
+    {
+        return $this->where('estado_id',null)->where('evaluador_has_evaluado_id',$id);
+    }
 
     public function scopeRegistradosContEvaluado($id)
     {
