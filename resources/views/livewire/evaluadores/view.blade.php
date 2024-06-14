@@ -27,12 +27,12 @@
 								</a>
 							</div>							
 
-							<div class="mb-1 btn btn-sm btn-default">
+							{{-- <div class="mb-1 btn btn-sm btn-default">
 								<a title="Enviar correo masivo" accesskey="e" wire:click="enviarCorreo" accesskey="e">
 									<i class="fa fa-envelope"></i> Enviar correo masivo (e)
 								</a>
 							</div>
-							<br>
+							<br> --}}
 							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#importDataModal">
 								<a title="Importar" data-toggle="modal" data-target="#importDataModal" accesskey="d">
 									<i class="fa fa-file-import"></i> Importar Eval. por Competencias (d)

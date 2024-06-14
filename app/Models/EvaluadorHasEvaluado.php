@@ -43,6 +43,11 @@ class EvaluadorHasEvaluado extends Model
         return $this->belongsTo(Personal::class,'evaluador_id','id');
     }
 
+    public function userEvaluador()
+    {
+        return $this->belongsTo(User::class,'evaluador_id','personal_id');
+    }
+
     public function evaluado()
     {
         return $this->belongsTo(Personal::class,'evaluado_id','id');

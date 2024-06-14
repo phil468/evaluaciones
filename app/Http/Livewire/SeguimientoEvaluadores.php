@@ -6,6 +6,7 @@ use App\Models\EvaluadorHasEvaluado;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Respuesta;
+use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
 class SeguimientoEvaluadores extends Component
@@ -131,34 +132,43 @@ class SeguimientoEvaluadores extends Component
         // ->orderBy('evaluador_id')
         // ->get()->toArray();
     
-        $evaluadores = EvaluadorHasEvaluado::
-        join('personal','evaluador_has_evaluados.evaluador_id','=','personal.id')
-        ->join('users','personal.id','=','users.personal_id')
-        ->select(
-            'evaluador_has_evaluados.evaluacion_id',
-            'evaluador_has_evaluados.evaluador_id',
-            'users.email as email',
-            'users.name as name',
-        )
-        // ->with('evaluacion')
-        ->distinct('users.email','users.name')
-        ->get()
-        ->filter(function ($evaluador) {
-            return $evaluador->estado_pendiente;
-        })
-        ->toArray();
 
-        //de $evaluadores solo quedarme con email y name no repetidos
-        // $evaluadores = $evaluadores->unique('email');
+        // $evaluadores = EvaluadorHasEvaluado::
+        // join('personal','evaluador_has_evaluados.evaluador_id','=','personal.id')
+        // ->join('users','personal.id','=','users.personal_id')
+        // ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+        // ->select(
+        //     'evaluador_has_evaluados.evaluacion_id',
+        //     'evaluador_has_evaluados.evaluador_id',
+        //     'users.email as email',
+        //     'users.name as name',
+        // )
+        // // ->with('evaluacion')
+        // ->distinct('users.email','users.name')
+        // ->get()
+        // ->filter(function ($evaluador) {
+        //     return $evaluador->estado_pendiente;
+        // })
+        // ->toArray();
+
+        $evaluadores_id = EvaluadorHasEvaluado::all()->filter(function ($evaluador) {
+            return $evaluador->estado_pendiente;
+        })->pluck('evaluador_id')->toArray();
+
+        // dd($evaluadores_id);
+
+        $usuarios = User::select('email','name')
+        ->whereIn('personal_id',$evaluadores_id)
+        ->distinct()
+        ->get();
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
-        $evaluadores = collect($evaluadores)->unique('email')->values()->all();
 
-        foreach ($evaluadores as $evaluacion) {
+        foreach ($usuarios as $evaluacion) {
             // Aquí puedes enviar el correo. Asegúrate de tener una clase de correo creada.
             $lista_de_correos_de_evaluadores[] = $evaluacion['email'];
             Mail::to($evaluacion['email'])->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
-            //Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
+//            Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
             \Log::info('Correo enviado', ['email' => $evaluacion['email']]);
         }
 
