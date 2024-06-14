@@ -32,19 +32,19 @@ class ObjetivosPrecargado extends Model
     // set y get de porcentaje_de_participacion
     public function setPorcentajeDeParticipacionAttribute($value)
     {
-        $this->attributes['porcentaje_de_participacion'] = ($value/100);
+        $this->attributes['porcentaje_de_participacion'] = ($value/100.00);
     }
 
     public function getPorcentajeDeParticipacionAttribute($value)
     {
-        return ($value*100);
+        return number_format($value*100.00, 2, '.', '');// ($value*100.00);
     }
 
     // set y get de minimo
     public function setMinimoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['minimo'] = ($value/100);
+            $this->attributes['minimo'] = ($value/100.00);
         } else {
             $this->attributes['minimo'] = $value;
         }
@@ -52,11 +52,10 @@ class ObjetivosPrecargado extends Model
 
     public function getMinimoAttribute($value)
     {
-        
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
 
@@ -64,7 +63,7 @@ class ObjetivosPrecargado extends Model
     public function setMaximoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['maximo'] = ($value/100);
+            $this->attributes['maximo'] = ($value/100.00);
         } else {
             $this->attributes['maximo'] = $value;
         }
@@ -73,9 +72,9 @@ class ObjetivosPrecargado extends Model
     public function getMaximoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
 
@@ -92,9 +91,9 @@ class ObjetivosPrecargado extends Model
     public function getResultadoAnteriorOEsperadoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
 

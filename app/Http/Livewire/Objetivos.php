@@ -285,7 +285,8 @@ class Objetivos extends Component
         ->orderByDesc('grupal')
         ->get();
 
-        $this->subtotal = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->sum('peso_ponderado');
+        $this->subtotal = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->sum('peso_ponderado')*100;
+
         if ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->maximo) {
             $this->total = $this->evaluador_has_evaluado->evaluacion->maximo;
         } elseif ($this->total >= $this->evaluador_has_evaluado->evaluacion->minimo) {

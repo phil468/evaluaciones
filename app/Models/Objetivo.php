@@ -82,18 +82,40 @@ class Objetivo extends Model implements Auditable
     // set y get de porcentaje_de_participacion
     public function setPorcentajeDeParticipacionAttribute($value)
     {
-        $this->attributes['porcentaje_de_participacion'] = ($value/100);
+        $this->attributes['porcentaje_de_participacion'] = ($value/100.00);
     }
         public function getPorcentajeDeParticipacionAttribute($value)
     {
-        return ($value*100);
+        return number_format($value*100.00, 2, '.', '');// ($value*100.00);
+    }
+
+    // set y get de porcentaje_de_logro_STI
+    public function setPorcentajeDeLogroSTIAttribute($value)
+    {
+        $this->attributes['porcentaje_de_logro_STI'] = ($value/100.00);
+    }
+
+    public function getPorcentajeDeLogroSTIAttribute($value)
+    {
+        return number_format($value*100.00, 2, '.', '');// ($value*100.00);
+    }
+
+    // set y get de peso_ponderado
+    public function setPesoPonderadoAttribute($value)
+    {
+        $this->attributes['peso_ponderado'] = ($value/100.00);
+    }
+
+    public function getPesoPonderadoAttribute($value)
+    {
+        return number_format($value*100.00, 2, '.', '');// ($value*100.00);
     }
     
     // set y get de minimo
     public function setMinimoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['minimo'] = ($value/100);
+            $this->attributes['minimo'] = ($value/100.00);
         } else {
             $this->attributes['minimo'] = $value;
         }
@@ -102,9 +124,9 @@ class Objetivo extends Model implements Auditable
     public function getMinimoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
 
@@ -112,7 +134,7 @@ class Objetivo extends Model implements Auditable
     public function setMaximoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['maximo'] = ($value/100);
+            $this->attributes['maximo'] = ($value/100.00);
         } else {
             $this->attributes['maximo'] = $value;
         }
@@ -121,9 +143,9 @@ class Objetivo extends Model implements Auditable
     public function getMaximoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
     
@@ -131,7 +153,7 @@ class Objetivo extends Model implements Auditable
     public function setResultadoAnteriorOEsperadoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['resultado_anterior_o_esperado'] = ($value/100);
+            $this->attributes['resultado_anterior_o_esperado'] = ($value/100.00);
         } else {
             $this->attributes['resultado_anterior_o_esperado'] = $value;
         }
@@ -140,9 +162,9 @@ class Objetivo extends Model implements Auditable
     public function getResultadoAnteriorOEsperadoAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
 
@@ -161,8 +183,6 @@ class Objetivo extends Model implements Auditable
     //     return $this->resultado??'';
     // }
 
-    
-
     // set y get de resultado_anterior_o_esperado
     public function setValorAttribute($value)
     {
@@ -176,12 +196,9 @@ class Objetivo extends Model implements Auditable
     public function getValorAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return ($value*100);
+            return number_format($value*100.00, 2, '.', '');
         } else {
-            return $value;
+            return number_format($value, 2, '.', '');
         }
     }
-
-    
-
 }

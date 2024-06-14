@@ -67,13 +67,11 @@ class ObjetivosPrecargados extends Component
 	}
 
 	public function calcular_maximo() {
-		$this->maximo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->maximo_evaluacion / 100.00 : 0.00;
-		// dd($this-> resultado_anterior_o_esperado);
+		$this->maximo = number_format($this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->maximo_evaluacion / 100.00 : 0.00, 2, '.', '');
 	}
 
 	public function calcular_minimo() {
-		$this->minimo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->minimo_evaluacion / 100.00 : 0.00;
-		// dd($this->minimo);
+		$this->minimo = number_format($this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->minimo_evaluacion / 100.00 : 0.00, 2, '.', '');
 	}
 	
 	public function updatedTipoObjetivoId($value)

@@ -54,9 +54,6 @@ class Evaluacione extends Model
 
     public function getPrimeraFaseActivaAttribute()
     {
-        // dd($this->fecha_inicio_primera_fase_matricula <= now());
-        // dd(now()->startOfDay());
-        // dd($this->fecha_fin_primera_fase_matricula);
         return $this->fecha_inicio_primera_fase_matricula <= now() && $this->fecha_fin_primera_fase_matricula >= now() && $this->tipo_de_evaluacion_id == 2;
     }
 
@@ -97,27 +94,26 @@ class Evaluacione extends Model
         return $this->belongsTo(TipoDeEvaluacione::class,'tipo_de_evaluacion_id','id');
     }
 
-
     // set y get de minimo
     public function setMinimoAttribute($value)
     {
-        $this->attributes['minimo'] = ($value/100);
+        $this->attributes['minimo'] = ($value/100.00);
     }
 
     public function getMinimoAttribute($value)
     {
-        return ($value*100);
+        return number_format($value*100.00, 2, '.', '');
     }
 
     // set y get de maximo
     public function setMaximoAttribute($value)
     {
-        $this->attributes['maximo'] = ($value/100);
+        $this->attributes['maximo'] = ($value/100.00);
     }
 
     public function getMaximoAttribute($value)
     {
-        return ($value*100);
+        return number_format($value*100.00, 2, '.', '');
     }
 
     // public function evaluacione_has_preguntas()
