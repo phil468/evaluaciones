@@ -350,7 +350,7 @@
 										<button 
 										disabled
 										class="rounded-full btn btn-vanguard" 
-										{{-- wire:click="openModalEvidencias"										 --}}
+										wire:click="openModalEvidencias({{$row->id}})"		
 										data-toggle="modal" 
 										data-target="#evidenciaModal"
 										>
