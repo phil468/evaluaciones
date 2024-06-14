@@ -72,7 +72,7 @@ class EvaluadorHasEvaluado extends Model
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()
     {
-        if($this->evaluacion->tipo_de_evaluacion_id == 2)
+        if($this->evaluacion && $this->evaluacion->tipo_de_evaluacion_id == 2)
         {
             if($this->objetivos->count() > $this->objetivosRegistrados->count())
             {
