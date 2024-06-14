@@ -153,20 +153,17 @@ class SeguimientoEvaluadores extends Component
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
         $evaluadores = collect($evaluadores)->unique('email')->values()->all();
-        // dd($evaluadores);
-        // Mail::to('john.delacruz@vanguardfresh.pe')->send(new \App\Mail\RecordatorioEvaluacion($evaluadores[0]->evaluador_id,));
 
         foreach ($evaluadores as $evaluacion) {
             // Aquí puedes enviar el correo. Asegúrate de tener una clase de correo creada.
-           // Mail::to($evaluacion->evaluador->correo_empresa)->send(new \App\Mail\RecordatorioEvaluacion($evaluacion->evaluador->email));
             $lista_de_correos_de_evaluadores[] = $evaluacion['email'];
             Mail::to($evaluacion['email'])->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
+            //Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
+            \Log::info('Correo enviado', ['email' => $evaluacion['email']]);
         }
-        // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($evaluadores[0]['name'],$evaluadores[0]['evaluador_id'],$lista_de_correos_de_evaluadores));
 
-        $message = 'Correos de prueba enviados correctamente';
+        $message = 'Correos enviados correctamente';
         session()->flash('message', $message);
 
-        // return redirect()->back()->with('message', 'Correos enviados correctamente');
     }
 }
