@@ -26,6 +26,7 @@ class ObjetivosListaTable extends LivewireDatatable
         ->leftJoin('personal as evaluados','evaluados.id','=','objetivos.evaluado_id')
         ->leftJoin('personal as evaluadores','evaluadores.id','=','objetivos.evaluador_id')
         ->leftjoin('evaluador_has_evaluados','evaluador_has_evaluados.id','=','objetivos.evaluador_has_evaluado_id' )
+        // ->leftjoin('objetivo_has_evidencias','objetivo_has_evidencias.objetivo_id','=','objetivos.id')
         ;
     }
 
@@ -57,10 +58,6 @@ class ObjetivosListaTable extends LivewireDatatable
 
         //COLUMNA ESTADO DE OBJETIVO
         Column::name('estado.name')->label('Estado')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('estado.color')->label('Estado Color')->searchable()->filterable()->defaultSort('asc')->hide(),
-        // Column::callback(['estado_id'], function ($estado_id) {
-        //     return view('components.estado', ['estado_id' => $estado_id]);
-        // })->label('Estado')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluadores.name')->label('Evaluador')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluados.name')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluador_has_evaluados.cargo_de_evaluado')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
@@ -95,14 +92,34 @@ class ObjetivosListaTable extends LivewireDatatable
             }
             })->label('Máximo')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
 
+        Column::callback(['objetivos.valor','objetivos.tipo_objetivo_id'], function ($valor,$tipo_objetivo_id) {
+            if ($tipo_objetivo_id == 2) { // si es porcentaje
+                return $valor ? ($valor * 100.00).'%' : '';
+                return ($valor).'%';
+            } else {
+                return $valor;
+            }
+            })->label('Valor')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
+
+        //Boton de desarga para evidencias las evidencias tienen la relacion Objetivo->evidencias
+
+        Column::callback(['id'], function ($id) {
+            $evidencias = Objetivo::find($id)->evidencias()->get();
             
-        Column::name('objetivos.valor')->label('Valor')->searchable()->filterable()->defaultSort('asc'),
+            return view('components.download-button', ['evidencias' => $evidencias]);
+        },
+        [],'evidencias')
+        ->label('Evidencias')->alignCenter()->excludeFromExport(),
+
 
         Column::callback(['objetivos.porcentaje_de_logro_STI','objetivos.tipo_objetivo_id'], function ($porcentaje_de_logro_STI,$tipo_objetivo_id) {
             return $porcentaje_de_logro_STI ? ($porcentaje_de_logro_STI * 100).'%' : '';
         })->label('Porcentaje de logro STI')->searchable()->filterable()->defaultSort('asc'),
 
-        Column::name('objetivos.peso_ponderado')->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
+        Column::callback(['objetivos.peso_ponderado', 'objetivos.tipo_objetivo_id'], function ($peso_ponderado, $tipo_objetivo_id) {
+            return $peso_ponderado ? ($peso_ponderado * 100).'%' : $peso_ponderado;
+        })->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
+        //name('objetivos.peso_ponderado')->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
 
         // Column::name('objetivos.descripcion')->label('Objetivo')->searchable()->filterable()->defaultSort('asc'),
         // Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),
