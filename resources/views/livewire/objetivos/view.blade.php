@@ -60,7 +60,7 @@
                             </div>
                         </div>
 						@can('ver-evaluaciones-de-desempeno')
-						<div class="float-right">
+						{{-- <div class="float-right">
 							@if ($evaluador_has_evaluado->jerarquia == 1 && $primera_fase_activa)
 								(Requeridos: {{$cantidad_requerida}} objetivos) 
 								
@@ -74,13 +74,12 @@
 									disabled
 								@endif
 								>
-								{{-- <a title="Nuevo" data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-default rounded-xl" wire:click="edit(0)"> --}}
 
 								<i class="fa fa-plus"></i> Nuevo
 								</button>
 								<br>
 							@endif
-						</div>
+						</div> --}}
 						@endcan
 
 						<br>
@@ -284,58 +283,36 @@
 
 									@else
 										@if ($primera_fase_activa)
-											{{--Formulario para ingresar valor--}}
 											<div class="form-group">
-												{{-- <label for="valor">Valor</label> --}}
 												<input disabled type="number" class="form-control" id="valor" placeholder="Valor" value="{{ $row->valor }}">
 											</div>
 										@else
 												{{ $row->valor }}
 										@endif
 									@endif
-									{{-- wire loading--}}
 									<div wire:loading wire:target="store_valor({{$row->id}})">
 										Actualizando
 									</div>
-									{{-- {{ $row->valor }} --}}
 								</td>
 								<td>{{ $row->porcentaje_de_logro_STI.'%' }}</td>
 								<td>{{ $row->peso_ponderado.'%' }}</td>
 								<td>
 
-									{{-- {{dd($row->evidencias()->get())}} --}}
 									@foreach ($row->evidencias()->get() as $evidencia)
-									{{-- {{dd($row->evidencias()->first())}} --}}
-									<div class="mb-2 btn-group" role="group" aria-label="Basic example">
-
-										<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
-											{{--icono--}}
-											{{-- Descargar --}}
-											{{ $evidencia->name }}
-											{{-- <i class="fa fa-download"></i> --}}
-										</a>
-										
-										<button class="btn btn-danger" wire:click="deleteEvidencia({{$evidencia->id}})" 
-											onclick="confirm('Confirma borrar Evidencia : {{$row->name}}? \nLas Evidencias eliminadas no pueden ser recuperados!')||event.stopImmediatePropagation()"
-											>
-											{{--icono--}}
-											{{-- Quitar --}}
-											<i class="fa fa-trash"></i>
-										</button>
-										</button>
-									</div> <br>
-
+										<div class="mb-2 btn-group" role="group" aria-label="Basic example">
+											<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
+												{{ $evidencia->name }}
+											</a>
+											@if ($segunda_fase_activa)
+												<button class="btn btn-danger" wire:click="deleteEvidencia({{$evidencia->id}})" 
+													onclick="confirm('Confirma borrar Evidencia : {{$row->name}}? \nLas Evidencias eliminadas no pueden ser recuperados!')||event.stopImmediatePropagation()"
+													>
+													<i class="fa fa-trash"></i>
+												</button>
+											@endif
+										</div> 
+										<br>
 									@endforeach
-
-									{{-- @if (isset($row->evidencias()))
-										@foreach ($row->evidencias as $evidencia)
-											<a href="{{ asset('storage/'.$evidencia->name) }}" target="_blank">{{ $evidencia->name }}</a>
-											<button class="btn btn-danger" wire:click="quitarEvidencia({{$evidencia->id}})">Quitar</button>
-										@endforeach											
-									@else
-										
-									@endif --}}
-								
 
 									@if ($segunda_fase_activa)
 										<button 
@@ -347,37 +324,19 @@
 											<i class="fa fa-plus"></i>
 										</button>
 									@else
-										<button 
-										disabled
-										class="rounded-full btn btn-vanguard" 
-										wire:click="openModalEvidencias({{$row->id}})"		
-										data-toggle="modal" 
-										data-target="#evidenciaModal"
-										>
-											<i class="fa fa-plus"></i>
-										</button>
-
 										@if ($primera_fase_activa)
-
-										@else
-
-											@if ($row->evidencias)
-												@foreach ($row->evidencias as $evidencia)
-													<a href="{{ asset('storage/'.$evidencia->ruta) }}" target="_blank">{{ $evidencia->nombre }}</a>
-													{{--boton quitar evidencia--}}
-													<button class="btn btn-danger" wire:click="quitarEvidencia({{$evidencia->id}})">Quitar</button>
-												@endforeach	
-											@endif
-											
+											<button 
+											disabled
+											class="rounded-full btn btn-vanguard" 
+											>
+												<i class="fa fa-plus"></i>
+											</button>
 										@endif
 									@endif
 																		
 								</td>
 
 								<td>
-									{{--estado--}}
-									
-										
 										@if (!$row->estado_id)
 											<span class="badge badge-danger">No Registrado</span>
 										@endif
@@ -391,13 +350,8 @@
 								</td>
 
 								<td>{{ $row->evaluacion->title ?? '' }}</td>
-								
-									{{-- <td>{{ $row->descripcion }}</td>
-									<td>{{ $row->tipo_objetivo->unidad.'('.$row->tipo_objetivo->simbolo.')' }}</td>
-									<td>{{ $row->resultado }}</td>
-									<td>{{ $row->evidencia }}</td> --}}
-									<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
-									<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
+								<td>{{ date_format($row->created_at,'d-m-Y h:i:s a') }}</td>
+								<td>{{ date_format($row->updated_at,'d-m-Y h:i:s a') }}</td>
 
 								</div>
 
@@ -405,7 +359,6 @@
 							</tbody>
 							{{--footer con promedio total que es la suma de promedios--}}
 							@if ($segunda_fase_activa)
-
 								<tfoot>
 									<tr>
 										<td colspan="9" class="text-right">Subtotal</td>
