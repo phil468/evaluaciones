@@ -8,7 +8,24 @@
 
 @section('content')
 
-@livewire('evaluador-has-evaluados', ['tipo_de_evaluacion_id' => $tipo_de_evaluacion_id])
+    @livewire('evaluador-has-evaluados', ['tipo_de_evaluacion_id' => $tipo_de_evaluacion_id])
+
+    @if ( $tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::RESULTADOS )
+        @php
+            // use App\Models\TipoDeEvaluacione;
+
+            $evaluaciones_por_resultado = Auth::user()->personal->evaluaciones()
+            ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
+            ->select('evaluador_has_evaluados.id')
+            ->where('evaluaciones.tipo_de_evaluacion_id', App\Models\TipoDeEvaluacione::RESULTADOS)
+            ->where('evaluaciones.fecha_fin_primera_fase_matricula', '<', now())
+            ->get();
+        @endphp
+
+        @foreach ($evaluaciones_por_resultado as $value)
+            @livewire('objetivos', ['evaluador_has_evaluado_id' => $value->id, 'readOnly' => true])
+        @endforeach
+    @endif
 
 @stop
 

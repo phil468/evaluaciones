@@ -94,6 +94,21 @@ class Personal extends Model
         return $this->hasOne('App\Models\TipoDePersonal', 'id', 'tipo_de_personal_id');
     }
 
+    public function evaluaciones()
+    {
+        return $this->hasMany('App\Models\EvaluadorHasEvaluado', 'evaluado_id', 'id');
+    }
+    
+    public function has_evaluacion($tipo_de_evaluacion_id)
+    {
+        return $this->evaluaciones()->where('tipo_de_evaluacion_id', $tipo_de_evaluacion_id)->exists();
+    }
+
+    public function evaluaciones_por_tipo_de_evaluacion($tipo_de_evaluacion) 
+    {
+        return $this->evaluaciones()->where('tipo_de_evaluacion_id', $tipo_de_evaluacion)->get();
+    }
+
     public function user()
     {
         return $this->hasOne('App\Models\User', 'personal_id', 'id');

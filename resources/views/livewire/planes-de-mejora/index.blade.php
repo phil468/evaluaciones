@@ -14,11 +14,9 @@
         'empleado_id' => $empleado_id??null
     ])
 
-
 @isset($ingreso)
     @livewire('dashboard', ['personal_id' => auth()->user()->personal_id, 'vista_personal' => true, 'title' => 'Resultados de evaluación'])
 @endisset
-
 
 @isset($dashboard)
     @livewire('dashboard', 

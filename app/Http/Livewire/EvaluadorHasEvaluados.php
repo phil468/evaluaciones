@@ -80,7 +80,6 @@ class EvaluadorHasEvaluados extends Component
     }
 	
     public function changeView() {
-        // dd('hola munda');
         $this->view_alternative = !$this->view_alternative;
     }
     

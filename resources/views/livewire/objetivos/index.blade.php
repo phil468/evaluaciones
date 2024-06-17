@@ -1,16 +1,3 @@
-{{-- @extends('layouts.app')
-@section('content')
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            @livewire('objetivos')
-        </div>     
-    </div>   
-</div>
-@endsection
- --}}
-
-
 @extends('adminlte::page')
 
 @section('title', 'Objetivos')
@@ -20,9 +7,7 @@
 @stop
 
 @section('content')
-
-@livewire('objetivos', ['evaluador_has_evaluado_id' => $evaluacion_id])
-
+    @livewire('objetivos', ['evaluador_has_evaluado_id' => $evaluacion_id])
 @stop
 
 @section('css')

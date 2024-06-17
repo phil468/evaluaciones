@@ -1,4 +1,4 @@
-@section('title', __('Objetivos'))
+{{-- @section('title', __('Objetivos')) --}}
 <div class="container-fluid">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
@@ -6,31 +6,23 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">EVALUACIÓN POR RESULTADOS</h5>
+							@if ($readOnly)
+								<h5 class="h5">Evaluación de Desempeño por Resultados Propios</h5>
+							@else
+								<h5 class="h5">Evaluación de Desempeño por Resultados</h5>
+							@endif
 						</div>
-						{{--<div wire:poll.1s>
-							<code><h5>{{ now()->format('H:i:s') }}</h5></code>
-						</div>--}}
+
 						@if (session()->has('message'))
 						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
-						{{-- <div>
-							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
-						</div> --}}
-						<div class="float-right">
-							
-							{{-- @can('ver-evaluaciones-de-desempeno')
-							<div class="btn btn-default rounded-xl" data-toggle="modal" data-target="#createDataModal">
-							<i class="fa fa-plus"></i>  Nuevo
+
+						@if (!$readOnly)
+							<div class="float-right">
+									<a type="button" class="btn btn-default rounded-xl" href="{{url('/evaluaciones-de-desempeno/2')}}" >Volver</a>
 							</div>
-							@endcan --}}
-                            {{-- <button class="btn btn-default btn-lg" wire:click="guardar">Guardar</button> --}}
-							{{-- @if ($evaluadorHasEvaluado->realizado) --}}
-								{{-- <a class="btn btn-default" href="{{url('/evaluaciones-de-desempeno')}}" >Volver</a> --}}
-							{{-- @else --}}
-                            	<a type="button" class="btn btn-default rounded-xl" href="{{url('/evaluaciones-de-desempeno/2')}}" >Volver</a>
-							{{-- @endif --}}
-                        </div>
+						@endif
+						
 					</div>
 				</div>
 				
@@ -39,15 +31,12 @@
 						@include('livewire.objetivos.create')
 						@endcan						
 						@can('ver-evaluaciones-de-desempeno')
-						{{-- @include('livewire.objetivos.update') --}}
 						@include('livewire.objetivos.update_v2')
 						@include('livewire.objetivos.updateValor')
 						@include('livewire.objetivos.evidencias')
 
 						@endcan
 						
-						{{-- @include('livewire.evaluacion.gracias') --}}
-
                         <div class="row">
                             <div class="col-md-6">
                                 <h5 class='h5'>Evaluado:</h5>
@@ -60,26 +49,7 @@
                             </div>
                         </div>
 						@can('ver-evaluaciones-de-desempeno')
-						{{-- <div class="float-right">
-							@if ($evaluador_has_evaluado->jerarquia == 1 && $primera_fase_activa)
-								(Requeridos: {{$cantidad_requerida}} objetivos) 
-								
-								<button
-								title="Nuevo"
-								class="mb-4 btn rounded-xl btn-vanguard" 
-								wire:click="edit(0)" 
-								data-toggle="modal" 
-								data-target="#updateModal"
-								@if ($objetivos->count() >= $cantidad_requerida)
-									disabled
-								@endif
-								>
 
-								<i class="fa fa-plus"></i> Nuevo
-								</button>
-								<br>
-							@endif
-						</div> --}}
 						@endcan
 
 						<br>
@@ -101,17 +71,6 @@
 										<th class="text-white bg-vanguard">Editar</th>
 									@endif
 									@endcan
-									{{-- <th>Meta</th> --}}
-									{{-- <th>% De Participación</th> --}}
-									{{-- <th>Evidencias</th> --}}
-									{{-- <th>Tipo de Objetivo</th> --}}
-									{{-- <th>Resultado Anterior/Esperado</th> --}}
-									{{-- <th>Mínimo</th> --}}
-									{{-- <th>Máximo</th> --}}
-									{{-- <th>Valor</th> --}}
-									{{-- <th>Porcentaje De Logro Sti</th> --}}
-									{{-- <th>Peso Ponderado</th> --}}
-									{{-- <th>Evaluación</th> --}}
 									
 									<th class="text-center text-white bg-vanguard">Metas</th>
 									<th class="text-center text-white bg-vanguard">% Participac.</th>
@@ -127,11 +86,6 @@
 									<th class="text-center text-white bg-vanguard">Estado</th>
 									<th class="text-center text-white bg-vanguard">Evaluación</th>
 									
-									{{-- <th>#</th> 
-									<th>Metas</th>
-									<th>Tipo Objetivo</th>
-									<th>Resultado</th>
-									<th>Evidencia</th> --}}
 									<th class="text-center text-white bg-vanguard">Fecha de creación</th>
 									<th class="text-center text-white bg-vanguard">Fecha de modificación</th>
 																	
@@ -160,14 +114,10 @@
 												<div class="btn-group">
 													@can('ver-evaluaciones-de-desempeno')
 													<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-vanguard" wire:click="edit({{$row->id}})">
-														{{--icono--}}
 														<i class="fa fa-edit"></i>
-														{{-- Editar  --}}
 													</a>
 													@endcan
-													{{-- @can('ver-evaluaciones-de-desempeno')							 
-													<a class="btn rounded-xl btn-sm btn-danger" onclick="confirm('Confirma borrar Objetivo : {{$row->descripcion}}? \nObjetivos borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
-													@endcan   --}}
+
 												</div>
 											@else
 												
@@ -177,34 +127,8 @@
 									@endcan
 								
 								<td 
-								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
 								>{{ $row->meta }}</td>
 								<td>{{ $row->porcentaje_de_participacion}}%</td>
-
-								{{-- @if($isOpen)
-								<div wire:ignore.self class="modal fade" id="evidenciaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="evidenciaModalLabel" aria-hidden="true">
-									<div class="modal-dialog modal-xl" role="document">
-										<div class="text-white modal-header bg-vanguard rounded-t-2xl">
-											<h5 class="h5 modal-title" id="updateModalLabel">
-												Cargar Evidencia
-											</h5>
-											<button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
-												<span wire:click.prevent="cancel()" aria-hidden="true">×</span>
-											</button>
-										</div>
-										<div class="modal-body">
-											
-											<div class="rounded-2xl modal-content">
-												<h2>Cargar Evidencia</h2>
-												<form wire:submit.prevent="uploadEvidencia">
-													<input type="file" wire:model="evidencia_subir">
-													<button type="submit">Subir</button>
-												</form>
-											</div>
-										</div>
-									</div>
-								</div>
-								@endif --}}
 
 								<td 
 								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
@@ -257,8 +181,9 @@
 								</td>
 								
 								<td>
-									@if ($segunda_fase_activa)
+									@if ($segunda_fase_activa && !$readOnly)
 									{{-- QUE SE LEVANTE UN MODAL PARA INGRESAR EL VALOR --}}
+									
 									<a type="button" class="btn btn-link" data-toggle="modal" data-target="#actualizarValorModal" wire:click="openModadActualizarValor({{$row->id}})">
 										{{ 
 										
@@ -303,7 +228,7 @@
 											<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
 												{{ $evidencia->name }}
 											</a>
-											@if ($segunda_fase_activa)
+											@if ($segunda_fase_activa && !$readOnly)
 												<button class="btn btn-danger" wire:click="deleteEvidencia({{$evidencia->id}})" 
 													onclick="confirm('Confirma borrar Evidencia : {{$row->name}}? \nLas Evidencias eliminadas no pueden ser recuperados!')||event.stopImmediatePropagation()"
 													>
@@ -314,7 +239,7 @@
 										<br>
 									@endforeach
 
-									@if ($segunda_fase_activa)
+									@if ($segunda_fase_activa && !$readOnly)
 										<button 
 										class="rounded-full btn btn-vanguard" 
 										wire:click="openModalEvidencias({{$row->id}})"										
@@ -377,20 +302,22 @@
 						@endif		
 					@endif
 					
-					<br>
-					<div>
-						<h1 class="h5">
-							Ejemplos:
-						</h1>
-						<ol>
-							<li>
-								- Reducir en un 10% las incidencias, por intrusión de personal no identificado, al establecimiento durante todo el periodo 24/25 vs 23/24.
-							</li>
-							<li>
-								- Cumplir con 145 inspecciones de actos y condiciones de seguridad durante todo el periodo 24/25
-							</li>
-						</ol>
-					</div>
+						@if (!$readOnly)
+							<br>
+							<div>
+								<h1 class="h5">
+									Ejemplos:
+								</h1>
+								<ol>
+									<li>
+										- Reducir en un 10% las incidencias, por intrusión de personal no identificado, al establecimiento durante todo el periodo 24/25 vs 23/24.
+									</li>
+									<li>
+										- Cumplir con 145 inspecciones de actos y condiciones de seguridad durante todo el periodo 24/25
+									</li>
+								</ol>
+							</div>
+						@endif
 					</div>
 				</div>
                 <div wire:loading wire:target="store,update,create,edit,destroy">

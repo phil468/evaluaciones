@@ -15,7 +15,7 @@
                         <div class="float-left">
 
                             @if ($tipo_de_evaluacion_id == 2)
-                                <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR RESULTADOS</h5>
+                                <h5 class="h5">Evaluación de Desempeño por Resultados de personal a cargo</h5>
                                 @section('title', __('Evaluación de Desempeño por Resultados'))
                             @endif
                             @if ($tipo_de_evaluacion_id == 1)
@@ -53,7 +53,8 @@
                                 <div class="progress-bar {{ $class }}" role="progressbar"
                                     style="width: {{ $porcentaje }}%; font-size: 18px; font-weight: bold; border-radius: 20px;"
                                     aria-valuenow="{{ $porcentaje }}" aria-valuemin="0" aria-valuemax="100">
-                                    {{ $label }} </div>
+                                    {{ $label }} 
+                                </div>
                             </div>
                             <br>
 
@@ -134,7 +135,7 @@
                                                             href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                 @if ($row->evaluacion->primera_fase_activa)
                                                                     @if ($row->cantidad_de_objetivos_registrados == $row->cantidad_de_objetivos_realizados )
-                                                                        class="badge badge-info badge-pill"
+                                                                        class="text-white badge badge-info badge-pill"
                                                                         style="background-color: #6ECBC9; width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                     @else
                                                                         class="badge badge-primary badge-pill"
@@ -144,14 +145,14 @@
                                                                     @if ($row->evaluacion->segunda_fase_activa)
                                                                        
                                                                         @if ($row->cantidad_de_objetivos_completados == $row->cantidad_de_objetivos_realizados )
-                                                                            class="badge badge-info badge-pill"
+                                                                            class="text-white badge badge-info badge-pill"
                                                                             style="background-color: #6ECBC9; width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                         @else
                                                                             class="badge badge-primary badge-pill"
                                                                             style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                         @endif
                                                                     @else
-                                                                        class="badge badge-default badge-pill"
+                                                                        class="text-white badge badge-default badge-pill"
                                                                         style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                     @endif
                                                                 @endif
@@ -184,45 +185,6 @@
                                                         @endif
 
                                                     @endif
-
-                                                    {{-- @if ($row->realizado)
-                                                        @if ($tipo_de_evaluacion_id == 2)
-                                                            <a
-                                                                href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
-                                                                    class="badge badge-secondary badge-pill"
-                                                                    style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                    REALIZADO
-                                                                    ({{ $row->cantidad_de_objetivos_realizados . '/' . $row->cantidad_requerida }})
-                                                                    <i class="far fa-hand-point-up"></i></span>
-                                                            </a>
-                                                        @endif
-                                                    @else
-                                                        <a
-                                                            href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
-                                                                class="badge badge-primary badge-pill"
-                                                                style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                
-                                                                @if ($tipo_de_evaluacion_id == 2)
-                                                                    @if ($row->evaluacion->primera_fase_activa)
-                                                                    REGISTRADOS
-                                                                        ({{ $row->cantidad_de_objetivos_registrados . '/' . $row->cantidad_de_objetivos_realizados }})
-                                                                    @else
-                                                                        @if ($row->evaluacion->segunda_fase_activa)
-                                                                        COMPLETADOS
-                                                                            ({{ $row->cantidad_de_objetivos_completados . '/' . $row->cantidad_de_objetivos_realizados }})
-                                                                        @else
-                                                                        OBJETIVOS
-                                                                            ({{ $row->cantidad_de_objetivos_realizados }})
-                                                                        @endif
-                                                                    @endif
-                                                                @endif
-                                                                @if ($tipo_de_evaluacion_id == 1)
-                                                                PENDIENTE
-                                                                @endif
-
-                                                                <i class="far fa-hand-point-up"></i>
-                                                            </span> </a>
-                                                    @endif --}}
 
                                                 </div>
                                             </div>
@@ -292,7 +254,7 @@
                                                                 href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
                                                                     @if ($row->evaluacion->primera_fase_activa)
                                                                         @if ($row->cantidad_de_objetivos_registrados == $row->cantidad_de_objetivos_realizados )
-                                                                            class="badge badge-info badge-pill"
+                                                                            class="text-white badge badge-info badge-pill"
                                                                             style="background-color: #6ECBC9; width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                         @else
                                                                             class="badge badge-primary badge-pill"
@@ -302,14 +264,14 @@
                                                                         @if ($row->evaluacion->segunda_fase_activa)
                                                                         
                                                                             @if ($row->cantidad_de_objetivos_completados == $row->cantidad_de_objetivos_realizados )
-                                                                                class="badge badge-info badge-pill"
+                                                                                class="text-white badge badge-info badge-pill"
                                                                                 style="background-color: #6ECBC9; width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                             @else
                                                                                 class="badge badge-primary badge-pill"
                                                                                 style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                             @endif
                                                                         @else
-                                                                            class="badge badge-default badge-pill"
+                                                                            class="text-white badge badge-default badge-pill"
                                                                             style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;"
                                                                         @endif
                                                                     @endif
@@ -348,14 +310,15 @@
                                     </table>
                                     {{ $evaluadorHasEvaluados->links() }}
                                 </div>
-                    </div>
-                    @endif
-                @else
+                            @endif
+                
+                    @else
                     <div class="alert alert-default" role="alert">
                         No tiene objetivos pendientes de ingresar.
                     </div>
                     @endif
                 @endisset
+                </div>
 
                 <div wire:loading wire:target="changeView">
                     <x-loading-indicator />

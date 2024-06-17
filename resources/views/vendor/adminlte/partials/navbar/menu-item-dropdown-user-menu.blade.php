@@ -68,7 +68,7 @@
                     {{ __('adminlte::menu.profile') }}
                 </a>
             @endif
-            <a class="btn btn-default btn-flat float-right @if(!$profile_url) btn-block @endif"
+            <a class="btn btn-default rounded-2xl float-right @if(!$profile_url) btn-block @endif"
                href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa fa-fw fa-power-off text-red"></i>
                 {{ __('adminlte::adminlte.log_out') }}

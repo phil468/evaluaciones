@@ -37,6 +37,8 @@ class Objetivos extends Component
 
     public $valor_actualizado;
 
+    public $readOnly;
+
 	protected $rules = 
 	[
 		'grupal' => 'required',
@@ -70,7 +72,7 @@ class Objetivos extends Component
 		// 'resultado_anterior_o_esperado.required_if' => 'El campo Resultado anterior o esperado es obligatorio cuando Objetivo grupal es SÍ.',
 	];
 
-    public function mount($evaluador_has_evaluado_id)
+    public function mount($evaluador_has_evaluado_id, $readOnly = false)
     {        
        
         $this->tipos_objetivo = TiposDeObjetivo::all();
@@ -81,6 +83,7 @@ class Objetivos extends Component
         // dd($this->evaluador_has_evaluado->evaluacion->minimo);
         $this->evaluador = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->evaluador()->get()->first();
         $this->evaluado = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->evaluado()->get()->first();
+        // dd($evaluador_has_evaluado_id, $this->evaluado);
 
         $this->cantidad_requerida = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->cantidad_requerida;
         $this->grupal = $this->evaluador_has_evaluado->grupal;
@@ -88,6 +91,8 @@ class Objetivos extends Component
         $this->evaluar_fases();
 
         $this->objetivoss = Objetivo::latest()->where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->get();
+
+        $this->readOnly = $readOnly;
 
         // $this->cargo = EvaluadorHasEvaluado::where('evaluador_has_evaluado_id',$evaluador_has_evaluado_id);
     }
@@ -297,10 +302,7 @@ class Objetivos extends Component
 
         $keyWord = '%'.$this->keyWord .'%';
         return view('livewire.objetivos.view', [
-            // 'objetivos' => Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)
-            //             ->orderByDesc('grupal')
-            //             ->get(),
-                        // 'tipos_objetivo' => TiposDeObjetivo::all(),
+
         ]);
     }
 	
