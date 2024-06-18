@@ -19,7 +19,6 @@
 
 @section('content')
 
-@livewire('evaluaciones')
 @livewire('planes-configuracion')
 
 @stop

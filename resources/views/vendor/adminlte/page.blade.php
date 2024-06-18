@@ -71,6 +71,7 @@
             $('#updatePlanDataModal').modal('hide');
             $('#actualizarValorModal').modal('hide');
             $('#evidenciaModal').modal('hide');
+            $('#updatePlanesConfiguracionModal').modal('hide');
         });
         
         window.livewire.on('opencreatePlanDataModal', () => {
@@ -93,10 +94,6 @@
             $('#guardarNoAsignacionModal').modal('show');
         });
         
-        // window.livewire.on('openIndicacionesModal', () => {
-        //     $('#indicacionesModal').modal('show');
-        // });
-        
         window.livewire.on('openGraciasModal', () => {
             $('#confirmacionModal').modal('hide');
             $('#graciasModal').modal('show');
@@ -108,6 +105,10 @@
         
         window.livewire.on('openUpdateModal', function () {
             $('#updateModal').modal('show');
+        });
+        
+        window.livewire.on('openUpdatePlanesConfiguracionModal', function () {
+            $('#updatePlanesConfiguracionModal').modal('show');
         });
 
         window.livewire.on('actualizarValorModal', function () {
