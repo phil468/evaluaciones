@@ -112,55 +112,16 @@ class SeguimientoEvaluadores extends Component
     {
         $lista_de_correos_de_evaluadores = array();
 
-        // $evaluadores = EvaluadorHasEvaluado::
-        // where('realizado','!=', 1)
-        // ->orWhere('realizado', null)
-        // ->select(
-        // 'evaluador_has_evaluados.evaluacion_id',
-        // // 'evaluador_has_evaluados.realizado',
-        // 'evaluador_has_evaluados.id','evaluador_id','users.name as name',
-        // 'users.email as email'
-        // )
-        // // ->withCount('objetivos')
-        // // ->withCount('objetivosNoRegistrados')
-        // // ->withCount('objetivosRegistrados')
-
-        // ->join('personal','evaluador_has_evaluados.evaluador_id','=','personal.id')
-        // ->join('users','personal.id','=','users.personal_id')
-
-        // ->distinct()
-        // ->orderBy('evaluador_id')
-        // ->get()->toArray();
-    
-
-        // $evaluadores = EvaluadorHasEvaluado::
-        // join('personal','evaluador_has_evaluados.evaluador_id','=','personal.id')
-        // ->join('users','personal.id','=','users.personal_id')
-        // ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
-        // ->select(
-        //     'evaluador_has_evaluados.evaluacion_id',
-        //     'evaluador_has_evaluados.evaluador_id',
-        //     'users.email as email',
-        //     'users.name as name',
-        // )
-        // // ->with('evaluacion')
-        // ->distinct('users.email','users.name')
-        // ->get()
-        // ->filter(function ($evaluador) {
-        //     return $evaluador->estado_pendiente;
-        // })
-        // ->toArray();
-
         $evaluadores_id = EvaluadorHasEvaluado::all()->filter(function ($evaluador) {
             return $evaluador->estado_pendiente;
         })->pluck('evaluador_id')->toArray();
-
-        // dd($evaluadores_id);
 
         $usuarios = User::select('email','name')
         ->whereIn('personal_id',$evaluadores_id)
         ->distinct()
         ->get();
+
+        // dd($usuarios);
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 

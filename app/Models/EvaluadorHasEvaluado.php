@@ -63,7 +63,7 @@ class EvaluadorHasEvaluado extends Model
         return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id');
     }
 
-    // objeticos con estado null
+    // objetivos con estado null
     public function objetivosNoRegistrados()
     {
         return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id')->where('estado_id',null);
@@ -71,36 +71,66 @@ class EvaluadorHasEvaluado extends Model
 
     public function objetivosRegistrados()
     {
-        return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id')->where('estado_id',1);
+        return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id')->whereIn('estado_id',[1,2]);
+    }
+    
+    public function objetivosRealizados()
+    {
+        return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id')->where('estado_id',2);
     }
 
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()
     {
-        if($this->evaluacion && $this->evaluacion->tipo_de_evaluacion_id == 2)
-        {
-            if($this->objetivos->count() > $this->objetivosRegistrados->count())
-            {
-                return true;
+        if($this->evaluacion && $this->evaluacion->activa) {
+            if($this->evaluacion->tipo_de_evaluacion_id == 2) {
+                if($this->evaluacion->primera_fase_activa) {
+                    if($this->objetivos->count() > $this->objetivosRegistrados->count()) {
+                        // dd('1');
+                        return true;
+                    }
+                    else {
+                        // dd('2');
+                        return false;
+                    }
+                }
+                elseif($this->evaluacion->segunda_fase_activa) {
+                    if($this->objetivos->count() > $this->objetivosRealizados->count()) {
+                        // dd('3');
+                        return true;
+                    }
+                    else {
+                        // dd('4');
+                        return false;
+                    }
+                }
+                else {
+                    // dd('5');
+                    return false;
+                }
             }
-            else
-            {
+            elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
+                if($this->realizado == 1) {
+                    // dd('6');
+                    return false;
+                }
+                else {
+                    // dd('7');
+                    return true;
+                }
+            }
+            else {
+                // dd('8');
                 return false;
             }
         }
-        else
-        {
-            if($this->realizado == 1)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+        else {
+            // dd('9');
+            return false;
         }
+        // dd('10');
+        return false;
     }
-
 
     // campo total_realizados 
     public function getTotalRealizadosAttribute()
@@ -108,22 +138,18 @@ class EvaluadorHasEvaluado extends Model
         return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->count();
     }
 
-    public function getCantidadDeObjetivosRealizadosAttribute()
+    public function getCantidadDeObjetivosAttribute()
     {
-        // return $this->objetivos()->registrados()->count();
-        return Objetivo::where('evaluador_has_evaluado_id',$this->id)
-        // ->where('estado_id',1)
-        ->get()
+        return Objetivo::
+        where('evaluador_has_evaluado_id',$this->id)
         ->count();
     }
 
     public function getCantidadDeObjetivosRegistradosAttribute()
     {
-        // dd(Objetivo::where('evaluador_has_evaluado_id',$this->id)
-        // ->where('estado_id',1)->get());
-        return Objetivo::where('evaluado_id',$this->evaluado_id)
-        ->where('evaluacion_id',$this->evaluacion_id)
-        ->where('estado_id',1)->get()
+        return Objetivo::
+        where('evaluador_has_evaluado_id',$this->id)
+        ->whereIn('estado_id',[1,2])
         ->count();
     }
 
@@ -141,23 +167,23 @@ class EvaluadorHasEvaluado extends Model
     //quiero contar objetivos con estado_id null relacionados por evaluado_id y evaluacion_id
     public function getCantidadDeObjetivosNoRegistradosAttribute()
     {
-        return Objetivo::where('evaluado_id',$this->evaluado_id)
-        ->where('evaluacion_id',$this->evaluacion_id)
-        ->where('estado_id',null)->get()
+        return Objetivo::
+        where('evaluador_has_evaluado_id',$this->id)
+        ->where('estado_id',null)
         ->count();
     } 
     
     public function getCantidadDeObjetivosCompletadosAttribute()
     {
         return Objetivo::where('evaluador_has_evaluado_id',$this->id)
-        ->where('estado_id',2)->get()
+        ->where('estado_id',2)
         ->count();
     }
 
     public function getCantidadDeObjetivosNoCompletadosAttribute()
     {
         return Objetivo::where('evaluador_has_evaluado_id',$this->id)
-        ->where('estado_id',null)->get()
+        ->whereIn('estado_id',[null,1])
         ->count();
     }
     

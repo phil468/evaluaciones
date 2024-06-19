@@ -41,6 +41,7 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
     public function columns()
     {
         return [
+            // Column::name('id'),
             Column::callback(['evaluador_has_evaluados.id'], function ($id) {
                 return view('table-actions-3', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
