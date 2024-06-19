@@ -19,7 +19,7 @@ class Objetivos extends Component
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $resultado, $evaluado_id, $evaluador_id, $tipo_objetivo_id, $descripcion, $evidencia;
 
-    public $meta, $porcentaje_de_participacion, $evidencias, $resultado_anterior_o_esperado, $minimo, $maximo, $valor, $porcentaje_de_logro_STI, $peso_ponderado, $evaluacion_id, $simbolo;
+    public $meta, $porcentaje_de_participacion, $evidencias, $resultado_anterior_o_esperado, $minimo, $maximo, $valor, $porcentaje_de_logro_STI, $peso_ponderado, $evaluacion_id, $simbolo, $estado_id;
 
     public $updateMode = false;
     public $evaluador_has_evaluado_id, $evaluador, $evaluado, $evaluador_has_evaluado, $cantidad_requerida;
@@ -218,18 +218,10 @@ class Objetivos extends Component
     
 	public function updatedResultadoAnteriorOEsperado($value)
 	{
-        // dd($value);
-
-        // if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            
-            $this->calcular_minimo();
-            $this->calcular_maximo();
-
-            // $this->resultado_anterior_o_esperado = $value/100;
-        // } else {
-
-            // $this->resultado_anterior_o_esperado = $value;
-        // }
+        $this->calcular_minimo();
+        $this->calcular_maximo();
+        $this->calcular_porcentaje_de_logro_STI();
+        $this->calcular_peso_ponderado();
     }
 
     // public function updatedValor($value)
@@ -292,9 +284,10 @@ class Objetivos extends Component
 
         $this->subtotal = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->sum('peso_ponderado')*100;
 
+        // dd($this->subtotal,$this->evaluador_has_evaluado->evaluacion->maximo);
         if ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->maximo) {
             $this->total = $this->evaluador_has_evaluado->evaluacion->maximo;
-        } elseif ($this->total >= $this->evaluador_has_evaluado->evaluacion->minimo) {
+        } elseif ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->minimo) {
             $this->total = $this->subtotal;
         } else {
             $this->total = 0.00;
@@ -369,36 +362,35 @@ class Objetivos extends Component
 
     public function calcular_minimo()
     {
-        $this->minimo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->minimo_evaluacion / 100 : 0;
+        // number_format($value*100.00, 2, '.', '');
+        $this->minimo = $this-> resultado_anterior_o_esperado ? 
+        number_format(($this-> resultado_anterior_o_esperado * $this->minimo_evaluacion / 100), 2, '.', '')  
+        : 0;
     }
 
     public function calcular_maximo()
     {
-        $this->maximo = $this-> resultado_anterior_o_esperado ? $this-> resultado_anterior_o_esperado * $this->maximo_evaluacion / 100 : 0;
+        $this->maximo = $this-> resultado_anterior_o_esperado ? 
+        number_format(($this-> resultado_anterior_o_esperado * $this->maximo_evaluacion / 100), 2, '.', '')
+        : 0;
     }
 
     public function calcular_porcentaje_de_logro_STI() {
-        // dd($this->valor,0);
-
             if ($this->valor > $this->maximo) {
-                // dd($this->valor,1);
-
                 $this->porcentaje_de_logro_STI = $this->maximo_evaluacion;
             }
             else if ($this->valor >= $this->minimo) {
-                // dd($this->valor, $this->minimo, 2);
-
-                $this->porcentaje_de_logro_STI = $this->resultado_anterior_o_esperado !=0 ? ($this->valor/$this->resultado_anterior_o_esperado)*100 : 0;
+                $this->porcentaje_de_logro_STI = $this->resultado_anterior_o_esperado !=0 ? 
+                number_format((($this->valor/$this->resultado_anterior_o_esperado)*100), 2, '.', '')
+                : 0;
             } else {
-                // dd($this->valor,3);
-
                 $this->porcentaje_de_logro_STI = 0;
             }
     }
 
     public function calcular_peso_ponderado()
     {
-        $this->peso_ponderado = ($this->porcentaje_de_participacion * $this->porcentaje_de_logro_STI) / 100;
+        $this->peso_ponderado = number_format((($this->porcentaje_de_participacion * $this->porcentaje_de_logro_STI) / 100), 2, '.', '');
     }
 
     public function store()
@@ -526,6 +518,7 @@ class Objetivos extends Component
 			$this->peso_ponderado = $record-> peso_ponderado;
 			$this->evaluacion_id = $record-> evaluacion_id;
 			$this->simbolo = $record->tipo_objetivo->simbolo??null;
+            $this->estado_id = $record->estado_id;
 
             // $this->simbolo = TiposDeObjetivo::find($this->tipo_objetivo_id)->simbolo;
 
@@ -579,7 +572,7 @@ class Objetivos extends Component
                     'peso_ponderado' => $this-> peso_ponderado,
 
                     'evaluacion_id' => $this-> evaluacion_id,
-                    'estado_id' => 1,
+                    'estado_id' => $this->estado_id ?? 1,
                 ]);
 
                 // dd( $record);

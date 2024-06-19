@@ -118,21 +118,6 @@ class Evaluadores extends Component
     //Enviar correo de notificación
     public function enviarCorreo()
     {
-        // // traer todos los evaluadores en la table EvaluadorHasEvaluado
-        // $evaluadores = EvaluadorHasEvaluado::all();
-
-        // /*hacer un foreach y enviar su usuario y contraseña si no tiene usuario entonces crear su usuario y contraseña y enviarla
-        // se llega al usuario así: $evaluadores->evaluador->user->email
-        // se llega a la contraseña así: $evaluadores->evaluador->user->password*/
-        // foreach ($evaluadores as $evaluador) {
-        //     $mail = $evaluador->evaluador->user->email;
-        //     $password = $evaluador->evaluador->user->password;
-        //     Mail::to('recipient@example.com')->send(new EvaluadorNotification($mail, $password));
-
-
-
-        //     # code...
-        // }
         
     }
 

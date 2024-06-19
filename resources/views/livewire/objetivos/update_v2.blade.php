@@ -38,7 +38,7 @@
                                 <div class="form-group col-sm-12 col-md-12 col-lg-8 col-xl-6">
                                     <label for="meta">Meta*</label>
                                     <textarea
-                                     @if (!$primera_fase_activa)
+                                    @if (!$primera_fase_activa)
                                         disabled
                                     @endif  
                                     wire:model.defer="meta" type="text" class="form-control" id="meta" placeholder="Meta" id="" cols="30" rows="2">
@@ -199,9 +199,17 @@
                 >Cerrar</button>
 
                 @if ($this->selected_id == 0)                    
-                    <button type="button" wire:loading.attr="disabled" wire:click.prevent="store()" class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
+                    <button
+                    @if (!$primera_fase_activa)
+                        disabled
+                    @endif 
+                    type="button" wire:loading.attr="disabled" wire:click.prevent="store()" class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
                 @else
-                    <button type="button" wire:loading.attr="disabled" wire:click.prevent="update()" class="btn btn-vanguard rounded-xl">Guardar</button>
+                    <button 
+                    @if (!$primera_fase_activa)
+                        disabled
+                    @endif 
+                    type="button" wire:loading.attr="disabled" wire:click.prevent="update()" class="btn btn-vanguard rounded-xl">Guardar</button>
                 @endif
                 
                 {{-- <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary rounded-xl" data-dismiss="modal">Cerrar</button>

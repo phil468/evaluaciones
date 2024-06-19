@@ -96,48 +96,39 @@
 								<div wire:key="objetivoss-field-{{ $row->id }}">
 
 								<tr class="text-center">
-									
 
 									@if ($row->grupal)
 										<td class="bg-info">GRUPAL</td>
 									@else
 										<td class="bg-primary">INDIVIDUAL</td>
 									@endif
-									{{-- <td>{{ $loop->iteration }}</td> --}}
-									{{-- <td>{{ $row->grupal? 'Sí' : 'No' }}</td> --}}
-								
-																	
+																
 									@can('ver-evaluaciones-de-desempeno','borrar-objetivo')
-									@if ($primera_fase_activa)
-										<td width="90" class="">
-											@if (!$row->grupal)
-												<div class="btn-group">
-													@can('ver-evaluaciones-de-desempeno')
-													<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-vanguard" wire:click="edit({{$row->id}})">
-														<i class="fa fa-edit"></i>
-													</a>
-													@endcan
-
-												</div>
-											@else
-												
-											@endif
-										</td>
-									@endif
+										@if ($primera_fase_activa)
+											<td width="90" class="">
+												@if (!$row->grupal)
+													<div class="btn-group">
+														@can('ver-evaluaciones-de-desempeno')
+															<a data-toggle="modal" data-target="#updateModal" class="btn rounded-xl btn-vanguard" wire:click="edit({{$row->id}})">
+																<i class="fa fa-edit"></i>
+															</a>
+														@endcan
+													</div>
+												@else
+													
+												@endif
+											</td>
+										@endif
 									@endcan
 								
 								<td 
 								>{{ $row->meta }}</td>
 								<td>{{ $row->porcentaje_de_participacion}}%</td>
 
-								<td 
-								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
-								>
+								<td>
 									{{ $row->tipo_objetivo ? $row->tipo_objetivo->unidad.'('.$row->tipo_objetivo->simbolo.')' : '' }}
 								</td>
-								<td 
-								{{-- @class(['table-secondary' => !($row->grupal)]) --}}
-								>
+								<td>
 									{{ 
 										$row->tipo_objetivo ? 
 											($row->tipo_objetivo->id == 2 ? 
@@ -150,8 +141,6 @@
 									}}
 								</td>
 								<td>
-									{{-- {{ ($row->minimo).'%' }} --}}
-
 									{{ 
 										$row->tipo_objetivo ? 
 											($row->tipo_objetivo->id == 2 ? 
@@ -162,11 +151,8 @@
 												)
 										: $row->minimo 
 									}}
-									
 								</td>
 								<td>
-									{{-- {{ ($row->maximo).'%' }} --}}
-
 									{{ 
 										$row->tipo_objetivo ? 
 											($row->tipo_objetivo->id == 2 ? 
@@ -177,44 +163,37 @@
 												)
 										: $row->maximo 
 									}}
-									
 								</td>
 								
 								<td>
-									@if ($segunda_fase_activa && !$readOnly)
+									{{-- @if ($segunda_fase_activa && !$readOnly) --}}
 									{{-- QUE SE LEVANTE UN MODAL PARA INGRESAR EL VALOR --}}
 									
-									<a type="button" class="btn btn-link" data-toggle="modal" data-target="#actualizarValorModal" wire:click="openModadActualizarValor({{$row->id}})">
-										{{ 
-										
-										
-											$row->valor
-											?
-
-											($row->tipo_objetivo ? 
-											($row->tipo_objetivo->id == 2 ? 
-												($row->valor).'%' 
-											: 	($row->tipo_objetivo->id == 1 ? 
-													number_format($row->valor, 2, '.', ',')
-												: $row->valor)
-												)
-											: $row->valor )
-
-
-											
-											:'Ingresar Valor' 
-										}}
-									</a>
-
-									@else
-										@if ($primera_fase_activa)
-											<div class="form-group">
-												<input disabled type="number" class="form-control" id="valor" placeholder="Valor" value="{{ $row->valor }}">
-											</div>
-										@else
-												{{ $row->valor }}
-										@endif
+									@if ($segunda_fase_activa && !$readOnly)
+										<button 
+										type="button" 
+										class="btn btn-link" 
+										data-toggle="modal" 
+										data-target="#actualizarValorModal" 
+										wire:click="openModadActualizarValor({{$row->id}})">
 									@endif
+										{{ 
+											$row->valor ?
+												( $row->tipo_objetivo ? 
+													($row->tipo_objetivo->id == 2 ? 
+														($row->valor).'%' 
+													: 	($row->tipo_objetivo->id == 1 ? 
+															number_format($row->valor, 2, '.', ',')
+														: $row->valor)
+													)
+												: $row->valor )
+											: (($segunda_fase_activa && !$readOnly) ? 'Ingresar Valor' : '')
+										}}
+										
+									@if ($segunda_fase_activa && !$readOnly)
+										</button>
+									@endif
+
 									<div wire:loading wire:target="store_valor({{$row->id}})">
 										Actualizando
 									</div>
@@ -222,7 +201,6 @@
 								<td>{{ $row->porcentaje_de_logro_STI.'%' }}</td>
 								<td>{{ $row->peso_ponderado.'%' }}</td>
 								<td>
-
 									@foreach ($row->evidencias()->get() as $evidencia)
 										<div class="mb-2 btn-group" role="group" aria-label="Basic example">
 											<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
@@ -244,16 +222,14 @@
 										class="rounded-full btn btn-vanguard" 
 										wire:click="openModalEvidencias({{$row->id}})"										
 										data-toggle="modal" 
-										data-target="#evidenciaModal"
-										>
+										data-target="#evidenciaModal">
 											<i class="fa fa-plus"></i>
 										</button>
 									@else
 										@if ($primera_fase_activa)
 											<button 
 											disabled
-											class="rounded-full btn btn-vanguard" 
-											>
+											class="rounded-full btn btn-vanguard">
 												<i class="fa fa-plus"></i>
 											</button>
 										@endif
@@ -262,16 +238,15 @@
 								</td>
 
 								<td>
-										@if (!$row->estado_id)
-											<span class="badge badge-danger">No Registrado</span>
-										@endif
-										@if ($row->estado_id == 1)
-											<span class="badge badge-warning">Registrado</span>
-										@endif
-										@if ($row->estado_id == 2)
-											<span class="badge badge-success">Realizado</span>
-										@endif
-									
+									@if (!$row->estado_id)
+										<span class="badge badge-danger">No Registrado</span>
+									@endif
+									@if ($row->estado_id == 1)
+										<span class="badge badge-warning">Registrado</span>
+									@endif
+									@if ($row->estado_id == 2)
+										<span class="badge badge-success">Realizado</span>
+									@endif
 								</td>
 
 								<td>{{ $row->evaluacion->title ?? '' }}</td>
@@ -283,7 +258,8 @@
 								@endforeach
 							</tbody>
 							{{--footer con promedio total que es la suma de promedios--}}
-							@if ($segunda_fase_activa)
+							{{-- {{dd($row->evaluacion->segunda_fase_iniciada)}} --}}
+							@if ($row->evaluacion->segunda_fase_iniciada)
 								<tfoot>
 									<tr>
 										<td colspan="9" class="text-right">Subtotal</td>
