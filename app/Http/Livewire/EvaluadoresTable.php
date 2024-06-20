@@ -25,122 +25,123 @@ class EvaluadoresTable extends LivewireDatatable
 
     public function builder()
     {       
-        return EvaluadorHasEvaluado::query()
-         ->select('evaluador_has_evaluados.*')
-        ->addSelect([
-            'realizados' => EvaluadorHasEvaluado::selectRaw('count(*)')
-                ->whereColumn('evaluador_id', 'evaluador_has_evaluados.evaluador_id')
-                ->where('realizado', 1),
-            'total' => EvaluadorHasEvaluado::selectRaw('count(*)')
-        ])
+        return 
+        // dd(
+        EvaluadorHasEvaluado::query()
+        ->select('evaluador_has_evaluados.*')
+        // ->addSelect([
+        //     'realizados_competencias' => EvaluadorHasEvaluado::selectRaw('count(*)')->from('evaluador_has_evaluados as eva')->where('eva.evaluador_id', DB::raw('evaluador_has_evaluados.evaluador_id'))
+        //     ->join('evaluaciones','eva.evaluacion_id','=','evaluaciones.id')
+        //     ->where('evaluaciones.tipo_de_evaluacion_id',1)
+        //     ->where('eva.realizado',1),
+        //     'total_compretencias' => EvaluadorHasEvaluado::selectRaw('count(*)')->from('evaluador_has_evaluados as eva1')
+        //     ->where('eva1.evaluador_id', DB::raw('evaluador_has_evaluados.evaluador_id'))
+        //     ->join('evaluaciones','eva1.evaluacion_id','=','evaluaciones.id')
+        //     ->where('evaluaciones.tipo_de_evaluacion_id',1),
+        //     'total_resultados' => EvaluadorHasEvaluado::selectRaw('count(*)')->from('evaluador_has_evaluados as eva2')
+        //     ->where('eva2.evaluador_id', DB::raw('evaluador_has_evaluados.evaluador_id'))
+        //     ->join('evaluaciones','eva2.evaluacion_id','=','evaluaciones.id')
+        //     ->where('evaluaciones.tipo_de_evaluacion_id',2),
+        //     // 'pendientes' => EvaluadorHasEvaluado::all()
+        //     // ->filter(function ($evaluador) {
+        //     //     return $evaluador->estado_pendiente;
+        //     // })->count(),
+        //     // // ->get()
+        //     // ->filter(function ($evaluador) {
+        //     //     return $evaluador->estado_pendiente;
+        //     // }),
+        // ])
+        ->from('evaluador_has_evaluados as evaluador_has_evaluados')
         ->groupBy('evaluador_has_evaluados.evaluador_id')
-        ->orderByRaw('realizados DESC')
-        ->where('evaluador_has_evaluados.deleted_at',null)
-        ->leftJoin('personal','personal.id','=','evaluador_has_evaluados.evaluador_id');
+        // ->orderByRaw('realizados_competencias DESC')
+        ->whereNull('evaluador_has_evaluados.deleted_at')
+        ->leftJoin('personal','personal.id','=','evaluador_has_evaluados.evaluador_id')
+        // ->get()
+        // )
+        ;
     }
 
     public $model = EvaluadorHasEvaluado::class;
 
     public function columns()
     {
-        //
-        // dd($this->model::query()->where('id', '=', $this->model::query()->first()->id)->get()->first()->realizados);
+        // dd($this->builder()->get());
         return [
             Column::name('personal.name')->label('Evaluador')->searchable()->filterable(),
-            Column::callback('evaluador_has_evaluados.evaluador_id',function ($value) {
+            
+            Column::callback(['evaluador_id'],function ($value) {
                
-                // $realizados = $this->model::query()->where('evaluador_has_evaluados.evaluador_id',$value)->first()->realizados;
-                // $total = $this->model::query()->where('evaluador_has_evaluados.evaluador_id',$value)->first()->total;
-                
-                // $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
-                // $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
-
-                // //mostrar una barra de progreso
-                // if($total == 0){
-                //     $porcentaje = 0;
-                // }else {
-                //     $porcentaje = ($realizados/$total)*100;
-                //     $porcentaje = round($porcentaje,2);                    
-                // }
-                
-                // if ($realizados == 0) {
-                //     $class = 'bg-white';
-                //     $porcentaje = 100;
-                // } else if ($total == $realizados) {
-                //     $class = 'bg-primary';
-                // } else {
-                //     $class = 'bg-secondary';
-                // }
-                
-                // $barra = '<div class="progress" style="height: 25px;">
-                // <div class="progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
-                // </div>';
-                // return $barra;
-
-
                 $barra='';
                 for ($i=1; $i <3 ; $i++) {
-                    $realizados = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
-                    ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
-                    ->where('evaluaciones.tipo_de_evaluacion_id',$i)
-                    ->where('evaluador_has_evaluados.realizado',1)
-                    ->count();
-                    
-                    $total = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
-                    ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
-                    ->where('evaluaciones.tipo_de_evaluacion_id',$i)
-                    // ->where('evaluador_has_evaluados.realizado',1)
-                    ->count();
+                    if ($i ==2) {
+                        $pendientes = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id', $value)
+                        ->select('evaluador_has_evaluados.*')
+                        ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                        ->where('evaluaciones.tipo_de_evaluacion_id',2)
+                        ->get()->filter(function ($evaluador) {
+                            return $evaluador->estado_no_realizado;
+                        })->count();
 
+                        $total = EvaluadorHasEvaluado::
+                        where('evaluador_has_evaluados.evaluador_id', $value)
+                        ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                        ->where('evaluaciones.tipo_de_evaluacion_id',2)
+                        ->count();
+
+                        $realizados = $total-$pendientes;
+
+                    } 
+                    if ($i == 1) {
+                        $realizados = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+                        ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                        ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+                        ->where('evaluador_has_evaluados.realizado',1)
+                        ->count();
+                        
+                        $total = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+                        ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                        ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+                        ->count();
+                    }
                     if ($total > 0) {
                         //mostrar una barra de progreso
                         $porcentaje = ($realizados/$total)*100;
                         $porcentaje = round($porcentaje,2);                
                         
                         if ($realizados == 0) {
-                            $class = 'bg-white';
+                            $class = 'bg-primary';
                             $porcentaje = 100;
                         } else if ($total == $realizados) {
-                            $class = 'bg-primary';
-                        } else {
                             $class = 'bg-secondary';
+                        } else {
+                            $class = 'bg-primary';
                         }
                         
                         $tipo_de_evaluacion = TipoDeEvaluacione::find($i);
                         
-                        $barra = $barra .'
+                        $barra = $barra
+                        // .$realizados
+                        // .$total
+                         .'
                         
                         <h5 class="">'. ucfirst(mb_strtolower($tipo_de_evaluacion->name)).'</h5>
                         <div class="mb-3 progress" style="height: 25px;">
-                        <div class="progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
+                        <div class="rounded-xl progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
                         </div>
                         ';
                     }
-                    
                 }
                 
                 return $barra;
                 
 
             })->label('Avance')->exportCallback(function ($value) {
-                
-                // $realizados = $this->model::query()->where('evaluador_id',$value)->first()->realizados;
-                // $total = $this->model::query()->where('evaluador_id',$value)->first()->total;
-                
                 $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
                 $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
                 return $realizados.' de '.$total;
             }),
-            
-            // Column::callback('evaluador_has_evaluados.evaluador_id',function ($value) {
-            //     $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
-            //     return (int) $realizados;
-            // })->label('Realizadoss')
-            // ->filterable()->searchable()->sortBy(function ($builder, $direction) {
-            //     // dd($builder);
-            //     return $builder->orderBy('realizados', $direction);
-            // }),
-            
+            // Column::raw('realizados_competencias'),
+           
         ];
 
     }

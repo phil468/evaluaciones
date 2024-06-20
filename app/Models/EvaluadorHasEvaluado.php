@@ -82,55 +82,179 @@ class EvaluadorHasEvaluado extends Model
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()
     {
+        if($this->evaluacion) {
+            if($this->evaluacion->activa) {
+                if($this->evaluacion->tipo_de_evaluacion_id == 2) {
+                    if($this->evaluacion->primera_fase_activa) {
+                        if($this->objetivos->count() > $this->objetivosRegistrados->count()) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }elseif($this->evaluacion->segunda_fase_activa) {
+                        if($this->objetivos->count() > $this->objetivosRealizados->count()) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
+                    if($this->realizado == 1) {
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+        return false;
+    }
+
+        //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
+        public function getEstadoNoRealizadoAttribute()
+        {
+            if($this->evaluacion) {
+                // if($this->evaluacion->activa) {
+                    if($this->evaluacion->tipo_de_evaluacion_id == 2) {
+                        if($this->evaluacion->primera_fase_activa) {
+                            if($this->objetivos->count() > $this->objetivosRegistrados->count()) {
+                                // dd(8);
+                                return true;
+                            }
+                            else {
+                                
+                                // dd(9);
+                                return false;
+                            }
+                        }elseif($this->evaluacion->segunda_fase_activa) {
+                            if($this->objetivos->count() > $this->objetivosRealizados->count()) {
+                                
+                                // dd(10);
+                                return true;
+                            }
+                            else {
+                                
+                                // dd(11);
+                                return false;
+                            }
+                        }else {
+
+                            if($this->evaluacion->antes_primera_fase) {
+                                if($this->objetivos->count() > $this->objetivosRegistrados->count()) {
+                                    // dd(1);
+                                    return true;
+                                }
+                                else {
+                                    // dd(2);
+                                    return false;
+                                }
+                            } elseif($this->evaluacion->despues_segunda_fase) {
+                                if($this->objetivos->count() > $this->objetivosRealizados->count()) {
+                                    // dd(3);
+                                    return true;
+                                }
+                                else {
+                                    // dd(4);
+                                    return false;
+                                }
+                            } else {
+                                if($this->objetivos->count() > $this->objetivosRegistrados->count()) {
+                                    // dd(5);
+                                    return true;
+                                }
+                                else {
+                                    // dd(6);
+                                    return false;
+                                }
+                            }
+                            // dd(7);
+                            return false;
+                        }
+                    }
+                    elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
+                        if($this->realizado == 1) {
+                            // dd(13);
+                            return false;
+                        }
+                        else {
+                            // dd(14);
+                            return true;
+                        }
+                    }
+                    else {
+                        // dd(15);
+                        return false;
+                    }
+                // } else {
+                //     dd(16);
+                //     return false;
+                // }
+            }
+            else {
+                // dd(17);
+                return false;
+            }
+            // dd(18);
+            return false;
+        }
+
+    public function getCantidadPendienteAttribute($query)
+    {
         if($this->evaluacion && $this->evaluacion->activa) {
             if($this->evaluacion->tipo_de_evaluacion_id == 2) {
                 if($this->evaluacion->primera_fase_activa) {
                     if($this->objetivos->count() > $this->objetivosRegistrados->count()) {
-                        // dd('1');
                         return true;
                     }
                     else {
-                        // dd('2');
                         return false;
                     }
                 }
                 elseif($this->evaluacion->segunda_fase_activa) {
                     if($this->objetivos->count() > $this->objetivosRealizados->count()) {
-                        // dd('3');
                         return true;
                     }
                     else {
-                        // dd('4');
                         return false;
                     }
                 }
                 else {
-                    // dd('5');
                     return false;
                 }
             }
             elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
                 if($this->realizado == 1) {
-                    // dd('6');
                     return false;
                 }
                 else {
-                    // dd('7');
                     return true;
                 }
             }
             else {
-                // dd('8');
                 return false;
             }
         }
         else {
-            // dd('9');
             return false;
         }
-        // dd('10');
         return false;
     }
+
 
     // campo total_realizados 
     public function getTotalRealizadosAttribute()

@@ -31,34 +31,54 @@ class EvaluadorHasEvaluados extends Component
 		$keyWord = '%'.$this->keyWord .'%';
 
         $id_personal = auth()->user()->personal->id;
-                $realizados = EvaluadorHasEvaluado::
+        
+        if ($this->tipo_de_evaluacion_id == 1) {
+            $realizados = EvaluadorHasEvaluado::
                 where('evaluador_has_evaluados.evaluador_id',$id_personal)
                 ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
                 ->where('realizado',1)
                 ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                 ->count();
-                
-                $total = EvaluadorHasEvaluado::
+            
+            $total = EvaluadorHasEvaluado::
                 where('evaluador_has_evaluados.evaluador_id',$id_personal)
                 ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
                 ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                 ->count();
+        }
 
-                //mostrar una barra de progreso
-                $porcentaje =  $total == 0 ? 0 : ($realizados/$total)*100;
-                $porcentaje = round($porcentaje,2);
-                
-                if ($realizados == 0) {
-                    $class = 'bg-secondary';
-                    $porcentaje = 100;
-                    $label = '0%';
-                } else if ($total == $realizados) {
-                    $class = 'bg-primary';
-                    $label = $porcentaje.'%';
-                } else {
-                    $class = 'bg-primary';
-                    $label = $porcentaje.'%';
-                }
+        if ($this->tipo_de_evaluacion_id == 2) {
+            $pendientes = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id', $id_personal)
+            ->select('evaluador_has_evaluados.*')
+            ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+            ->get()->filter(function ($evaluador) {
+                return $evaluador->estado_no_realizado;
+            })->count();
+
+            $total = EvaluadorHasEvaluado::
+            where('evaluador_has_evaluados.evaluador_id', $id_personal)
+            ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+            ->count();
+
+            $realizados = $total-$pendientes;
+        }
+        //mostrar una barra de progreso
+        $porcentaje =  $total == 0 ? 0 : ($realizados/$total)*100;
+        $porcentaje = round($porcentaje,2);
+        
+        if ($realizados == 0) {
+            $class = 'bg-primary';
+            $porcentaje = 100;
+            $label = '0%';
+        } else if ($total == $realizados) {
+            $class = 'bg-secondary';
+            $label = $porcentaje.'%';
+        } else {
+            $class = 'bg-primary';
+            $label = $porcentaje.'%';
+        }
 
         return view('livewire.evaluador-has-evaluados.view', [
             'evaluadorHasEvaluados' => EvaluadorHasEvaluado::

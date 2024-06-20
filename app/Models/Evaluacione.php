@@ -67,6 +67,16 @@ class Evaluacione extends Model
         return $this->fecha_inicio_segunda_fase <= now() && $this->tipo_de_evaluacion_id == 2;
     }
 
+    public function getAntesPrimeraFaseAttribute()
+    {
+        return $this->fecha_inicio_primera_fase_matricula > now();
+    }
+    
+    public function getDespuesSegundaFaseAttribute()
+    {
+        return $this->fecha_fin_segunda_fase < now();
+    }
+
     public function preguntas() {
         return $this->hasMany(Pregunta::class,'evaluacion_id','id');
     }
