@@ -8,8 +8,7 @@
 
 @section('content')
 
-@livewire('evaluadores')
-@livewire('encargados-planes')
+{{-- @livewire('evaluadores') --}}
 
 @stop
 

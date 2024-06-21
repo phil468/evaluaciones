@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Objetivo;
 use App\Models\Respuesta;
 use App\Models\TipoDeEvaluacione;
 use Illuminate\Support\Facades\DB;
@@ -27,13 +28,13 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
 
     public function builder()
     {       
-        return EvaluadorHasEvaluado::query()
-         ->select('evaluador_has_evaluados.*')
-        ->leftJoin('personal as evaluador','evaluador.id','=','evaluador_has_evaluados.evaluador_id')
-        ->leftJoin('personal as evaluado','evaluado.id','=','evaluador_has_evaluados.evaluado_id')
-        ->leftJoin('evaluaciones','evaluaciones.id','=','evaluador_has_evaluados.evaluacion_id')
-        ->where('evaluaciones.tipo_de_evaluacion_id',TipoDeEvaluacione::RESULTADOS)
-        ;
+        return 
+        EvaluadorHasEvaluado::query()
+        ->select('evaluador_has_evaluados.*')
+        ->leftJoin('personal as encargado','encargado.id','=','evaluador_has_evaluados.evaluador_id')
+        ->whereHas('evaluacion', function ($query) {
+            $query->where('tipo_de_evaluacion_id', TipoDeEvaluacione::RESULTADOS);
+        });
     }
 
     public $model = EvaluadorHasEvaluado::class;
@@ -44,8 +45,27 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
             Column::callback(['evaluador_has_evaluados.id'], function ($id) {
                 return view('table-actions-3', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
-            Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
-            Column::name('evaluador.name')->label('Evaluador')->searchable()->filterable(),
+            NumberColumn::name('objetivos.id:count')->label('Objetivos Totales'),
+
+            Column::callback(['evaluador_has_evaluados.id'], function ($id) {
+
+                // Aquí, realiza las subconsultas para calcular objetivos_registrados y objetivos_completados
+                // basándote en el ID del evaluador_has_evaluado. Este es un ejemplo simplificado.
+                $objetivosNoRegistrados = Objetivo::where('evaluador_has_evaluado_id', $id)
+                                                ->where('estado_id', null)
+                                                ->count();
+                $objetivosRegistrados = Objetivo::where('evaluador_has_evaluado_id', $id)
+                                                ->where('estado_id', 1)
+                                                ->count();
+                $objetivosCompletados = Objetivo::where('evaluador_has_evaluado_id', $id)
+                                                ->where('estado_id', 2)
+                                                ->count();
+                // Devuelve los valores calculados como desees mostrarlos en la tabla
+                return "No Registrados: $objetivosNoRegistrados<br> Registrados: $objetivosRegistrados <br> Completados: $objetivosCompletados";
+            },[],'Objetivos Resumen')->label('Objetivos Resumen'),
+
+            Column::name('evaluacion.title')->label('Evaluacion')->searchable()->filterable(),
+            Column::name('encargado.name')->label('Evaluador')->searchable()->filterable(),
             Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
             Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),

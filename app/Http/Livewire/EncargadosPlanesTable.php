@@ -2,20 +2,19 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\EvaluadorHasEvaluado;
+use App\Models\EncargadosPlanesDeAccion;
+// use App\Models\EvaluadorHasEvaluado;
 use App\Models\Respuesta;
 use App\Models\TipoDeEvaluacione;
 use Illuminate\Support\Facades\DB;
 use Mediconesystems\LivewireDatatables\Action;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
-// use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\LabelColumn;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
-class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
+class EncargadosPlanesTable extends LivewireDatatable
 {
     public $hideable = 'inline';
     public $exportable = true;
@@ -24,44 +23,33 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
     public $updateMode = false;
     public $export_name = 'Evaluadores';
 
-    protected $listeners = ['closeModal' => '$refresh','limpiarSeleccionTable'=>'limpiarSeleccionTable'];
+    protected $listeners = ['refreshEncargadosPlanes' => '$refresh','limpiarSeleccionTable'=>'limpiarSeleccionTable'];
 
     public function builder()
     {       
-        return EvaluadorHasEvaluado::query()
-        ->whereHas('evaluacion', function ($query) {
-            $query->where('tipo_de_evaluacion_id', TipoDeEvaluacione::COMPETENCIAS);
-        })
-        ->leftJoin('personal as encargado','encargado.id','=','evaluador_has_evaluados.evaluador_id')
-        // ->leftJoin('personal as empleado','empleado.id','=','evaluador_has_evaluados.evaluado_id');
-        // ->with('evaluacion','evaluador','evaluado')
-        ;
+        return EncargadosPlanesDeAccion::query()
+        ->leftJoin('personal as encargado','encargado.id','=','encargados_planes_de_accion.encargado_id');
+        // ->leftJoin('personal as evaluado','evaluado.id','=','encargados_planes_de_accion.empleado_id');
     }
 
-    public $model = EvaluadorHasEvaluado::class;
+    public $model = EncargadosPlanesDeAccion::class;
 
     public function columns()
     {
         return [
-            // Column::name('id'),
-            Column::callback(['id'], function ($id) {
+            Column::callback(['encargados_planes_de_accion.id'], function ($id) {
                 return view('table-actions-3', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
-
-            BooleanColumn::name('realizado')->label('Realizado')->searchable()->filterable(),
-
-            Column::name('evaluacion.title')->label('Evaluacion')->searchable()->filterable(),
+            // Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
+            BooleanColumn::name('encargados_planes_de_accion.realizado')->label('Realizado')->searchable()->filterable(),
+            Column::name('plan_de_mejora.title')->label('Plan de Mejora')->searchable()->filterable(),
 
             Column::name('encargado.name')->label('Evaluador')->searchable()->filterable(),
-            // Column::name('evaluador.name')->label('Evaluador')->searchable()->filterable(),
-
             Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
             Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
 
-            // Column::name('empleado.name')->label('Evaluado Nombre')->searchable()->filterable(),
-            Column::name('evaluado.name')->label('Evaluado')->searchable()->filterable(),
-
+            Column::name('empleado.name')->label('Evaluado')->searchable()->filterable(),
             Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
@@ -88,7 +76,7 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
 
     public function delete($id)
     {
-        $evaluadorHasEvaluado = EvaluadorHasEvaluado::find($id);
+        $evaluadorHasEvaluado = EncargadosPlanesDeAccion::find($id);
         $evaluadorHasEvaluado->delete();
         session()->flash('message', 'Evaluador eliminado correctamente.');
     }
@@ -115,7 +103,7 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
     public function destroy($id)
     {
         if ($id) {
-            $record = EvaluadorHasEvaluado::where('id', $id);
+            $record = EncargadosPlanesDeAccion::where('id', $id);
             $record->delete();
         }
     }

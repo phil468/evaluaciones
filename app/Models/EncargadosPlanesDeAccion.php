@@ -29,7 +29,8 @@ class EncargadosPlanesDeAccion extends Model
         'gerencia_sub_gerencia_de_evaluado',
         'cantidad_requerida',
         'valor_esperado',
-        'jerarquia'
+        'jerarquia',
+        'planes_de_accion_configuracion_id',
     ];
 
     public function empleado()
@@ -52,12 +53,14 @@ class EncargadosPlanesDeAccion extends Model
         return $this->hasMany(PlanesDeAccion::class, 'encargado_id','id');
     }
 
-
     public function planes_de_accion_empleado()
     {
         return $this->hasMany(PlanesDeAccion::class, 'empleado_id','empleado_id');
     }
 
-
+    public function plan_de_mejora()
+    {
+        return $this->belongsTo(PlanesConfiguracion::class, 'planes_de_accion_configuracion_id','id');        
+    }
 	
 }
