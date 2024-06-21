@@ -43,7 +43,7 @@ class Dashboard extends Component
         if($personal_id) {
             $this->personal_id = [$personal_id];
             $this->empleado_id = $personal_id;
-            $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
+            $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado ?? 0.00;
         }
 
         $this->vista_personal = $vista_personal;
