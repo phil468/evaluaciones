@@ -23,6 +23,8 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
     * @return \Illuminate\Database\Eloquent\Model|null
     */
 
+    public $message;
+
     public function rules(): array
     {
         return [
@@ -136,11 +138,13 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                         
                         // Verifica si el registro no existe o si existe pero estado_id es null.
                         if (is_null($objetivoExistente) || is_null($objetivoExistente->estado_id)) {
-                            Objetivo::updateOrCreate([
+                            Objetivo::updateOrCreate(
+                                [
                                     'evaluado_id' => $record-> evaluado_id,
                                     'evaluador_id' => $record-> evaluador_id,
                                     'objetivo_precargado_id' => $objetivo_precargado->id,
-                            ],[
+                                ],
+                                [
                                     'evaluador_has_evaluado_id' => $record->id,
                                     'meta' => $objetivo_precargado-> meta,
                                     'grupal' => $objetivo_precargado-> grupal,
@@ -154,7 +158,8 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                                     'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
                                     'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
                                     'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-                            ]);
+                                ]
+                            );
                         }
                     }
                     // dd('creado jer 2');
@@ -173,11 +178,13 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
 
                         // Verifica si el registro no existe o si existe pero estado_id es null.
                         if (is_null($objetivoExistente) || is_null($objetivoExistente->estado_id)) {
-                            Objetivo::updateOrCreate([
+                            Objetivo::updateOrCreate(
+                                [
                                     'evaluado_id' => $record-> evaluado_id,
                                     'evaluador_id' => $record-> evaluador_id,
                                     'objetivo_precargado_id' => $objetivo_precargado->id,
-                                ],[
+                                ],
+                                [
                                     'evaluador_has_evaluado_id' => $record->id,
                                     'meta' => $objetivo_precargado-> meta,
                                     'grupal' => $objetivo_precargado-> grupal,
@@ -192,9 +199,9 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                                     'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
                                     'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
                                     'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
-                            ]);
+                                ]
+                            );
                         }
-
                     }
                     // dd('creado jer 5');
                 }
@@ -217,12 +224,18 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                 //         'valor_esperado' => $valor_esperado
                 //     ]
                 // );
-                $message = $message . "Evaluador - Evaluado creado correctamente en la linea " . $index . "\n";
+                $message = $message . "<p>Evaluador - Evaluado creado correctamente: " . $evaluador->name ." - ". $evaluado->name . "</p>";
 
             }
 
         }
-        return $message;
         // return $message;
+        // return $message;
+        $this->message = $message;
+    }    
+    
+    public function getMessage()
+    {
+        return $this->message;
     }
 }

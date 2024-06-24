@@ -13,13 +13,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                {{-- <form method="post" enctype="multipart/form-data" 
-                    wire:submit.prevent="importarEncargadosPlanes" 
-                    > 
-                    @csrf --}}
+                <form method="post" enctype="multipart/form-data" wire:submit.prevent="importarEncargadosPlanes"> 
+                    @csrf
                     <div class="form-group">
                         <label for="file">Archivo</label>
-                        <input type="file" wire:model.defer="file" class="form-control-file" id="file" >
+                        <input type="file" wire:model.defer="file" class="form-control-file" id="file_planes" >
                         @error('file') <span class="error text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div>
@@ -39,7 +37,7 @@
                             @endif
                         </div>                     
                     </div>
-                {{-- </form> --}}
+                </form>
             </div>
        </div>
     </div>

@@ -24,7 +24,7 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
     public $updateMode = false;
     public $export_name = 'Evaluadores';
 
-    protected $listeners = ['closeModal' => '$refresh','limpiarSeleccionTable'=>'limpiarSeleccionTable'];
+    protected $listeners = ['refreshEvaluadoresResultados' => '$refresh', 'limpiarSeleccionTable'=>'limpiarSeleccionTable'];
 
     public function builder()
     {       

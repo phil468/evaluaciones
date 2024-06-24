@@ -128,11 +128,9 @@ class EncargadosPlanes extends Component
             session()->flash('message', $this->message);
         }
 
-        $this->resetInput();                
-        
-        // $this->emit('closeModal');
+        $this->resetInput();
+        $this->emit('limpiarFile');      
         $this->emit('refreshEncargadosPlanes');
-        // $this->emit('alert');
     }
 
     

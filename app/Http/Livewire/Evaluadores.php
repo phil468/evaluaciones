@@ -40,7 +40,8 @@ class Evaluadores extends Component
     
     
     $file,$file_objetivos
-    ,$tipo_de_evaluacion_objetivos_id
+    ,$tipo_de_evaluacion_objetivos_id,
+    $message
     ;
 
     public $updateMode = false;
@@ -82,37 +83,140 @@ class Evaluadores extends Component
         $this->emit('closeModal');
     }
         
+    // public function importar()
+    // {
+    //     $this->validate([
+    //         'file' => 'required|file|mimes:xls,xlsx'
+    //     ]);
+     
+    //     $cs =  Excel::import(new EvaluadoresImport, $this->file);
+
+    //     $this->resetInput();                
+        
+    //     session()->flash('message', 'Evaluadores importado correctamente.');
+    //     $this->emit('closeModal');
+    //     $this->emit('alert');
+    // }
+
     public function importar()
     {
+        $this->message = null;
         $this->validate([
             'file' => 'required|file|mimes:xls,xlsx'
         ]);
-     
-        $cs =  Excel::import(new EvaluadoresImport, $this->file);
 
-        $this->resetInput();                
-        
-        session()->flash('message', 'Evaluadores importado correctamente.');
-        $this->emit('closeModal');
-        $this->emit('alert');
+        try {
+            $importacion = new EvaluadoresImport;
+            Excel::import($importacion, $this->file);
+			$this->message = $importacion->getMessage();
+            session()->flash('message_importacion_evaluadores_competencias', $this->message);
+            // dd('message');
+
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            // dd($failures);
+
+            foreach ($failures as $failure) {
+
+                $fila = $failure->row();
+                $atributo = $failure->attribute();
+                $errores = $failure->errors();
+                $valores = $failure->values();
+
+                // $failure->row(); // row that went wrong
+                // $failure->attribute(); // either heading key (if using heading row concern) or column index
+                // $failure->errors(); // Actual error messages from Laravel validator
+                // $failure->values(); // The values of the row that has failed.
+
+                    // Formatear el mensaje de error
+                $mensajeError = "Error en la fila $fila, Atributo: $atributo, ";
+                $mensajeError .= "Errores: " . implode(', ', $errores) . ", ";
+                $mensajeError .= "Valores: " . implode(', ', $valores);
+
+                // Agregar el mensaje de error al array de erroresDetallados
+                $erroresDetallados[] = $mensajeError;
+            }
+
+            // Mostrar los errores
+            // Aquí puedes decidir cómo quieres mostrar los errores. Por ejemplo:
+            foreach ($erroresDetallados as $error) {
+                $this->message = $this->message.$error . "<br>";
+            }
+            session()->flash('message_importacion_evaluadores_competencias', $this->message);
+        }
+
+        $this->resetInput();
+        $this->emit('limpiarFile');      
+        $this->emit('refreshEvaluadoresCompetencias');
     }
 
-    
+    // public function importar_objetivos()
+    // {
+    //     $this->validate([
+    //         'file_objetivos' => 'required|file|mimes:xls,xlsx'    
+    //     ]);
+
+    //         $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
+    //         //mostrar mensaje que retorna de $cs
+    //         // dd($cs);
+    //         $this->crear_editar_usuarios();
+    //                 $this->resetInput();                
+           
+    //         session()->flash('message', 'Evaluadores de objetivos importado correctamente.');
+    //         $this->emit('closeModal');
+    //         $this->emit('alert');
+    // }
+
     public function importar_objetivos()
     {
+        $this->message = null;
         $this->validate([
-            'file_objetivos' => 'required|file|mimes:xls,xlsx'    
+            'file_objetivos' => 'required|file|mimes:xls,xlsx'
         ]);
 
-            $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
-            //mostrar mensaje que retorna de $cs
-            // dd($cs);
-            $this->crear_editar_usuarios();
-                    $this->resetInput();                
-           
-            session()->flash('message', 'Evaluadores de objetivos importado correctamente.');
-            $this->emit('closeModal');
-            $this->emit('alert');
+        try {
+            $importacion = new EvaluadoresObjetivosImport;
+            Excel::import($importacion, $this->file_objetivos);
+			$this->message = $importacion->getMessage();
+            session()->flash('message_importacion_evaluadores_resultados', $this->message);
+            // dd('message');
+
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            // dd($failures);
+
+            foreach ($failures as $failure) {
+
+                $fila = $failure->row();
+                $atributo = $failure->attribute();
+                $errores = $failure->errors();
+                $valores = $failure->values();
+
+                // $failure->row(); // row that went wrong
+                // $failure->attribute(); // either heading key (if using heading row concern) or column index
+                // $failure->errors(); // Actual error messages from Laravel validator
+                // $failure->values(); // The values of the row that has failed.
+
+                // Formatear el mensaje de error
+                $mensajeError = "Error en la fila $fila, Atributo: $atributo, ";
+                $mensajeError .= "Errores: " . implode(', ', $errores) . ", ";
+                $mensajeError .= "Valores: " . implode(', ', $valores);
+
+                // Agregar el mensaje de error al array de erroresDetallados
+                $erroresDetallados[] = $mensajeError;
+            }
+
+            // Mostrar los errores
+            // Aquí puedes decidir cómo quieres mostrar los errores. Por ejemplo:
+            foreach ($erroresDetallados as $error) {
+                $this->message = $this->message.$error . "<br>";
+            }
+            session()->flash('message_importacion_evaluadores_resultados', $this->message);
+        }
+
+        $this->resetInput();
+        $this->emit('limpiarFile');      
+        $this->emit('refreshEvaluadoresResultados');
     }
 
     //Enviar correo de notificación

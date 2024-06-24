@@ -10,14 +10,37 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class EvaluadoresImport implements ToCollection, WithHeadingRow
+class EvaluadoresImport implements ToCollection, WithHeadingRow, WithValidation
 {
     /**
     * @param array $row
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
+
+    public $message;
+    
+    public function rules(): array
+    {
+        return [
+            'dni_evaluador' => 'required',
+            'dni_evaluado' => 'required',
+            'identificador' => 'required|exists:evaluaciones,identificador',
+            'cargo_de_evaluador' => 'required',
+            'area_de_evaluador' => 'required',
+            'gerencia_sub_gerencia_de_evaluador' => 'required',
+            'cargo_de_evaluado' => 'required',
+            'area_de_evaluado' => 'required',
+            'gerencia_sub_gerencia_de_evaluado' => 'required',
+            // 'cantidad_requerida' => 'required',
+            // 'valor_esperado' => 'required',
+            // 'jerarquia' => 'required',
+            // 'grupal' => 'required',
+        ];
+    }
+
     public function collection(Collection $rows)
     {
         // dd($rows);
@@ -83,10 +106,14 @@ class EvaluadoresImport implements ToCollection, WithHeadingRow
                         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
                     ]
                 );
-                $message = $message . "Evaluador - Evaluado creado correctamente en la linea " . $index . "\n";
+                $message = $message . "<p>Evaluador - Evaluado creado correctamente: " . $evaluador->name ." - ". $evaluado->name . "</p>";
             }
-
         }
-        return $message;
+        $this->message = $message;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
     }
 }

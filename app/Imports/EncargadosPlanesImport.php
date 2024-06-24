@@ -122,15 +122,10 @@ class EncargadosPlanesImport implements ToCollection, WithHeadingRow, WithValida
                         'jerarquia' => $jerarquia,
                     ]
                 );
-                
                 $message = $message . "<p>Evaluador - Evaluado creado correctamente: " . $evaluador->name ." - ". $evaluado->name . "</p>";
-                
-                // dd($message);
             }
         }
-        // $message;
         $this->message = $message;
-        // dd($this->message);
     }
     
     public function getMessage()

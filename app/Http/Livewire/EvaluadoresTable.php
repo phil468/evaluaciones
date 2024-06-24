@@ -23,6 +23,8 @@ class EvaluadoresTable extends LivewireDatatable
     public $updateMode = false;
     public $export_name = 'Evaluadores';
 
+    protected $listeners = ['refreshEvaluadores' => '$refresh'];
+
     public function builder()
     {       
         return 

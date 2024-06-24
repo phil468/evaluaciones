@@ -111,7 +111,7 @@
 			@include('livewire.evaluadores.update')
 			@endcan
 
-			<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,cancel,importar_objetivos,store,importar,update">
+			<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,store,update">
 				<x-loading-indicator />
 			</div>	
 		</div>

@@ -122,8 +122,11 @@
         });
         
         window.livewire.on('limpiarFile', () => {
-            // console.log('Se limpia campo con id File')
+            // dd('cargado');
+            console.log('Se limpia campo con id File');
             document.getElementById('file').value = null;
+            document.getElementById('file_objetivos').value = null;
+            document.getElementById('file_planes').value = null;
         });
 
         $(document).ready(function() {
