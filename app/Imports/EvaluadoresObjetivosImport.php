@@ -126,54 +126,75 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
                 {
                     foreach ($objetivos_precargados_tipo_1 as $objetivo_precargado) {
                         // dd($objetivo_precargado->id);
-                        Objetivo::updateOrCreate([
-                                'evaluado_id' => $record-> evaluado_id,
-                                'evaluador_id' => $record-> evaluador_id,
-                                'objetivo_precargado_id' => $objetivo_precargado->id,
-                        ],[
-                                'evaluador_has_evaluado_id' => $record->id,
-                                'meta' => $objetivo_precargado-> meta,
-                                'grupal' => $objetivo_precargado-> grupal,
-                                'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
-                                // 'evidencias' => $this-> evidencias,
-                                'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
-                                'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
-                                'minimo' => $objetivo_precargado-> minimo,
-                                'maximo' => $objetivo_precargado-> maximo,
-                                'valor' => $objetivo_precargado-> valor,
-                                'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
-                                'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
-                                'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-                        ]);
+
+                        // Intenta encontrar el registro basado en las condiciones únicas.
+                        $objetivoExistente = Objetivo::where([
+                            'evaluado_id' => $record->evaluado_id,
+                            'evaluador_id' => $record->evaluador_id,
+                            'objetivo_precargado_id' => $objetivo_precargado->id,
+                        ])->first();
+                        
+                        // Verifica si el registro no existe o si existe pero estado_id es null.
+                        if (is_null($objetivoExistente) || is_null($objetivoExistente->estado_id)) {
+                            Objetivo::updateOrCreate([
+                                    'evaluado_id' => $record-> evaluado_id,
+                                    'evaluador_id' => $record-> evaluador_id,
+                                    'objetivo_precargado_id' => $objetivo_precargado->id,
+                            ],[
+                                    'evaluador_has_evaluado_id' => $record->id,
+                                    'meta' => $objetivo_precargado-> meta,
+                                    'grupal' => $objetivo_precargado-> grupal,
+                                    'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
+                                    // 'evidencias' => $this-> evidencias,
+                                    'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
+                                    'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
+                                    'minimo' => $objetivo_precargado-> minimo,
+                                    'maximo' => $objetivo_precargado-> maximo,
+                                    'valor' => $objetivo_precargado-> valor,
+                                    'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
+                                    'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
+                                    'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
+                            ]);
+                        }
                     }
                     // dd('creado jer 2');
                 }
                 
                 if ($jerarquia == 5)
                 {
-                    
-                // dd('llego aqui 5');
+                    // dd('llego aqui 5');
                     foreach ($objetivos_precargados_tipo_2 as $objetivo_precargado) {
-                        Objetivo::updateOrCreate([
-                                'evaluado_id' => $record-> evaluado_id,
-                                'evaluador_id' => $record-> evaluador_id,
-                                'objetivo_precargado_id' => $objetivo_precargado->id,
-                            ],[
-                                'evaluador_has_evaluado_id' => $record->id,
-                                'meta' => $objetivo_precargado-> meta,
-                                'grupal' => $objetivo_precargado-> grupal,
-                                'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
-                                // 'evidencias' => $this-> evidencias,
-                                'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
-                                'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
-                                'minimo' => $objetivo_precargado-> minimo,
-                                'maximo' => $objetivo_precargado-> maximo,
-                                'valor' => $objetivo_precargado-> valor,
-                                'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
-                                'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
-                                'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-                                'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
-                        ]);
+                        // Intenta encontrar el registro basado en las condiciones únicas.
+                        $objetivoExistente = Objetivo::where([
+                            'evaluado_id' => $record->evaluado_id,
+                            'evaluador_id' => $record->evaluador_id,
+                            'objetivo_precargado_id' => $objetivo_precargado->id,
+                        ])->first();
+
+                        // Verifica si el registro no existe o si existe pero estado_id es null.
+                        if (is_null($objetivoExistente) || is_null($objetivoExistente->estado_id)) {
+                            Objetivo::updateOrCreate([
+                                    'evaluado_id' => $record-> evaluado_id,
+                                    'evaluador_id' => $record-> evaluador_id,
+                                    'objetivo_precargado_id' => $objetivo_precargado->id,
+                                ],[
+                                    'evaluador_has_evaluado_id' => $record->id,
+                                    'meta' => $objetivo_precargado-> meta,
+                                    'grupal' => $objetivo_precargado-> grupal,
+                                    'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
+                                    // 'evidencias' => $this-> evidencias,
+                                    'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
+                                    'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
+                                    'minimo' => $objetivo_precargado-> minimo,
+                                    'maximo' => $objetivo_precargado-> maximo,
+                                    'valor' => $objetivo_precargado-> valor,
+                                    'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
+                                    'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
+                                    'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
+                                    'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
+                            ]);
+                        }
+
                     }
                     // dd('creado jer 5');
                 }
