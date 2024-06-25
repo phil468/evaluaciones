@@ -39,11 +39,11 @@
 								</a>
 							</div>
 
-							<div class="mb-1 btn btn-sm btn-default">
+							{{-- <div class="mb-1 btn btn-sm btn-default">
 								<a title="Eliminar Evaluaciones por Desempeño no iniciadas" accesskey="x" wire:click="eliminarEvaluacionPorDesempeno">
 									<i class="fa fa-trash"></i> Eliminar Eval. por Competencias no iniciadas (x)
 								</a>
-							</div>
+							</div> --}}
 							
 						</div>
 						@endcan
@@ -87,11 +87,11 @@
 								</a>
 							</div>
 
-							<div class="mb-1 btn btn-sm btn-default">
+							{{-- <div class="mb-1 btn btn-sm btn-default">
 								<a title="Eliminar Evaluaciones por Objetivos no iniciadas" accesskey="x" wire:click="eliminarObjetivos">
 									<i class="fa fa-trash"></i> Eliminar Eval. por Resultados no iniciadas (x)
 								</a>
-							</div>
+							</div> --}}
 							
 						</div>
 						@endcan
