@@ -85,6 +85,11 @@ video {
     {{-- style="display: none;" --}}
     >
         <br>
+        @if ($errors->has('email_corporativo'))
+            <div class="alert alert-danger">
+                {{ $errors->first('email_corporativo') }}
+            </div>
+        @endif
         <hr>
         <div class="mt-2 text-center h5">
             Inicio de Sesión Local
