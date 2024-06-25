@@ -86,7 +86,7 @@ video {
     >
         <br>
         @if ($errors->has('email_corporativo'))
-            <div class="alert alert-danger">
+            <div class="alert alert-info">
                 {{ $errors->first('email_corporativo') }}
             </div>
         @endif

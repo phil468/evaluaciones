@@ -46,7 +46,7 @@ class LoginController extends Controller
     {
         // Verificar si el correo electrónico termina en @dominio.pe
         if (str_ends_with($request->input($this->username()), '@vanguardfresh.pe')) {
-            return redirect()->back()->withErrors(['email_corporativo' => 'Por favor, utilice el botón de "Iniciar sesión" e ingresa con tus credenciales de correo corporativo.']);
+            return redirect()->back()->withErrors(['email_corporativo' => 'Por favor, utilice el botón de "Iniciar sesión" e ingrese con sus credenciales de correo corporativo.']);
         }
 
         $this->validateLogin($request);
