@@ -11,6 +11,30 @@
 @section('adminlte_css')
     @stack('css')
     @yield('css')
+    
+<style>
+    body {
+        
+        background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}');
+        /* url('/img/evaluacion/login-10s.mp4'); */
+        background-size: cover;
+        background-repeat: no-repeat;
+        /* background-color: #568ca5!important; */
+    }
+
+    video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 105%;
+    min-height: 100%;
+    transform: translateX(calc((100% - 100vw) / 2));
+    z-index: -2;
+    max-width: none !important;
+    }
+
+</style>
+
 @stop
 
 @section('classes_body'){{ ($auth_type ?? 'login') . '-page' }}@stop

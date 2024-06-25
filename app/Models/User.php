@@ -106,6 +106,11 @@ class User extends Authenticatable implements JWTSubject
     public function canAccessFilament(): bool
     {
         return str_ends_with($this->email, '@vanguardfresh.pe') && $this->hasVerifiedEmail();
+    }    
+    
+    public function adminlte_profile_url()
+    {
+        return 'users/'.auth()->user()->id.'';
     }
     
 }
