@@ -111,7 +111,7 @@ class EvaluadoresTable extends LivewireDatatable
                         $porcentaje = round($porcentaje,2);                
                         
                         if ($realizados == 0) {
-                            $class = 'bg-primary';
+                            $class = 'bg-white';
                             $porcentaje = 100;
                         } else if ($total == $realizados) {
                             $class = 'bg-secondary';
@@ -127,7 +127,7 @@ class EvaluadoresTable extends LivewireDatatable
                          .'
                         
                         <h5 class="">'. ucfirst(mb_strtolower($tipo_de_evaluacion->name)).'</h5>
-                        <div class="mb-3 progress" style="height: 25px;">
+                        <div class="mb-3 rounded-xl progress" style="height: 25px;">
                         <div class="rounded-xl progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
                         </div>
                         ';

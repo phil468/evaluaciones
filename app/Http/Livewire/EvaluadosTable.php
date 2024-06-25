@@ -59,9 +59,9 @@ class EvaluadosTable extends LivewireDatatable
                             $class = 'bg-white';
                             $porcentaje = 100;
                         } else if ($total == $realizados) {
-                            $class = 'bg-primary';
-                        } else {
                             $class = 'bg-secondary';
+                        } else {
+                            $class = 'bg-primary';
                         }
                         
                         $tipo_de_evaluacion = TipoDeEvaluacione::find($i);
@@ -69,8 +69,8 @@ class EvaluadosTable extends LivewireDatatable
                         $barra = $barra .'
                         
                         <h5 class="">'. ucfirst(mb_strtolower($tipo_de_evaluacion->name)).'</h5>
-                        <div class="mb-3 progress" style="height: 25px;">
-                        <div class="progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
+                        <div class="mb-3 rounded-xl progress" style="height: 25px;">
+                        <div class="rounded-xl progress-bar '.$class.'" role="progressbar" style="width: '.$porcentaje.'%;" aria-valuenow="'.$porcentaje.'" aria-valuemin="0" aria-valuemax="100">'.$realizados.' de '. $total.'</div>
                         </div>
                         ';
                     }
