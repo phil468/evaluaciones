@@ -100,14 +100,7 @@
 				searchFloor: 1,
 				renderChoiceLimit: 100
 			}
-	
-			// const opcionesPlanes = {
-			// 	removeItemButton: true,
-			// 	itemSelectText: 'Seleccione',
-			// 	noChoicesText: 'No hay opciones para elegir'
-			// }
-			
-			
+		
 			const encargado_id_select = new Choices('#encargado_id', opcionesPlanes);
 			const empleado_id_select = new Choices('#empleado_id', opcionesPlanes);
 			const planes_de_accion_configuracion_id_select = new Choices('#planes_de_accion_configuracion_id', opcionesPlanes);

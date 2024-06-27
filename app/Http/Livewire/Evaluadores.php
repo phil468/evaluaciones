@@ -13,6 +13,7 @@ use App\Models\Personal;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -41,6 +42,7 @@ class Evaluadores extends Component
     
     $file,$file_objetivos
     ,$tipo_de_evaluacion_objetivos_id,
+    $tipo_de_evaluacion_id=null,
     $message
     ;
 
@@ -49,11 +51,20 @@ class Evaluadores extends Component
 	public $cargando = false;
 	public $actualizandoVista = true;
 
-    protected $listeners = ['edit' => 'edit'];
+    protected $listeners = ['edit_evaluador' => 'edit'];
     
     public function mount() 
     {
         $this->tipo_de_evaluacion_objetivos_id = 2;
+        $this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+		$this->evaluados 	= 	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+		$this->evaluaciones = 	Evaluacione::	orderBy('title')->select('title as label', 'id as value')->get()->toArray();
+    
+		// $this->emit('listar_selects',
+        //     $this->evaluadores,
+        //     $this->evaluados,
+        //     $this->evaluaciones,
+        // );
     }
     public function render()
     {
@@ -117,18 +128,12 @@ class Evaluadores extends Component
             // dd($failures);
 
             foreach ($failures as $failure) {
-
                 $fila = $failure->row();
                 $atributo = $failure->attribute();
                 $errores = $failure->errors();
                 $valores = $failure->values();
 
-                // $failure->row(); // row that went wrong
-                // $failure->attribute(); // either heading key (if using heading row concern) or column index
-                // $failure->errors(); // Actual error messages from Laravel validator
-                // $failure->values(); // The values of the row that has failed.
-
-                    // Formatear el mensaje de error
+                // Formatear el mensaje de error
                 $mensajeError = "Error en la fila $fila, Atributo: $atributo, ";
                 $mensajeError .= "Errores: " . implode(', ', $errores) . ", ";
                 $mensajeError .= "Valores: " . implode(', ', $valores);
@@ -149,23 +154,6 @@ class Evaluadores extends Component
         $this->emit('limpiarFile');      
         $this->emit('refreshEvaluadoresCompetencias');
     }
-
-    // public function importar_objetivos()
-    // {
-    //     $this->validate([
-    //         'file_objetivos' => 'required|file|mimes:xls,xlsx'    
-    //     ]);
-
-    //         $cs =  Excel::import(new EvaluadoresObjetivosImport, $this->file_objetivos);
-    //         //mostrar mensaje que retorna de $cs
-    //         // dd($cs);
-    //         $this->crear_editar_usuarios();
-    //                 $this->resetInput();                
-           
-    //         session()->flash('message', 'Evaluadores de objetivos importado correctamente.');
-    //         $this->emit('closeModal');
-    //         $this->emit('alert');
-    // }
 
     public function importar_objetivos()
     {
@@ -225,33 +213,37 @@ class Evaluadores extends Component
         
     }
 
-    public function listarSelects() {
-		$this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+    public function listarSelects() 
+    {		
+        $this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
 		$this->evaluados 	= 	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
-		$this->evaluaciones = 	Evaluacione::		orderBy('title')->select('title as label', 'id as value')->get()->toArray();
+		$this->evaluaciones = 	Evaluacione::	orderBy('title')->activa()->select('title as label', 'id as value')
+                                ->when($this->tipo_de_evaluacion_id, function ($q) {
+                                    return $q->where('tipo_de_evaluacion_id', $this->tipo_de_evaluacion_id);
+                                })->get()->toArray();
+// dd($this->evaluaciones);
 
-		$this->emit('listar_selects',
-			$this->evaluadores,
-			$this->evaluados,
-			$this->evaluaciones,
-		);
 		$this->actualizarDatosPersonal();
 	}
     
 	public function actualizarDatosPersonal () {
-		$this->emit('actualizarDatosP',
+		$this->emit('actualizarDatosEvaluadores',
 			$this->evaluador_id,
 			$this->evaluado_id,
-			$this->evaluacion_id
+			$this->evaluacion_id,
+
+            $this->evaluadores,
+            $this->evaluados,
+            $this->evaluaciones
 		);
 	}
 
     public function cancel()
     {
+		$this->emit('limpiarDatosEvaluadores');
         $this->resetInput();
-		$this->emit('limpiarDatos');
-        $this->cargando = false;
-        $this->actualizandoVista = true;
+		$this->resetValidation();
+        $this->updateMode = false;
     }
 	
     private function resetInput()
@@ -274,69 +266,112 @@ class Evaluadores extends Component
     }
 
     public function create() {
-        $this->listarSelects();
-        $this->updateMode = true;		
-        $this->cargando = true;
-        // $this->createMode = true;
-        // $this->listarSelects();
+        $this->updateMode = true;	
+        $this->listarSelects();        
     }   
 
     public function store()
     {
         $this->validate([
-            'evaluador_id' => 'required',
+            'evaluador_id' => [
+                'required',
+                Rule::unique('evaluador_has_evaluados')->where(function ($query) {
+                    return $query->where('evaluador_id', $this-> evaluador_id)
+                                 ->where('evaluado_id', $this-> evaluado_id)
+                                 ->where('evaluacion_id', $this-> evaluacion_id);
+                }),
+            ],
             'evaluado_id' => 'required',
-            'evaluacion' => 'required',
+            'evaluacion_id' => 'required',
 
+            'cargo_de_evaluador' => 'required',
+            'area_de_evaluador' => 'required',
+            'gerencia_sub_gerencia_de_evaluador' => 'required',
 
+            'cargo_de_evaluado' => 'required',
+            'area_de_evaluado' => 'required',
+            'gerencia_sub_gerencia_de_evaluado' => 'required',
         ]);
 
         EvaluadorHasEvaluado::create([ 
 			'evaluador_id' => $this-> evaluador_id,
 			'evaluado_id' => $this-> evaluado_id,
-			'evaluacion' => $this-> evaluacion_id
+			'evaluacion_id' => $this-> evaluacion_id,
+
+            'cargo_de_evaluador' => $this-> cargo_de_evaluador,
+            'area_de_evaluador' => $this-> area_de_evaluador,
+            'gerencia_sub_gerencia_de_evaluador' => $this-> gerencia_sub_gerencia_de_evaluador,
+
+            'cargo_de_evaluado' => $this-> cargo_de_evaluado,
+            'area_de_evaluado' => $this-> area_de_evaluado,
+            'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
         ]);
         
+		$this->emit('limpiarDatosEvaluadores');
         $this->resetInput();
-		$this->emit('limpiarDatos');
-        $this->cargando = false;
-		$this->actualizandoVista = true;
+        $this->resetValidation();
+        $this->updateMode=false;
 		$this->emit('closeModal');
-		session()->flash('message', 'Evaluadores creado correctamente.');
+
+        if ($this->tipo_de_evaluacion_id == 1) {
+            $this->emit('refreshEvaluadoresCompetencias');        
+            session()->flash('messageEvaluadoresCompetencias', 'Evaluadores creado correctamente.');
+        }
+
+        if ($this->tipo_de_evaluacion_id == 2) {
+            $this->emit('refreshEvaluadoresResultados');
+            session()->flash('messageEvaluadoresResultados', 'Evaluadores creado correctamente.');
+        }
     }
 
-    public function edit($id)
+    public function edit($id, $tipo_de_evaluacion_id)
     {
+        $this->tipo_de_evaluacion_id = $tipo_de_evaluacion_id;
+
 		if ($id != 0) {
-			$this->resetValidation();
-			$this->resetInput();
-            
             $record = EvaluadorHasEvaluado::findOrFail($id);
 
             $this->selected_id = $id; 
             $this->evaluador_id = $record-> evaluador_id;
             $this->evaluado_id = $record-> evaluado_id;
             $this->evaluacion_id = $record-> evaluacion_id;
+           
+            $this->cargo_de_evaluador = $record-> cargo_de_evaluador;
+            $this->area_de_evaluador = $record-> area_de_evaluador;
+            $this->gerencia_sub_gerencia_de_evaluador = $record-> gerencia_sub_gerencia_de_evaluador;
+            $this->cargo_de_evaluado = $record-> cargo_de_evaluado;
+            $this->area_de_evaluado = $record-> area_de_evaluado;
+            $this->gerencia_sub_gerencia_de_evaluado = $record-> gerencia_sub_gerencia_de_evaluado;
 
-            
-            $this->updateMode = true;
 		} else {
-			$this->resetValidation();
-			$this->resetInput();
 			$this->selected_id = 0; 
 		}
 
-        $this->listarSelects();
         $this->updateMode = true;
-        $this->cargando = true;
+        $this->listarSelects();
     }
 
     public function update()
     {
         $this->validate([
-            'evaluador_id' => 'required',
+            'evaluador_id' => [
+                'required',
+                Rule::unique('evaluador_has_evaluados')->where(function ($query) {
+                    return $query->where('evaluador_id', $this-> evaluador_id)
+                                 ->where('evaluado_id', $this-> evaluado_id)
+                                 ->where('evaluacion_id', $this-> evaluacion_id);
+                }),
+            ],
             'evaluado_id' => 'required',
-            'evaluacion' => 'required',
+            'evaluacion_id' => 'required',
+
+            'cargo_de_evaluador' => 'required',
+            'area_de_evaluador' => 'required',
+            'gerencia_sub_gerencia_de_evaluador' => 'required',
+
+            'cargo_de_evaluado' => 'required',
+            'area_de_evaluado' => 'required',
+            'gerencia_sub_gerencia_de_evaluado' => 'required',
         ]);
 
         if ($this->selected_id) {
@@ -344,16 +379,32 @@ class Evaluadores extends Component
             $record->update([ 
                 'evaluador_id' => $this-> evaluador_id,
                 'evaluado_id' => $this-> evaluado_id,
-                'evaluacion' => $this-> evaluacion
+                'evaluacion_id' => $this-> evaluacion_id,
+
+                'cargo_de_evaluador' => $this-> cargo_de_evaluador,
+                'area_de_evaluador' => $this-> area_de_evaluador,
+                'gerencia_sub_gerencia_de_evaluador' => $this-> gerencia_sub_gerencia_de_evaluador,
+                
+                'cargo_de_evaluado' => $this-> cargo_de_evaluado,
+                'area_de_evaluado' => $this-> area_de_evaluado,
+                'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
             ]);
 
+			$this->emit('limpiarDatosEvaluadores');
             $this->resetInput();
-            // $this->updateMode = false;
-			$this->emit('limpiarDatos');
-        	$this->cargando = false;
-        	$this->actualizandoVista = true;
+            $this->resetValidation();
+            $this->updateMode = false;
 		    $this->emit('closeModal');
-			session()->flash('message', 'Evaluadores actualizado correctamente.');
+
+            if ($this->tipo_de_evaluacion_id == 1) {
+                $this->emit('refreshEvaluadoresCompetencias');        
+                session()->flash('messageEvaluadoresCompetencias', 'Evaluadores creado correctamente.');
+            }
+    
+            if ($this->tipo_de_evaluacion_id == 2) {
+                $this->emit('refreshEvaluadoresResultados');
+                session()->flash('messageEvaluadoresResultados', 'Evaluadores creado correctamente.');
+            }
         }
     }
 

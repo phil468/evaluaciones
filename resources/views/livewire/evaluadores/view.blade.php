@@ -9,14 +9,14 @@
 							<h5 class="h5">Evaluadores de Evaluación por Competencias</h5>
 						</div>
 
-						@if (session()->has('message'))
-						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
+						@if (session()->has('messageEvaluadoresCompetencias'))
+						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('messageEvaluadoresCompetencias') }} </div>
 						@endif
 
 						@can('crear-evaluacion')
 						<div class="float-right">
 							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
-								<a title="Nuevo" data-toggle="modal" data-target="#updateModal" wire:click="edit(0)" accesskey="n">
+								<a title="Nuevo" data-toggle="modal" data-target="#updateModal" wire:click="edit(0,1)" accesskey="n">
 									<i class="fa fa-plus"></i> Nuevo (n)
 								</a>
 							</div>
@@ -63,14 +63,14 @@
 							<h5 class="h5">Evaluadores de Evaluación por Resultados</h5>
 						</div>
 
-						@if (session()->has('message'))
-						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
+						@if (session()->has('messageEvaluadoresResultados'))
+						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('messageEvaluadoresResultados') }} </div>
 						@endif
 
 						@can('crear-evaluacion')
 						<div class="float-right">
 							<div class="mb-1 btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
-								<a title="Nuevo" data-toggle="modal" data-target="#updateModal" wire:click="edit(0)" accesskey="n">
+								<a title="Nuevo" data-toggle="modal" data-target="#updateModal" wire:click="edit(0,2)" accesskey="n">
 									<i class="fa fa-plus"></i> Nuevo (n)
 								</a>
 							</div>
@@ -111,19 +111,25 @@
 			@include('livewire.evaluadores.update')
 			@endcan
 
-			<div wire:loading wire:target="edit,crear_editar_usuarios,enviarCorreo,store,update">
+			<div wire:loading wire:target="crear_editar_usuarios,enviarCorreo,store,update">
 				<x-loading-indicator />
 			</div>	
 		</div>
 	</div>
 
+	@push('js')
 	<script>
 		document.addEventListener('livewire:load', function () {
 			console.log('Inicializar Choice.js');
 			
-			const opciones = {
+			const placeholderEncargadoPlanes = [
+						{ value: '', label: ' - Seleccione - '},
+					];
+
+			const opcionesPlanes = {
 				removeItemButton: true,
 				itemSelectText: 'Seleccione',
+				noChoicesText: 'No hay opciones para elegir',
 				
 				searchPlaceholderValue: 'Buscar',
 				placeholderValue: 'Selecciona una opción',
@@ -133,77 +139,57 @@
     			placeholderValue: null,
 				allowHTML: false,
 				shouldSort: true,
-				searchResultLimit: 5,
+				searchResultLimit: 10,
 				searchFields: ['label'],
 				
 				searchFloor: 1,
 				renderChoiceLimit: 100
 			}
-	
-			const evaluador_id_select = new Choices('#evaluador_id', opciones);
+		
+			const evaluador_id_select = new Choices('#evaluador_id', opcionesPlanes);
+			const evaluado_id_select = new Choices('#evaluado_id', opcionesPlanes);
+			const evaluacion_id_select = new Choices('#evaluacion_id', opcionesPlanes);
+			
+			evaluador_id_select.setChoices(@json($evaluadores), 'value', 'label', true);
+			evaluado_id_select.setChoices(@json($evaluados), 'value', 'label', true);
+			evaluacion_id_select.setChoices(@json($evaluaciones), 'value', 'label', true);
+
 			evaluador_id_select.passedElement.element.addEventListener('change', function (event) {
-					dato = evaluador_id_select.getValue(true) !== undefined ? evaluador_id_select.getValue(true) : '' ;
-					@this.set('evaluador_id', dato );
+				@this.set('evaluador_id', evaluador_id_select.getValue(true));
 			});
-			
-			const evaluado_id_select = new Choices('#evaluado_id', opciones);
 			evaluado_id_select.passedElement.element.addEventListener('change', function (event) {
-				if (evaluado_id_select.getValue(true) !== undefined) {
-					@this.set('evaluado_id', evaluado_id_select.getValue(true));
-				}
+				@this.set('evaluado_id', evaluado_id_select.getValue(true));
+			});
+			evaluacion_id_select.passedElement.element.addEventListener('change', function (event) {
+				@this.set('evaluacion_id', evaluacion_id_select.getValue(true));
 			});
 			
-			const evaluacion_id_select = new Choices('#evaluacion_id', opciones);
-			evaluacion_id_select.passedElement.element.addEventListener('change', function (event) {
-				if (evaluacion_id_select.getValue(true) !== undefined) {
-					@this.set('evaluacion_id', evaluacion_id_select.getValue(true));
-				}
-			});
+			Livewire.on('actualizarDatosEvaluadores', function (evaluador_id,evaluado_id,evaluacion_id,
+			$evaluadores,
+			$evaluados,
+			$evaluaciones
+			) {
 				
-			Livewire.on('actualizarDatosP', function (evaluador_id,evaluado_id,evaluacion_id) {
-				habilitarDatosPersonal();
-	
+				evaluador_id_select.setChoices($evaluadores, 'value', 'label', true);
+				evaluado_id_select.setChoices($evaluados, 'value', 'label', true);
+				evaluacion_id_select.setChoices($evaluaciones, 'value', 'label', true);
+
+			
 				evaluador_id_select.setChoiceByValue(evaluador_id ?? '');
 				evaluado_id_select.setChoiceByValue(evaluado_id ?? '');
 				evaluacion_id_select.setChoiceByValue(evaluacion_id ?? '');
-			});
-				
-			Livewire.on('listar_selects', function (evaluadores,evaluados,evaluaciones) {
-				const placeholder = [
-						{ value: '', label: ' - Seleccione - '},
-					];
-	
-				deshabilitarDatosPersonal();
-				
-				evaluador_id_select.clearChoices();
-				evaluado_id_select.clearChoices();
-				evaluacion_id_select.clearChoices();
-				
-				evaluador_id_select.setChoices(placeholder);
-				evaluado_id_select.setChoices(placeholder);
-				evaluacion_id_select.setChoices(placeholder);
-				
-				evaluador_id_select.setChoices(evaluadores);
-				evaluado_id_select.setChoices(evaluados);
-				evaluacion_id_select.setChoices(evaluaciones);
 				
 			});
-	
-			const deshabilitarDatosPersonal = () => {
-				evaluador_id_select.disable();
-				evaluado_id_select.disable();
-				evaluacion_id_select.disable();
-			};
 			
-		
-			const habilitarDatosPersonal = () => {
-				evaluador_id_select.enable();
-				evaluado_id_select.enable();
-				evaluacion_id_select.enable();
-			};
-
-		})
+			Livewire.on('limpiarDatosEvaluadores', function (areas) {
+				evaluador_id_select.removeActiveItems();
+				evaluado_id_select.removeActiveItems();
+				evaluacion_id_select.removeActiveItems();
+			});
+			
+		});
 	</script>
+	@endpush
 	
 
 </div>

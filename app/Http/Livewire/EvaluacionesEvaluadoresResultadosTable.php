@@ -43,7 +43,7 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
     {
         return [
             Column::callback(['evaluador_has_evaluados.id'], function ($id) {
-                return view('table-actions-3', ['id' => $id]);
+                return view('table-actions-4', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
             NumberColumn::name('objetivos.id:count')->label('Objetivos Totales'),
 
@@ -75,10 +75,10 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
 
-            Column::name('cantidad_requerida')->label('Cantidad requerida')->searchable()->filterable(),
-            Column::name('valor_esperado')->label('Valor Esperado')->searchable()->filterable(),
+            // Column::name('cantidad_requerida')->label('Cantidad requerida')->searchable()->filterable(),
+            // Column::name('valor_esperado')->label('Valor Esperado')->searchable()->filterable(),
 
-            Column::name('evaluador_has_evaluados.realizado')->label('Realizado')->searchable()->filterable(),
+            // Column::name('evaluador_has_evaluados.realizado')->label('Realizado')->searchable()->filterable(),
             
         ];
 
@@ -86,7 +86,8 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
     
     public function edit($id)
     {
-        $this->emit('edit', $id);
+        $this->emit('openUpdateModal');
+        $this->emit('edit_evaluador', $id, 2);
     }
 
     public function export()

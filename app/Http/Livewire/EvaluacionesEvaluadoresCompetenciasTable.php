@@ -45,7 +45,7 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
         return [
             // Column::name('id'),
             Column::callback(['id'], function ($id) {
-                return view('table-actions-3', ['id' => $id]);
+                return view('table-actions-4', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
 
             BooleanColumn::name('realizado')->label('Realizado')->searchable()->filterable(),
@@ -66,14 +66,15 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
 
-            Column::name('cantidad_requerida')->label('Cantidad requerida')->searchable()->filterable(),
-            Column::name('valor_esperado')->label('Valor Esperado')->searchable()->filterable(),
+            // Column::name('cantidad_requerida')->label('Cantidad requerida')->searchable()->filterable(),
+            // Column::name('valor_esperado')->label('Valor Esperado')->searchable()->filterable(),
         ];
     }
     
     public function edit($id)
     {
-        $this->emit('edit', $id);
+        $this->emit('openUpdateModal');
+        $this->emit('edit_evaluador', $id, 1);
     }
 
     public function export()

@@ -25,42 +25,40 @@
                 @endif
 
                 <form>
-                        <div class="row">
-                            <input type="hidden" wire:model="selected_id">
-                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
-                                <label for="encargado_id">Encargado</label>
-                                    <select name="encargado_id" class="form-control" id="encargado_id"
-                                    {{-- id="evaluador_planes_id" --}}
-                                        placeholder="Encargado"
-                                        >
-                                        <option value="">Seleccione</option>
-                                    </select>
-                                @error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
-                                <label for="empleado_id">Empleado</label>
-                                <div wire:ignore>
-                                    <select name="empleado_id" class="form-control" id="empleado_id"
-                                    {{-- multiple --}}
-                                        placeholder="Empleado"
-                                        >
-                                        <option value="">Seleccione</option>
-                                    </select>
-                                </div>
-                                @error('empleado_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
-                                <label for="planes_de_accion_configuracion_id">Plan de Mejora</label>
-                                <div wire:ignore>
-                                    <select name="planes_de_accion_configuracion_id" class="form-control" id="planes_de_accion_configuracion_id"
-                                        placeholder="Plan de Mejora"
-                                        >
-                                        <option value="">Seleccione</option>
-                                    </select>
-                                </div>
-                                @error('planes_de_accion_configuracion_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                            </div>                            
+                    <div class="row">
+                        <input type="hidden" wire:model="selected_id">
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
+                            <label for="encargado_id">Encargado</label>
+                                <select name="encargado_id" class="form-control" id="encargado_id"
+                                    placeholder="Encargado"
+                                    >
+                                    <option value="">Seleccione</option>
+                                </select>
+                            @error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
+                            <label for="empleado_id">Empleado</label>
+                            <div wire:ignore>
+                                <select name="empleado_id" class="form-control" id="empleado_id"
+                                    placeholder="Empleado"
+                                    >
+                                    <option value="">Seleccione</option>
+                                </select>
+                            </div>
+                            @error('empleado_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
+                            <label for="planes_de_accion_configuracion_id">Plan de Mejora</label>
+                            <div wire:ignore>
+                                <select name="planes_de_accion_configuracion_id" class="form-control" id="planes_de_accion_configuracion_id"
+                                    placeholder="Plan de Mejora"
+                                    >
+                                    <option value="">Seleccione</option>
+                                </select>
+                            </div>
+                            @error('planes_de_accion_configuracion_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>                            
+                    </div>
                         
                     <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled"
                     @if (!$this->updateMode)                    
