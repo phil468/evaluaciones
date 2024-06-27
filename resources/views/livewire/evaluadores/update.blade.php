@@ -29,17 +29,19 @@
 
                         <input type="hidden" wire:model="selected_id">
                         
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="evaluador_id">Evaluador</label>
+                            <div wire:ignore>
                                 <select name="evaluador_id" class="form-control" id="evaluador_id"
                                     placeholder="Encargado"
                                     >
                                     <option value="">Seleccione</option>
                                 </select>
+                            </div>
                             @error('evaluador_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="evaluado_id">Evaluado</label>
                             <div wire:ignore>
                                 <select name="evaluado_id" class="form-control" id="evaluado_id"
@@ -51,7 +53,7 @@
                             @error('evaluado_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4" wire:ignore>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="evaluacion_id">Evaluación</label>
                             <div wire:ignore>
                                 <select name="evaluacion_id" class="form-control" id="evaluacion_id"

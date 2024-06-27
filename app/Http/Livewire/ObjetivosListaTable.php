@@ -21,7 +21,7 @@ class ObjetivosListaTable extends LivewireDatatable
     public function builder()
     {
         return Objetivo::query()
-        ->where('objetivos.deleted_at',null)->where('objetivos.deleted_at',null)
+        ->where('objetivos.deleted_at',null)
         ->leftJoin('tipo_de_objetivos','tipo_de_objetivos.id','=','objetivos.tipo_objetivo_id')
         ->leftJoin('personal as evaluados','evaluados.id','=','objetivos.evaluado_id')
         ->leftJoin('personal as evaluadores','evaluadores.id','=','objetivos.evaluador_id')
@@ -132,6 +132,7 @@ class ObjetivosListaTable extends LivewireDatatable
         // Column::name('evaluador_has_evaluados.jerarquia')->label('Jerarquía')->searchable()->filterable()->defaultSort('asc'),
         Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
         Column::name('updated_at')->label('Fecha de Modificación')->searchable()->filterable()->defaultSort('asc'),
+        Column::name('deleted_at')->label('Fecha de eliminación')->searchable()->filterable()->defaultSort('asc'),
 
         ];
     }

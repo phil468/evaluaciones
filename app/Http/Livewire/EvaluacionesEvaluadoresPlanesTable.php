@@ -41,6 +41,7 @@ class EvaluacionesEvaluadoresPlanesTable extends LivewireDatatable
     public function columns()
     {
         return [
+            Column::name('id')->label('ID')->filterable()->defaultSort('asc'),
             Column::callback(['encargados_planes_de_accion.id'], function ($id) {
                 return view('table-actions-3', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),

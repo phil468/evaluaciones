@@ -51,7 +51,13 @@ class Evaluadores extends Component
 	public $cargando = false;
 	public $actualizandoVista = true;
 
-    protected $listeners = ['edit_evaluador' => 'edit'];
+    protected $listeners = ['edit_evaluador' => 'edit' , 'eliminadoEvaluadoresResultados' => 'eliminadoEvaluadoresResultados'];
+
+    public function eliminadoEvaluadoresResultados()
+    {
+        session()->flash('messageEvaluadoresResultados', 'Evaluador y objetivos eliminados correctamente.');    
+    }
+    
     
     public function mount() 
     {
@@ -360,7 +366,8 @@ class Evaluadores extends Component
                     return $query->where('evaluador_id', $this-> evaluador_id)
                                  ->where('evaluado_id', $this-> evaluado_id)
                                  ->where('evaluacion_id', $this-> evaluacion_id);
-                }),
+                    // }),
+                    })->ignore($this->selected_id),
             ],
             'evaluado_id' => 'required',
             'evaluacion_id' => 'required',
@@ -372,6 +379,21 @@ class Evaluadores extends Component
             'cargo_de_evaluado' => 'required',
             'area_de_evaluado' => 'required',
             'gerencia_sub_gerencia_de_evaluado' => 'required',
+        ], [
+            'evaluador_id.required' => 'El campo evaluador es obligatorio.',
+            'evaluador_id.unique' => 'Esta combinación de Evaluador - Evaluado - Evaluacion ya ha sido registrada.',
+            'evaluado_id.required' => 'El campo evaluado es obligatorio.',
+            'evaluacion_id.required' => 'El campo evaluación es obligatorio.',
+        ], [
+            'evaluador_id' => 'evaluador',
+            'evaluado_id' => 'evaluado',
+            'evaluacion_id' => 'evaluación',
+            'cargo_de_evaluador' => 'cargo de evaluador',
+            'area_de_evaluador' => 'área de evaluador',
+            'gerencia_sub_gerencia_de_evaluador' => 'gerencia/subgerencia de evaluador',
+            'cargo_de_evaluado' => 'cargo de evaluado',
+            'area_de_evaluado' => 'área de evaluado',
+            'gerencia_sub_gerencia_de_evaluado' => 'gerencia/subgerencia de evaluado',
         ]);
 
         if ($this->selected_id) {
@@ -390,21 +412,31 @@ class Evaluadores extends Component
                 'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
             ]);
 
-			$this->emit('limpiarDatosEvaluadores');
-            $this->resetInput();
-            $this->resetValidation();
-            $this->updateMode = false;
-		    $this->emit('closeModal');
-
             if ($this->tipo_de_evaluacion_id == 1) {
                 $this->emit('refreshEvaluadoresCompetencias');        
                 session()->flash('messageEvaluadoresCompetencias', 'Evaluadores creado correctamente.');
             }
     
             if ($this->tipo_de_evaluacion_id == 2) {
+                $objetivos = $record->objetivos;
+                
+                foreach ($objetivos as $o) {
+                    $o->evaluador_id = $this->evaluador_id;
+                    $o->evaluado_id = $this->evaluado_id;
+                    if ($o->isDirty()) {
+                        $o->save();
+                    }
+                }
+
                 $this->emit('refreshEvaluadoresResultados');
                 session()->flash('messageEvaluadoresResultados', 'Evaluadores creado correctamente.');
             }
+
+			$this->emit('limpiarDatosEvaluadores');
+            $this->resetInput();
+            $this->resetValidation();
+            $this->updateMode = false;
+		    $this->emit('closeModal');
         }
     }
 
@@ -472,11 +504,12 @@ class Evaluadores extends Component
     
     }
 
-    public function destroy($id)
-    {
-        if ($id) {
-            $record = EvaluadorHasEvaluado::where('id', $id);
-            $record->delete();
-        }
-    }
+    // public function destroy($id)
+    // {
+    //     if ($id) {
+    //         $record = EvaluadorHasEvaluado::where('id', $id);
+    //         dd('delete table');
+    //         $record->delete();
+    //     }
+    // }
 }

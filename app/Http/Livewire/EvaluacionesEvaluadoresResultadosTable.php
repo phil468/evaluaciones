@@ -42,6 +42,7 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
     public function columns()
     {
         return [
+            Column::name('id')->label('ID')->filterable()->defaultSort('asc'),
             Column::callback(['evaluador_has_evaluados.id'], function ($id) {
                 return view('table-actions-4', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
@@ -131,6 +132,12 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
         if ($id) {
             $record = EvaluadorHasEvaluado::where('id', $id);
             $record->delete();
+
+            $record = Objetivo::where('evaluador_has_evaluado_id', $id);
+            $record->delete();
+            
+            $this->emit('refreshEvaluadoresResultados');
+            $this->emit('eliminadoEvaluadoresResultados');
         }
     }
 
