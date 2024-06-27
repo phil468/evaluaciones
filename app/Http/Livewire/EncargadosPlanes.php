@@ -11,9 +11,11 @@ use App\Models\Evaluacione;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Personal;
+use App\Models\PlanesConfiguracion;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -24,7 +26,7 @@ class EncargadosPlanes extends Component
     use WithPagination;
 
 	protected $paginationTheme = 'bootstrap';
-    public $selected_id, $keyWord, $evaluador_id, $evaluado_id, $evaluacion_id,
+    public $selected_id, $keyWord, $encargado_id, $empleado_id, $planes_de_accion_configuracion_id,
     $evaluadores,
     $evaluados,
     $evaluaciones,
@@ -47,13 +49,17 @@ class EncargadosPlanes extends Component
     public $updateMode = false;
     public $createMode = false;
 	public $cargando = false;
-	public $actualizandoVista = true;
+	public $actualizandoVista = false;
 
     protected $listeners = ['edit' => 'edit'];
     
     public function mount() 
     {
         $this->tipo_de_evaluacion_objetivos_id = 2;
+
+        $this->evaluadores 	=	Personal::		        orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+		$this->evaluados 	= 	Personal::		        orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+		$this->evaluaciones = 	PlanesConfiguracion::   orderBy('title')->activa()->select('title as label', 'id as value')->get()->toArray();
     }
     public function render()
     {
@@ -72,14 +78,14 @@ class EncargadosPlanes extends Component
             }
             $e->evaluadores()->delete();
         }
-        session()->flash('message', 'Se eliminaron los objetivos y los registros correctamente.');
+        session()->flash('messagePlanes', 'Se eliminaron los objetivos y los registros correctamente.');
         $this->emit('closeModal');
         $this->emit('refreshEncargadosPlanes');
     }
 
     public function abrirImportar() 
     {
-        session()->flash('message', null);
+        session()->flash('messagePlanes', null);
     }
         
     public function importarEncargadosPlanes()
@@ -92,8 +98,8 @@ class EncargadosPlanes extends Component
             $importacion = new EncargadosPlanesImport;
             Excel::import($importacion, $this->file);
 			$this->message = $importacion->getMessage();
-            session()->flash('message', $this->message);
-            // dd('message');
+            session()->flash('messagePlanes', $this->message);
+            // dd('messagePlanes');
 
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
@@ -125,7 +131,7 @@ class EncargadosPlanes extends Component
             foreach ($erroresDetallados as $error) {
                 $this->message = $this->message.$error . "<br>";
             }
-            session()->flash('message', $this->message);
+            session()->flash('messagePlanes', $this->message);
         }
 
         $this->resetInput();
@@ -140,41 +146,43 @@ class EncargadosPlanes extends Component
         
     }
 
-    public function listarSelects() {
+    public function listarSelects() 
+    {
 		$this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
 		$this->evaluados 	= 	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
-		$this->evaluaciones = 	Evaluacione::		orderBy('title')->select('title as label', 'id as value')->get()->toArray();
+		$this->evaluaciones = 	PlanesConfiguracion::		orderBy('title')->activa()->select('title as label', 'id as value')->get()->toArray();
 
-		$this->emit('listar_selects',
-			$this->evaluadores,
-			$this->evaluados,
-			$this->evaluaciones,
-		);
+		// $this->emit('listar_selects_encargados_planes',
+		// 	$this->evaluadores,
+		// 	$this->evaluados,
+		// 	$this->evaluaciones,
+		// );
 		$this->actualizarDatosPersonal();
 	}
     
-	public function actualizarDatosPersonal () {
-		$this->emit('actualizarDatosP',
-			$this->evaluador_id,
-			$this->evaluado_id,
-			$this->evaluacion_id
+	public function actualizarDatosPersonal ()
+    {
+		$this->emit('actualizarDatosEncargadosPlanes',
+			$this->encargado_id,
+			$this->empleado_id,
+			$this->planes_de_accion_configuracion_id
 		);
 	}
 
     public function cancel()
     {
+		$this->emit('limpiarDatosEncargadosPlanes');
         $this->resetInput();
-		$this->emit('limpiarDatos');
-        $this->cargando = false;
-        $this->actualizandoVista = true;
+		$this->resetValidation();
+        $this->updateMode = false;
     }
 	
     private function resetInput()
     {		
 		$this->selected_id = null;
-		$this->evaluador_id = null;
-		$this->evaluado_id = null;
-		$this->evaluacion_id = null;
+		$this->encargado_id = null;
+		$this->empleado_id = null;
+		$this->planes_de_accion_configuracion_id = null;
         $this->cargo_de_evaluador = null;
         $this->area_de_evaluador = null;
         $this->gerencia_sub_gerencia_de_evaluador = null;
@@ -188,87 +196,143 @@ class EncargadosPlanes extends Component
         $this->file_objetivos = null;
     }
 
-    public function create() {
+    public function create()
+    {
+        $this->updateMode = true;
         $this->listarSelects();
-        $this->updateMode = true;		
-        $this->cargando = true;
-        // $this->createMode = true;
-        // $this->listarSelects();
     }   
 
     public function store()
-    {
+    {   
         $this->validate([
-            'evaluador_id' => 'required',
-            'evaluado_id' => 'required',
-            'evaluacion' => 'required',
+            'encargado_id' => [
+                'required',
+                Rule::unique('encargados_planes_de_accion')->where(function ($query) {
+                    return $query->where('encargado_id', $this-> encargado_id)
+                                 ->where('empleado_id', $this-> empleado_id)
+                                 ->where('planes_de_accion_configuracion_id', $this-> planes_de_accion_configuracion_id);
+                }),
+            ],
+            'empleado_id' => 'required',
+            'planes_de_accion_configuracion_id' => 'required',
+
+            'cargo_de_evaluador' => 'required',
+            'area_de_evaluador' => 'required',
+            'gerencia_sub_gerencia_de_evaluador' => 'required',
+            'cargo_de_evaluado' => 'required',
+            'area_de_evaluado' => 'required',
+            'gerencia_sub_gerencia_de_evaluado' => 'required',
+
+            'cantidad_requerida' => 'required|integer',
+            'valor_esperado' => 'required|numeric',
+            'jerarquia' => 'required',
         ]);
 
         EncargadosPlanesDeAccion::create([ 
-			'evaluador_id' => $this-> evaluador_id,
-			'evaluado_id' => $this-> evaluado_id,
-			'evaluacion' => $this-> evaluacion_id
+            'encargado_id' => $this-> encargado_id,
+            'empleado_id' => $this-> empleado_id,
+            'planes_de_accion_configuracion_id' => $this-> planes_de_accion_configuracion_id,
+
+            'cargo_de_evaluador' => $this-> cargo_de_evaluador,
+            'area_de_evaluador' => $this-> area_de_evaluador,
+            'gerencia_sub_gerencia_de_evaluador' => $this-> gerencia_sub_gerencia_de_evaluador,
+            'cargo_de_evaluado' => $this-> cargo_de_evaluado,
+            'area_de_evaluado' => $this-> area_de_evaluado,
+            'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
+
+            'cantidad_requerida' => $this-> cantidad_requerida,
+            'valor_esperado' => $this-> valor_esperado,
+            'jerarquia' => $this-> jerarquia,
         ]);
         
+		$this->emit('limpiarDatosEncargadosPlanes');
         $this->resetInput();
-		$this->emit('limpiarDatos');
-        $this->cargando = false;
-		$this->actualizandoVista = true;
+        $this->resetValidation();
+        $this->updateMode=false;
 		$this->emit('closeModal');
         $this->emit('refreshEncargadosPlanes');
-		session()->flash('message', 'Evaluadores creado correctamente.');
+		session()->flash('messagePlanes', 'Evaluadores creado correctamente.');
     }
 
     public function edit($id)
     {
-		if ($id != 0) {
-			$this->resetValidation();
-			$this->resetInput();
-            
+        if ($id != 0) {
             $record = EncargadosPlanesDeAccion::findOrFail($id);
 
             $this->selected_id = $id; 
-            $this->evaluador_id = $record-> evaluador_id;
-            $this->evaluado_id = $record-> evaluado_id;
-            $this->evaluacion_id = $record-> evaluacion_id;
+            $this->encargado_id = $record-> encargado_id;
+            $this->empleado_id = $record-> empleado_id;
+            $this->planes_de_accion_configuracion_id = $record-> planes_de_accion_configuracion_id;
 
-            
-            $this->updateMode = true;
+            $this->cargo_de_evaluador = $record-> cargo_de_evaluador;
+            $this->area_de_evaluador = $record-> area_de_evaluador;
+            $this->gerencia_sub_gerencia_de_evaluador = $record-> gerencia_sub_gerencia_de_evaluador;
+            $this->cargo_de_evaluado = $record-> cargo_de_evaluado;
+            $this->area_de_evaluado = $record-> area_de_evaluado;
+            $this->gerencia_sub_gerencia_de_evaluado = $record-> gerencia_sub_gerencia_de_evaluado;
+
+            $this->cantidad_requerida = $record-> cantidad_requerida;
+            $this->valor_esperado = $record-> valor_esperado;
+            $this->jerarquia = $record-> jerarquia;
 		} else {
-			$this->resetValidation();
-			$this->resetInput();
-			$this->selected_id = 0; 
+			$this->selected_id = 0;
 		}
-
-        $this->listarSelects();
         $this->updateMode = true;
-        $this->cargando = true;
+        $this->listarSelects();        
     }
 
     public function update()
     {
         $this->validate([
-            'evaluador_id' => 'required',
-            'evaluado_id' => 'required',
-            'evaluacion' => 'required',
+            'encargado_id' => [
+                'required',
+                Rule::unique('encargados_planes_de_accion')->where(function ($query) {
+                    return $query->where('encargado_id', $this-> encargado_id)
+                                 ->where('empleado_id', $this-> empleado_id)
+                                 ->where('planes_de_accion_configuracion_id', $this-> planes_de_accion_configuracion_id);
+                })->ignore($this->selected_id),
+            ],
+            'empleado_id' => 'required',
+            'planes_de_accion_configuracion_id' => 'required',
+
+            'cargo_de_evaluador' => 'required',
+            'area_de_evaluador' => 'required',
+            'gerencia_sub_gerencia_de_evaluador' => 'required',
+            'cargo_de_evaluado' => 'required',
+            'area_de_evaluado' => 'required',
+            'gerencia_sub_gerencia_de_evaluado' => 'required',
+
+            'cantidad_requerida' => 'required|integer',
+            'valor_esperado' => 'required|numeric',
+            'jerarquia' => 'required',
         ]);
 
         if ($this->selected_id) {
 			$record = EncargadosPlanesDeAccion::find($this->selected_id);
             $record->update([ 
-                'evaluador_id' => $this-> evaluador_id,
-                'evaluado_id' => $this-> evaluado_id,
-                'evaluacion' => $this-> evaluacion
+                'encargado_id' => $this-> encargado_id,
+                'empleado_id' => $this-> empleado_id,
+                'planes_de_accion_configuracion_id' => $this-> planes_de_accion_configuracion_id,
+
+                'cargo_de_evaluador' => $this-> cargo_de_evaluador,
+                'area_de_evaluador' => $this-> area_de_evaluador,
+                'gerencia_sub_gerencia_de_evaluador' => $this-> gerencia_sub_gerencia_de_evaluador,
+                'cargo_de_evaluado' => $this-> cargo_de_evaluado,
+                'area_de_evaluado' => $this-> area_de_evaluado,
+                'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
+
+                'cantidad_requerida' => $this-> cantidad_requerida,
+                'valor_esperado' => $this-> valor_esperado,
+                'jerarquia' => $this-> jerarquia,
             ]);
 
+            $this->emit('limpiarDatosEncargadosPlanes');
             $this->resetInput();
-            // $this->updateMode = false;
-			$this->emit('limpiarDatos');
-        	$this->cargando = false;
-        	$this->actualizandoVista = true;
+            $this->resetValidation();
+            $this->updateMode=false;
 		    $this->emit('closeModal');
             $this->emit('refreshEncargadosPlanes');
-			session()->flash('message', 'Evaluadores actualizado correctamente.');
+			session()->flash('messagePlanes', 'Encargado de planes actualizado correctamente.');
         }
     }
 

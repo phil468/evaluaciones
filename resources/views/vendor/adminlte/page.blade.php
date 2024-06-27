@@ -73,7 +73,7 @@
             $('#evidenciaModal').modal('hide');
             $('#updatePlanesConfiguracionModal').modal('hide');
             $('#importEncargadosPlanesDataModal').modal('hide');
-            
+            $('#updateEncargadosPlanesModal').modal('hide');
         });
         
         window.livewire.on('opencreatePlanDataModal', () => {
@@ -119,6 +119,10 @@
         
         window.livewire.on('openModalEvidencias', function () {
             $('#evidenciaModal').modal('show');
+        });
+        
+        window.livewire.on('openEncargadosPlanesModal', function () {
+            $('#updateEncargadosPlanesModal').modal('show');
         });
         
         window.livewire.on('limpiarFile', () => {

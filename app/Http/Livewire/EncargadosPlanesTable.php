@@ -28,7 +28,7 @@ class EncargadosPlanesTable extends LivewireDatatable
     public function builder()
     {       
         return EncargadosPlanesDeAccion::query()
-        ->leftJoin('personal as encargado','encargado.id','=','encargados_planes_de_accion.encargado_id');
+        ->leftJoin('personal as encargados','encargados.id','=','encargados_planes_de_accion.encargado_id');
         // ->leftJoin('personal as evaluado','evaluado.id','=','encargados_planes_de_accion.empleado_id');
     }
 
@@ -38,13 +38,13 @@ class EncargadosPlanesTable extends LivewireDatatable
     {
         return [
             Column::callback(['encargados_planes_de_accion.id'], function ($id) {
-                return view('table-actions-3', ['id' => $id]);
+                return view('table-actions-4', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
             // Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
             BooleanColumn::name('encargados_planes_de_accion.realizado')->label('Realizado')->searchable()->filterable(),
             Column::name('plan_de_mejora.title')->label('Plan de Mejora')->searchable()->filterable(),
 
-            Column::name('encargado.name')->label('Evaluador')->searchable()->filterable(),
+            Column::name('encargados.name')->label('Evaluador')->searchable()->filterable(),
             Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
             Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
@@ -61,6 +61,7 @@ class EncargadosPlanesTable extends LivewireDatatable
     
     public function edit($id)
     {
+        $this->emit('openEncargadosPlanesModal');
         $this->emit('edit', $id);
     }
 

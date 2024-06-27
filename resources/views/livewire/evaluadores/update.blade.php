@@ -45,6 +45,7 @@
                                 <select name="evaluador_id" class="form-control" id="evaluador_id"
                                     {{-- placeholder="Empresas" --}}
                                     >
+                                    
                                 </select>
                             </div>
                             @error('evaluador_id') <span class="error text-danger">{{ $message }}</span> @enderror
@@ -63,9 +64,7 @@
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="evaluacion_id">Evaluación</label>
                             <div wire:ignore>
-                                <select name="evaluacion_id" class="form-control" id="evaluacion_id"
-                                    {{-- placeholder="Empresas" --}}
-                                    >
+                                <select name="evaluacion_id" class="form-control" id="evaluacion_id">
                                 </select>
                             </div>
                             @error('evaluacion_id') <span class="error text-danger">{{ $message }}</span> @enderror
@@ -102,7 +101,7 @@
                             <input wire:model="gerencia_sub_gerencia_de_evaluado" type="text" class="form-control" id="gerencia_sub_gerencia_de_evaluado" placeholder="Gerencia Sub Gerencia de Evaluado">
                             @error('gerencia_sub_gerencia_de_evaluado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                        {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="cantidad_requerida">Cantidad Requerida</label>
                             <input wire:model="cantidad_requerida" type="text" class="form-control" id="cantidad_requerida" placeholder="Cantidad Requerida">
                             @error('cantidad_requerida') <span class="error text -danger">{{ $message }}</span> @enderror
@@ -117,7 +116,7 @@
                             <label for="jerarquia">Jerarquia</label>
                             <input wire:model="jerarquia" type="text" class="form-control" id="jerarquia" placeholder="Jerarquia">
                             @error('jerarquia') <span class="error text -danger">{{ $message }}</span> @enderror
-                        </div>
+                        </div> --}}
                         
                     </fieldset>
                 </form>
