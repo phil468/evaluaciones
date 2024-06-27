@@ -11,6 +11,7 @@ use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 // use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
@@ -137,14 +138,99 @@ class EvaluadoresTable extends LivewireDatatable
                 return $barra;
                 
 
-            })->label('Avance')->exportCallback(function ($value) {
-                $realizados = EvaluadorHasEvaluado::where('evaluador_id',$value)->where('realizado',1)->count();
-                $total = EvaluadorHasEvaluado::where('evaluador_id',$value)->count();
+            })->label('Avance')->excludeFromExport()
+            // ->exportCallback(function ($value) {
+            //     $barra='';
+            //     for ($i=1; $i <3 ; $i++) {
+            //         if ($i == 1) {
+            //             $realizados = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+            //             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            //             ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+            //             ->where('evaluador_has_evaluados.realizado',1)
+            //             ->count();
+                        
+            //             $total = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+            //             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            //             ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+            //             ->count();
+                        
+            //             $barra=$barra.'Ev. por Competencias : '.$realizados.' de '.$total;
+            //         }
+                    
+            //         if ($i == 2) {
+            //             $pendientes = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id', $value)
+            //             ->select('evaluador_has_evaluados.*')
+            //             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            //             ->where('evaluaciones.tipo_de_evaluacion_id',2)
+            //             ->get()->filter(function ($evaluador) {
+            //                 return $evaluador->estado_no_realizado;
+            //             })->count();
+
+            //             $total = EvaluadorHasEvaluado::
+            //             where('evaluador_has_evaluados.evaluador_id', $value)
+            //             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+            //             ->where('evaluaciones.tipo_de_evaluacion_id',2)
+            //             ->count();
+
+            //             $realizados = $total-$pendientes;
+                        
+            //             $barra=$barra.' | Ev. por Resultados : '.$realizados.' de '.$total;
+            //         } 
+
+            //     }
+                
+            //     return $barra;
+                
+            // })
+            ,
+            //columna oculta callback de avance de realizados y total
+            Column::callback(['evaluador_id'],function ($value) {
+                $realizados = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+                ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->where('evaluaciones.tipo_de_evaluacion_id',1)
+                ->where('evaluador_has_evaluados.realizado',1)
+                ->count();
+                
+                $total = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id',$value)
+                ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->where('evaluaciones.tipo_de_evaluacion_id',1)
+                ->count();
+                
                 return $realizados.' de '.$total;
-            }),
-            // Column::raw('realizados_competencias'),
+            },[],'Seguimiento de Ev. Por Competencias')->label('Ev. Por Competencias')->hide(),
+
+            Column::callback(['evaluador_id'],function ($value) {
+                $pendientes = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id', $value)
+                ->select('evaluador_has_evaluados.*')
+                ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->where('evaluaciones.tipo_de_evaluacion_id',2)
+                ->get()->filter(function ($evaluador) {
+                    return $evaluador->estado_no_realizado;
+                })->count();
+
+                $total = EvaluadorHasEvaluado::
+                where('evaluador_has_evaluados.evaluador_id', $value)
+                ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->where('evaluaciones.tipo_de_evaluacion_id',2)
+                ->count();
+
+                $realizados = $total-$pendientes;
+                
+                return $realizados.' de '.$total;
+            },[],'Seguimiento de Ev. Por Resultados')->label('Ev. Por Resultados')->hide(),
            
         ];
 
     }
+
+    public function export()
+    {
+        $this->forgetComputed();
+
+        $export = new DatatableExport($this->getExportResultsSet());
+
+        $export->setFileName('Seguimiento_de_evaluadores.xlsx');
+        return $export->download();
+    }
+    
 }
