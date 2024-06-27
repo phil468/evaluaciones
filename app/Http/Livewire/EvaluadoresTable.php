@@ -197,7 +197,7 @@ class EvaluadoresTable extends LivewireDatatable
                 ->count();
                 
                 return $realizados.' de '.$total;
-            },[],'Seguimiento de Ev. Por Competencias')->label('Ev. Por Competencias')->hide(),
+            },[],'Seguimiento de Ev. Por Competencias')->label('Ev. Por Competencias'),
 
             Column::callback(['evaluador_id'],function ($value) {
                 $pendientes = EvaluadorHasEvaluado::where('evaluador_has_evaluados.evaluador_id', $value)
@@ -217,7 +217,7 @@ class EvaluadoresTable extends LivewireDatatable
                 $realizados = $total-$pendientes;
                 
                 return $realizados.' de '.$total;
-            },[],'Seguimiento de Ev. Por Resultados')->label('Ev. Por Resultados')->hide(),
+            },[],'Seguimiento de Ev. Por Resultados')->label('Ev. Por Resultados'),
            
         ];
 
