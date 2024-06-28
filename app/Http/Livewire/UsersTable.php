@@ -75,8 +75,13 @@ class UsersTable extends LivewireDatatable
     public function destroy($id)
     {
         if ($id) {
-            $record = User::where('id', $id);
-            $record->delete();
+            $user = User::find($id);
+            // Cambiar el email a un valor temporal único antes de eliminar
+            $user->email = 'deleted_' . time() . '_' . $user->email;
+            $user->save();
+        
+            // Ahora eliminar (soft delete) el usuario
+            $user->delete();
         }
     }
     
