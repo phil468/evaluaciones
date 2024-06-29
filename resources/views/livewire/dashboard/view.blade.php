@@ -34,7 +34,7 @@
 						<div class="row">
 							<div class="form-group col-md-4 col-sm-4" wire:ignore>
 								<label for="gerencia_sub_gerencia_de_evaluado">Gerencia/Subgerencia</label>
-								<select name="gerencia_sub_gerencia_de_evaluado" class="form-control" multiple class="form-control" id="gerencia_sub_gerencia_de_evaluado" placeholder="Gerencias/Sugerencias">
+								<select name="gerencia_sub_gerencia_de_evaluado" class="form-control" id="gerencia_sub_gerencia_de_evaluado" placeholder="Gerencias/Sugerencias">
 									<option value="">Seleccione</option>
 									@foreach ($gerencia_sub_gerencia_de_evaluados as $id => $name)
 										<option value="{{ $id }}">{{ $name }}</option>
@@ -44,7 +44,7 @@
 							
 							<div class="form-group col-md-4 col-sm-4" wire:ignore>
 								<label for="area_de_evaluado">Área</label>
-								<select name="area_de_evaluado" class="form-control" multiple class="form-control" id="area_de_evaluado" placeholder="Areas">
+								<select name="area_de_evaluado" class="form-control" multiple id="area_de_evaluado" placeholder="Areas">
 									<option value="">Seleccione</option>
 									{{-- @foreach ($area_de_evaluados as $label => $value)
 										<option value="{{ $label }}">{{ $value }}</option>
@@ -124,9 +124,10 @@
 									<p class="mb-2 h5">
 										Promedio total por competencia										
 									</p>
-									@if (!$this->evaluacionPorCompetenciasFinalizada)
+									{{-- @if (!$this->evaluacionPorCompetenciasFinalizada) --}}
+									@if (1)
 										<div class="alert alert-default rounded-2xl" role="alert">
-											Una vez finalizada la evaluación por competencias se mostrarán la gráfica.
+											Una vez finalizada la evaluación de desempeño por competencias, se mostrarán los resultados obtenidos en la gráfica.
 										</div>
 									@else
 										<div class="alert alert-default rounded-2xl" role="alert">
