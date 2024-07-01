@@ -76,8 +76,8 @@
 									<th class="text-center text-white bg-vanguard">% Participac.</th>
 									<th class="text-center text-white bg-vanguard">Tipo de Objetivo</th>
 									<th class="text-center text-white bg-vanguard">Result. Anterior / Esperado</th>
-									<th class="text-center text-white bg-vanguard">Mínimo {{ $evaluador_has_evaluado->evaluacion->minimo}}%</th>
-									<th class="text-center text-white bg-vanguard">Máximo {{ $evaluador_has_evaluado->evaluacion->maximo}}%</th>
+									{{-- <th class="text-center text-white bg-vanguard">Mínimo {{ $evaluador_has_evaluado->evaluacion->minimo}}%</th> --}}
+									{{-- <th class="text-center text-white bg-vanguard">Máximo {{ $evaluador_has_evaluado->evaluacion->maximo}}%</th> --}}
 									{{-- <th class="text-center text-white bg-vanguard">Evaluación</th> --}}
 									<th class="text-center text-white bg-vanguard">Valor</th>
 									<th class="text-center text-white bg-vanguard">% Logr. STI</th>
@@ -140,7 +140,7 @@
 										: $row->resultado_anterior_o_esperado 
 									}}
 								</td>
-								<td>
+								{{-- <td>
 									{{ 
 										$row->tipo_objetivo ? 
 											($row->tipo_objetivo->id == 2 ? 
@@ -163,7 +163,7 @@
 												)
 										: $row->maximo 
 									}}
-								</td>
+								</td> --}}
 								
 								<td>
 									{{-- @if ($segunda_fase_activa && !$readOnly) --}}
