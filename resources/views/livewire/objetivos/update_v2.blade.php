@@ -64,74 +64,81 @@
                             <div class="col-12">
                                 <div class="row">
                             {{-- @if(isset($grupal) && $grupal == 1) --}}
-                                <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                    <label for="tipo_objetivo_id">Tipo de Objetivo*</label>
-                                    <select  
-                                    @if (!$primera_fase_activa)
-                                       disabled
-                                   @endif
-                                   class="form-control" id="tipo_objetivo_id" wire:model="tipo_objetivo_id">
-                                            <option value="">Seleccionar Tipo de Objetivo</option>
-                                        @foreach ($tipos_objetivo as $tipo)
-                                            <option value="{{ $tipo->id }}">{{ $tipo->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('tipo_objetivo_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                                </div>
+                                    <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                        <label for="tipo_objetivo_id">Tipo de Objetivo*</label>
+                                        <select  
+                                        @if (!$primera_fase_activa)
+                                            disabled
+                                        @endif
+                                        class="form-control" id="tipo_objetivo_id" wire:model="tipo_objetivo_id">
+                                                <option value="">Seleccionar Tipo de Objetivo</option>
+                                            @foreach ($tipos_objetivo as $tipo)
+                                                <option value="{{ $tipo->id }}">{{ $tipo->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('tipo_objetivo_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                                    </div>
                             {{-- @endif --}}
                             
                             {{-- @if(isset($grupal) && $grupal == 1) --}}
-                                <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                    <label for="resultado_anterior_o_esperado">Resultado Anterior/Esperado*</label>
-                                    <div class="input-group">
-                                        <input  
-                                        @if (!$primera_fase_activa)
-                                           disabled
-                                       @endif
-                                       inputmode="decimal" wire:loading.attr="disabled" wire:target="tipo_objetivo_id" wire:model="resultado_anterior_o_esperado" type="number" class="form-control" id="resultado_anterior_o_esperado" placeholder="Resultado Anterior O Esperado">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
-                                                {{$simbolo}}
-                                            </span>
-                                            <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
-                                                <i>Actualizando...</i>
-                                            </span>
+                                    <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                        <label for="resultado_anterior_o_esperado">Resultado Anterior/Esperado*</label>
+                                        <div class="input-group">
+                                            <input  
+                                            @if (!$primera_fase_activa)
+                                                disabled
+                                            @endif
+                                            inputmode="decimal" wire:loading.attr="disabled" wire:target="tipo_objetivo_id" wire:model="resultado_anterior_o_esperado" type="number" class="form-control" id="resultado_anterior_o_esperado" placeholder="Resultado Anterior O Esperado">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
+                                                    {{$simbolo}}
+                                                </span>
+                                                <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
+                                                    <i>Actualizando...</i>
+                                                </span>
+                                            </div>
+                                            @error('resultado_anterior_o_esperado') <span class="error text-danger">{{ $message }}</span> @enderror
                                         </div>
-                                        @error('resultado_anterior_o_esperado') <span class="error text-danger">{{ $message }}</span> @enderror
                                     </div>
-                                </div>
                             {{-- @endif --}}
-                            
-                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                <label for="minimo">Mínimo - {{$minimo_evaluacion}}%</label>
-                                <div class="input-group">
-                                    <input disabled wire:model="minimo" inputmode="decimal" min="0" type="number" class="form-control" id="minimo" placeholder="Minimo">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
-                                            {{$simbolo}}
-                                        </span>
-                                        <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
-                                            <i>Actualizando...</i>
-                                        </span>
+                                    <input disabled wire:model="minimo" inputmode="decimal" min="0" class="form-control" id="minimo" placeholder="Minimo" type="hidden">
+
+                                    <input disabled wire:model="maximo" inputmode="decimal" min="0" class="form-control" id="maximo" placeholder="Maximo" type="hidden">
+                                            
+                                    {{-- <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                        <label for="minimo">Mínimo - {{$minimo_evaluacion}}%</label>
+                                        <div class="input-group">
+                                            <input disabled wire:model="minimo" inputmode="decimal" min="0" 
+                                            type="number" 
+                                            class="form-control" id="minimo" placeholder="Minimo">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
+                                                    {{$simbolo}}
+                                                </span>
+                                                <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
+                                                    <i>Actualizando...</i>
+                                                </span>
+                                            </div>
+                                            @error('minimo') <span class="error text-danger">{{ $message }}</span> @enderror
+                                        </div>
                                     </div>
-                                    @error('minimo') <span class="error text-danger">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                <label for="maximo">Máximo - {{$maximo_evaluacion}}%</label>
-                                <div class="input-group">
-                                    <input disabled wire:model="maximo" inputmode="decimal" min="0" type="number" class="form-control" id="maximo" placeholder="Maximo">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
-                                            {{$simbolo}}
-                                        </span>
-                                        <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
-                                            <i>Actualizando...</i>
-                                        </span>
-                                    </div>
-                                    @error('maximo') <span class="error text-danger">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
+                                    <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                        <label for="maximo">Máximo - {{$maximo_evaluacion}}%</label>
+                                        <div class="input-group">
+                                            <input disabled wire:model="maximo" inputmode="decimal" min="0" 
+                                            type="number" 
+                                            class="form-control" id="maximo" placeholder="Maximo">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" wire:loading.remove wire:target="tipo_objetivo_id">
+                                                    {{$simbolo}}
+                                                </span>
+                                                <span class="input-group-text" wire:loading wire:target="tipo_objetivo_id">
+                                                    <i>Actualizando...</i>
+                                                </span>
+                                            </div>
+                                            @error('maximo') <span class="error text-danger">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             </div>
