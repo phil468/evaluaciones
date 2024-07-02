@@ -90,6 +90,10 @@ class EvaluacionTable extends LivewireDatatable
                 return $fecha_fin_segunda_fase ? (new DateTime($fecha_fin_segunda_fase))->format('d/m/Y h:i:s a') : '';
             })->label('Fecha de fin de la segunda fase (Resultado)')->searchable(),
 
+            Column::callback('evaluaciones.fecha_para_mostrar_resultados', function ($fecha_para_mostrar_resultados) {
+                return $fecha_para_mostrar_resultados ? (new DateTime($fecha_para_mostrar_resultados))->format('d/m/Y h:i:s a') : '';
+            })->label('Fecha para mostrar resultados')->searchable(),
+
             // name('evaluaciones.fecha_fin')
             // ->label('Fecha de fin')->searchable(),
             

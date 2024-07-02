@@ -30,6 +30,7 @@ class Evaluaciones extends Component
     $fecha_fin_primera_fase_matricula,
     $fecha_inicio_segunda_fase,
     $fecha_fin_segunda_fase,
+    $fecha_para_mostrar_resultados,
     $tipos;
 
     public $updateMode = false;
@@ -51,7 +52,9 @@ class Evaluaciones extends Component
         'fecha_inicio_segunda_fase' => 
         'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio|before_or_equal:fecha_fin_segunda_fase',
         'fecha_fin_segunda_fase' => 
-        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio'
+        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|after_or_equal:fecha_inicio_segunda_fase|after_or_equal:fecha_fin_primera_fase_matricula|before_or_equal:fecha_fin|after_or_equal:fecha_inicio',
+        'fecha_para_mostrar_resultados' =>
+        'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|before_or_equal:fecha_fin|after_or_equal:fecha_inicio',
     ];
 
     protected $validationAttributes = 
@@ -69,6 +72,7 @@ class Evaluaciones extends Component
         'fecha_fin_primera_fase_matricula' => 'Fecha de fin de la primera fase (Matrícula)',
         'fecha_inicio_segunda_fase' => 'Fecha de inicio de la segunda fase',
         'fecha_fin_segunda_fase' => 'Fecha de fin de la segunda fase',
+        'fecha_para_mostrar_resultados' => 'Fecha para mostrar resultados',
     
 	];
 
@@ -81,6 +85,7 @@ class Evaluaciones extends Component
         'fecha_fin_primera_fase_matricula.required_if' => 'El campo Fecha de fin de la primera fase (Matrícula) es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
         'fecha_inicio_segunda_fase.required_if' => 'El campo Fecha de inicio de la segunda fase es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
         'fecha_fin_segunda_fase.required_if' => 'El campo Fecha de fin de la segunda fase es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
+        'fecha_para_mostrar_resultados.required_if' => 'El campo Fecha para mostrar resultados es obligatorio cuando el tipo de evaluación es "Evaluación de desempeño por objetivos"',
     ];
 
 	protected $listeners = [
@@ -119,15 +124,17 @@ class Evaluaciones extends Component
 
         // $recordatorios = \App\Models\Recordatorio::whereDate('fecha', '')->get();
 
-		$keyWord = '%'.$this->keyWord .'%';
-        return view('livewire.evaluaciones.view', [
-            'evaluaciones' => Evaluacione::latest()
-            ->orWhere('eid', 'LIKE', $keyWord)
-			->orWhere('title', 'LIKE', $keyWord)
-			->orWhere('date', 'LIKE', $keyWord)
-			->orWhere('status', 'LIKE', $keyWord)
-			->paginate(10),
-        ]);
+		// $keyWord = '%'.$this->keyWord .'%';
+        return view('livewire.evaluaciones.view'
+            // , [
+            //     'evaluaciones' => Evaluacione::latest()
+            //     ->orWhere('eid', 'LIKE', $keyWord)
+            // 	->orWhere('title', 'LIKE', $keyWord)
+            // 	->orWhere('date', 'LIKE', $keyWord)
+            // 	->orWhere('status', 'LIKE', $keyWord)
+            // 	->paginate(10),
+            // ]
+        );
     }
 	
     public function cancel()
@@ -157,6 +164,7 @@ class Evaluaciones extends Component
         $this->fecha_fin_primera_fase_matricula = null;
         $this->fecha_inicio_segunda_fase = null;
         $this->fecha_fin_segunda_fase = null;
+        $this->fecha_para_mostrar_resultados = null;
     }
 
     public function create() {
@@ -191,6 +199,7 @@ class Evaluaciones extends Component
             'fecha_fin_primera_fase_matricula' => $this->fecha_fin_primera_fase_matricula,
             'fecha_inicio_segunda_fase' => $this->fecha_inicio_segunda_fase,
             'fecha_fin_segunda_fase' => $this->fecha_fin_segunda_fase,
+            'fecha_para_mostrar_resultados' => $this->fecha_para_mostrar_resultados,
         ]);
     
         $this->resetInput();
@@ -238,6 +247,8 @@ class Evaluaciones extends Component
             ? date('Y-m-d\TH:i', strtotime($record->fecha_inicio_segunda_fase)) : '';
             $this->fecha_fin_segunda_fase = $record->fecha_fin_segunda_fase 
             ? date('Y-m-d\TH:i', strtotime($record->fecha_fin_segunda_fase)) : '';
+            $this->fecha_para_mostrar_resultados = $record->fecha_para_mostrar_resultados
+            ? date('Y-m-d\TH:i', strtotime($record->fecha_para_mostrar_resultados)) : '';
             $this->tipos = $record->tipos;
 		} else {
 			$this->resetValidation();
@@ -255,6 +266,7 @@ class Evaluaciones extends Component
             $this->fecha_fin_primera_fase_matricula = null;
             $this->fecha_inicio_segunda_fase = null;
             $this->fecha_fin_segunda_fase = null;
+            $this->fecha_para_mostrar_resultados = null;
         }
     }
 
@@ -287,6 +299,7 @@ class Evaluaciones extends Component
                 'fecha_fin_primera_fase_matricula' => $this->fecha_fin_primera_fase_matricula,
                 'fecha_inicio_segunda_fase' => $this->fecha_inicio_segunda_fase,
                 'fecha_fin_segunda_fase' => $this->fecha_fin_segunda_fase,
+                'fecha_para_mostrar_resultados' => $this->fecha_para_mostrar_resultados,
             ]);
     
             $this->resetInput();

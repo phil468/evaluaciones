@@ -34,6 +34,7 @@ class Evaluacione extends Model
         'fecha_fin_primera_fase_matricula',
         'fecha_inicio_segunda_fase',
         'fecha_fin_segunda_fase',
+        'fecha_para_mostrar_resultados'
     ];
 
     protected $dates = [
@@ -44,6 +45,7 @@ class Evaluacione extends Model
         'fecha_fin_segunda_fase',
         'fecha_inicio_primera_fase_matricula',
         'fecha_fin_primera_fase_matricula',
+        'fecha_para_mostrar_resultados'
     ];
 
     /// quiero deveolver un valor verdadero si hoy se encuentra entre $evaluador_has_evaluado->evaluacion->fecha_inicio y $evaluador_has_evaluado->evaluacion->fecha_fin

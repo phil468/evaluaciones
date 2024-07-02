@@ -138,6 +138,11 @@
                                     <label for="fecha_fin_segunda_fase">Fecha Fin Segunda Fase*</label>
                                     <input wire:model="fecha_fin_segunda_fase" type="datetime-local" class="form-control" id="fecha_fin_segunda_fase" placeholder="Fecha Fin Segunda Fase">@error('fecha_fin_segunda_fase') <span class="error text-danger">{{ $message }}</span> @enderror
                                 </div>
+                                <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                    <label for="fecha_para_mostrar_resultados">Fecha para mostrar resultados*</label>
+                                    <input wire:model="fecha_para_mostrar_resultados" type="datetime-local" class="form-control" id="fecha_para_mostrar_resultados" placeholder="Fecha Fin Segunda Fase">@error('fecha_para_mostrar_resultados') <span class="error text-danger">{{ $message }}</span> @enderror
+                                </div>
+                                
                             </div>
                         </div>
             

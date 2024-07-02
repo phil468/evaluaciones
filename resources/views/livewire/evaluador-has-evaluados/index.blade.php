@@ -12,13 +12,11 @@
 
     @if ( $tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::RESULTADOS )
         @php
-            // use App\Models\TipoDeEvaluacione;
-
             $evaluaciones_por_resultado = Auth::user()->personal->evaluaciones()
             ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
             ->select('evaluador_has_evaluados.id')
             ->where('evaluaciones.tipo_de_evaluacion_id', App\Models\TipoDeEvaluacione::RESULTADOS)
-            ->where('evaluaciones.fecha_fin_primera_fase_matricula', '<', now())
+            ->where('evaluaciones.fecha_para_mostrar_resultados', '<', now())
             ->get();
         @endphp
 
