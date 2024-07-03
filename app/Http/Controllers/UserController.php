@@ -180,7 +180,13 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        User::find($id)->delete();
+        $user = User::find($id);
+        // Cambiar el email a un valor temporal único antes de eliminar
+        $user->email = 'deleted_' . time() . '_' . $user->email;
+        $user->save();
+    
+        // Ahora eliminar (soft delete) el usuario
+        $user->delete();
         return redirect()->route('users.index');
     }
 
