@@ -128,6 +128,12 @@
   border-color:  var(--vanguard-color);
 }
 
+.btn-outline-vanguard:hover {
+  /* Añade aquí los estilos deseados para cuando el mouse esté por encima */
+  background-color: var(--vanguard-color); /* Ejemplo: Cambia el fondo */
+  color: #fff; /* Ejemplo: Cambia el color del texto */
+}
+
 .badge-primary {
     color: #fff;
     background-color: var(--primary-color);
