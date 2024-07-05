@@ -112,6 +112,23 @@
                             <input wire:model="jerarquia" type="text" class="form-control" id="jerarquia" placeholder="Jerarquia">
                             @error('jerarquia') <span class="error text -danger">{{ $message }}</span> @enderror
                         </div> --}}
+
+                        @if ($this->tipo_de_evaluacion_id == 2)
+                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                                <label for="jerarquia">Jerarquía</label>
+                                <div>
+                                    <select name="jerarquia" class="form-control" id="jerarquia" placeholder="Evaluación" wire:model='jerarquia'>
+                                        <option value="">Seleccione</option>
+                                        <option value=1>TIPO 1 (INDIVIDUAL)</option>
+                                        <option value=2>TIPO 2 (GRUPAL)</option>
+                                    </select>
+                                </div>
+                                @if (session()->has('cambioJerarquia'))
+                                    <div class="btn btn-sm btn-warning" style="margin-top:0px; margin-bottom:0px;"> {{ session('cambioJerarquia') }} </div>
+                                @endif
+                                @error('jerarquia') <span class="error text-danger">{{ $message }}</span> @enderror
+                            </div> 
+                        @endif
                         
                     </fieldset>
                 </form>
@@ -123,23 +140,38 @@
                 wire:loading.attr="disabled" 
                 wire:click.prevent="cancel()" 
                 class="btn btn-secondary rounded-xl" 
-                data-dismiss="modal"
-                >Cerrar</button>
+                @if (!$this->updateMode)                    
+                    disabled
+                @endif
+                data-dismiss="modal">
+                    Cerrar
+                </button>
 
                 @if ($this->selected_id == 0)
                     <button 
                     type="button" 
-                    wire:target="edit,store,update,tipo_de_evaluacion_id" 
+                    wire:target="edit,store,update,tipo_de_evaluacion_id, jerarquia" 
                     wire:loading.attr="disabled" 
                     wire:click.prevent="store()" 
-                    class="btn btn-lg btn-vanguard rounded-xl close-modal"
-                    >Guardar</button>
+                    @if (!$this->updateMode)                    
+                        disabled
+                    @endif
+                    class="btn btn-lg btn-vanguard rounded-xl close-modal">
+                    Guardar</button>
                 @else
                     <button 
                     type="button" 
-                    wire:target="edit,store,update,tipo_de_evaluacion_id" 
-                    wire:loading.attr="disabled" 
-                    wire:click.prevent="update()" 
+                    wire:target="edit,store,update,tipo_de_evaluacion_id, jerarquia" 
+                    wire:loading.attr="disabled"
+                    @if (!$this->updateMode)                    
+                        disabled
+                    @endif
+                    @if (session()->has('cambioJerarquia'))
+                        x-on:click="confirm('¿Confirma que desea actualizar? Eliminará los objetivos y los volverá a cargar. \n ¡Los objetivos eliminados no pueden ser recuperados!') ? $wire.update() : event.stopImmediatePropagation()"
+                    @else
+                        wire:click.prevent="update()"
+                    @endif
+                    {{-- wire:click="update()" --}}
                     class="btn btn-lg btn-vanguard rounded-xl"
                     >Guardar</button>
                 @endif
