@@ -15,11 +15,11 @@
                         <div class="float-left">
 
                             @if ($tipo_de_evaluacion_id == 2)
-                                <h5 class="h5">Evaluación de Desempeño por Resultados de personal a cargo</h5>
+                                <h5 class="h5">Evaluación de Desempeño por Resultados {{$evaluadorHasEvaluados[0]->evaluacion->campania}} de personal a cargo</h5>
                                 @section('title', __('Evaluación de Desempeño por Resultados'))
                             @endif
                             @if ($tipo_de_evaluacion_id == 1)
-                                <h5 class="h5">EVALUACIÓN DE DESEMPEÑO POR COMPETENCIA</h5>
+                                <h5 class="h5">Evaluación de Desempeño por Competencia {{$evaluadorHasEvaluados[0]->evaluacion->campania}} </h5>
                                 @section('title', __('Evaluación de Desempeño por Competencia'))
                             @endif
 
@@ -97,19 +97,26 @@
                                                     {{-- Primero evaluamos estado de evaluacion --}}
 
                                                     @if ($tipo_de_evaluacion_id == 1)
-                                                        @if ($row->realizado)
-                                                            <span class="badge badge-secondary badge-pill"
-                                                                style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">FINALIZADO</span>
+                                                        @if ($row->evaluacion->activa)
+                                                            @if ($row->realizado)
+                                                                <span class="badge badge-secondary badge-pill"
+                                                                    style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">REALIZADO</span>
+                                                            @else
+                                                                <a
+                                                                href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
+                                                                    class="badge badge-primary badge-pill"
+                                                                    style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
+                                                                    PENDIENTE
+                                                                        <i class="far fa-hand-point-up"></i>
+                                                                    </span> 
+                                                                </a>
+                                                            @endif
                                                         @else
-                                                            <a
-                                                            href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
-                                                                class="badge badge-primary badge-pill"
-                                                                style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                PENDIENTE
-                                                                    <i class="far fa-hand-point-up"></i>
-                                                                </span> 
-                                                            </a>
-                                                        @endif
+                                                            <span 
+                                                            class="badge badge-light badge-pill"
+                                                            style="height: 2rem; font-size: 90%; line-height: inherit;"
+                                                            >EVALUACIÓN NO VIGENTE</span>
+                                                        @endif                                                        
                                                     @endif
                                                     
                                                     @if ($tipo_de_evaluacion_id == 2)
@@ -209,23 +216,27 @@
                                                         {{-- Primero evaluamos estado de evaluacion --}}
 
                                                         @if ($tipo_de_evaluacion_id == 1)
-                                                            @if ($row->realizado)
-                                                                <span class="badge badge-secondary badge-pill"
-                                                                    style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">FINALIZADO</span>
+                                                            @if ($row->evaluacion->activa)
+                                                                @if ($row->realizado)
+                                                                    <span class="badge badge-secondary badge-pill"
+                                                                        style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">REALIZADO</span>
+                                                                @else
+                                                                    <a
+                                                                    href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
+                                                                        class="badge badge-primary badge-pill"
+                                                                        style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
+                                                                        PENDIENTE
+                                                                            <i class="far fa-hand-point-up"></i>
+                                                                        </span> 
+                                                                    </a>
+                                                                @endif
                                                             @else
-                                                                <a
-                                                                href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
-                                                                    class="badge badge-primary badge-pill"
-                                                                    style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                    PENDIENTE
-                                                                        <i class="far fa-hand-point-up"></i>
-                                                                    </span> 
-                                                                </a>
-
-                                                            @endif
-
+                                                                <span 
+                                                                class="badge badge-light badge-pill"
+                                                                style="height: 2rem; font-size: 90%; line-height: inherit;"
+                                                                >EVALUACIÓN NO VIGENTE</span>
+                                                            @endif                                                              
                                                         @endif
-
                                                         
                                                         @if ($tipo_de_evaluacion_id == 2)
                                                             @if ($row->realizado)
