@@ -15,11 +15,13 @@ class EvaluadorHasEvaluados extends Component
     public $updateMode = false;
     public $view_alternative = false;
     public $tipo_de_evaluacion_id;
+    public $campania;
 
-    public function mount($tipo_de_evaluacion_id)
+    public function mount($tipo_de_evaluacion_id, $campania)
     {
         $error = session('error');
         $this->tipo_de_evaluacion_id = $tipo_de_evaluacion_id;
+        $this->campania = $campania;
         if ($error) {
             session()->flash('error', $error);
         }
@@ -27,15 +29,13 @@ class EvaluadorHasEvaluados extends Component
     
     public function render()
     {
-        // dd(auth()->user()->personal->id);
-		$keyWord = '%'.$this->keyWord .'%';
-
         $id_personal = auth()->user()->personal->id;
         
         if ($this->tipo_de_evaluacion_id == 1) {
             $realizados = EvaluadorHasEvaluado::
                 where('evaluador_has_evaluados.evaluador_id',$id_personal)
                 ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+                ->where('evaluaciones.campania',$this->campania)
                 ->where('realizado',1)
                 ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                 ->count();
@@ -43,6 +43,7 @@ class EvaluadorHasEvaluados extends Component
             $total = EvaluadorHasEvaluado::
                 where('evaluador_has_evaluados.evaluador_id',$id_personal)
                 ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+                ->where('evaluaciones.campania',$this->campania)
                 ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                 ->count();
         }
@@ -52,6 +53,7 @@ class EvaluadorHasEvaluados extends Component
             ->select('evaluador_has_evaluados.*')
             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
             ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+            ->where('evaluaciones.campania',$this->campania)
             ->get()->filter(function ($evaluador) {
                 return $evaluador->estado_no_realizado;
             })->count();
@@ -60,11 +62,12 @@ class EvaluadorHasEvaluados extends Component
             where('evaluador_has_evaluados.evaluador_id', $id_personal)
             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
             ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+            ->where('evaluaciones.campania',$this->campania)
             ->count();
 
             $realizados = $total-$pendientes;
         }
-        //mostrar una barra de progreso
+
         $porcentaje =  $total == 0 ? 0 : ($realizados/$total)*100;
         $porcentaje = round($porcentaje,2);
         
@@ -86,13 +89,10 @@ class EvaluadorHasEvaluados extends Component
             ->select('evaluador_has_evaluados.*')
             ->where('evaluador_has_evaluados.evaluador_id', '=', $id_personal)
             ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
+            ->where('evaluaciones.campania',$this->campania)
             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
             ->with('evaluacion')						
-            // ->orWhere('evaluador_id', 'LIKE', $keyWord)
-						// ->orWhere('evaluado_id', 'LIKE', $keyWord)
-						// ->orWhere('evaluacion_id', 'LIKE', $keyWord)
-						->paginate(10),
-            // 'barra' => $barra,
+            ->paginate(10),
             'class' => $class,
             'porcentaje' => $porcentaje,
             'label' => $label
