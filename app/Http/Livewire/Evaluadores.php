@@ -423,7 +423,7 @@ class Evaluadores extends Component
         $record = EvaluadorHasEvaluado::find($this->selected_id);
 
         if($record->tipo_jerarquia_id != $value) {
-            session()->flash('cambioJerarquia', 'Si cambia la jerarquía se eliminarán/cambiarán los objetivos de este evaluador.');
+            session()->flash('cambioJerarquia', 'Si cambia la jerarquía se eliminarán los objetivos actuales y se generarán los nuevos objetivos para este evaluador-evaluado-evaluación.');
         } else {
             session()->forget('cambioJerarquia', null);
         }
