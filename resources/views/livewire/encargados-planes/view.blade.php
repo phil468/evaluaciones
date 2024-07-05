@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Encargado de Planes de Acción</h5>
+							<h5 class="h5">Encargado de Planes de Mejora</h5>
 						</div>
 
 						{{-- @if (session()->has('message'))
@@ -98,7 +98,7 @@
 				searchFields: ['label'],
 				
 				searchFloor: 1,
-				renderChoiceLimit: 100
+				renderChoiceLimit: 15
 			}
 		
 			const encargado_id_select = new Choices('#encargado_id', opcionesPlanes);
