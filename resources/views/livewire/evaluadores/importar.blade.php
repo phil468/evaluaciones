@@ -32,6 +32,12 @@
                                     {!! session('message_importacion_evaluadores_competencias') !!}
                                 </div>
                             @endif
+                            @if (session()->has('message_importacion_evaluadores_competencias_error'))
+                                <div class="alert alert-warning">
+                                    <h4 class="alert-heading h5">Respuesta de importación</h4>
+                                    {!! session('message_importacion_evaluadores_competencias_error') !!}
+                                </div>
+                            @endif
                         </div>                     
                     </div>
                 </form>
