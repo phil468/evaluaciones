@@ -37,22 +37,15 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
             'cargo_de_evaluado' => 'required',
             'area_de_evaluado' => 'required',
             'gerencia_sub_gerencia_de_evaluado' => 'required',
-            // 'cantidad_requerida' => 'required',
-            // 'valor_esperado' => 'required',
-            'jerarquia' => 'required',
-            // 'grupal' => 'required',
+            'tipo_de_jerarquia_de_objetivos' => 'required',
         ];
     }
 
     public function collection(Collection $rows)
     {
-        // dd($rows);
         // mostrar en un mensaje de texto el resultado detallado de la importación de cada linea
         $message="";
         
-        $objetivos_precargados_tipo_1 = ObjetivosPrecargado::where('tipo_de_jerarquia_id','=','1')->get();
-        $objetivos_precargados_tipo_2 = ObjetivosPrecargado::where('tipo_de_jerarquia_id','=','2')->get();
-
         foreach ($rows as $index=>$row) 
         {
             $dni_evaluador = trim($row["dni_evaluador"]);
@@ -64,10 +57,7 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
             $cargo_de_evaluado =  trim($row['cargo_de_evaluado']);
             $area_de_evaluado =  trim($row['area_de_evaluado']);
             $gerencia_sub_gerencia_de_evaluado =  trim($row['gerencia_sub_gerencia_de_evaluado']);
-            // $cantidad_requerida =  trim($row['cantidad_requerida']);
-            // $valor_esperado =  isset($row['valor_esperado']) ? trim($row['valor_esperado']) : '' ;
-            $jerarquia = isset($row['jerarquia']) ? trim($row['jerarquia']) : '' ;
-            // $grupal = isset($row['grupal']) ? trim($row['grupal']) : '' ;
+            $jerarquia = isset($row['tipo_de_jerarquia_de_objetivos']) ? trim($row['tipo_de_jerarquia_de_objetivos']) : '' ;
 
             $evaluador = Personal::where('dni',$dni_evaluador)->first();
             if(!$evaluador){
@@ -93,144 +83,99 @@ class EvaluadoresObjetivosImport implements ToCollection, WithHeadingRow, WithVa
 
             $evaluacion = Evaluacione::where('identificador',$evaluacion)->first();
 
-            //create or update
-
-            /// si no trae vacio 
             if(!$evaluador || !$evaluado || !$evaluacion){
                 $message = $message . "Error en la linea " . $index . " " . "No se encontro el evaluador, evaluado o evaluacion" . "\n";
-                            
-            // dd($evaluado,$evaluador,$evaluacion);
-                //pasar al siguiente registro del foreach 
-                // continue;
-                // return null;
             } else { 
-                $record = EvaluadorHasEvaluado::updateOrCreate(
-                    [
+                if(!$evaluacion->activa) {
+                    $message = $message . "<p class='bg-danger'>Error en la linea " . $index . " " . "La evaluación no se encuentra activa, no se realizaron cambios</p>";
+                } else {
+                    $record = EvaluadorHasEvaluado::where([
                         'evaluador_id' => $evaluador->id,
                         'evaluado_id' => $evaluado->id,
                         'evaluacion_id' => $evaluacion->id,
-                    ],
-                    [
-                        'cargo_de_evaluador' => $cargo_de_evaluador,
-                        'area_de_evaluador' => $area_de_evaluador,
-                        'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
-                        'cargo_de_evaluado' => $cargo_de_evaluado,
-                        'area_de_evaluado' => $area_de_evaluado,
-                        'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                        // 'cantidad_requerida' => $cantidad_requerida,
-                        // 'valor_esperado' => $valor_esperado,
-                        'jerarquia' => $jerarquia,
-                        // 'grupal' => $grupal == 'SI' ? 1 : 0
-                    ]
-                );
+                    ])->first();
+    
+                    $jerarquia_anterior = $record->tipo_jerarquia_id ?? null;
+    
+                    EvaluadorHasEvaluado::updateOrCreate(
+                        [
+                            'evaluador_id' => $evaluador->id,
+                            'evaluado_id' => $evaluado->id,
+                            'evaluacion_id' => $evaluacion->id,
+                        ],
+                        [
+                            'cargo_de_evaluador' => $cargo_de_evaluador,
+                            'area_de_evaluador' => $area_de_evaluador,
+                            'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
+                            'cargo_de_evaluado' => $cargo_de_evaluado,
+                            'area_de_evaluado' => $area_de_evaluado,
+                            'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
+                            'tipo_jerarquia_id' => $jerarquia,
+                        ]
+                    );
+                   
+                        if ($jerarquia_anterior != $jerarquia) {
+                            if($evaluacion->antes_primera_fase_activa) {
+                                // Si se ha cambiado de jerarquia se eliminan 
+                                // y se crean los objetivos con la información 
+                                // de los objetivos precargados de este nuevo tipo de jerarquía
+                                Objetivo::where('evaluador_has_evaluado_id', $record->id)->delete();
+        
+                                $objetivos_precargados = 
+                                ObjetivosPrecargado::
+                                where('tipo_de_jerarquia_id', $jerarquia)
+                                ->where('evaluacion_id', $evaluacion->id)
+                                ->get();
+        
+                                foreach ($objetivos_precargados as $objetivo_precargado) {
+                                    Objetivo::updateOrCreate(
+                                        [
+                                            'evaluado_id' => $record-> evaluado_id,
+                                            'evaluador_id' => $record-> evaluador_id,
+                                            'objetivo_precargado_id' => $objetivo_precargado->id,
+                                        ],
+                                        [
+                                            'evaluador_has_evaluado_id' => $record->id,
+                                            'meta' => $objetivo_precargado-> meta,
+                                            'grupal' => $objetivo_precargado-> grupal,
+                                            'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
+                                            'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
+                                            'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
+                                            'minimo' => $objetivo_precargado-> minimo,
+                                            'maximo' => $objetivo_precargado-> maximo,
+                                            'valor' => $objetivo_precargado-> valor,
+                                            'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
+                                            'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
+                                            'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
+                                            'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
+                                        ]
+                                    );
+                                }
+                                $message = $message 
+                                . "<p>Evaluador - Evaluado creado correctamente: " 
+                                . $evaluador->name ." - ". $evaluado->name . "</p>";
 
-                if ($jerarquia == 2)
-                {
-                    foreach ($objetivos_precargados_tipo_1 as $objetivo_precargado) {
-                        // dd($objetivo_precargado->id);
-
-                        // Intenta encontrar el registro basado en las condiciones únicas.
-                        $objetivoExistente = Objetivo::where([
-                            'evaluado_id' => $record->evaluado_id,
-                            'evaluador_id' => $record->evaluador_id,
-                            'objetivo_precargado_id' => $objetivo_precargado->id,
-                        ])->first();
-                        
-                        // Verifica si el registro no existe o si existe pero estado_id es null.
-                        if (is_null($objetivoExistente) || is_null($objetivoExistente->estado_id)) {
-                            Objetivo::updateOrCreate(
-                                [
-                                    'evaluado_id' => $record-> evaluado_id,
-                                    'evaluador_id' => $record-> evaluador_id,
-                                    'objetivo_precargado_id' => $objetivo_precargado->id,
-                                ],
-                                [
-                                    'evaluador_has_evaluado_id' => $record->id,
-                                    'meta' => $objetivo_precargado-> meta,
-                                    'grupal' => $objetivo_precargado-> grupal,
-                                    'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
-                                    // 'evidencias' => $this-> evidencias,
-                                    'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
-                                    'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
-                                    'minimo' => $objetivo_precargado-> minimo,
-                                    'maximo' => $objetivo_precargado-> maximo,
-                                    'valor' => $objetivo_precargado-> valor,
-                                    'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
-                                    'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
-                                    'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-                                ]
-                            );
+                                $message = $message 
+                                . "<p class='bg-success'>Objetivos Eliminados e ingresados correctamente para: " . 
+                                $evaluador->name ." - ". $evaluado->name . "</p>";
+                            
+                            } else {
+                                $message = $message 
+                                . "<p>Evaluador - Evaluado creado correctamente: " 
+                                . $evaluador->name ." - ". $evaluado->name . "</p>";
+                                
+                                $message = $message 
+                                . "<p class='bg-warning'>Objetivos no cambiados para: " 
+                                . $evaluador->name ." - ". $evaluado->name 
+                                . ", porque la evaluación es posterior a inicio de primera fase, si desea hacer cambio 
+                                a objetivos hágalos de manera manual</p>";
+                            }
+                        } else {
+                            $message = $message . "<p>Evaluador - Evaluado creado correctamente: " . $evaluador->name ." - ". $evaluado->name . "</p>";
                         }
-                    }
-                    // dd('creado jer 2');
                 }
-                
-                if ($jerarquia == 5)
-                {
-                    // dd('llego aqui 5');
-                    foreach ($objetivos_precargados_tipo_2 as $objetivo_precargado) {
-                        // Intenta encontrar el registro basado en las condiciones únicas.
-                        $objetivoExistente = Objetivo::where([
-                            'evaluado_id' => $record->evaluado_id,
-                            'evaluador_id' => $record->evaluador_id,
-                            'objetivo_precargado_id' => $objetivo_precargado->id,
-                        ])->first();
-
-                        // Verifica si el registro no existe o si existe pero estado_id es null.
-                        if (is_null($objetivoExistente) || is_null($objetivoExistente->estado_id)) {
-                            Objetivo::updateOrCreate(
-                                [
-                                    'evaluado_id' => $record-> evaluado_id,
-                                    'evaluador_id' => $record-> evaluador_id,
-                                    'objetivo_precargado_id' => $objetivo_precargado->id,
-                                ],
-                                [
-                                    'evaluador_has_evaluado_id' => $record->id,
-                                    'meta' => $objetivo_precargado-> meta,
-                                    'grupal' => $objetivo_precargado-> grupal,
-                                    'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
-                                    // 'evidencias' => $this-> evidencias,
-                                    'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
-                                    'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
-                                    'minimo' => $objetivo_precargado-> minimo,
-                                    'maximo' => $objetivo_precargado-> maximo,
-                                    'valor' => $objetivo_precargado-> valor,
-                                    'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
-                                    'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
-                                    'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
-                                    'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
-                                ]
-                            );
-                        }
-                    }
-                    // dd('creado jer 5');
-                }
-
-
-                // $record = EncargadosPlanesDeAccion::updateOrCreate(
-                //     [
-                //         'encargado_id' => $evaluador->id,
-                //         'empleado_id' => $evaluado->id,
-                //         'evaluacion_id' => $evaluacion->id
-                //     ],
-                //     [
-                //         'cargo_de_evaluador' => $cargo_de_evaluador,
-                //         'area_de_evaluador' => $area_de_evaluador,
-                //         'gerencia_sub_gerencia_de_evaluador' => $gerencia_sub_gerencia_de_evaluador,
-                //         'cargo_de_evaluado' => $cargo_de_evaluado,
-                //         'area_de_evaluado' => $area_de_evaluado,
-                //         'gerencia_sub_gerencia_de_evaluado' => $gerencia_sub_gerencia_de_evaluado,
-                //         'cantidad_requerida' => $cantidad_requerida,
-                //         'valor_esperado' => $valor_esperado
-                //     ]
-                // );
-                $message = $message . "<p>Evaluador - Evaluado creado correctamente: " . $evaluador->name ." - ". $evaluado->name . "</p>";
-
             }
-
         }
-        // return $message;
-        // return $message;
         $this->message = $message;
     }    
     
