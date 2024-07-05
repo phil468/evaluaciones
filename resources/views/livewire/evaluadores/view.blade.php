@@ -111,7 +111,7 @@
 			@include('livewire.evaluadores.update')
 			@endcan
 
-			<div wire:loading wire:target="crear_editar_usuarios,enviarCorreo,store,update">
+			<div wire:loading wire:target="crear_editar_usuarios,enviarCorreo">
 				<x-loading-indicator />
 			</div>	
 		</div>
@@ -143,16 +143,20 @@
 				searchFields: ['label'],
 				
 				searchFloor: 1,
-				renderChoiceLimit: 100
+				renderChoiceLimit: 15
 			}
 		
 			const evaluador_id_select = new Choices('#evaluador_id', opcionesPlanes);
 			const evaluado_id_select = new Choices('#evaluado_id', opcionesPlanes);
 			const evaluacion_id_select = new Choices('#evaluacion_id', opcionesPlanes);
 			
-			evaluador_id_select.setChoices(@json($evaluadores), 'value', 'label', true);
-			evaluado_id_select.setChoices(@json($evaluados), 'value', 'label', true);
-			evaluacion_id_select.setChoices(@json($evaluaciones), 'value', 'label', true);
+			// evaluador_id_select.setChoices(@json($evaluadores), 'value', 'label', true);
+			// evaluado_id_select.setChoices(@json($evaluados), 'value', 'label', true);
+			// evaluacion_id_select.setChoices(@json($evaluaciones), 'value', 'label', true);
+
+			evaluador_id_select.disable();
+			evaluado_id_select.disable();
+			evaluacion_id_select.disable();
 
 			evaluador_id_select.passedElement.element.addEventListener('change', function (event) {
 				@this.set('evaluador_id', evaluador_id_select.getValue(true));
@@ -164,27 +168,48 @@
 				@this.set('evaluacion_id', evaluacion_id_select.getValue(true));
 			});
 			
-			Livewire.on('actualizarDatosEvaluadores', function (evaluador_id,evaluado_id,evaluacion_id,
-			$evaluadores,
-			$evaluados,
-			$evaluaciones
-			) {
+			Livewire.on('actualizarDatosEvaluadores', function (
+				evaluador_id,
+				evaluado_id,
+				evaluacion_id,
 				
-				evaluador_id_select.setChoices($evaluadores, 'value', 'label', true);
-				evaluado_id_select.setChoices($evaluados, 'value', 'label', true);
-				evaluacion_id_select.setChoices($evaluaciones, 'value', 'label', true);
+				evaluadores,
+				evaluados,
+				evaluaciones,
+				
+				disable
+			) {
+				evaluador_id_select.hideDropdown();
+				evaluado_id_select.hideDropdown();
+				evaluacion_id_select.hideDropdown();
+					
+				evaluador_id_select.setChoices(evaluadores, 'value', 'label', true);
+				evaluado_id_select.setChoices(evaluados, 'value', 'label', true);
+				evaluacion_id_select.setChoices(evaluaciones, 'value', 'label', true);
 
-			
 				evaluador_id_select.setChoiceByValue(evaluador_id ?? '');
 				evaluado_id_select.setChoiceByValue(evaluado_id ?? '');
 				evaluacion_id_select.setChoiceByValue(evaluacion_id ?? '');
-				
+
+				if(disable) {
+					evaluador_id_select.disable();
+					evaluado_id_select.disable();
+					evaluacion_id_select.disable();
+				} else {
+					evaluador_id_select.enable();
+					evaluado_id_select.enable();
+					evaluacion_id_select.enable();
+				}
 			});
 			
 			Livewire.on('limpiarDatosEvaluadores', function (areas) {
 				evaluador_id_select.removeActiveItems();
 				evaluado_id_select.removeActiveItems();
 				evaluacion_id_select.removeActiveItems();
+				
+				evaluador_id_select.disable();
+				evaluado_id_select.disable();
+				evaluacion_id_select.disable();
 			});
 			
 		});
