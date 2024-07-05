@@ -11,6 +11,7 @@ use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 // use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use Mediconesystems\LivewireDatatables\LabelColumn;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
@@ -33,8 +34,8 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
             $query->where('tipo_de_evaluacion_id', TipoDeEvaluacione::COMPETENCIAS);
         })
         ->leftJoin('personal as encargado','encargado.id','=','evaluador_has_evaluados.evaluador_id')
-        // ->leftJoin('personal as empleado','empleado.id','=','evaluador_has_evaluados.evaluado_id');
-        // ->with('evaluacion','evaluador','evaluado')
+        ->leftJoin('personal as empleado','empleado.id','=','evaluador_has_evaluados.evaluado_id')
+        ->leftJoin('evaluaciones','evaluaciones.id','=','evaluador_has_evaluados.evaluacion_id')
         ;
     }
 
@@ -43,14 +44,22 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
     public function columns()
     {
         return [
-            // Column::name('id'),
-            Column::callback(['id'], function ($id) {
-                return view('table-actions-4', ['id' => $id]);
+            // Column::checkbox('id')->label('ID')->alignCenter(),
+            // NumberColumn::name('id')->label('ID')->filterable()->searchable(),
+            Column::callback(['evaluador_has_evaluados.id','evaluador_has_evaluados.realizado', 'encargado.name', 'empleado.name', 'evaluaciones.title'], function ($id,$realizado, $evaluador, $evaluado, $evaluacion) {
+                $name= $evaluador.' - '.$evaluado.' - '.$evaluacion;
+                return $realizado ? view('table-actions-5', ['id' => $id , 'name' => $name, 'canEdit' => true, 'canDelete' => false]) : view('table-actions-5', ['id' => $id, 'name' => $name,]);
+                // if($realizado){
+                //     return view('table-actions-4', ['id' => $id , 'canEdit' => true, 'canDelete' => false]);
+                // } else {
+                //     return view('table-actions-4', ['id' => $id]);
+                // }
+                // return view('table-actions-4', ['id' => $id , 'canEdit' => false, 'canDelete' => false]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
 
             BooleanColumn::name('realizado')->label('Realizado')->searchable()->filterable(),
 
-            Column::name('evaluacion.title')->label('Evaluacion')->searchable()->filterable(),
+            Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
 
             Column::name('encargado.name')->label('Evaluador')->searchable()->filterable(),
             // Column::name('evaluador.name')->label('Evaluador')->searchable()->filterable(),
@@ -60,7 +69,7 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
 
             // Column::name('empleado.name')->label('Evaluado Nombre')->searchable()->filterable(),
-            Column::name('evaluado.name')->label('Evaluado')->searchable()->filterable(),
+            Column::name('empleado.name')->label('Evaluado')->searchable()->filterable(),
 
             Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
@@ -77,9 +86,17 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
         $this->emit('edit_evaluador', $id, 1);
     }
 
+    // public function export()
+    // {
+    //     $this->exportSelected();
+    // }
+
     public function export()
     {
-        $this->exportSelected();
+        $this->forgetComputed();
+        $export = new DatatableExport($this->getExportResultsSet());
+        $export->setFileName('evaluadores_de_evaluacion_por_competencias.xlsx');
+        return $export->download();
     }
 
     public function limpiarSeleccionPersonalTable()
@@ -87,12 +104,17 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
         $this->reset();
     }
 
-    public function delete($id)
-    {
-        $evaluadorHasEvaluado = EvaluadorHasEvaluado::find($id);
-        $evaluadorHasEvaluado->delete();
-        session()->flash('message', 'Evaluador eliminado correctamente.');
-    }
+    // public function delete($id)
+    // {
+    //     $evaluadorHasEvaluado = EvaluadorHasEvaluado::find($id);
+    //     if($evaluadorHasEvaluado->realizado){
+    //         session()->flash('messageEvaluadoresCompetencias', 'No se puede eliminar un evaluador que ya ha realizado la evaluación.');
+    //         return;
+    //     } else {
+    //         $evaluadorHasEvaluado->delete();
+    //         session()->flash('messageEvaluadoresCompetencias', 'Evaluador eliminado correctamente.');            
+    //     }
+    // }
 
     public function confirmDelete($id)
     {
@@ -116,8 +138,14 @@ class EvaluacionesEvaluadoresCompetenciasTable extends LivewireDatatable
     public function destroy($id)
     {
         if ($id) {
-            $record = EvaluadorHasEvaluado::where('id', $id);
-            $record->delete();
+            $record = EvaluadorHasEvaluado::find($id);
+            if($record->realizado){
+                $this->emit('eliminadoEvaluadoresCompetencias', 'No se puede eliminar un evaluador que ya ha realizado la evaluación.');
+                return;
+            } else {
+                $record->delete();
+                $this->emit('eliminadoEvaluadoresCompetencias', 'Evaluador eliminado correctamente.');
+            }
         }
     }
 
