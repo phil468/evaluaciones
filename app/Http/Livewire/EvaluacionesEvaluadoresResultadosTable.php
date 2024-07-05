@@ -12,6 +12,7 @@ use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 // use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
@@ -32,6 +33,8 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
         EvaluadorHasEvaluado::query()
         ->select('evaluador_has_evaluados.*')
         ->leftJoin('personal as encargado','encargado.id','=','evaluador_has_evaluados.evaluador_id')
+        ->leftJoin('evaluaciones','evaluaciones.id','=','evaluador_has_evaluados.evaluacion_id')
+        ->leftJoin('personal as empleado','empleado.id','=','evaluador_has_evaluados.evaluado_id')
         ->whereHas('evaluacion', function ($query) {
             $query->where('tipo_de_evaluacion_id', TipoDeEvaluacione::RESULTADOS);
         });
@@ -42,14 +45,20 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id')->label('ID')->filterable()->defaultSort('asc'),
-            Column::callback(['evaluador_has_evaluados.id'], function ($id) {
-                return view('table-actions-4', ['id' => $id]);
+            // Column::name('id')->label('ID')->filterable()->defaultSort('asc'),
+
+            Column::callback(['evaluador_has_evaluados.id','evaluaciones.fecha_fin', 'encargado.name', 'empleado.name', 'evaluaciones.title'], 
+            function ($id,$fecha_fin, $evaluador, $evaluado, $evaluacion) {
+                $name= $evaluador.' - '.$evaluado.' - '.$evaluacion;
+                return $fecha_fin < now() ? '' : view('table-actions-4', ['id' => $id , 'name' => $name]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
-            NumberColumn::name('objetivos.id:count')->label('Objetivos Totales'),
+            Column::callback(['evaluador_has_evaluados.tipo_jerarquia_id'], function ($id) {
+                return ($id == 1 ? 'TIPO 1' : ($id == 2 ? 'TIPO 2' : ''));
+            })->label('Tipo de Jerarquia de Objetivos')->searchable()->filterable(),
+
+            NumberColumn::name('objetivos.id:count')->label('Objetivos Totales')->searchable()->filterable(),
 
             Column::callback(['evaluador_has_evaluados.id'], function ($id) {
-
                 // Aquí, realiza las subconsultas para calcular objetivos_registrados y objetivos_completados
                 // basándote en el ID del evaluador_has_evaluado. Este es un ejemplo simplificado.
                 $objetivosNoRegistrados = Objetivo::where('evaluador_has_evaluado_id', $id)
@@ -63,24 +72,18 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
                                                 ->count();
                 // Devuelve los valores calculados como desees mostrarlos en la tabla
                 return "No Registrados: $objetivosNoRegistrados<br> Registrados: $objetivosRegistrados <br> Completados: $objetivosCompletados";
-            },[],'Objetivos Resumen')->label('Objetivos Resumen'),
+            },[],'Objetivos Resumen')->label('Objetivos Resumen')->searchable()->filterable(),
 
-            Column::name('evaluacion.title')->label('Evaluacion')->searchable()->filterable(),
+            Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
             Column::name('encargado.name')->label('Evaluador')->searchable()->filterable(),
             Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
             Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
 
-            Column::name('evaluado.name')->label('Evaluado')->searchable()->filterable(),
+            Column::name('empleado.name')->label('Evaluado')->searchable()->filterable(),
             Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
-
-            // Column::name('cantidad_requerida')->label('Cantidad requerida')->searchable()->filterable(),
-            // Column::name('valor_esperado')->label('Valor Esperado')->searchable()->filterable(),
-
-            // Column::name('evaluador_has_evaluados.realizado')->label('Realizado')->searchable()->filterable(),
-            
         ];
 
     }
@@ -93,7 +96,10 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
 
     public function export()
     {
-        $this->exportSelected();
+        $this->forgetComputed();
+        $export = new DatatableExport($this->getExportResultsSet());
+        $export->setFileName('evaluadores_de_evaluacion_por_resultados.xlsx');
+        return $export->download();
     }
 
     public function limpiarSeleccionPersonalTable()
@@ -130,7 +136,7 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
     public function destroy($id)
     {
         if ($id) {
-            $record = EvaluadorHasEvaluado::where('id', $id);
+            $record = EvaluadorHasEvaluado::find($id);
             $record->delete();
 
             $record = Objetivo::where('evaluador_has_evaluado_id', $id);
