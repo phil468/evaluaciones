@@ -119,12 +119,12 @@
         @if (env('APP_ENV')=='local')
             <div class="text-center w-100 bg-danger">
                 <span>
-                    SE ENCUENTRA EN ENTORNO LOCAL
+                    SE ENCUENTRA EN ENTORNO LOCAL ({{env('DB_HOST')}} - {{env('DB_DATABASE')}})
                 </span>
             </div>
             <div class="text-center w-100 bg-danger fixed-top">
                 <span>
-                    SE ENCUENTRA EN ENTORNO LOCAL
+                    SE ENCUENTRA EN ENTORNO LOCAL ({{env('DB_HOST')}} - {{env('DB_DATABASE')}})
                 </span>
             </div>
         @endif
