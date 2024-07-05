@@ -39,31 +39,18 @@ class Evaluacion extends Component
     {
             $this->evaluacion_id = $evaluacion_id;
         
-            // Obtener el evaluadorHasEvaluado correspondiente al evaluacion_id
-            $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)
-            // ->where('evaluador_id', auth()->user()->personal_id)
-            // ->where('realizado', null)            
-            ->first();
+            // Obtener el evaluadorHasEvaluado correspondiente a la evaluacion_id
+            // $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)->first();
+            $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::find($evaluacion_id);
 
-            // dd($this->evaluadorHasEvaluado);
-
-            // if ($this->evaluadorHasEvaluado == null) {
-            //     // $this->emit('closeModal');
-            //     // dd('redirect');
-            //     // return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id',1);
-            //     // return redirect()->to('/evaluaciones-de-desempeno/1');
-
-            //     $this->redirectTo = '/evaluaciones-de-desempeno/1';
-            // } else {
-                
-                // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
-                $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
-    
+            // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
+                // $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
+                $this->evaluacion = Evaluacione::find($this->evaluadorHasEvaluado->evaluacion_id);
+    // dd($this->evaluacion);
                 if ($this->evaluacion->tipo_de_evaluacion_id == 2) {
                     $this->evaluacion_por_objetivos = true;
-                    $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
-                    // $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
-                    // $this->]
+                    // $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+                    $this->evaluado = Personal::find($this->evaluadorHasEvaluado->evaluado_id);
                 } else {
                     
                     if($this->evaluadorHasEvaluado->realizado == 1){
@@ -81,21 +68,22 @@ class Evaluacion extends Component
                     }
             
                     // Obtener el evaluador correspondiente al evaluadorHasEvaluado
-                    $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
+                    // $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
+                    $this->evaluador = Personal::find($this->evaluadorHasEvaluado->evaluador_id);
             
                     // Obtener el evaluado correspondiente al evaluadorHasEvaluado
-                    $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+                    // $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
+                    $this->evaluado = Personal::find($this->evaluadorHasEvaluado->evaluado_id);
             
                     // Obtener las secciones unicas de la evaluacion
-                    $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
+                    // $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
+                    $this->secciones =  Evaluacione::find($this->evaluadorHasEvaluado->evaluacion_id)->seccionesUnicas()->toArray();
+                    // dd($this->secciones);
                     $this->secciones = (array) $this->secciones;
                     $this->seccion_indexs = array_keys($this->secciones);
                     //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
                     // $this->seccion_index_select = count($this->seccion_indexs)-1;
                     $this->seccion_index_select = 0;
-                
-            // }
-                
             }
             
     }
@@ -103,7 +91,6 @@ class Evaluacion extends Component
     public function render()
     {
         // return redirect()->to('/evaluaciones-de-desempeno/1');
-
         if ($this->evaluacion_por_objetivos) {
             return view('livewire.objetivos.index',
             [
@@ -111,7 +98,6 @@ class Evaluacion extends Component
             ]
         );
         } else {
-
             // contar el total de preguntas: preguntas.*.valor
             // contar el total de preguntas cuyo valor no sea nulo
             $totalPreguntas = count($this->preguntas);
@@ -135,7 +121,7 @@ class Evaluacion extends Component
                 $label = $porcentaje.'%';
             }
 
-            $keyWord = '%'.$this->keyWord .'%';        
+            // $keyWord = '%'.$this->keyWord .'%';        
             return view('livewire.evaluacion.view', [
                 'class' => $class,
                 'porcentaje' => $porcentaje,
@@ -178,15 +164,6 @@ class Evaluacion extends Component
         $this->evaluadorHasEvaluado->save();
         
         $this->emit('openGraciasModal');
-
-        // Objetivo::create([
-        //     'descripcion' =>        $this->descripcion2,
-        //     'cantidad' =>           $this->cantidad2,
-        //     'evaluado_id' =>        $this->evaluado->id,
-        //     'tipo_objetivo_id' =>   $this->tipo_objetivo_id2,
-        // ]);
-
-        // Redirige o muestra un mensaje de éxito...
     }
 
     public function anterior() {
@@ -291,7 +268,6 @@ class Evaluacion extends Component
     public function volver()
     {
         // Volver a /evaluaciones_de_desempeno
-        // $this->emit('closeModal');
         return redirect()->to('/evaluaciones-de-desempeno/1');
     }
     
@@ -347,10 +323,10 @@ class Evaluacion extends Component
         if ($this->selected_id) {
             $record = Evaluacione::find($this->selected_id);
             $record->update([ 
-            'eid' => $this-> eid,
-            'title' => $this-> title,
-            'date' => $this-> date,
-            'status' => $this-> status
+                'eid' => $this-> eid,
+                'title' => $this-> title,
+                'date' => $this-> date,
+                'status' => $this-> status
             ]);
 
             $this->resetInput();
