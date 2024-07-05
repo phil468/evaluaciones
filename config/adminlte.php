@@ -125,7 +125,7 @@ return [
     'classes_body' => '',
     'classes_brand' => '',
     'classes_brand_text' => '',
-    'classes_content_wrapper' => ( env('APP_ENV')=='testing') ? 'bg-warning' : '',
+    'classes_content_wrapper' => ( env('APP_ENV')=='testing' || env('APP_ENV')=='local') ? 'bg-warning' : '',
     'classes_content_header' => '',
     'classes_content' => '',
     'classes_sidebar' => 'sidebar-dark-lightblue elevation-4',
