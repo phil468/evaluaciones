@@ -34,10 +34,6 @@ class EvaluadoresImport implements ToCollection, WithHeadingRow, WithValidation
             'cargo_de_evaluado' => 'required',
             'area_de_evaluado' => 'required',
             'gerencia_sub_gerencia_de_evaluado' => 'required',
-            // 'cantidad_requerida' => 'required',
-            // 'valor_esperado' => 'required',
-            // 'jerarquia' => 'required',
-            // 'grupal' => 'required',
         ];
     }
 
