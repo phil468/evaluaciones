@@ -12,6 +12,7 @@ use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 // use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
@@ -73,9 +74,17 @@ class EvaluacionesEvaluadoresPlanesTable extends LivewireDatatable
         $this->emit('edit', $id);
     }
 
+    // public function export()
+    // {
+    //     $this->exportSelected();
+    // }
+
     public function export()
     {
-        $this->exportSelected();
+        $this->forgetComputed();
+        $export = new DatatableExport($this->getExportResultsSet());
+        $export->setFileName('evaluadores_de_planes_de_mejora.xlsx');
+        return $export->download();
     }
 
     public function limpiarSeleccionPersonalTable()
