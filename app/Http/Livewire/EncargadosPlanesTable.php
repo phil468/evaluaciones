@@ -11,6 +11,7 @@ use Mediconesystems\LivewireDatatables\Action;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
@@ -28,7 +29,10 @@ class EncargadosPlanesTable extends LivewireDatatable
     public function builder()
     {       
         return EncargadosPlanesDeAccion::query()
-        ->leftJoin('personal as encargados','encargados.id','=','encargados_planes_de_accion.encargado_id');
+        ->leftJoin('personal as encargados','encargados.id','=','encargados_planes_de_accion.encargado_id')
+        ->leftJoin('personal as empleados','empleados.id','=','encargados_planes_de_accion.empleado_id')
+        ->leftJoin('planes_de_accion_configuracion', 'planes_de_accion_configuracion.id', '=', 'encargados_planes_de_accion.planes_de_accion_configuracion_id');
+        ;
         // ->leftJoin('personal as evaluado','evaluado.id','=','encargados_planes_de_accion.empleado_id');
     }
 
@@ -49,7 +53,7 @@ class EncargadosPlanesTable extends LivewireDatatable
             Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
 
-            Column::name('empleado.name')->label('Evaluado')->searchable()->filterable(),
+            Column::name('empleados.name')->label('Evaluado')->searchable()->filterable(),
             Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
@@ -67,7 +71,10 @@ class EncargadosPlanesTable extends LivewireDatatable
 
     public function export()
     {
-        $this->exportSelected();
+        $this->forgetComputed();
+        $export = new DatatableExport($this->getExportResultsSet());
+        $export->setFileName('evaluadores_de_planes_de_mejora.xlsx');
+        return $export->download();
     }
 
     public function limpiarSeleccionPersonalTable()
