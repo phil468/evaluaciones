@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Objetivo;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\DateColumn;
 use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
 use OwenIt\Auditing\Models\Audit;
 
@@ -119,20 +120,13 @@ class ObjetivosListaTable extends LivewireDatatable
         Column::callback(['objetivos.peso_ponderado', 'objetivos.tipo_objetivo_id'], function ($peso_ponderado, $tipo_objetivo_id) {
             return $peso_ponderado ? ($peso_ponderado * 100).'%' : $peso_ponderado;
         })->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
-        //name('objetivos.peso_ponderado')->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
 
-        // Column::name('objetivos.descripcion')->label('Objetivo')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('objetivos.resultado')->label('Resultado')->searchable()->filterable()->defaultSort('asc'),
-        // Column::callback(['id'], function ($id) {
-        //     return 'Evidencias';
-        // },[],'evidencias')->label('Evidencias')->alignCenter(),        
-        
-        // Column::name('evaluador_has_evaluados.area_de_evaluado')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado')->label('Gerencia/Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
-        // Column::name('evaluador_has_evaluados.jerarquia')->label('Jerarquía')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('created_at')->label('Fecha de creacion')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('updated_at')->label('Fecha de Modificación')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('deleted_at')->label('Fecha de eliminación')->searchable()->filterable()->defaultSort('asc'),
+        DateColumn::name('created_at')->label('Fecha de creacion')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
+        DateColumn::name('updated_at')->label('Fecha de Modificación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
+        DateColumn::name('deleted_at')->label('Fecha de eliminación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
+
+        // DateColumn::name('evaluaciones.fecha_para_mostrar_resultados')->format('d/m/Y h:i:s a')
+        // ->label('Fecha para mostrar resultados')->searchable()->filterable()->sortable(),
 
         ];
     }
