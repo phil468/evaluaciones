@@ -9,6 +9,8 @@ use App\Models\Evaluacione;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Objetivo;
+use App\Models\ObjetivosPrecargado;
 use App\Models\Personal;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -38,8 +40,8 @@ class Evaluadores extends Component
     $cantidad_requerida,
     $valor_esperado,
     $jerarquia,
-    
-    
+    $realizado,
+        
     $file,$file_objetivos
     ,$tipo_de_evaluacion_objetivos_id,
     $tipo_de_evaluacion_id=null,
@@ -51,13 +53,21 @@ class Evaluadores extends Component
 	public $cargando = false;
 	public $actualizandoVista = true;
 
-    protected $listeners = ['edit_evaluador' => 'edit' , 'eliminadoEvaluadoresResultados' => 'eliminadoEvaluadoresResultados'];
+    protected $listeners = [
+        'edit_evaluador' => 'edit' , 
+        'eliminadoEvaluadoresCompetencias' => 'eliminadoEvaluadoresCompetencias',
+        'eliminadoEvaluadoresResultados' => 'eliminadoEvaluadoresResultados'
+    ];
+
+    public function eliminadoEvaluadoresCompetencias($message)
+    {
+        session()->flash('messageEvaluadoresCompetencias', $message);    
+    }
 
     public function eliminadoEvaluadoresResultados()
     {
         session()->flash('messageEvaluadoresResultados', 'Evaluador y objetivos eliminados correctamente.');    
     }
-    
     
     public function mount() 
     {
@@ -65,13 +75,8 @@ class Evaluadores extends Component
         $this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
 		$this->evaluados 	= 	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
 		$this->evaluaciones = 	Evaluacione::	orderBy('title')->select('title as label', 'id as value')->get()->toArray();
-    
-		// $this->emit('listar_selects',
-        //     $this->evaluadores,
-        //     $this->evaluados,
-        //     $this->evaluaciones,
-        // );
     }
+
     public function render()
     {
 		$keyWord = '%'.$this->keyWord .'%';
@@ -100,21 +105,6 @@ class Evaluadores extends Component
         $this->emit('closeModal');
     }
         
-    // public function importar()
-    // {
-    //     $this->validate([
-    //         'file' => 'required|file|mimes:xls,xlsx'
-    //     ]);
-     
-    //     $cs =  Excel::import(new EvaluadoresImport, $this->file);
-
-    //     $this->resetInput();                
-        
-    //     session()->flash('message', 'Evaluadores importado correctamente.');
-    //     $this->emit('closeModal');
-    //     $this->emit('alert');
-    // }
-
     public function importar()
     {
         $this->message = null;
@@ -153,7 +143,7 @@ class Evaluadores extends Component
             foreach ($erroresDetallados as $error) {
                 $this->message = $this->message.$error . "<br>";
             }
-            session()->flash('message_importacion_evaluadores_competencias', $this->message);
+            session()->flash('message_importacion_evaluadores_competencias_error', $this->message);
         }
 
         $this->resetInput();
@@ -203,9 +193,9 @@ class Evaluadores extends Component
             // Mostrar los errores
             // Aquí puedes decidir cómo quieres mostrar los errores. Por ejemplo:
             foreach ($erroresDetallados as $error) {
-                $this->message = $this->message.$error . "<br>";
+                $this->message = $this->message.'<p class="my-2">'.$error . "</p>";
             }
-            session()->flash('message_importacion_evaluadores_resultados', $this->message);
+            session()->flash('message_importacion_evaluadores_resultados_error', $this->message);
         }
 
         $this->resetInput();
@@ -219,20 +209,19 @@ class Evaluadores extends Component
         
     }
 
-    public function listarSelects() 
-    {		
+    public function listarSelects($disable = false) 
+    {
         $this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
 		$this->evaluados 	= 	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
 		$this->evaluaciones = 	Evaluacione::	orderBy('title')->activa()->select('title as label', 'id as value')
                                 ->when($this->tipo_de_evaluacion_id, function ($q) {
                                     return $q->where('tipo_de_evaluacion_id', $this->tipo_de_evaluacion_id);
                                 })->get()->toArray();
-// dd($this->evaluaciones);
 
-		$this->actualizarDatosPersonal();
+		$this->actualizarDatosPersonal($disable);
 	}
     
-	public function actualizarDatosPersonal () {
+	public function actualizarDatosPersonal ($disable = false) {
 		$this->emit('actualizarDatosEvaluadores',
 			$this->evaluador_id,
 			$this->evaluado_id,
@@ -240,7 +229,9 @@ class Evaluadores extends Component
 
             $this->evaluadores,
             $this->evaluados,
-            $this->evaluaciones
+            $this->evaluaciones,
+
+            $disable
 		);
 	}
 
@@ -267,13 +258,14 @@ class Evaluadores extends Component
         $this->cantidad_requerida = null;
         $this->valor_esperado = null;
         $this->jerarquia = null;
+        $this->realizado = null;
         $this->file = null;
         $this->file_objetivos = null;
     }
 
     public function create() {
         $this->updateMode = true;	
-        $this->listarSelects();        
+        $this->listarSelects();  
     }   
 
     public function store()
@@ -282,9 +274,9 @@ class Evaluadores extends Component
             'evaluador_id' => [
                 'required',
                 Rule::unique('evaluador_has_evaluados')->where(function ($query) {
-                    return $query->where('evaluador_id', $this-> evaluador_id)
-                                 ->where('evaluado_id', $this-> evaluado_id)
-                                 ->where('evaluacion_id', $this-> evaluacion_id);
+                    return $query->where('evaluador_id' ,    $this-> evaluador_id)
+                                 ->where('evaluado_id'  ,     $this-> evaluado_id)
+                                 ->where('evaluacion_id',   $this-> evaluacion_id);
                 }),
             ],
             'evaluado_id' => 'required',
@@ -297,9 +289,28 @@ class Evaluadores extends Component
             'cargo_de_evaluado' => 'required',
             'area_de_evaluado' => 'required',
             'gerencia_sub_gerencia_de_evaluado' => 'required',
+
+            'jerarquia' => 'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|min:1',
+        ], [
+            'evaluador_id.required' => 'El campo evaluador es obligatorio.',
+            'evaluador_id.unique' => 'Esta combinación de Evaluador - Evaluado - Evaluacion ya ha sido registrada.',
+            'evaluado_id.required' => 'El campo evaluado es obligatorio.',
+            'evaluacion_id.required' => 'El campo evaluación es obligatorio.',
+            'jerarquia.required_if' => 'El campo jerarquía es obligatorio cuando el tipo de evaluación es por resultados.',
+        ], [
+            'evaluador_id' => 'evaluador',
+            'evaluado_id' => 'evaluado',
+            'evaluacion_id' => 'evaluación',
+            'cargo_de_evaluador' => 'cargo de evaluador',
+            'area_de_evaluador' => 'área de evaluador',
+            'gerencia_sub_gerencia_de_evaluador' => 'gerencia/subgerencia de evaluador',
+            'cargo_de_evaluado' => 'cargo de evaluado',
+            'area_de_evaluado' => 'área de evaluado',
+            'gerencia_sub_gerencia_de_evaluado' => 'gerencia/subgerencia de evaluado',
+            'jerarquia' => 'jerarquía',
         ]);
 
-        EvaluadorHasEvaluado::create([ 
+        $record = EvaluadorHasEvaluado::create([ 
 			'evaluador_id' => $this-> evaluador_id,
 			'evaluado_id' => $this-> evaluado_id,
 			'evaluacion_id' => $this-> evaluacion_id,
@@ -311,8 +322,14 @@ class Evaluadores extends Component
             'cargo_de_evaluado' => $this-> cargo_de_evaluado,
             'area_de_evaluado' => $this-> area_de_evaluado,
             'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
+
+            'tipo_jerarquia_id' => $this-> jerarquia ,
         ]);
         
+        if ($this->tipo_de_evaluacion_id == 2) {
+            $this->ingresarObjetivosPrecargados($this-> jerarquia,$record);
+        }
+
 		$this->emit('limpiarDatosEvaluadores');
         $this->resetInput();
         $this->resetValidation();
@@ -327,6 +344,36 @@ class Evaluadores extends Component
         if ($this->tipo_de_evaluacion_id == 2) {
             $this->emit('refreshEvaluadoresResultados');
             session()->flash('messageEvaluadoresResultados', 'Evaluadores creado correctamente.');
+        }
+    }
+
+    public function ingresarObjetivosPrecargados($jerarquia,$record)
+    {
+        $objetivos_precargados = 
+        ObjetivosPrecargado::where('tipo_de_jerarquia_id', $jerarquia)
+        ->where('evaluacion_id', $record->evaluacion_id)
+        ->get();
+
+        foreach ($objetivos_precargados as $objetivo_precargado) {
+            Objetivo::create([
+                'evaluado_id' => $this-> evaluado_id,
+                'evaluador_id' => $this-> evaluador_id,
+                'objetivo_precargado_id' => $objetivo_precargado->id,
+                'evaluador_has_evaluado_id' => $record->id,
+
+                'meta' => $objetivo_precargado-> meta,
+                'grupal' => $objetivo_precargado-> grupal,
+                'porcentaje_de_participacion' => $objetivo_precargado-> porcentaje_de_participacion,
+                'tipo_objetivo_id' => $objetivo_precargado-> tipo_objetivo_id,
+                'resultado_anterior_o_esperado' => $objetivo_precargado-> resultado_anterior_o_esperado,
+                'minimo' => $objetivo_precargado-> minimo,
+                'maximo' => $objetivo_precargado-> maximo,
+                'valor' => $objetivo_precargado-> valor,
+                'porcentaje_de_logro_STI' => $objetivo_precargado-> porcentaje_de_logro_STI,
+                'peso_ponderado' => $objetivo_precargado-> peso_ponderado,
+                'evaluacion_id' => $objetivo_precargado->evaluacion_id, // por defecto
+                'estado_id' => $objetivo_precargado-> grupal ? 1 : null,
+            ]);
         }
     }
 
@@ -349,12 +396,37 @@ class Evaluadores extends Component
             $this->area_de_evaluado = $record-> area_de_evaluado;
             $this->gerencia_sub_gerencia_de_evaluado = $record-> gerencia_sub_gerencia_de_evaluado;
 
+            $this->jerarquia = $record->tipo_jerarquia_id;
+
+            $this->realizado = $record-> realizado;
 		} else {
-			$this->selected_id = 0; 
+			$this->selected_id = 0;            
 		}
 
         $this->updateMode = true;
-        $this->listarSelects();
+
+        $disable = false;
+
+        if ($tipo_de_evaluacion_id == 1 && $this->realizado) {
+            $disable = true;
+        } else {
+            $disable = false;
+        }
+        $this->listarSelects($disable);
+    }
+
+    public function updatedJerarquia($value)
+    { 
+        if($this->selected_id == 0) return;
+        if($this->tipo_de_evaluacion_id != 2) return;
+
+        $record = EvaluadorHasEvaluado::find($this->selected_id);
+
+        if($record->tipo_jerarquia_id != $value) {
+            session()->flash('cambioJerarquia', 'Si cambia la jerarquía se eliminarán/cambiarán los objetivos de este evaluador.');
+        } else {
+            session()->forget('cambioJerarquia', null);
+        }
     }
 
     public function update()
@@ -366,7 +438,6 @@ class Evaluadores extends Component
                     return $query->where('evaluador_id', $this-> evaluador_id)
                                  ->where('evaluado_id', $this-> evaluado_id)
                                  ->where('evaluacion_id', $this-> evaluacion_id);
-                    // }),
                     })->ignore($this->selected_id),
             ],
             'evaluado_id' => 'required',
@@ -379,11 +450,15 @@ class Evaluadores extends Component
             'cargo_de_evaluado' => 'required',
             'area_de_evaluado' => 'required',
             'gerencia_sub_gerencia_de_evaluado' => 'required',
+
+            'jerarquia' => 'required_if:tipo_de_evaluacion_id,2|exclude_unless::tipo_de_evaluacion_id,2|min:1',
         ], [
             'evaluador_id.required' => 'El campo evaluador es obligatorio.',
             'evaluador_id.unique' => 'Esta combinación de Evaluador - Evaluado - Evaluacion ya ha sido registrada.',
             'evaluado_id.required' => 'El campo evaluado es obligatorio.',
             'evaluacion_id.required' => 'El campo evaluación es obligatorio.',
+            'jerarquia.required_if' => 'El campo jerarquía es obligatorio cuando el tipo de evaluación es por resultados.',
+
         ], [
             'evaluador_id' => 'evaluador',
             'evaluado_id' => 'evaluado',
@@ -394,11 +469,18 @@ class Evaluadores extends Component
             'cargo_de_evaluado' => 'cargo de evaluado',
             'area_de_evaluado' => 'área de evaluado',
             'gerencia_sub_gerencia_de_evaluado' => 'gerencia/subgerencia de evaluado',
+            'jerarquia' => 'jerarquía',
         ]);
 
         if ($this->selected_id) {
+
 			$record = EvaluadorHasEvaluado::find($this->selected_id);
-            $record->update([ 
+
+            $borrarObjetivos = false;
+
+            $borrarObjetivos = ($record->tipo_jerarquia_id != $this-> jerarquia);
+
+            $record->update([
                 'evaluador_id' => $this-> evaluador_id,
                 'evaluado_id' => $this-> evaluado_id,
                 'evaluacion_id' => $this-> evaluacion_id,
@@ -410,26 +492,40 @@ class Evaluadores extends Component
                 'cargo_de_evaluado' => $this-> cargo_de_evaluado,
                 'area_de_evaluado' => $this-> area_de_evaluado,
                 'gerencia_sub_gerencia_de_evaluado' => $this-> gerencia_sub_gerencia_de_evaluado,
+
+                'tipo_jerarquia_id' => $this-> jerarquia ,
             ]);
 
             if ($this->tipo_de_evaluacion_id == 1) {
                 $this->emit('refreshEvaluadoresCompetencias');        
-                session()->flash('messageEvaluadoresCompetencias', 'Evaluadores creado correctamente.');
+                session()->flash('messageEvaluadoresCompetencias', 'Evaluador actualizado correctamente.');
             }
     
             if ($this->tipo_de_evaluacion_id == 2) {
                 $objetivos = $record->objetivos;
-                
-                foreach ($objetivos as $o) {
-                    $o->evaluador_id = $this->evaluador_id;
-                    $o->evaluado_id = $this->evaluado_id;
-                    if ($o->isDirty()) {
-                        $o->save();
+
+                if(!count($objetivos)) {
+                    $this->ingresarObjetivosPrecargados($this-> jerarquia,$record);
+                } else {
+                    if ($borrarObjetivos) {
+                        $objetivos->each(function($objetivo) {
+                            $objetivo->delete();
+                        });
+                        $this->ingresarObjetivosPrecargados($this-> jerarquia,$record);
+                    } else {
+                        foreach ($objetivos as $o) {
+                            $o->evaluador_id = $this->evaluador_id;
+                            $o->evaluado_id = $this->evaluado_id;
+                            if ($o->isDirty()) {
+                                $o->save();
+                            }
+                        }
                     }
                 }
 
                 $this->emit('refreshEvaluadoresResultados');
                 session()->flash('messageEvaluadoresResultados', 'Evaluadores creado correctamente.');
+                session()->forget('cambioJerarquia', null);
             }
 
 			$this->emit('limpiarDatosEvaluadores');
