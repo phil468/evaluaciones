@@ -13,13 +13,12 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-
                             @if ($tipo_de_evaluacion_id == 2)
-                                <h5 class="h5">Evaluación de Desempeño por Resultados {{$evaluadorHasEvaluados[0]->evaluacion->campania}} de personal a cargo</h5>
+                                <h5 class="h5">Evaluación de Desempeño por Resultados {{$campania}} de personal a cargo</h5>
                                 @section('title', __('Evaluación de Desempeño por Resultados'))
                             @endif
                             @if ($tipo_de_evaluacion_id == 1)
-                                <h5 class="h5">Evaluación de Desempeño por Competencia {{$evaluadorHasEvaluados[0]->evaluacion->campania}} </h5>
+                                <h5 class="h5">Evaluación de Desempeño por Competencia {{$campania}} </h5>
                                 @section('title', __('Evaluación de Desempeño por Competencia'))
                             @endif
 
