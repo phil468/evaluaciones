@@ -309,7 +309,7 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                    {{ $evaluadorHasEvaluados->links() }}
+                                    {{-- {{ $evaluadorHasEvaluados->links() }} --}}
                                 </div>
                             @endif
                 

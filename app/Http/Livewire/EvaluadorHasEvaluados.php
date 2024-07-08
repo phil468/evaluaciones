@@ -91,8 +91,9 @@ class EvaluadorHasEvaluados extends Component
             ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
             ->where('evaluaciones.campania',$this->campania)
             ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
-            ->with('evaluacion')						
-            ->paginate(10),
+            ->with('evaluacion')
+            ->get(),
+            // ->paginate(10),
             'class' => $class,
             'porcentaje' => $porcentaje,
             'label' => $label
