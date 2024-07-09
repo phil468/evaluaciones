@@ -13,6 +13,7 @@ use Mediconesystems\LivewireDatatables\BooleanColumn;
 // use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
+use Mediconesystems\LivewireDatatables\NumberColumn;
 
 use function PHPUnit\Framework\callback;
 
@@ -33,14 +34,15 @@ class RespuestasTable extends LivewireDatatable
         // $respuestas = Respuesta::query()
         return Respuesta::query()
         // ->selectRaw(Crypt::decryptString('respuestas.pregunta id'))
-        ->where('respuestas.deleted_at',null)->where('preguntas.deleted_at',null)
-        ->leftJoin('preguntas','preguntas.id','=','respuestas.pregunta_id')
-        ->leftJoin('personal','personal.id','=','respuestas.evaluado_id')
-        ->leftJoin('secciones','secciones.id','=','preguntas.seccion_id')
-        ->leftJoin('evaluaciones','evaluaciones.id','=','preguntas.evaluacion_id')
+        ->where('respuestas.deleted_at',null);
+        // ->where('preguntas.deleted_at',null)
+        // ->leftJoin('preguntas','preguntas.id','=','respuestas.pregunta_id')
+        // ->leftJoin('personal','personal.id','=','respuestas.evaluado_id')
+        // ->leftJoin('secciones','secciones.id','=','preguntas.seccion_id')
+        // ->leftJoin('evaluaciones','evaluaciones.id','=','preguntas.evaluacion_id')
         // ->leftJoin('evaluador_has_evaluados','evaluador_has_evaluados.evaluado_id','=','respuestas.evaluado_id')
         //cargo
-        ->leftJoin('cargos','cargos.id','=','personal.cargo_id')
+        // ->leftJoin('cargos','cargos.id','=','personal.cargo_id')
         ;
 
         // return $this->respuestas;
@@ -51,25 +53,27 @@ class RespuestasTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::callback(['evaluado_id'], function ($evaluado_id) {
-                $evaluado = Personal::select('name')
-                ->where('id', Crypt::decryptString($evaluado_id))
-                ->first();
-                return $evaluado->name;
-            },[],'0')->label('Nombres y apellidos del evaluado')
-            ->searchable()->filterable()->defaultSort('asc'),
+            NumberColumn::name('id')->label('ID')->filterable()->searchable()->defaultSort('asc'),
+
+            NumberColumn::callback(['id'], function ($id) {
+                return Respuesta::find($id)->evaluado_id;
+            },[],'evaluado_id')->label('ID de evaluado')->searchable()->filterable()->defaultSort('asc'),
+
+            Column::callback(['id'], function ($id) {
+                return Respuesta::find($id)->evaluado->name;
+            },[],'evaluado')->label('Evaluado')->searchable()->filterable()->defaultSort('asc'),
 
             Column::callback(['id'], function($id) {
                 return Respuesta::find($id)->pregunta->seccion->name;
             },[],'competencia')->label('Competencia')->searchable()->filterable()->defaultSort('asc'),
+           
+            Column::callback(['id'], function ($id){
+                return Respuesta::find($id)->pregunta->pregunta;
+            },[],'pregunta')->label('Pregunta')->searchable()->filterable()->defaultSort('asc'),
 
-            Column::callback(['pregunta_id'], function ($pregunta_id){
-                return Pregunta::find(Crypt::decryptString($pregunta_id))->pregunta;
-            })->label('Pregunta')->searchable()->filterable()->defaultSort('asc'),
-
-            Column::callback(['valor_numerico'], function ($v) {
-                return Crypt::decryptString($v);
-            })->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
+            Column::callback(['id'], function ($id) {
+                return Respuesta::find($id)->valor_numerico;
+            },[],'puntuacion')->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
 
             Column::callback(['respuestas.evaluado_id'], function ($id) {
                 $cargo_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.cargo_de_evaluado')
@@ -96,20 +100,20 @@ class RespuestasTable extends LivewireDatatable
                 ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
                 ->first();
                 return $gerencia_sub_gerencia_de_evaluado->gerencia_sub_gerencia_de_evaluado ?? '';
-            },[],'3')->label('Gerencia/Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
+            },[],'3')->label('Gerencia / Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
             
-            Column::callback(['respuestas.evaluado_id'], function ($id) {
-                $jerarquia = EvaluadorHasEvaluado::select('evaluador_has_evaluados.jerarquia')
-                ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
-                ->where('evaluador_has_evaluados.deleted_at',null)
-                ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
-                ->first();
-                return $jerarquia->jerarquia ?? '';
-            },[],'4')->label('Jerarquia')->searchable()->filterable()->defaultSort('asc')
-            // ->exportCallback(function(){
-            //     return '1';
-            // })
-            ,
+            // // Column::callback(['respuestas.evaluado_id'], function ($id) {
+            // //     $jerarquia = EvaluadorHasEvaluado::select('evaluador_has_evaluados.jerarquia')
+            // //     ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
+            // //     ->where('evaluador_has_evaluados.deleted_at',null)
+            // //     ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
+            // //     ->first();
+            // //     return $jerarquia->jerarquia ?? '';
+            // // },[],'4')->label('Jerarquia')->searchable()->filterable()->defaultSort('asc')
+            // // ->exportCallback(function(){
+            // //     return '1';
+            // // })
+            // // ,
 
         ];
     }
