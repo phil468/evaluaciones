@@ -153,6 +153,21 @@
                                         <option value=2>TIPO 2</option>
                                 </select>
                             </div>
+                            @if ($tipo_de_jerarquia_id == 2 && $grupal)
+                                <div class="p-2 col-sm-12 bg-info rounded-xl">
+                                    <p>
+                                        Para los objetivos tipo "Grupal" y de jerarquía "Tipo 2" , se modificaran los siguientes campos en los objetivos asociados:
+                                    </p>
+                                    <dl class="ml-2 ul">
+                                        <li>Meta</li>
+                                        <li>Porcentaje de participación</li>
+                                        <li>Tipo Objetivo</li>
+                                        <li>Resultado Anterior o Esperado</li>
+                                        <li>Mínimo</li>
+                                        <li>Máximo</li>                                        
+                                    </dl>                                
+                                </div>
+                            @endif
                     </fieldset>
                 </form>
             </div>

@@ -9,6 +9,11 @@ class TiposDeObjetivo extends Model
 {
     use HasFactory;
 
+    // constante competencias
+    const NUMERICO = 1;
+    const PORCENTAJE = 2;
+    const BOOLEANO = 3;
+
     protected $table = 'tipo_de_objetivos';
     
     protected $fillable = [

@@ -29,8 +29,8 @@ class ObjetivosPrecargados extends Component
 		'tipo_objetivo_id' => 'required_if:grupal,1',
 		'resultado_anterior_o_esperado' => 'required_if:grupal,1',
 		'porcentaje_de_participacion' => 'required|numeric|between:0,100',
-		'minimo'=>'required_if:grupal,1|exclude_if:grupal,0|numeric|lt:maximo|gt:0',
-		'maximo'=>'required_if:grupal,1|exclude_if:grupal,0|numeric|gt:minimo|',
+		'minimo'=>'required_if:grupal,1|exclude_if:grupal,0|exclude_if:tipo_objetivo_id,'.TiposDeObjetivo::BOOLEANO.'|numeric|lt:maximo|gt:0',
+		'maximo'=>'required_if:grupal,1|exclude_if:grupal,0|exclude_if:tipo_objetivo_id,'.TiposDeObjetivo::BOOLEANO.'|numeric|gt:minimo|',
 		'evaluacion_id' => 'required',
 		'tipo_de_jerarquia_id' => 'required'
 	];
@@ -171,12 +171,12 @@ class ObjetivosPrecargados extends Component
 		$this->evaluarGrupal();
 
         ObjetivosPrecargado::create([ 
+			'tipo_objetivo_id' => $this-> tipo_objetivo_id,
 			'meta' => $this-> meta,
 			'grupal' => $this-> grupal,
 			'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
 			'evidencias' => $this-> evidencias,
 			'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,
-			'tipo_objetivo_id' => $this-> tipo_objetivo_id,
 			'minimo' => $this-> minimo,
 			'maximo' => $this-> maximo,
 			'valor' => $this-> valor,
@@ -237,12 +237,12 @@ class ObjetivosPrecargados extends Component
         if ($this->selected_id) {
 			$record = ObjetivosPrecargado::find($this->selected_id);
             $record->update([ 
+				'tipo_objetivo_id' => $this-> tipo_objetivo_id,
 				'meta' => $this-> meta,
 				'grupal' => $this-> grupal,
 				'porcentaje_de_participacion' => $this-> porcentaje_de_participacion,
 				'evidencias' => $this-> evidencias,
 				'resultado_anterior_o_esperado' => $this-> resultado_anterior_o_esperado,
-				'tipo_objetivo_id' => $this-> tipo_objetivo_id,
 				'minimo' => $this-> minimo,
 				'maximo' => $this-> maximo,
 				'valor' => $this-> valor,
@@ -252,12 +252,55 @@ class ObjetivosPrecargados extends Component
 				'tipo_de_jerarquia_id' => $this-> tipo_de_jerarquia_id
             ]);
 
-			// dd($record);
-			$this->resetInput();
-			$this->resetValidation();
-            $this->updateMode = false;
-		    $this->emit('closeModal');
-			session()->flash('message', 'Objetivos Precargado actualizado correctamente.');
+			// cambiamos en todos los objetivos asociados a este objetivo precargado
+			if ($record->grupal && $record->tipo_de_jerarquia_id == 2) {
+				$objetivos = Objetivo::where('objetivo_precargado_id', $this->selected_id)->get();
+
+				$count = 0;
+
+				foreach ($objetivos as $objetivo) {
+					if ($objetivo->estado_id == 1)
+					{
+						$objetivo->tipo_objetivo_id = $record-> tipo_objetivo_id;
+						$objetivo->meta = $record-> meta;
+						$objetivo->porcentaje_de_participacion = $record-> porcentaje_de_participacion;
+						$objetivo->resultado_anterior_o_esperado = $record-> resultado_anterior_o_esperado;
+						$objetivo->minimo = $record-> minimo;
+						$objetivo->maximo = $record-> maximo;
+
+						$objetivo->save();
+
+						// $objetivo->update([
+						// 	'meta' => $record-> meta,
+						// 	// 'grupal' => $record-> grupal,
+						// 	'porcentaje_de_participacion' => $record-> porcentaje_de_participacion,
+						// 	'resultado_anterior_o_esperado' => $record-> resultado_anterior_o_esperado,
+						// 	'tipo_objetivo_id' => $record-> tipo_objetivo_id,
+						// 	'minimo' => $record-> minimo,
+						// 	'maximo' => $record-> maximo,
+						// 	// 'valor' => $this-> valor,
+						// 	// 'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
+						// 	// 'peso_ponderado' => $this-> peso_ponderado,
+						// 	// 'evaluacion_id' => $this-> evaluacion_id,
+						// 	// 'estado_id' => $this-> grupal ? 1 : null,
+						// ]);
+						$count++;
+					}
+				}
+				
+				$this->resetInput();
+				$this->resetValidation();
+				$this->updateMode = false;
+				$this->emit('closeModal');
+				session()->flash('message', 'Objetivos Precargado actualizado correctamente. Se actualizaron '.$count.' objetivos asociados.');
+
+			} else {
+				$this->resetInput();
+				$this->resetValidation();
+				$this->updateMode = false;
+				$this->emit('closeModal');
+				session()->flash('message', 'Objetivos Precargado actualizado correctamente.');
+			}
         }
     }
 

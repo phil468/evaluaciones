@@ -196,27 +196,35 @@
                             </div> --}}
                             </div>
                         </div>
-                                            </fieldset>
+                    </fieldset>
                 </form>
             </div>
             <div class="modal-footer">
                 
-                <button type="button" wire:click="cancel()" class="btn btn-secondary rounded-xl" 
-                data-dismiss="modal"
-                >Cerrar</button>
+                <button 
+                type="button" 
+                wire:click="cancel()" 
+                class="btn btn-secondary rounded-xl" 
+                data-dismiss="modal">Cerrar</button>
 
                 @if ($this->selected_id == 0)                    
                     <button
                     @if (!$primera_fase_activa)
                         disabled
                     @endif 
-                    type="button" wire:loading.attr="disabled" wire:click.prevent="store()" class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
+                    type="button" 
+                    wire:loading.attr="disabled" 
+                    wire:click.prevent="store()" 
+                    class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
                 @else
                     <button 
                     @if (!$primera_fase_activa)
                         disabled
                     @endif 
-                    type="button" wire:loading.attr="disabled" wire:click.prevent="update()" class="btn btn-vanguard rounded-xl">Guardar</button>
+                    type="button" 
+                    wire:loading.attr="disabled" 
+                    wire:click.prevent="update()" 
+                    class="btn btn-vanguard rounded-xl">Guardar</button>
                 @endif
                 
                 {{-- <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary rounded-xl" data-dismiss="modal">Cerrar</button>

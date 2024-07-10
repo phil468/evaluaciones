@@ -97,4 +97,9 @@ class ObjetivosPrecargado extends Model
         }
     }
 
+    public function objetivos()
+    {
+        return $this->hasMany(Objetivo::class,'objetivo_precargado_id','id');
+    }
+
 }
