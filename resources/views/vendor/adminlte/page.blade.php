@@ -80,6 +80,10 @@
             $('#createPlanDataModal').modal('show');
         });
         
+        window.livewire.on('openUpdatePlanDataModal', () => {
+            $('#updatePlanDataModal').modal('show');
+        });
+
         window.livewire.on('openSeleccionarActivoModal', () => {
             $('#seleccionarActivoModal').modal('show');
         });

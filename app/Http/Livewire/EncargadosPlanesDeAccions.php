@@ -42,49 +42,59 @@ class EncargadosPlanesDeAccions extends Component
     public $name,$fecha_de_revision,$avance,$tipo_de_proceso_id,$gerencia_id,$area_id;
     public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
     public $evaluacionPorCompetenciasFinalizada=false;
+    public $secciones_ordenadas = [];
+    public $primera_fase_activa, $segunda_fase_activa;
 
-protected $listeners = [
-    'setCompetenciaId' => 'setCompetenciaId'
-    ,'setEstadoId' => 'setEstadoId'
-    ,'setAvance' => 'setAvance'
-    ,'setValues' => 'setValues'
-    ,'setSeccionesBajas' => 'setSeccionesBajas'
-];
+    protected $listeners = [
+        'setCompetenciaId' => 'setCompetenciaId'
+        ,'setEstadoId' => 'setEstadoId'
+        ,'setAvance' => 'setAvance'
+        ,'setValues' => 'setValues'
+        ,'setSeccionesBajas' => 'setSeccionesBajas'
+    ];
 
-public function setCompetenciaId($competencia_id)
-{
-    $this->competencia_id = $competencia_id;
-}
-public function setEstadoId($competencia_id)
-{
-    $this->estado_id = $competencia_id;
-}
-public function setAvance($competencia_id)
-{
-    $this->avance = $competencia_id;
-}
+    public function setCompetenciaId($competencia_id)
+    {
+        $this->competencia_id = $competencia_id;
+    }
 
-public function setValues($seccion_id)
-{
-    $this->competencia_id = $seccion_id;    
-    $this->estado_id = 1;
-    $this->avance = 0;
-    $this->emit('opencreatePlanDataModal');
-}
+    public function setEstadoId($competencia_id)
+    {
+        $this->estado_id = $competencia_id;
+    }
 
-public function setSeccionesBajas($seccion_id)
-{
-    $this->secciones_bajas = $seccion_id;
-}
+    public function setAvance($competencia_id)
+    {
+        $this->avance = $competencia_id;
+    }
 
-public function openModal()
-{
-    // $this->competencia_id = $seccion_id;
-    // $this->competencias = Competencia::orderBy('name','asc')->where('estado',1)->whereIn('id',[])->pluck('name','id');
-    $this->estado_id = 1;
-    $this->avance = 0;
-    $this->emit('opencreatePlanDataModal');
-}
+    public function setValues($seccion_id)
+    {
+        $this->competencia_id = $seccion_id;    
+        $this->estado_id = 1;
+        $this->avance = 0;
+        $this->emit('openUpdatePlanDataModal');
+    }
+
+    public function setSeccionesBajas($seccion_id)
+    {
+        $this->secciones_bajas = $seccion_id;
+    }
+    
+    public function evaluar_fases()
+    {
+        $this->primera_fase_activa = $this->evaluador_has_evaluado->evaluacion->primera_fase_activa;
+        $this->segunda_fase_activa = $this->evaluador_has_evaluado->evaluacion->segunda_fase_activa;
+    }
+
+    public function openModal()
+    {
+        // $this->competencia_id = $seccion_id;
+        // $this->competencias = Competencia::orderBy('name','asc')->where('estado',1)->whereIn('id',[])->pluck('name','id');
+        $this->estado_id = 1;
+        $this->avance = 0;
+        $this->emit('opencreatePlanDataModal');
+    }
 
     public function mount($ingreso = null, $empleado_id = null, $dashboard = null)
     {
@@ -97,12 +107,12 @@ public function openModal()
             $this->evaluacionPorCompetenciasFinalizada = true;
         }
 
-        $this->competencias 	= Competencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
-        $this->procesos 		= Proceso::orderBy('name','asc')->where('estado',1)->pluck('name','id');
-        $this->estados 			= EstadosDePlanDeAccion::orderBy('name','asc')->where('estado',1)->pluck('name','id');
-        $this->gerencias 		= Gerencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
-        $this->areas 			= Area::orderBy('name','asc')->where('estado',1)->pluck('name','id');
-        $this->personals 		= Personal::orderBy('name','asc')->where('id',$empleado_id)->orWhere('id',auth()->user()->personal->id)
+        $this->competencias = Competencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
+        $this->procesos 	= Proceso::orderBy('name','asc')->where('estado',1)->pluck('name','id');
+        $this->estados 		= EstadosDePlanDeAccion::orderBy('name','asc')->where('estado',1)->pluck('name','id');
+        $this->gerencias 	= Gerencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
+        $this->areas 		= Area::orderBy('name','asc')->where('estado',1)->pluck('name','id');
+        $this->personals 	= Personal::orderBy('name','asc')->where('id',$empleado_id)->orWhere('id',auth()->user()->personal->id)
         ->pluck('name','id');
 
         if ($ingreso == 'ingreso') {
@@ -164,12 +174,101 @@ public function openModal()
         }
     }
 
+    public function secciones_bajas($personal_id) 
+    {
+        $respuestas = Respuesta::with('pregunta.seccion','evaluado')->whereNull('respuestas.deleted_at')->get();
+
+        $personal_id = (array) $personal_id;
+
+        $secciones = $respuestas
+        ->when(!empty($personal_id), function ($collection) use($personal_id) {
+            return $collection->filter(function ($respuesta) use($personal_id) {
+                return in_array($respuesta->evaluado->id, $personal_id);
+            });
+        })
+        ->groupBy('pregunta.seccion_id')->map(function ($respuestasPorSeccion) {
+            return [
+                'seccion_id' => $respuestasPorSeccion->first()->pregunta->seccion_id,
+                'nombre' => $respuestasPorSeccion->first()->pregunta->seccion->name,
+                'valor_esperado' => $this->valor_esperado,
+                'promedio' => round($respuestasPorSeccion->avg('valor_numerico'), 2),
+            ];
+        });
+
+        if (count($secciones) > 0) {
+            // Calculate overall average
+            $overallAverage = round($secciones->avg('promedio'), 2);
+            
+            // Add a row for overall average
+            $overallRow = (object) [
+                'seccion_id' => 0,
+                'nombre' => 'PROMEDIO',
+                'valor_esperado' => $this->valor_esperado,
+                'promedio' => $overallAverage,
+            ];
+            
+            $secciones->prepend($overallRow);
+        }
+
+        $rangos = RangosDePlanDeAccion::where('estado', 1)->orderBy('rango_mayor')->get();
+        $valores = $rangos->pluck('rango_mayor')->toArray();
+        $colores = $rangos->pluck('color')->toArray();
+        $secciones = $secciones->map(function ($respuesta) use ($valores, $colores) {
+            $respuesta = (object) $respuesta;
+            for ($i = 0; $i < count($valores); $i++) {
+                if ($respuesta->promedio < $valores[$i]) {
+                    $respuesta->color = $colores[$i];
+                    break;
+                }
+            }
+            return $respuesta;
+        });
+
+        // si el campo promedio es unico en la lista se ahgrega a su nombre la palbara obligatorio si es repetido se agraga lka palabra opcional
+        $secciones = $secciones->map(function ($respuesta) use ($secciones) {
+            // $respuesta->nombre = $respuesta->nombre . ' ' . ($secciones->where('promedio', $respuesta->promedio)->count() > 1 ? '(Opcional)' : '(Obligatorio)');
+            $respuesta->obligatorio = ($secciones->where('promedio', $respuesta->promedio)->count() > 1 ? false : true);
+            return $respuesta;
+        });
+
+        //Encontrar los dos valores mas bajos y hacer una lsita de todas las secciones que esten por debajo de esos valores
+        $valores = $secciones->pluck('promedio')->toArray();
+
+        // Ordenar los valores de menor a mayor
+        sort($valores);
+
+        // Obtener los primeros $cantidad_requerida valores más bajos
+        $valores_mas_bajos = array_slice($valores, 0, $this->cantidad_requerida);
+        // dd($valores_mas_bajos);
+
+        // Marcar las secciones con los $cantidad_requerida valores más bajos
+        $secciones = $secciones->map(function ($respuesta) use ($valores_mas_bajos) {
+            if (in_array($respuesta->promedio, $valores_mas_bajos)) {
+                $respuesta->bajo = true;
+                // $respuesta->color = 'red';
+                //evaluar si $respuesta->promedio es unico en la lista de $respuesta->promedio si es unico se agreag a su nombre obligatorio sino es unico se agrega opcional
+            } else {
+                // Asegurarse de que 'bajo' no esté marcado si no es necesario
+                $respuesta->bajo = false;
+            }
+            return $respuesta;
+        });
+
+        // Copia ordenada de las secciones por valor promedio
+        $secciones_ordenadas = $secciones->sortBy('promedio');
+        //ordenar secciones_ordenadas
+        return $secciones_ordenadas->values();
+    }
+
     public function render()
     {
         if ($this->dashboard) {
-
-                $this->proceso_id = 1;
+            $this->proceso_id = 1;
             $this->nombreEmpleado = Personal::find($this->empleado_id)->name;
+
+            if ($this->secciones) {
+                $this->secciones_ordenadas = $this->secciones_bajas($this->empleado_id);
+            }
 
             return view('livewire.encargados-planes-de-accion.view', [
                 'nombreEmpleado' => $this->nombreEmpleado,
@@ -220,12 +319,11 @@ public function openModal()
 	
     private function resetInput()
     {		
-		$this->encargado_id = null;
-		$this->empleado_id = null;
+		// $this->encargado_id = null;
+		// $this->empleado_id = null;
 		$this->evaluacion_id = null;
 		$this->realizado = null;
     }
-
 
 	public function create() 
 	{
@@ -315,8 +413,6 @@ public function openModal()
         // return redirect()->route(Route::currentRouteName());
     }
 
-    
-
     public function destroy_plan($id)
     {
         if ($id) {
@@ -364,7 +460,6 @@ public function openModal()
 			session()->flash('message', 'Planes De Mejora actualizado correctamente.');
         }
     }
-    
 
     public function plan($id)
     {
@@ -429,6 +524,5 @@ public function openModal()
         $this->updateMode = true;
 
         redirect()->route('planes-de-mejora', ['dashboard' => 'dashboard','empleado_id'=>$this->empleado_id]);
-
     }
 }

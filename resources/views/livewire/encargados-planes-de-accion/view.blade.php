@@ -24,13 +24,13 @@
                             </div>
                         @endcan
                         @isset($dashboard)
-                        @if ($dashboard)
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
-                                    class="btn btn-xl btn-default rounded-xl">
-                                    <i class="fa fa-arrow-left"></i> Volver
-                                </a>
-                            </div>
+                            @if ($dashboard)
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
+                                        class="btn btn-xl btn-default rounded-xl">
+                                        <i class="fa fa-arrow-left"></i> Volver
+                                    </a>
+                                </div>
                             @endif
                         @endisset
                     </div>
@@ -77,16 +77,20 @@
                                                                 <div class="btn-group">
                                                                     <button class="rounded-xl btn btn-vanguard" data-toggle="tooltip"
                                                                         data-placement="top" title="Ver"
-                                                                        wire:click="ver({{ $row->id }})"><i
-                                                                            class="fa fa-eye"></i></button>
+                                                                        wire:click="ver({{ $row->id }})">
+                                                                            <i class="fa fa-eye"></i>
+                                                                    </button>
                                                                 </div>
                                                             @else
-                                                            <button class="rounded-xl btn btn-vanguard" data-toggle="tooltip"
-                                                                        data-placement="top" title="Evaluaciones aun no están finalizadas" disabled
-                                                                        
-                                                                        ><i
-                                                                            class="fa fa-eye"></i></button>
-                                                                            <br>
+                                                                <button 
+                                                                class="rounded-xl btn btn-vanguard" 
+                                                                data-toggle="tooltip" 
+                                                                data-placement="top" 
+                                                                title="Evaluaciones aun no están finalizadas" 
+                                                                disabled>
+                                                                    <i class="fa fa-eye"></i>
+                                                                </button>
+                                                                <br>
                                                             @endif
                                                         </td>
                                                 @endforeach
@@ -121,17 +125,36 @@
                                         disabled
                                     @endif
                                     >
-                                    <i class="fa fa-plus"></i>  Nuevo
+                                        <i class="fa fa-plus"></i>  Nuevo
                                     </button>
                                 </p>
                                 <p>
                                     (Requeridos: {{$cantidad_requerida}} planes)
                                 </p>
                             </div>
+
+                                <p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
+                                @foreach ($secciones_ordenadas as $row)
+                                    @if ($row->bajo)
+                                        @if ($row->obligatorio)
+                                            <p class="mb-2">
+                                                <button type="button" class="rounded-xl btn btn-outline-danger btn-block" wire:click='setValues({{$row->seccion_id}})'>
+                                                    <div class="h6"> {{ $row->nombre }} (Obligatorio) </div> 
+                                                </button>										
+                                            </p>
+                                        @else
+                                            <p class="mb-2">
+                                                <button type="button" class="rounded-xl btn btn-outline-warning btn-block" wire:click='setValues({{$row->seccion_id}})'>
+                                                    <div class="h6"> {{ $row->nombre }} (Opcional) </div> 
+                                                </button>
+                                            </p>							
+                                        @endif
+                                    @endif
+                                @endforeach
+                            
                             {{-- <div class="float-right mb-2">
                                 (Requeridos: {{$cantidad_requerida}} planes)
                             </div> --}}
-                            
 
                             <div class="table-responsive">
 
@@ -163,7 +186,6 @@
                                         <tbody>
                                             @foreach ($planesDeAccions as $row)
                                                 <tr>
-
                                                     <td width="90">
                                                         <div class="btn-group">
                                                             <a data-toggle="modal" data-target="#updatePlanDataModal"
@@ -183,14 +205,13 @@
                                                     <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
                                                     <td>{{ $row->fecha_de_revision ?? '' }}</td>
-                                                    <td style="
-                                                    background-color: {{ $row->estado->color ?? '' }};
-                                                    " >{{ $row->estado->name ?? '' }}</td>
+                                                    <td style=" background-color: {{ $row->estado->color ?? '' }};" > {{ $row->estado->name ?? '' }}</td>
                                                     <td>{{ $row->avance }}%</td>
                                                     <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
                                                     <td>{{ $row->empleado->area->name ?? '' }}</td>
                                                     <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
                                                     <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
+                                                </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -310,150 +331,149 @@
 
 	@push('js')
 		@if ($dashboard)
-		<script>
-			Chart.defaults.font.size = 16;
+            <script>
+                Chart.defaults.font.size = 16;
 
-			var ctx = document.getElementById('myChart').getContext('2d');
-			var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
-			var data = {!! json_encode($this->secciones->pluck('promedio')) !!};
-			var valor_esperado_data = {!! json_encode($this->secciones->pluck('valor_esperado')) !!};
-			var seccion_ids = {!! json_encode($this->secciones->pluck('seccion_id')) !!};
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
+                var data = {!! json_encode($this->secciones->pluck('promedio')) !!};
+                var valor_esperado_data = {!! json_encode($this->secciones->pluck('valor_esperado')) !!};
+                var seccion_ids = {!! json_encode($this->secciones->pluck('seccion_id')) !!};
 
-			// Add a line with the value from Livewire
-			
-			var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
-            
-			var borderColors = data.map((value) => 'rgba(75, 192, 192, 1)');
+                // Add a line with the value from Livewire
+                
+                var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
+                
+                var borderColors = data.map((value) => 'rgba(75, 192, 192, 1)');
 
-			var sortedData = [...data].sort((a, b) => a - b);
-			var lowestValues = sortedData.slice(0, 2);
-            var secciones_bajas=[];
+                var sortedData = [...data].sort((a, b) => a - b);
+                var lowestValues = sortedData.slice(0, 2);
+                var secciones_bajas=[];
 
-			data.forEach((value, index) => {
-				if (lowestValues.includes(value)) {
-					borderColors[index] = 'rgba(255, 99, 132, 1)';
-					labels[index] = labels[index] + ' (Bajo)';
-                    // hacer un array
-                    secciones_bajas.push(seccion_ids[index]);
-				} else {
-					borderColors[index] = 'rgba(0, 0, 0, 0.1)';
-				}
-			});
+                data.forEach((value, index) => {
+                    if (lowestValues.includes(value)) {
+                        borderColors[index] = 'rgba(255, 99, 132, 1)';
+                        labels[index] = labels[index] + ' (Bajo)';
+                        // hacer un array
+                        secciones_bajas.push(seccion_ids[index]);
+                    } else {
+                        borderColors[index] = 'rgba(0, 0, 0, 0.1)';
+                    }
+                });
 
-            Livewire.emit('setSeccionesBajas', secciones_bajas);
+                Livewire.emit('setSeccionesBajas', secciones_bajas);
 
-            // @this.set('secciones_bajas', secciones_bajas);
+                // @this.set('secciones_bajas', secciones_bajas);
 
-			var myChart = new Chart(ctx, {
-				data: {
-					labels: labels,
-					datasets: [{
-						type: 'bar',
-						label: 'Promedio de competencia',
-						data: data,
-						data_id: seccion_ids,
-						backgroundColor: backgroundColors,
-						borderColor: borderColors,
-						borderWidth: 1,
-						order:1,
-						usePointStyle: false,
-						pointStyle: 'rect',
-					},{
-						type: 'line',
-						borderWidth: 2,
-						label: 'Valor mínimo esperado ({{ $this->valor_esperado }})',//
-						data: valor_esperado_data,
-						datalabels: {
-							display: false,
-						},
-						borderColor: '#b3b3b3',
-						backgroundColor: 'transparent',
-						borderDash: [5, 5],
-						usePointStyle: true,
-						pointStyle: 'line',
-						pointRadius: 2,
-						order:2
-					}]
-				},
-				plugins: [ChartDataLabels],
-				options: {
-					legend: {
-						labels: {
-							usePointStyle: true,
-						}
-					},
-					scales: {
-							y: {
-								title: {
-								display: true,
-								text: 'Competencias',
-								},
-							},
-							x: {
-								title: {
-								display: true,
-								text: 'Resultado'
-								},
-								min: 0,
-								max: 10,
-								ticks: {
-								stepSize: 1
-								},
-							}
-							},
-					layout:{
-						padding: {
-							left: 20,
-							right: 80,
-							top: 20,
-							bottom: 20
-						}
-					},
-					indexAxis: 'y',
-					onClick: function(event, array) {
-						if (array.length > 0) {
-							var index = array[0].index;
-							if (lowestValues.includes(data[index])) {
-								var seccion_id = this.data.datasets[0].data_id[index];
-								Livewire.emit('setValues', seccion_id);
-							}
-						}
-					},
-                    plugins : {
-						legend: {
-							display: true,
-							position: 'top',
-							labels: {
-								usePointStyle: true,
-							},
-						},
-                        tooltip : {
-                            enabled: true,
-                        },
-                        datalabels: {
-							align: 'end',
-							anchor: 'end',
-                          },
-						title: {
-							display: true,
-							text: 'Evaluación de Desempeño por Competencias',
-							html: true,
-							font: {
-								size: 18
-							}
-						}
-	
+                var myChart = new Chart(ctx, {
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            type: 'bar',
+                            label: 'Promedio de competencia',
+                            data: data,
+                            data_id: seccion_ids,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1,
+                            order:1,
+                            usePointStyle: false,
+                            pointStyle: 'rect',
+                        },{
+                            type: 'line',
+                            borderWidth: 2,
+                            label: 'Valor mínimo esperado ({{ $this->valor_esperado }})',//
+                            data: valor_esperado_data,
+                            datalabels: {
+                                display: false,
+                            },
+                            borderColor: '#b3b3b3',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            usePointStyle: true,
+                            pointStyle: 'line',
+                            pointRadius: 2,
+                            order:2
+                        }]
                     },
-					
-				}
-			});
-			
-			Livewire.on('dataUpdated', () => {
-				myChart.update();
-			});
-		
-		</script>
-			
+                    plugins: [ChartDataLabels],
+                    options: {
+                        legend: {
+                            labels: {
+                                usePointStyle: true,
+                            }
+                        },
+                        scales: {
+                                y: {
+                                    title: {
+                                    display: true,
+                                    text: 'Competencias',
+                                    },
+                                },
+                                x: {
+                                    title: {
+                                    display: true,
+                                    text: 'Resultado'
+                                    },
+                                    min: 0,
+                                    max: 10,
+                                    ticks: {
+                                    stepSize: 1
+                                    },
+                                }
+                                },
+                        layout:{
+                            padding: {
+                                left: 20,
+                                right: 80,
+                                top: 20,
+                                bottom: 20
+                            }
+                        },
+                        indexAxis: 'y',
+                        onClick: function(event, array) {
+                            if (array.length > 0) {
+                                var index = array[0].index;
+                                if (lowestValues.includes(data[index])) {
+                                    var seccion_id = this.data.datasets[0].data_id[index];
+                                    Livewire.emit('setValues', seccion_id);
+                                }
+                            }
+                        },
+                        plugins : {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                },
+                            },
+                            tooltip : {
+                                enabled: true,
+                            },
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Evaluación de Desempeño por Competencias',
+                                html: true,
+                                font: {
+                                    size: 18
+                                }
+                            }
+        
+                        },
+                        
+                    }
+                });
+                
+                Livewire.on('dataUpdated', () => {
+                    myChart.update();
+                });
+            
+            </script>
 		@endif
     @endpush  
     
