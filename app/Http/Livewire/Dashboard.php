@@ -14,9 +14,11 @@ class Dashboard extends Component
 {
     public
     $secciones,
+    $secciones_ordenadas,
     $area_de_evaluados=[],
     $gerencia_sub_gerencia_de_evaluados=[],
     $valor_esperado = 7.50,
+    $cantidad_requerida = 0,
     $area_de_evaluado=[],
     $gerencia_sub_gerencia_de_evaluado=[],
     $mostrar_grafica = null,
@@ -44,6 +46,7 @@ class Dashboard extends Component
             $this->personal_id = [$personal_id];
             $this->empleado_id = $personal_id;
             $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado ?? 0.00;
+            $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida ?? 0.00;
         }
 
         $this->vista_personal = $vista_personal;
@@ -177,12 +180,65 @@ class Dashboard extends Component
             return $respuesta;
         });
 
-        if($this->evaluacionPorCompetenciasFinalizada) {
+
+        // si el campo promedio es unico en la lista se ahgrega a su nombre la palbara obligatorio si es repetido se agraga lka palabra opcional
+        $this->secciones = $this->secciones->map(function ($respuesta) {
+            // $respuesta->nombre = $respuesta->nombre . ' ' . ($this->secciones->where('promedio', $respuesta->promedio)->count() > 1 ? '(Opcional)' : '(Obligatorio)');
+            $respuesta->obligatorio = ($this->secciones->where('promedio', $respuesta->promedio)->count() > 1 ? false : true);
+            return $respuesta;
+        });
+
+
+        //Encontrar los dos valores mas bajos y hacer una lsita de todas las secciones que esten por debajo de esos valores
+        $valores = $this->secciones->pluck('promedio')->toArray();
+
+        // Ordenar los valores de menor a mayor
+        sort($valores);
+
+        // Obtener los primeros $cantidad_requerida valores más bajos
+        $valores_mas_bajos = array_slice($valores, 0, $this->cantidad_requerida);
+        // dd($valores_mas_bajos);
+
+        // Marcar las secciones con los $cantidad_requerida valores más bajos
+        $this->secciones = $this->secciones->map(function ($respuesta) use ($valores_mas_bajos) {
+            if (in_array($respuesta->promedio, $valores_mas_bajos)) {
+                $respuesta->bajo = true;
+                // $respuesta->color = 'red';
+                //evaluar si $respuesta->promedio es unico en la lista de $respuesta->promedio si es unico se agreag a su nombre obligatorio sino es unico se agrega opcional
+            } else {
+                // Asegurarse de que 'bajo' no esté marcado si no es necesario
+                $respuesta->bajo = false;
+            }
+            return $respuesta;
+        });
+
+        // Copia ordenada de las secciones por valor promedio
+        $this->secciones_ordenadas = $this->secciones->sortBy('promedio');
+        //ordenar secciones_ordenadas
+        $this->secciones_ordenadas = $this->secciones_ordenadas->values();
+
+        // dd( ($this->secciones_ordenadas) );
+
+        //convertir seccion a objeto
+        // $this->secciones = $this->secciones->map(function ($respuesta) {
+        //     $respuesta = (object) $respuesta;
+        //     return $respuesta;
+        // });
+        // dd($this->secciones);
+
+        // if($this->evaluacionPorCompetenciasFinalizada) {
+        if(1) {
             $this->mostrar_grafica = count($this->secciones) > 0;
-            $this->mostrar_grafica = false; //momentaneamente no mmuestra grafica
+            // $this->mostrar_grafica = false; //momentaneamente no mmuestra grafica
         } else {
             $this->mostrar_grafica = false;
         }
             // If there are sections to show, display the chart (otherwise, hide it
     }
+
+    public function initSeccion($seccion_id)
+    {
+        $this->emit('setValues', $seccion_id);
+    }
+
 }

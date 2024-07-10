@@ -4,11 +4,11 @@
 		<div class="col-md-12">
             <div class="card rounded-xl">
                 <div class="text-white card-header bg-vanguard rounded-t-xl"
-				{{-- style="background-image: linear-gradient(90deg, #568ba5 0%, #500aa0 100%);" --}}
-				@if (!$showHeader)
-				hidden					
-				@endif				
-				>
+					{{-- style="background-image: linear-gradient(90deg, #568ba5 0%, #500aa0 100%);" --}}
+					@if (!$showHeader)
+					hidden					
+					@endif				
+					>
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
 							<h4 class='h5'>
@@ -30,6 +30,7 @@
 				</div>
 				
 				<div class="card-body">
+					
 					@if (!$vista_personal)
 						<div class="row">
 							<div class="form-group col-md-4 col-sm-4" wire:ignore>
@@ -103,43 +104,70 @@
 							</div> --}}
 						</div>
 					@else
-						
+						{{-- @if ($ingresar_plan)
+							<p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
+							@foreach ($secciones_ordenadas as $row)
+								@if ($row->bajo)
+									@if ($row->obligatorio)
+										<p class="mb-2">
+											<button type="button" class="rounded-xl btn btn-outline-danger btn-block" wire:click='initSeccion({{$row->seccion_id}})'>
+												<div class="h6"> {{ $row->nombre }} (Obligatorio) </div> 
+											</button>										
+										</p>
+									@else
+										<p class="mb-2">
+											<button type="button" class="rounded-xl btn btn-outline-warning btn-block" wire:click='initSeccion({{$row->seccion_id}})'>
+												<div class="h6"> {{ $row->nombre }} (Opcional) </div> 
+											</button>
+										</p>							
+									@endif
+								@endif
+							@endforeach
+						@else
+							
+						@endif --}}
 					@endif
+
 					<div class="row">
 						<div class="col-sm-12">
-								<canvas wire.ignore id="chart"
+							<canvas wire.ignore id="chart"
 								@if (!$mostrar_grafica)
 									style="display:none;"
 								@endif>
-								</canvas>
-								@if ($mostrar_grafica === true)
+							</canvas>
+							
+							@if ($mostrar_grafica === true)
 								<div class="d-flex justify-content-end">
 									<div class="col-sm-6">
 										@include('components.progress-bar-rango')										
 									</div>
 								</div>
+							@endif
+							
+							@if ($mostrar_grafica === false)
+								<p class="mb-2 h5">
+									Promedio total por competencia										
+								</p>
+
+								@if (!$this->evaluacionPorCompetenciasFinalizada)
+									<div class="alert alert-default rounded-2xl" role="alert">
+										Una vez finalizada la evaluación de desempeño por competencias, se mostrarán los resultados obtenidos en la gráfica.
+									</div>
+								@else
+									<div class="alert alert-default rounded-2xl" role="alert">
+										No se encontró información
+									</div>
+								@endif
 								
-								@endif
-								@if ($mostrar_grafica === false)
-									<p class="mb-2 h5">
-										Promedio total por competencia										
-									</p>
-									{{-- @if (!$this->evaluacionPorCompetenciasFinalizada) --}}
-									@if (1)
-										<div class="alert alert-default rounded-2xl" role="alert">
-											Una vez finalizada la evaluación de desempeño por competencias, se mostrarán los resultados obtenidos en la gráfica.
-										</div>
-									@else
-										<div class="alert alert-default rounded-2xl" role="alert">
-											No se encontró información
-										</div>
-									@endif
-								@endif
+							@endif
 						</div>
-					</div>			
-						<div wire:loading.delay.long wire:target="generar_grafica">
-							<x-loading-indicator/>
-						</div>
+					</div>
+					
+					<div wire:loading.delay.long wire:target="generar_grafica">
+						<x-loading-indicator/>
+					</div>
+
+				</div>
 			</div>
 		</div>
 	</div>	
@@ -154,7 +182,6 @@
 	@push('js')
 
     <script>
-
 		Chart.defaults.font.size = 16;
 
 		var ctx = document.getElementById('chart');
