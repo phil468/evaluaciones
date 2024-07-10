@@ -12,7 +12,7 @@ class TiposDeObjetivo extends Model
     // constante competencias
     const NUMERICO = 1;
     const PORCENTAJE = 2;
-    const BOOLEANO = 3;
+    const CONDICIONAL = 3;
 
     protected $table = 'tipo_de_objetivos';
     

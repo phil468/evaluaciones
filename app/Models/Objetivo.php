@@ -192,18 +192,18 @@ class Objetivo extends Model implements Auditable
     public function setValorAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            $this->attributes['valor'] = ($value/100.00);
+            $this->attributes['valor'] = is_null($value) ? '' : (is_numeric($value) ? ($value / 100.00) : null);
         } else {
-            $this->attributes['valor'] = $value;
+            $this->attributes['valor'] = is_null($value) ? '' : (is_numeric($value) ? ($value) : null);
         }
     }
 
     public function getValorAttribute($value)
     {
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return number_format($value*100.00, 2, '.', '');
+            return is_null($value) ? '' : number_format($value*100.00, 2, '.', '');
         } else {
-            return number_format($value, 2, '.', '');
+            return is_null($value) ? '' : number_format($value, 2, '.', '');
         }
     }
 }

@@ -29,8 +29,8 @@ class ObjetivosPrecargados extends Component
 		'tipo_objetivo_id' => 'required_if:grupal,1',
 		'resultado_anterior_o_esperado' => 'required_if:grupal,1',
 		'porcentaje_de_participacion' => 'required|numeric|between:0,100',
-		'minimo'=>'required_if:grupal,1|exclude_if:grupal,0|exclude_if:tipo_objetivo_id,'.TiposDeObjetivo::BOOLEANO.'|numeric|lt:maximo|gt:0',
-		'maximo'=>'required_if:grupal,1|exclude_if:grupal,0|exclude_if:tipo_objetivo_id,'.TiposDeObjetivo::BOOLEANO.'|numeric|gt:minimo|',
+		'minimo'=>'required_if:grupal,1|exclude_if:grupal,0|exclude_if:tipo_objetivo_id,'.TiposDeObjetivo::CONDICIONAL.'|numeric|lt:maximo|gt:0',
+		'maximo'=>'required_if:grupal,1|exclude_if:grupal,0|exclude_if:tipo_objetivo_id,'.TiposDeObjetivo::CONDICIONAL.'|numeric|gt:minimo|',
 		'evaluacion_id' => 'required',
 		'tipo_de_jerarquia_id' => 'required'
 	];

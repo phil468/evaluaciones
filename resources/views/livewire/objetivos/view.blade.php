@@ -267,15 +267,15 @@
 											@if ($row->evaluacion->segunda_fase_iniciada)
 												<tfoot>
 													<tr>
-														<td colspan="9" class="text-right">Subtotal</td>
+														<td colspan="7" class="text-right">Subtotal</td>
 														<td class="text-center text-white bg-vanguard">{{ $subtotal.'%' }}</td>
-														<td colspan="5"></td>
+														<td colspan="3"></td>
 													</tr>
 													
 													<tr>
-														<td colspan="9" class="text-right">Total Real</td>
+														<td colspan="7" class="text-right">Total Real</td>
 														<td class="text-center text-white bg-vanguard">{{ $total.'%' }}</td>
-														<td colspan="5"></td>
+														<td colspan="3"></td>
 													</tr>
 												</tfoot>
 											@endif

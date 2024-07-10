@@ -99,7 +99,6 @@ class Objetivos extends Component
 
     public function actualizarValor($id)
     {
-        
         $this->validate(
             [
                 'valor_actualizado' => 'required|numeric',
@@ -110,13 +109,17 @@ class Objetivos extends Component
             ]
         );
 
+        $record = Objetivo::find($this->selected_id);
+
         $this->valor = $this->valor_actualizado;
-        $this->calcular_porcentaje_de_logro_STI();
+
+        if ($record->tipo_objetivo_id == TiposDeObjetivo::CONDICIONAL) {
+            $this->porcentaje_de_logro_STI = $this->valor_actualizado == $record->resultado_anterior_o_esperado ? 100 : 0;
+        } else {
+            $this->calcular_porcentaje_de_logro_STI();
+        }
         $this->calcular_peso_ponderado();
         
-        // dd($this->valor_actualizado, $this->porcentaje_de_logro_STI, $this->peso_ponderado);
-
-        $record = Objetivo::find($this->selected_id);
         $record->update([ 
             'valor' => $this->valor_actualizado*1.00,
             'porcentaje_de_logro_STI' => $this-> porcentaje_de_logro_STI,
