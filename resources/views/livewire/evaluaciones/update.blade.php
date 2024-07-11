@@ -17,16 +17,15 @@
             <div class="modal-body">
                 <form>
                     <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled"
-                    @if (!$this->updateMode)                    
-                        disabled
-                    @endif
-                    >
+                        @if (!$this->updateMode)                    
+                            disabled
+                        @endif >
                     
-                    @if (!$this->updateMode)
-                    <div class="col-12 alert alert-warning" role="alert">
-                        Cargando ...
-                    </div>
-                    @endif
+                        @if (!$this->updateMode)
+                        <div class="col-12 alert alert-warning" role="alert">
+                            Cargando ...
+                        </div>
+                        @endif
 
 					    <input type="hidden" wire:model="selected_id">
                         {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -107,12 +106,11 @@
                                     class="col-12"
                                 @else
                                     class="d-none"
-                                @endif
-                        >
-                        <hr>
-                        <div class="mt-2 h5">
-                            Opciones de evaluación por resultados:
-                        </div>
+                                @endif >
+                            <hr>
+                            <div class="mt-2 h5">
+                                Opciones de evaluación por resultados:
+                            </div>
                             <div class="row">
                                 <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                     <label for="minimo">Mínimo*</label>

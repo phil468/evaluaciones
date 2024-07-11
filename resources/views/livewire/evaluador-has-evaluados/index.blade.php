@@ -9,16 +9,22 @@
 @section('content')
 
     @php
-        $campania = 
+        $campania_vigentes = 
         App\Models\Evaluacione::select('evaluaciones.campania')
         ->vigente()
         ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
         ->groupBy('evaluaciones.campania')
         ->orderBy('evaluaciones.campania', 'desc')
         ->get();
+
+        $campanias = App\Models\Evaluacione::select('evaluaciones.campania')
+        ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
+        ->groupBy('evaluaciones.campania')
+        ->orderBy('evaluaciones.campania', 'desc')
+        ->get();
     @endphp
 
-    @if ($campania->isEmpty())
+    @if ($campania_vigentes->isEmpty())
         @include('livewire.evaluador-has-evaluados.evaluaciones_no_vigentes')
     @endif
     
@@ -31,8 +37,8 @@
         ->get();
     @endphp
 
-    @foreach ($campania as $value)
-        @livewire('evaluador-has-evaluados', ['tipo_de_evaluacion_id' => $tipo_de_evaluacion_id , 'campania' => $value->campania])
+    @foreach ($campania_vigentes as $value)
+            @livewire('evaluador-has-evaluados', ['tipo_de_evaluacion_id' => $tipo_de_evaluacion_id , 'campania' => $value->campania])
     @endforeach
 
     @if ( $tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::RESULTADOS )
@@ -52,12 +58,17 @@
     @endif
 
     @if ( $tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::COMPETENCIAS )
-        @livewire('dashboard', [
-            'personal_id' => auth()->user()->personal_id, 
-            'vista_personal' => true, 
-            'title' => 'Resultados de evaluación'
-            ]
-            )
+        @foreach ($campanias as $value)
+                @livewire('dashboard', [
+                    'personal_id' => auth()->user()->personal_id, 
+                    'vista_personal' => true, 
+                    'title' => 'Resultados de evaluación',
+                    'ingresar_plan' => false,
+                    'showHeader' => true,
+                    'campania' => $value->campania
+                    ]
+                    )
+        @endforeach
     @endif
 
 @stop

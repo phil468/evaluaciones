@@ -30,14 +30,14 @@
         ])
 @endforeach
 
-@isset($ingreso)
+{{-- @isset($ingreso)
     @livewire('dashboard', [
         'personal_id' => auth()->user()->personal_id, 
         'vista_personal' => true, 
         'title' => 'Resultados de evaluación'
         ]
         )
-@endisset
+@endisset --}}
 
 @isset($dashboard)
     @livewire('dashboard', [

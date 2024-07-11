@@ -59,6 +59,12 @@ class EvaluadorHasEvaluado extends Model
         return $this->belongsTo(Evaluacione::class,'evaluacion_id','id');
     }
 
+    // campania se obtiene a traves de evaluaciones
+    public function campania()
+    {
+        return $this->evaluacion->campania;
+    }
+
     public function objetivos()
     {
         return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id');

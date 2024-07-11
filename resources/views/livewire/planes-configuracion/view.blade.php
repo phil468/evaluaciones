@@ -1,5 +1,6 @@
-@section('title', __('Evaluaciones'))
+
 <div class="container-fluid">
+	@section('title', __('Evaluaciones'))
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card rounded-xl">

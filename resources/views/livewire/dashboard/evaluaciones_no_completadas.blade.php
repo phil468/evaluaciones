@@ -5,20 +5,13 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            @if ($tipo_de_evaluacion_id == 2)
-                                <h5 class="h5">Evaluación de Desempeño por Resultados de personal a cargo</h5>
-                                @section('title', __('Evaluación de Desempeño por Resultados'))
-                            @endif
-                            @if ($tipo_de_evaluacion_id == 1)
-                                <h5 class="h5">Evaluación de Desempeño por Competencia</h5>
-                                @section('title', __('Evaluación de Desempeño por Competencia'))
-                            @endif
+                            <h5 class="h5">Resultados de evaluación</h5>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-default" role="alert">
-                        No se encuentran Evaluaciones Vigentes.
+                        Los resultados serán visibles una vez que todos los evaluadores asignados a usted hayan completado su evaluación.
                     </div>
                 </div>
             </div>

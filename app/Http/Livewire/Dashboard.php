@@ -7,6 +7,8 @@ use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\RangosDePlanDeAccion;
 use App\Models\Respuesta;
+use App\Models\TipoDeEvaluacione;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -29,11 +31,16 @@ class Dashboard extends Component
     $title=null,
     $showHeader=true,
     $empleado_id=null,
-    $evaluacionPorCompetenciasFinalizada=false;
+    $evaluacionPorCompetenciasFinalizada=false,
+    $campania,
+    $evaluaciones_no_completadas;
 
-    public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true)
+    public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true, $campania=2024)
     {
-        $evaluaciones = Evaluacione::where('tipo_de_evaluacion_id', 1)->vigente()->get();
+        $evaluaciones = Evaluacione::
+        where('tipo_de_evaluacion_id', 1)
+        ->where('campania', $campania)
+        ->vigente()->get();
 
         if ($evaluaciones->count() > 0) {
             $this->evaluacionPorCompetenciasFinalizada = false;
@@ -42,10 +49,21 @@ class Dashboard extends Component
         }
 
         if($personal_id) {
+
+            $this->evaluaciones_no_completadas = Auth::user()->personal->evaluaciones()
+            ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
+            ->select('evaluador_has_evaluados.id')
+            ->where('evaluaciones.tipo_de_evaluacion_id', TipoDeEvaluacione::COMPETENCIAS)
+            ->where('evaluaciones.campania', $campania)
+            ->where('evaluador_has_evaluados.realizado',null)
+            ->get();
+
             $this->personal_id = [$personal_id];
             $this->empleado_id = $personal_id;
             $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado ?? 0.00;
             $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida ?? 0.00;
+            $this->campania = $campania;
+
         }
 
         $this->vista_personal = $vista_personal;
@@ -55,9 +73,9 @@ class Dashboard extends Component
         
         $this->gerencia_sub_gerencia_de_evaluados = 
         EvaluadorHasEvaluado::
-        orderBy('gerencia_sub_gerencia_de_evaluado')
-        ->pluck('gerencia_sub_gerencia_de_evaluado', 'gerencia_sub_gerencia_de_evaluado')
-        ->toArray();
+            orderBy('gerencia_sub_gerencia_de_evaluado')
+            ->pluck('gerencia_sub_gerencia_de_evaluado', 'gerencia_sub_gerencia_de_evaluado')
+            ->toArray();
         
         $this->areas();
 
@@ -68,7 +86,17 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.dashboard.view');
+        if ($this->vista_personal)
+        {
+            if ($this->evaluaciones_no_completadas->isEmpty())
+                return view('livewire.dashboard.view');
+            else
+                return view('livewire.dashboard.evaluaciones_no_completadas');
+        }
+        else
+        {
+            return view('livewire.dashboard.view');
+        }   
     }
 
     public function updatedGerenciaSubGerenciaDeEvaluado()
@@ -156,7 +184,6 @@ class Dashboard extends Component
             }
             return $respuesta;
         });
-
 
         // si el campo promedio es unico en la lista se ahgrega a su nombre la palbara obligatorio si es repetido se agraga lka palabra opcional
         $this->secciones = $this->secciones->map(function ($respuesta) {
