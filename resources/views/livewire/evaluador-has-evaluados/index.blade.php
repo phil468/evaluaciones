@@ -22,6 +22,15 @@
         @include('livewire.evaluador-has-evaluados.evaluaciones_no_vigentes')
     @endif
     
+    @php
+        $campania_planes_de_mejora = 
+        App\Models\PlanesConfiguracion::select('planes_de_accion_configuracion.campania')
+        ->vigente()
+        ->groupBy('planes_de_accion_configuracion.campania')
+        ->orderBy('planes_de_accion_configuracion.campania', 'desc')
+        ->get();
+    @endphp
+
     @foreach ($campania as $value)
         @livewire('evaluador-has-evaluados', ['tipo_de_evaluacion_id' => $tipo_de_evaluacion_id , 'campania' => $value->campania])
     @endforeach
@@ -40,6 +49,15 @@
         @foreach ($evaluaciones_por_resultado as $value)
             @livewire('objetivos', ['evaluador_has_evaluado_id' => $value->id, 'readOnly' => true])
         @endforeach
+    @endif
+
+    @if ( $tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::COMPETENCIAS )
+        @livewire('dashboard', [
+            'personal_id' => auth()->user()->personal_id, 
+            'vista_personal' => true, 
+            'title' => 'Resultados de evaluación'
+            ]
+            )
     @endif
 
 @stop

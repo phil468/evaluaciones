@@ -36,7 +36,6 @@ class Dashboard extends Component
         $evaluaciones = Evaluacione::where('tipo_de_evaluacion_id', 1)->vigente()->get();
 
         if ($evaluaciones->count() > 0) {
-            // session()->flash('message', 'Aún No Finaliza la Evaluación por Competencias.');
             $this->evaluacionPorCompetenciasFinalizada = false;
         } else {
             $this->evaluacionPorCompetenciasFinalizada = true;
@@ -55,7 +54,8 @@ class Dashboard extends Component
         $this->showHeader = $showHeader;
         
         $this->gerencia_sub_gerencia_de_evaluados = 
-        EvaluadorHasEvaluado::orderBy('gerencia_sub_gerencia_de_evaluado')
+        EvaluadorHasEvaluado::
+        orderBy('gerencia_sub_gerencia_de_evaluado')
         ->pluck('gerencia_sub_gerencia_de_evaluado', 'gerencia_sub_gerencia_de_evaluado')
         ->toArray();
         
@@ -100,30 +100,6 @@ class Dashboard extends Component
 
     public function datos_promedio()
     {
-        // $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
-
-        // $this->secciones = Respuesta::with('pregunta.seccion')
-        //     ->select(
-        //     'preguntas.seccion_id as seccion_id',
-        //     'secciones.name as nombre',
-        //     DB::raw($this->valor_esperado . ' as valor_esperado'),
-        //     DB::raw('ROUND(avg(valor_numerico), 2) as promedio')
-        //     )
-        //     ->join('preguntas', 'respuestas.pregunta_id', '=', 'preguntas.id')
-        //     ->join('secciones', 'preguntas.seccion_id', '=', 'secciones.id')
-        //     ->join('evaluador_has_evaluados', 'respuestas.evaluado_id', '=', 'evaluador_has_evaluados.evaluado_id')
-        //     ->groupBy('preguntas.seccion_id')
-        //     ->when(($this->area_de_evaluado), function ($query, $area_de_evaluado) {
-        //         $query->whereIn('evaluador_has_evaluados.area_de_evaluado', $this->area_de_evaluado);
-        //     })
-        //     ->when(($this->gerencia_sub_gerencia_de_evaluado), function ($query, $gerencia_sub_gerencia_de_evaluado) {
-        //         $query->whereIn('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado', $this->gerencia_sub_gerencia_de_evaluado);
-        //     })
-        //     ->when(($this->personal_id), function ($query, $personal_id) {
-        //         $query->whereIn('respuestas.evaluado_id', $this->personal_id);
-        //     })
-        //     ->get();
-
         $respuestas = Respuesta::with('pregunta.seccion','evaluado')->whereNull('respuestas.deleted_at')->get();
             
         $this->secciones = $respuestas
@@ -169,6 +145,7 @@ class Dashboard extends Component
         $rangos = RangosDePlanDeAccion::where('estado', 1)->orderBy('rango_mayor')->get();
         $valores = $rangos->pluck('rango_mayor')->toArray();
         $colores = $rangos->pluck('color')->toArray();
+
         $this->secciones = $this->secciones->map(function ($respuesta) use ($valores, $colores) {
             $respuesta = (object) $respuesta;
             for ($i = 0; $i < count($valores); $i++) {
@@ -217,15 +194,6 @@ class Dashboard extends Component
         //ordenar secciones_ordenadas
         $this->secciones_ordenadas = $this->secciones_ordenadas->values();
 
-        // dd( ($this->secciones_ordenadas) );
-
-        //convertir seccion a objeto
-        // $this->secciones = $this->secciones->map(function ($respuesta) {
-        //     $respuesta = (object) $respuesta;
-        //     return $respuesta;
-        // });
-        // dd($this->secciones);
-
         // if($this->evaluacionPorCompetenciasFinalizada) {
         if(1) {
             $this->mostrar_grafica = count($this->secciones) > 0;
@@ -234,11 +202,6 @@ class Dashboard extends Component
             $this->mostrar_grafica = false;
         }
             // If there are sections to show, display the chart (otherwise, hide it
-    }
-
-    public function initSeccion($seccion_id)
-    {
-        $this->emit('setValues', $seccion_id);
     }
 
 }

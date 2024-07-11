@@ -104,28 +104,7 @@
 							</div> --}}
 						</div>
 					@else
-						{{-- @if ($ingresar_plan)
-							<p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
-							@foreach ($secciones_ordenadas as $row)
-								@if ($row->bajo)
-									@if ($row->obligatorio)
-										<p class="mb-2">
-											<button type="button" class="rounded-xl btn btn-outline-danger btn-block" wire:click='initSeccion({{$row->seccion_id}})'>
-												<div class="h6"> {{ $row->nombre }} (Obligatorio) </div> 
-											</button>										
-										</p>
-									@else
-										<p class="mb-2">
-											<button type="button" class="rounded-xl btn btn-outline-warning btn-block" wire:click='initSeccion({{$row->seccion_id}})'>
-												<div class="h6"> {{ $row->nombre }} (Opcional) </div> 
-											</button>
-										</p>							
-									@endif
-								@endif
-							@endforeach
-						@else
-							
-						@endif --}}
+
 					@endif
 
 					<div class="row">
