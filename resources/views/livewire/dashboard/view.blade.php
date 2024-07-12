@@ -220,34 +220,34 @@
 				labels: labels,
 				datasets: [
 					{
-					type: 'bar',
-					label: 'Promedio de competencia',
-					data: data,
-					data_id: seccion_ids,
-					backgroundColor: backgroundColors,
-					borderColor: borderColors,
-					borderWidth: borderWidths,
-					order:1,
-					usePointStyle: false,
-					pointStyle: 'rect',
-				}
-				// ,{
-				// 	type: 'line',
-				// 	borderWidth: 2,
-				// 	label: 'Valor mínimo esperado ({{ number_format($this->valor_esperado,2) }})',//
-				// 	data: valor_esperado_data,
-				// 	datalabels: {
-				// 		display: false,
-				// 	},
-				// 	borderColor: '#b3b3b3',
-				// 	backgroundColor: 'transparent',
-				// 	borderDash: [5, 5],
-				// 	usePointStyle: true,
-				// 	pointStyle: 'line',
-				// 	pointRadius: 0,
-				// 	order:2
-				// }
-			]
+						type: 'bar',
+						label: 'Promedio de competencia',
+						data: data,
+						data_id: seccion_ids,
+						backgroundColor: backgroundColors,
+						borderColor: borderColors,
+						borderWidth: borderWidths,
+						order:1,
+						usePointStyle: false,
+						pointStyle: 'rect',
+					}
+					// ,{
+					// 	type: 'line',
+					// 	borderWidth: 2,
+					// 	label: 'Valor mínimo esperado ({{ number_format($this->valor_esperado,2) }})',//
+					// 	data: valor_esperado_data,
+					// 	datalabels: {
+					// 		display: false,
+					// 	},
+					// 	borderColor: '#b3b3b3',
+					// 	backgroundColor: 'transparent',
+					// 	borderDash: [5, 5],
+					// 	usePointStyle: true,
+					// 	pointStyle: 'line',
+					// 	pointRadius: 0,
+					// 	order:2
+					// }
+				]
 			},
 			plugins: [ChartDataLabels],
 			options: {
@@ -316,7 +316,6 @@
 				
 			}
 		});
-				
 
         Livewire.on('dataUpdated', (promedios,nombres,colores) => {
             chart.data.datasets[0].data = promedios;
