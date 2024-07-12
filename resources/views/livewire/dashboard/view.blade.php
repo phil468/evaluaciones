@@ -109,11 +109,14 @@
 
 					<div class="row">
 						<div class="col-sm-12">
-							<canvas wire.ignore id="chart"
-								@if (!$mostrar_grafica)
-									style="display:none;"
-								@endif>
-							</canvas>
+
+							<div style="width: 100%; height: 600px;"> <!-- Ajusta la altura según necesites -->
+								<canvas wire.ignore id="chart"
+									@if (!$mostrar_grafica)
+										style="display:none;"
+									@endif>
+								</canvas>
+							</div>						
 							
 							@if ($mostrar_grafica === true)
 								<div class="d-flex justify-content-end">
@@ -161,7 +164,7 @@
 	@push('js')
 
     <script>
-		Chart.defaults.font.size = 16;
+		Chart.defaults.font.size = 12;
 
 		var ctx = document.getElementById('chart');
 		var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
@@ -248,6 +251,8 @@
 			},
 			plugins: [ChartDataLabels],
 			options: {
+				responsive: true,
+				maintainAspectRatio: false, // Esto permite que el gráfico se estire en altura. Ajusta según necesidad.
 				legend: {
 					labels: {
 						usePointStyle: true,
@@ -256,19 +261,19 @@
 				scales: {
 						y: {
 							title: {
-							display: true,
-							text: 'Competencias',
+								display: true,
+								text: 'Competencias',
 							},
 						},
 						x: {
 							title: {
-							display: true,
-							text: 'Resultado'
+								display: true,
+								text: 'Resultado'
 							},
 							min: 0.00,
 							max: 10.00,
 							ticks: {
-							stepSize: 1.00
+								stepSize: 1.00
 							},
 						}
 						},
