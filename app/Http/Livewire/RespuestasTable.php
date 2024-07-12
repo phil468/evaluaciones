@@ -2,12 +2,14 @@
 
 namespace App\Http\Livewire;
 
+use App\Exports\RespuestasExport;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Personal;
 use App\Models\Pregunta;
 use App\Models\Respuesta;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
+use Maatwebsite\Excel\Facades\Excel;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 // use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
@@ -31,21 +33,9 @@ class RespuestasTable extends LivewireDatatable
 
     public function builder()
     {
-        // $respuestas = Respuesta::query()
         return Respuesta::query()
-        // ->selectRaw(Crypt::decryptString('respuestas.pregunta id'))
         ->where('respuestas.deleted_at',null);
-        // ->where('preguntas.deleted_at',null)
-        // ->leftJoin('preguntas','preguntas.id','=','respuestas.pregunta_id')
-        // ->leftJoin('personal','personal.id','=','respuestas.evaluado_id')
-        // ->leftJoin('secciones','secciones.id','=','preguntas.seccion_id')
-        // ->leftJoin('evaluaciones','evaluaciones.id','=','preguntas.evaluacion_id')
-        // ->leftJoin('evaluador_has_evaluados','evaluador_has_evaluados.evaluado_id','=','respuestas.evaluado_id')
-        //cargo
-        // ->leftJoin('cargos','cargos.id','=','personal.cargo_id')
-        ;
 
-        // return $this->respuestas;
     }
 
     public $model = Respuesta::class;
@@ -75,33 +65,48 @@ class RespuestasTable extends LivewireDatatable
                 return Respuesta::find($id)->valor_numerico;
             },[],'puntuacion')->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
 
-            Column::callback(['respuestas.evaluado_id'], function ($id) {
-                $cargo_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.cargo_de_evaluado')
-                ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
-                ->where('evaluador_has_evaluados.deleted_at',null)
-                ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
-                ->first();
-                return $cargo_de_evaluado->cargo_de_evaluado ?? '';
-            },[],'1')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
+            // Column::callback(['respuestas.evaluado_id'], function ($id) {
+            //     $cargo_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.cargo_de_evaluado')
+            //     ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
+            //     ->where('evaluador_has_evaluados.deleted_at',null)
+            //     ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
+            //     ->first();
+            //     return $cargo_de_evaluado->cargo_de_evaluado ?? '';
+            // },[],'1')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
 
-            Column::callback(['respuestas.evaluado_id'], function ($id) {
-                $area_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.area_de_evaluado')
-                ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
-                ->where('evaluador_has_evaluados.deleted_at',null)
-                ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
-                ->first();
-                return $area_de_evaluado->area_de_evaluado ?? '';
-            },[],'2')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
+            Column::callback(['id'], function ($id) {
+                $respuesta = Respuesta::find($id);
+                return $respuesta->cargo_de_evaluado ?? '';
+            },[],'11')->label('Cargo del evaluado')->searchable()->filterable()->defaultSort('asc'),
+
+            // Column::callback(['respuestas.evaluado_id'], function ($id) {
+            //     $area_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.area_de_evaluado')
+            //     ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
+            //     ->where('evaluador_has_evaluados.deleted_at',null)
+            //     ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
+            //     ->first();
+            //     return $area_de_evaluado->area_de_evaluado ?? '';
+            // },[],'2')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
+
+            Column::callback(['id'], function ($id) {
+                $respuesta = Respuesta::find($id);
+                return $respuesta->area_de_evaluado ?? '';
+            },[],'22')->label('Area del evaluado')->searchable()->filterable()->defaultSort('asc'),
             
-            Column::callback(['respuestas.evaluado_id'], function ($id) {
-                $gerencia_sub_gerencia_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado')
-                ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
-                ->where('evaluador_has_evaluados.deleted_at',null)
-                ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
-                ->first();
-                return $gerencia_sub_gerencia_de_evaluado->gerencia_sub_gerencia_de_evaluado ?? '';
-            },[],'3')->label('Gerencia / Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
+            // Column::callback(['respuestas.evaluado_id'], function ($id) {
+            //     $gerencia_sub_gerencia_de_evaluado = EvaluadorHasEvaluado::select('evaluador_has_evaluados.gerencia_sub_gerencia_de_evaluado')
+            //     ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
+            //     ->where('evaluador_has_evaluados.deleted_at',null)
+            //     ->where('evaluador_has_evaluados.evaluacion_id','<>',4)
+            //     ->first();
+            //     return $gerencia_sub_gerencia_de_evaluado->gerencia_sub_gerencia_de_evaluado ?? '';
+            // },[],'3')->label('Gerencia / Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
             
+            Column::callback(['id'], function ($id) {
+                $respuesta = Respuesta::find($id);
+                return $respuesta->gerencia_de_evaluado ?? '';
+            },[],'33')->label('Gerencia / Subgerencia del evaluado')->searchable()->filterable()->defaultSort('asc'),
+
             // // Column::callback(['respuestas.evaluado_id'], function ($id) {
             // //     $jerarquia = EvaluadorHasEvaluado::select('evaluador_has_evaluados.jerarquia')
             // //     ->where('evaluador_has_evaluados.evaluado_id',Crypt::decryptString($id))
@@ -120,12 +125,29 @@ class RespuestasTable extends LivewireDatatable
 
     public function export()
     {
-        $this->forgetComputed();
+        $datosParaExportar = [];
 
-        $export = new DatatableExport($this->getExportResultsSet());
+        Respuesta::with(['evaluado', 'pregunta.seccion'])
+        ->chunk(2000, function ($respuestas) use (&$datosParaExportar) {
+            foreach ($respuestas as $respuesta) {
+                $datosParaExportar[] = [
+                    'ID' => $respuesta->id,
+                    'ID de evaluado' => $respuesta->evaluado_id,
+                    'Evaluado' => $respuesta->evaluado->name ?? '',
+                    'Competencia' => $respuesta->pregunta->seccion->name ?? '',
+                    'Pregunta' => $respuesta->pregunta->pregunta ?? '',
+                    'Puntuación' => $respuesta->valor_numerico,
+                    'Cargo del evaluado' => $respuesta->cargo_de_evaluado ?? '',
+                    'Area del evaluado' => $respuesta->area_de_evaluado ?? '',
+                    'Gerencia / Subgerencia del evaluado' => $respuesta->gerencia_de_evaluado ?? ''
+                ];
+                // break;
+            }
+            // return false;
+        });
 
-        $export->setFileName('respuestas_de_evaluacion_por_competencias.xlsx');
-        return $export->download();
-    }
+        return Excel::download(new RespuestasExport($datosParaExportar), 'respuestas.xlsx');
+
+    }   
 
 }

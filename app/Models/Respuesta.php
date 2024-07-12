@@ -41,19 +41,23 @@ class Respuesta extends Model
         return $this->belongsTo(Personal::class,'evaluado_id','id');
     }
 
-    public function getAreaEvaluacionAttribute()
+    public function getAreaDeEvaluadoAttribute()
     {
-        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)->first()->area_de_evaluado;
+        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        ->where('evaluacion_id',$this->pregunta->evaluacion_id)
+        ->first()->area_de_evaluado;
     }
 
-    public function getCargoEvaluacionAttribute()
+    public function getCargoDeEvaluadoAttribute()
     {
-        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)->first()->cargo_de_evaluado;
+        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->cargo_de_evaluado;
     }
 
-    public function getGerenciaEvaluacionAttribute()
+    public function getGerenciaDeEvaluadoAttribute()
     {
-        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)->first()->gerencia_sub_gerencia_de_evaluado;
+        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->gerencia_sub_gerencia_de_evaluado;
     }
 
     // //desencripto el valor numerico
