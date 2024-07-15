@@ -132,7 +132,7 @@
                                     (Requeridos: {{$cantidad_requerida}} planes)
                                 </p>
                             </div>
-
+                            @if ($planesDeAccions->count() < $cantidad_requerida)
                                 <p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
                                 @foreach ($secciones_ordenadas as $row)
                                     @if ($row->bajo)
@@ -151,6 +151,7 @@
                                         @endif
                                     @endif
                                 @endforeach
+                            @endif
                             
                             {{-- <div class="float-right mb-2">
                                 (Requeridos: {{$cantidad_requerida}} planes)
