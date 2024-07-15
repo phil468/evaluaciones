@@ -54,12 +54,12 @@ class PlanesConfiguracion extends Model
 
     public function getPrimeraFaseActivaAttribute()
     {
-        return $this->fecha_inicio_primera_fase_matricula <= now() && $this->fecha_fin_primera_fase_matricula >= now() && $this->tipo_de_evaluacion_id == 2;
+        return $this->fecha_inicio_primera_fase_matricula <= now() && $this->fecha_fin_primera_fase_matricula >= now();
     }
 
     public function getSegundaFaseActivaAttribute()
     {
-        return $this->fecha_inicio_segunda_fase <= now() && $this->fecha_fin_segunda_fase >= now() && $this->tipo_de_evaluacion_id == 2;
+        return $this->fecha_inicio_segunda_fase <= now() && $this->fecha_fin_segunda_fase >= now();
     }
 
     public function preguntas() {

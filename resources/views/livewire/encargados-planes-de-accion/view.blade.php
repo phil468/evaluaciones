@@ -116,7 +116,7 @@
                             </div>
 
                             <div class="float-right mb-2">
-                                <p class="text-right align">
+                                {{-- <p class="text-right align">
                                     <button class="btn rounded-xl btn-vanguard" 
                                     wire:click="openModal()" 
                                     data-toggle="modal" 
@@ -127,7 +127,7 @@
                                     >
                                         <i class="fa fa-plus"></i>  Nuevo
                                     </button>
-                                </p>
+                                </p> --}}
                                 <p>
                                     (Requeridos: {{$cantidad_requerida}} planes)
                                 </p>

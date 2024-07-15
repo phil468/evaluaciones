@@ -43,7 +43,7 @@ class EncargadosPlanesDeAccions extends Component
     public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
     public $evaluacionPorCompetenciasFinalizada=false;
     public $secciones_ordenadas = [];
-    public $primera_fase_activa, $segunda_fase_activa;
+    public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado;
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -83,8 +83,10 @@ class EncargadosPlanesDeAccions extends Component
     
     public function evaluar_fases()
     {
-        $this->primera_fase_activa = $this->evaluador_has_evaluado->evaluacion->primera_fase_activa;
-        $this->segunda_fase_activa = $this->evaluador_has_evaluado->evaluacion->segunda_fase_activa;
+        // dd($this->evaluador_has_evaluado->plan_de_mejora);
+        $this->primera_fase_activa = $this->evaluador_has_evaluado->plan_de_mejora->primera_fase_activa;
+
+        $this->segunda_fase_activa = $this->evaluador_has_evaluado->plan_de_mejora->segunda_fase_activa;
     }
 
     public function openModal()
@@ -127,6 +129,8 @@ class EncargadosPlanesDeAccions extends Component
         if ($dashboard == 'dashboard') {
             $this->dashboard = true;
             $this->empleado_id = $empleado_id;
+            
+		    $this->evaluador_has_evaluado = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)->get()->first();
             $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
             $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida;
             $this->secciones = Respuesta::with('pregunta.seccion')
@@ -171,6 +175,8 @@ class EncargadosPlanesDeAccions extends Component
             
                 return $respuesta;
             });
+
+            $this->evaluar_fases();
         }
     }
 
@@ -278,6 +284,8 @@ class EncargadosPlanesDeAccions extends Component
                 })
                 ->get()
             ]);
+            
+            $this->evaluar_fases();
         }
 
         if ($this->ingreso) {
@@ -331,6 +339,7 @@ class EncargadosPlanesDeAccions extends Component
     
     public function store()
     {
+        $this->evaluar_fases();
         $this->validate([
         ]);
 
@@ -348,6 +357,7 @@ class EncargadosPlanesDeAccions extends Component
 
     public function store_plan()
     {
+        $this->evaluar_fases();
         $this->validate([
 			'name' => 'required',
 			'encargado_id' => 'required',
@@ -394,6 +404,7 @@ class EncargadosPlanesDeAccions extends Component
     
     public function edit_plan($id)
     {
+        $this->evaluar_fases();
         $record = PlanesDeAccion::findOrFail($id);
 
         $this->selected_id = $id; 
@@ -424,6 +435,7 @@ class EncargadosPlanesDeAccions extends Component
 
     public function update_plan()
     {
+        $this->evaluar_fases();
         $this->validate([
 			'name' => 'required',
 			'encargado_id' => 'required',
