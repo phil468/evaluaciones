@@ -76,4 +76,12 @@ class PlanesConfiguracionTable extends LivewireDatatable
         $this->emit('editPlanes', $id);
     }
 
+    public function destroy($id)
+    {
+        if ($id) {
+            $record = PlanesConfiguracion::where('id', $id);
+            $record->delete();
+        }
+    }
+
 }

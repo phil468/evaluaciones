@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Livewire\EncargadosPlanes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,7 +19,22 @@ class PlanesDeAccion extends Model implements Auditable
 
     protected $table = 'planes_de_accion';
 
-    protected $fillable = ['encargado_id','empleado_id','competencia_id','tipo_de_proceso_id','proceso_id','fecha_de_revision','estado_id','gerencia_id','subgerencia_id','area_id','avance','name','nombre_de_proceso_id'];
+    protected $fillable = [
+        'encargado_id',
+        'empleado_id',
+        'competencia_id',
+        'tipo_de_proceso_id',
+        'proceso_id',
+        'fecha_de_revision',
+        'estado_id',
+        'gerencia_id',
+        'subgerencia_id',
+        'area_id',
+        'avance',
+        'name',
+        'nombre_de_proceso_id',
+        'encargados_planes_de_accion_id'
+    ];
 
     public function competencia()
     {
@@ -63,6 +79,11 @@ class PlanesDeAccion extends Model implements Auditable
     public function nombre_de_proceso()
     {
         return $this->belongsTo(Evaluacione::class, 'nombre_de_proceso','id');
+    }
+
+    public function encargados_planes_de_accion()
+    {
+        return $this->belongsTo(EncargadosPlanesDeAccion::class,'encargados_planes_de_accion_id','id');
     }
 
 	

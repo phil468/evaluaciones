@@ -19,7 +19,7 @@
 @endphp
 
 @if ($campania->isEmpty())
-    @include('livewire.planes-de-mejora.planes_no_vigentes')
+    @include('livewire.planes-de-mejora.planes_de_mejora_no_vigentes')
 @endif
 
 @foreach ($campania as $value)

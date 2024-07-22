@@ -135,19 +135,35 @@
                             @if ($planesDeAccions->count() < $cantidad_requerida)
                                 <p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
                                 @foreach ($secciones_ordenadas as $row)
+                                {{-- {{dd($secciones_ordenadas)}} --}}
                                     @if ($row->bajo)
                                         @if ($row->obligatorio)
-                                            <p class="mb-2">
-                                                <button type="button" class="rounded-xl btn btn-outline-danger btn-block" wire:click='setValues({{$row->seccion_id}})'>
-                                                    <div class="h6"> {{ $row->nombre }} (Obligatorio) </div> 
-                                                </button>										
-                                            </p>
+                                            @if ($row->ingresado)
+
+                                            @else
+                                                <p class="mb-2">
+                                                    <button type="button" 
+                                                    class="rounded-xl btn btn-outline-danger btn-block" 
+                                                    wire:click='setValues({{$row->seccion_id}})'>
+                                                        <div class="h6"> {{ $row->nombre }} (Obligatorio) </div> 
+                                                    </button>										
+                                                </p>
+                                            @endif
                                         @else
-                                            <p class="mb-2">
-                                                <button type="button" class="rounded-xl btn btn-outline-warning btn-block" wire:click='setValues({{$row->seccion_id}})'>
-                                                    <div class="h6"> {{ $row->nombre }} (Opcional) </div> 
-                                                </button>
-                                            </p>							
+                                                
+                                            @if ($row->ingresado)
+
+                                            @else
+                                                @if ($row->visible)
+                                                    <p class="mb-2">
+                                                        <button type="button" class="rounded-xl btn btn-outline-warning btn-block" wire:click='setValues({{$row->seccion_id}})'>
+                                                            <div class="h6"> {{ $row->nombre }} (Opcional) </div> 
+                                                        </button>
+                                                    </p>	
+                                                @else
+                                                    
+                                                @endif
+                                            @endif						
                                         @endif
                                     @endif
                                 @endforeach
@@ -186,6 +202,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($planesDeAccions as $row)
+                                            {{-- {{dd($row)}} --}}
                                                 <tr>
                                                     <td width="90">
                                                         <div class="btn-group">
@@ -208,8 +225,8 @@
                                                     <td>{{ $row->fecha_de_revision ?? '' }}</td>
                                                     <td style=" background-color: {{ $row->estado->color ?? '' }};" > {{ $row->estado->name ?? '' }}</td>
                                                     <td>{{ $row->avance }}%</td>
-                                                    <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
-                                                    <td>{{ $row->empleado->area->name ?? '' }}</td>
+                                                    <td>{{  '' }}</td>
+                                                    <td>{{  '' }}</td>
                                                     <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
                                                     <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
                                                 </tr>

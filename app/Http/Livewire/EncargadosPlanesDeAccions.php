@@ -43,7 +43,7 @@ class EncargadosPlanesDeAccions extends Component
     public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
     public $evaluacionPorCompetenciasFinalizada=false;
     public $secciones_ordenadas = [];
-    public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado;
+    public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado, $ingresado_opcional;
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -83,16 +83,12 @@ class EncargadosPlanesDeAccions extends Component
     
     public function evaluar_fases()
     {
-        // dd($this->evaluador_has_evaluado->plan_de_mejora);
         $this->primera_fase_activa = $this->evaluador_has_evaluado->plan_de_mejora->primera_fase_activa;
-
         $this->segunda_fase_activa = $this->evaluador_has_evaluado->plan_de_mejora->segunda_fase_activa;
     }
 
     public function openModal()
     {
-        // $this->competencia_id = $seccion_id;
-        // $this->competencias = Competencia::orderBy('name','asc')->where('estado',1)->whereIn('id',[])->pluck('name','id');
         $this->estado_id = 1;
         $this->avance = 0;
         $this->emit('opencreatePlanDataModal');
@@ -103,7 +99,6 @@ class EncargadosPlanesDeAccions extends Component
         $evaluaciones = Evaluacione::where('tipo_de_evaluacion_id', 1)->vigente()->get();
 
         if ($evaluaciones->count() > 0) {
-            // session()->flash('message', 'Aún No Finaliza la Evaluación por Competencias.');
             $this->evaluacionPorCompetenciasFinalizada = false;
         } else {
             $this->evaluacionPorCompetenciasFinalizada = true;
@@ -263,7 +258,43 @@ class EncargadosPlanesDeAccions extends Component
         // Copia ordenada de las secciones por valor promedio
         $secciones_ordenadas = $secciones->sortBy('promedio');
         //ordenar secciones_ordenadas
+
+        // ahora vamos a ver la lista de planes de acciones (mejoras)
+        $planes_ingesados = PlanesDeAccion::latest()
+                ->when($this->empleado_id, function ($query, $personal_id) {
+                    return $query->where('empleado_id', $personal_id);
+                })->get();
+        
+        // quiero que se agregue un campo a cada seccion que sea planes_de_accion la relación es seccion_id iagual al id de planes_ingresados, debe agregarse un campo ingresado =  true
+        //Considera esta condición, sí es un campo obligatorio es falso el que es verdadero $planes_ingresados->count() > 0 entonces se agrega un campo ingresado = false, pero visible = false
+        $this->ingresado_opcional = false;
+        $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) use ($planes_ingesados) {
+            $planes_ingresados = $planes_ingesados->where('competencia_id', $seccion->seccion_id);
+            $seccion->planes_de_accion = $planes_ingresados;
+            $seccion->ingresado = $planes_ingresados->count() > 0;
+            $seccion->visible = !($planes_ingresados->count() > 0);
+            if($seccion->obligatorio == false && $seccion->ingresado == true){
+                $this->ingresado_opcional = true;
+            }
+            // si esta sección el campo obligatorio es falso e ingresado = true, entonces se agrega un campo visible = false y todos los campos obligatorio = false se vuelven visible = false
+            return $seccion;
+        });
+
+        if ($this->ingresado_opcional) {
+            $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) {
+                if (!$seccion->obligatorio) {
+                    $seccion->visible = false;
+                }
+                return $seccion;
+            });
+        }
+        // dd($secciones_ordenadas);
         return $secciones_ordenadas->values();
+    }
+
+    public function secciones_ingresadas($personal_id)
+    {
+        // necesido el ide de personal->planes_de_mejora
     }
 
     public function render()
@@ -281,10 +312,8 @@ class EncargadosPlanesDeAccions extends Component
                 'planesDeAccions' => PlanesDeAccion::latest()
                 ->when($this->empleado_id, function ($query, $empleado_id) {
                     return $query->where('empleado_id', $empleado_id);
-                })
-                ->get()
+                })->get()
             ]);
-            
             $this->evaluar_fases();
         }
 
@@ -293,12 +322,10 @@ class EncargadosPlanesDeAccions extends Component
                 'encargadosPlanesDeAccions' => 
                 EncargadosPlanesDeAccion::latest()
             ->where('encargado_id', auth()->user()->personal->id)
-                            ->paginate(10)
-                            ,
+                            ->paginate(10),
                 'planesDeAccions' => PlanesDeAccion::latest()
                             ->where('empleado_id', auth()->user()->personal->id)
-                            ->paginate(10)
-                            ,
+                            ->paginate(10),
             ]);
         }
 

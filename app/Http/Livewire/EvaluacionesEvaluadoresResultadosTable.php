@@ -75,11 +75,13 @@ class EvaluacionesEvaluadoresResultadosTable extends LivewireDatatable
             },[],'Objetivos Resumen')->label('Objetivos Resumen')->searchable()->filterable(),
 
             Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
+            Column::name('encargado.dni')->label('DNI EVALUADOR')->searchable()->filterable(),
             Column::name('encargado.name')->label('Evaluador')->searchable()->filterable(),
             Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
             Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
             Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
 
+            Column::name('empleado.dni')->label('DNI Evaluado')->searchable()->filterable(),
             Column::name('empleado.name')->label('Evaluado')->searchable()->filterable(),
             Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
             Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
