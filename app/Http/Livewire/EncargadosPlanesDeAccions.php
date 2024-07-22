@@ -43,7 +43,10 @@ class EncargadosPlanesDeAccions extends Component
     public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
     public $evaluacionPorCompetenciasFinalizada=false;
     public $secciones_ordenadas = [];
-    public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado, $ingresado_opcional;
+    public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado, 
+    $ingresado_opcional = false, 
+    $tieneObligatorioBajo = false,
+    $secciones_opcionales_no_visibles = false;
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -246,6 +249,9 @@ class EncargadosPlanesDeAccions extends Component
         $secciones = $secciones->map(function ($respuesta) use ($valores_mas_bajos) {
             if (in_array($respuesta->promedio, $valores_mas_bajos)) {
                 $respuesta->bajo = true;
+                if ($respuesta->obligatorio && !$this->tieneObligatorioBajo) {
+                    $this->tieneObligatorioBajo = true;
+                }
                 // $respuesta->color = 'red';
                 //evaluar si $respuesta->promedio es unico en la lista de $respuesta->promedio si es unico se agreag a su nombre obligatorio sino es unico se agrega opcional
             } else {
@@ -267,26 +273,37 @@ class EncargadosPlanesDeAccions extends Component
         
         // quiero que se agregue un campo a cada seccion que sea planes_de_accion la relación es seccion_id iagual al id de planes_ingresados, debe agregarse un campo ingresado =  true
         //Considera esta condición, sí es un campo obligatorio es falso el que es verdadero $planes_ingresados->count() > 0 entonces se agrega un campo ingresado = false, pero visible = false
-        $this->ingresado_opcional = false;
+        // $this->ingresado_opcional = false;
         $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) use ($planes_ingesados) {
             $planes_ingresados = $planes_ingesados->where('competencia_id', $seccion->seccion_id);
             $seccion->planes_de_accion = $planes_ingresados;
             $seccion->ingresado = $planes_ingresados->count() > 0;
             $seccion->visible = !($planes_ingresados->count() > 0);
-            if($seccion->obligatorio == false && $seccion->ingresado == true){
-                $this->ingresado_opcional = true;
+
+            if (!$this->ingresado_opcional) {
+                if($seccion->obligatorio == false && $seccion->ingresado == true){
+                    $this->ingresado_opcional = true;
+                }
             }
             // si esta sección el campo obligatorio es falso e ingresado = true, entonces se agrega un campo visible = false y todos los campos obligatorio = false se vuelven visible = false
             return $seccion;
         });
 
         if ($this->ingresado_opcional) {
-            $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) {
-                if (!$seccion->obligatorio) {
-                    $seccion->visible = false;
+            // verificar si $secciones_ordenadas tiene algun campo obligatorio = true
+
+            if($this->tieneObligatorioBajo) {
+                if (!$this->secciones_opcionales_no_visibles) {
+                    $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) {
+                        if (!$seccion->obligatorio) {
+                            $seccion->visible = false;
+                        }
+                        return $seccion;
+                    });
+                    $this->secciones_opcionales_no_visibles = true;
                 }
-                return $seccion;
-            });
+            }
+
         }
         // dd($secciones_ordenadas);
         return $secciones_ordenadas->values();
@@ -385,6 +402,18 @@ class EncargadosPlanesDeAccions extends Component
     public function store_plan()
     {
         $this->evaluar_fases();
+        // contar los planes y si es igual a la catidad_requerida entonces no se puede ingresar mas planes
+        $contador_de_planes = PlanesDeAccion::latest()
+                ->when($this->empleado_id, function ($query, $empleado_id) {
+                    return $query->where('empleado_id', $empleado_id);
+                })->get()->count();
+
+        if ($this->cantidad_requerida <= $contador_de_planes) {
+            $this->emit('closeModal');
+            session()->flash('message', 'No se puede ingresar mas planes de mejora.');
+            return;
+        }
+
         $this->validate([
 			'name' => 'required',
 			'encargado_id' => 'required',
