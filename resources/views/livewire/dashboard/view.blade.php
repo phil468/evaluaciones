@@ -231,22 +231,22 @@
 						usePointStyle: false,
 						pointStyle: 'rect',
 					}
-					// ,{
-					// 	type: 'line',
-					// 	borderWidth: 2,
-					// 	label: 'Valor mínimo esperado ({{ number_format($this->valor_esperado,2) }})',//
-					// 	data: valor_esperado_data,
-					// 	datalabels: {
-					// 		display: false,
-					// 	},
-					// 	borderColor: '#b3b3b3',
-					// 	backgroundColor: 'transparent',
-					// 	borderDash: [5, 5],
-					// 	usePointStyle: true,
-					// 	pointStyle: 'line',
-					// 	pointRadius: 0,
-					// 	order:2
-					// }
+					,{
+						type: 'line',
+						borderWidth: 2,
+						label: 'Valor mínimo esperado ({{ number_format($this->valor_esperado,2) }})',//
+						data: valor_esperado_data,
+						datalabels: {
+							display: false,
+						},
+						borderColor: '#b3b3b3',
+						backgroundColor: 'transparent',
+						borderDash: [5, 5],
+						usePointStyle: true,
+						pointStyle: 'line',
+						pointRadius: 0,
+						order:2
+					}
 				]
 			},
 			plugins: [ChartDataLabels],
