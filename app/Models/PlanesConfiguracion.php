@@ -140,7 +140,7 @@ class PlanesConfiguracion extends Model
 
     //scope que devuelvan evaluaciones que tengan fecha_fin mayor al día de hoy
     public function scopeVigente($query) {
-        return $query->where('fecha_fin','>=',now())->where('fecha_inicio','<=',now());
+        return $query->activa()->where('fecha_fin','>=',now())->where('fecha_inicio','<=',now());
     }
 
     public function scopePorId($query,$id) {

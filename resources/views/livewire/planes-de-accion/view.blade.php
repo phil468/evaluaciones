@@ -6,24 +6,23 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Planes De Mejora </h4>
+							<h5 class="h5">Planes De Mejora </h5>
 						</div>
 						@if (session()->has('message'))
-						<div wire:poll.4s class="btn btn-sm btn-success rounded-xl" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
+							<div wire:poll.4s class="btn btn-sm btn-success rounded-xl" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
-						<div>
+						{{-- <div>
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar">
-						</div>
+						</div> --}}
 						@can('crear-planes-de-accion')
-						<div class="btn btn-sm btn-default rounded-xl" data-toggle="modal" data-target="#createDataModal">
-						<i class="fa fa-plus"></i>  Nuevo
-						</div>
+							{{-- <div class="btn btn-sm btn-default rounded-xl" data-toggle="modal" data-target="#createDataModal">
+								<i class="fa fa-plus"></i>  Nuevo
+							</div> --}}
 						@endcan
 					</div>
 				</div>
 				
 				<div class="card-body">
-					
 					
 						@can('crear-planes-de-accion')
 						@include('livewire.planes-de-accion.create')

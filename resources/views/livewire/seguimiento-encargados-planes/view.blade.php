@@ -6,17 +6,17 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<div class="float-left">
-							<h5 class="h5">Seguimiento Encargado Planes</h5>
+							<h5 class="h5">Seguimiento Evaluadores</h5>
 						</div>
 						@if (session()->has('message'))
 						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
-						<button wire:click="enviarCorreoEvaluadores" class="btn btn-sm btn-default rounded-xl">Enviar correo a evaluadores</button>
+						<button wire:click="enviarCorreoEvaluadores" class="btn btn-sm btn-default rounded-xl">Enviar correo a encargados de planes</button>
 					</div>
 				</div>
 				
 				<div class="card-body">
-					@livewire('evaluadores-table')
+					@livewire('seguimiento-encargados-planes-table')
 				</div>
 			</div>
 		</div>

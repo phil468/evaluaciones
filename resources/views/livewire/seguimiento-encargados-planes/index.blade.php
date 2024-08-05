@@ -1,6 +1,17 @@
+{{-- @extends('layouts.app')
+@section('content')
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            @livewire('respuestas')
+        </div>     
+    </div>   
+</div>
+@endsection --}}
+
 @extends('adminlte::page')
 
-@section('title', 'Planes De Accion')
+@section('title', 'Seguimiento Encargados Planes')
 
 @section('content_header')
     <h1></h1>
@@ -8,10 +19,7 @@
 
 @section('content')
 
-@livewire('planes-de-accions')
-
 @livewire('seguimiento-encargados-planes')
-
 
 @stop
 

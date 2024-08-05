@@ -57,10 +57,61 @@ class EncargadosPlanesDeAccion extends Model
     {
         return $this->hasMany(PlanesDeAccion::class, 'empleado_id','empleado_id');
     }
+    
+    public function planes_de_accion_empleado_realizados()
+    {
+        return $this->hasMany(PlanesDeAccion::class, 'empleado_id','empleado_id')->where('estado_id','<>',1);
+    }
 
     public function plan_de_mejora()
     {
         return $this->belongsTo(PlanesConfiguracion::class, 'planes_de_accion_configuracion_id','id');        
+    }
+
+    //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
+    public function getEstadoPendienteAttribute()
+    {
+        if($this->plan_de_mejora) {
+                if($this->plan_de_mejora->activa) {
+                    // if($this->evaluacion->tipo_de_evaluacion_id == 2) {
+                        if($this->plan_de_mejora->primera_fase_activa) {
+                            if($this->cantidad_requerida > $this->planes_de_accion_empleado->count()) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }elseif($this->plan_de_mejora->segunda_fase_activa) {
+                            if($this->planes_de_accion_empleado->count() > $this->planes_de_accion_empleado_realizados->count()) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                    // }
+                    // elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
+                    //     if($this->realizado == 1) {
+                    //         return false;
+                    //     }
+                    //     else {
+                    //         return true;
+                    //     }
+                    // }
+                    // else {
+                    //     return false;
+                    // }
+                } else {
+                    return false;
+                }
+        }
+        else {
+            return false;
+        }
+        return false;
     }
 	
 }

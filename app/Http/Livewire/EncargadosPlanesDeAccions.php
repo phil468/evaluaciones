@@ -44,9 +44,7 @@ class EncargadosPlanesDeAccions extends Component
     public $evaluacionPorCompetenciasFinalizada=false;
     public $secciones_ordenadas = [];
     public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado, 
-    $ingresado_opcional = false, 
-    $tieneObligatorioBajo = false,
-    $secciones_opcionales_no_visibles = false;
+    $ingresado_opcional = false, $tieneObligatorioBajo = false, $secciones_opcionales_no_visibles = false;
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -112,7 +110,9 @@ class EncargadosPlanesDeAccions extends Component
         $this->estados 		= EstadosDePlanDeAccion::orderBy('name','asc')->where('estado',1)->pluck('name','id');
         $this->gerencias 	= Gerencia::orderBy('name','asc')->where('estado',1)->pluck('name','id');
         $this->areas 		= Area::orderBy('name','asc')->where('estado',1)->pluck('name','id');
-        $this->personals 	= Personal::orderBy('name','asc')->where('id',$empleado_id)->orWhere('id',auth()->user()->personal->id)
+        $this->personals 	= 
+        Personal::orderBy('name','asc')->where('id',$empleado_id)
+        ->orWhere('id',auth()->user()->personal->id)
         ->pluck('name','id');
 
         if ($ingreso == 'ingreso') {
@@ -128,7 +128,7 @@ class EncargadosPlanesDeAccions extends Component
             $this->dashboard = true;
             $this->empleado_id = $empleado_id;
             
-		    $this->evaluador_has_evaluado = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)->get()->first();
+		    $this->evaluador_has_evaluado   = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)->get()->first();
             $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
             $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida;
             $this->secciones = Respuesta::with('pregunta.seccion')
@@ -326,7 +326,8 @@ class EncargadosPlanesDeAccions extends Component
 
             return view('livewire.encargados-planes-de-accion.view', [
                 'nombreEmpleado' => $this->nombreEmpleado,
-                'planesDeAccions' => PlanesDeAccion::latest()
+                'planesDeAccions' => 
+                PlanesDeAccion::latest()
                 ->when($this->empleado_id, function ($query, $empleado_id) {
                     return $query->where('empleado_id', $empleado_id);
                 })->get()
@@ -338,20 +339,20 @@ class EncargadosPlanesDeAccions extends Component
             return view('livewire.encargados-planes-de-accion.view', [
                 'encargadosPlanesDeAccions' => 
                 EncargadosPlanesDeAccion::latest()
-            ->where('encargado_id', auth()->user()->personal->id)
-                            ->paginate(10),
+                ->where('encargado_id', auth()->user()->personal->id)
+                ->paginate(10),
                 'planesDeAccions' => PlanesDeAccion::latest()
-                            ->where('empleado_id', auth()->user()->personal->id)
-                            ->paginate(10),
+                ->where('empleado_id', auth()->user()->personal->id)
+                ->paginate(10),
             ]);
         }
 
         return view('livewire.encargados-planes-de-accion.view', [
             'encargadosPlanesDeAccions' => EncargadosPlanesDeAccion::latest()
-                        ->when($this->empleado_ids, function ($query, $empleado_ids) {
-                            return $query->whereIn('empleado_id', $empleado_ids);
-                        })
-                        ->paginate(10),
+            ->when($this->empleado_ids, function ($query, $empleado_ids) {
+                return $query->whereIn('empleado_id', $empleado_ids);
+            })
+            ->paginate(10),
         ]);
             
     }
