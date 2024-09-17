@@ -74,10 +74,6 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
                     'encargados_planes_de_accion.cantidad_requerida'
                 )->get();
 
-                // if ($encargado_id == 8901) {
-                //     dd($encargados->toArray());
-                // }
-
                 // Filtrar los realizados
                 $totalRealizados = $encargados->filter(function($encargado) {
                     return $encargado->cantidad_requerida > 0 && $encargado->cantidad_requerida == $encargado->total_planes;
@@ -132,6 +128,8 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
                 ->join('personal as empleado','encargados_planes_de_accion.empleado_id','=','empleado.id')
                 ->leftJoin('planes_de_accion','encargados_planes_de_accion.empleado_id','=','planes_de_accion.empleado_id')
                 ->where('encargados_planes_de_accion.encargado_id',$encargado_id)
+                ->whereNull('encargados_planes_de_accion.deleted_at')
+                ->whereNull('planes_de_accion.deleted_at')
                 ->groupBy(
                     'encargado.name',
                     'empleado.name',
@@ -152,9 +150,7 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
                 
                 return $realizados.' de '.$total;
             },[],'Avances')->label('Planes de Mejora Completos'),
-           
         ];
-
     }
 
     public function export()
