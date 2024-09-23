@@ -67,7 +67,7 @@
             
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="fecha_de_revision">Fecha De Revisión</label>
-                            <input wire:model="fecha_de_revision" type="date" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision" min="{{ now()->addMonths(6)->format('Y-m-d') }}" max="2025-03-18">
+                            <input wire:model="fecha_de_revision" type="date" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision" min="{{ now()->addMonths(6)->format('Y-m-d') }}" max="2025-03-27">
                             @error('fecha_de_revision') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
