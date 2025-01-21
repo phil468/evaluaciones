@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EvaluacionController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
@@ -59,6 +60,8 @@ Route::get('/auth/callback', function () {
 
     // Inicia sesión con el usuario
     Auth::login($localUser, true);
+    $loginController = new LoginController();
+    $loginController->auditlogin($localUser);
 
     // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/me/contacts');
     // $response = Http::withToken($user->token)->get('https://graph.microsoft.com/v1.0/users');
@@ -97,6 +100,7 @@ Auth::routes();
 Route::group(['middleware'  =>  ['auth']],function(){
 
     Route::get('/download/{id}', [App\Http\Controllers\EvidenciaController::class,'download'])->name('download');
+    Route::get('/download_evidencia_plan/{id}', [App\Http\Controllers\EvidenciaController::class,'download_evidencia_plan'])->name('download_evidencia_plan');
 
     Route::resource('roles',RolController::class);
 
@@ -129,7 +133,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-empresa']);
     Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
     Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
-    Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
+    // Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     
     // Route::get('/evaluacion/{tipo_de_evaluacion_id}/{id}', function ($tipo_de_evaluacion_id,$evaluacion_id) {
     //     $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('evaluador_has_evaluados.id',$evaluacion_id)

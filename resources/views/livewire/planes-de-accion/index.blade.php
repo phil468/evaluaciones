@@ -12,7 +12,6 @@
 
 @livewire('seguimiento-encargados-planes')
 
-
 @stop
 
 @section('css')

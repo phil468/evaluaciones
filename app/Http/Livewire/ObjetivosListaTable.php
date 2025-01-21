@@ -107,7 +107,7 @@ class ObjetivosListaTable extends LivewireDatatable
         Column::callback(['id'], function ($id) {
             $evidencias = Objetivo::find($id)->evidencias()->get();
             
-            return view('components.download-button', ['evidencias' => $evidencias]);
+            return view('components.download-button', ['evidencias' => $evidencias, 'ruta' => 'download']);
         },
         [],'evidencias')
         ->label('Evidencias')->alignCenter()->excludeFromExport(),

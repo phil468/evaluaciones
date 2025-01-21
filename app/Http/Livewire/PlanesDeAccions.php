@@ -70,8 +70,6 @@ class PlanesDeAccions extends Component
 						->orWhere('avance', 'LIKE', $keyWord)
 						->orWhere('name', 'LIKE', $keyWord)
 						->paginate(10),
-			
-
         ]);
     }
 	

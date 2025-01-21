@@ -112,10 +112,5 @@ class EncargadosPlanesDeAccion extends Model
             return false;
         }
         return false;
-    }	
+    }
 }
-
-// public function getEstadoRegistradosAttribute() {
-
-// }
-

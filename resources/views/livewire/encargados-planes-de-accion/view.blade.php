@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <h4 class="h5">Planes De Mejora de personal a cargo </h4>
+                            <h4 class="h5">Planes De Mejora de personal a cargo</h4>
                         </div>
                         @if (session()->has('message'))
                             <div wire:poll.4s class="btn btn-sm btn-success rounded-xl"
@@ -194,6 +194,7 @@
                                                 <th>Fecha De Revision</th>
                                                 <th>Estado</th>
                                                 <th>Avance</th>
+                                                <th>Evidencias</th>
                                                 <th>Gerencia</th>
                                                 <th>Area</th>
                                                 <th>Fecha de Creación</th>
@@ -209,9 +210,12 @@
                                                             <a data-toggle="modal" data-target="#updatePlanDataModal"
                                                                 class="btn btn-sm btn-vanguard rounded-xl"
                                                                 wire:click="edit_plan({{ $row->id }})">Editar </a>
-                                                            <a class="btn btn-sm btn-danger rounded-xl"
-                                                                onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
-                                                                wire:click="destroy_plan({{ $row->id }})"> Borrar </a>
+                                                            @if ($primera_fase_activa)
+                                                                <a class="btn btn-sm btn-danger rounded-xl"
+                                                                    onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
+                                                                    wire:click="destroy_plan({{ $row->id }})"> Borrar 
+                                                                </a>                                                                
+                                                            @endif
                                                         </div>
                                                     </td>
 
@@ -225,6 +229,18 @@
                                                     <td>{{ $row->fecha_de_revision ?? '' }}</td>
                                                     <td style=" background-color: {{ $row->estado->color ?? '' }};" > {{ $row->estado->name ?? '' }}</td>
                                                     <td>{{ $row->avance }}%</td>
+                                                    
+                                                    <td>
+                                                        @foreach ($row->evidencias()->get() as $evidencia)
+                                                            <div class="mb-2 btn-group" role="group" aria-label="Basic example">
+                                                                <a href="{{ route('download_evidencia_plan', $evidencia->id) }}" class="btn btn-link">
+                                                                    {{ $evidencia->name }}
+                                                                </a>
+                                                            </div> 
+                                                            <br>
+                                                        @endforeach
+                                                    </td> 
+                                                    
                                                     <td>{{  '' }}</td>
                                                     <td>{{  '' }}</td>
                                                     <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
@@ -318,7 +334,7 @@
                                                                 <td>{{ $row->competencia->name ?? '' }}</td>
                                                                 <td>{{ $row->fecha_de_revision ?? '' }}</td>
                                                                 <td>{{ $row->estado->name ?? '' }}</td>
-                                                                <td>{{ $row->avance }}%</td>
+                                                                <td>{{ $row->avance }}%</td>                                                             
                                                                 <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
                                                                 <td>{{ $row->empleado->area->name ?? '' }}</td>
                                                                 <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
@@ -339,7 +355,7 @@
         @endisset
 
     </div>
-   
+
     @once
         @push('js')
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -33,7 +33,8 @@ class PlanesDeAccion extends Model implements Auditable
         'avance',
         'name',
         'nombre_de_proceso_id',
-        'encargados_planes_de_accion_id'
+        'encargados_planes_de_accion_id',
+        // 'planes_de_accion_configuracion_id',
     ];
 
     public function competencia()
@@ -85,6 +86,9 @@ class PlanesDeAccion extends Model implements Auditable
     {
         return $this->belongsTo(EncargadosPlanesDeAccion::class,'encargados_planes_de_accion_id','id');
     }
-
 	
+    public function evidencias()
+    {
+        return $this->hasMany(PlanesDeMejoraHasEvidencia::class, 'planes_de_accion_id','id');
+    }
 }

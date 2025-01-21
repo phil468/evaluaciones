@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Objetivo;
 use App\Models\PlanesDeAccion;
+use App\Models\PlanesDeMejoraHasEvidencia;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
@@ -52,7 +53,19 @@ class PlanesDeAccionTable extends LivewireDatatable
         Column::name('competencias.name')->label('Competencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('planes_de_accion.fecha_de_revision')->label('Fecha de Revisión')->searchable()->filterable()->defaultSort('asc'),
         Column::name('estados_de_plan_de_accion.name')->label('Estado')->searchable()->filterable()->defaultSort('asc'),
-        Column::name('planes_de_accion.avance')->label('Avance')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::callback(['planes_de_accion.avance'], function ($valor) {
+                return $valor.'%';
+            })->label('Avance')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
+
+
+        Column::callback(['id'], function ($id) {
+            $evidencias = PlanesDeAccion::find($id)->evidencias()->get();
+            return view('components.download-button', ['evidencias' => $evidencias, 'ruta' => 'download_evidencia_plan']);
+        },
+        [],'evidencias')
+        ->label('Evidencias')->alignCenter()->excludeFromExport(),
+
         Column::name('gerencias.name')->label('Gerencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('subgerencias.name')->label('Subgerencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('areas.name')->label('Area')->searchable()->filterable()->defaultSort('asc'),

@@ -62,18 +62,30 @@
                                     
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="name">Compromiso</label>
-                            <input wire:model.defer="name" type="text" class="form-control" id="name" placeholder="Compromiso">@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <textarea
+                            @if (!$primera_fase_activa)
+                                disabled
+                            @endif
+                            wire:model.defer="name" type="text" class="form-control" id="name" placeholder="Compromiso"> </textarea>@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
             
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="fecha_de_revision">Fecha De Revisión</label>
-                            <input wire:model="fecha_de_revision" type="date" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision" min="{{ now()->addMonths(6)->format('Y-m-d') }}" max="2025-03-27">
+                            <input
+                            @if (!$primera_fase_activa)
+                                disabled
+                            @endif
+                            wire:model="fecha_de_revision" type="date" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision" min="{{ now()->addMonths(6)->format('Y-m-d') }}" max="2025-03-27">
                             @error('fecha_de_revision') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="estado_id">Estado</label>
-                            <select disabled wire:model="estado_id" class="form-control" id="estado_id">
+                            <select
+                            @if (!$segunda_fase_activa)
+                                disabled
+                            @endif
+                            wire:model="estado_id" class="form-control" id="estado_id">
                                 <option value="">Seleccionar Estado</option>
                                 @foreach($estados as $index => $name)
                                     <option value="{{ $index}}">{{ $name }}</option>
@@ -93,8 +105,65 @@
                         
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="avance">Avance (%)</label>
-                            <input disabled wire:model="avance" type="number" class="form-control" id="avance" placeholder="Avance">@error('avance') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <input 
+                            @if (!$segunda_fase_activa)
+                                disabled
+                            @endif
+                            wire:model="avance" type="number" class="form-control" id="avance" placeholder="Avance">@error('avance') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
+
+                        @if (!$segunda_fase_activa)
+                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                <label for="evidencias">Evidencias</label>
+                                <p>
+                                    <span class="error text-warning">Subir evidencias solo está activa en la fase correspondiente.</span>
+                                </p>
+                                 
+                            </div>
+                        @endif
+                        @if ($segunda_fase_activa)
+                            <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                <label for="evidencias">Evidencias</label>
+                                <div class="custom-file">
+                                    <input 
+                                        type="file" 
+                                        class="custom-file-input" 
+                                        id="evidencias" 
+                                        wire:model="evidencias" 
+                                        multiple
+                                    >
+                                    <label class="custom-file-label" for="evidencias">Seleccionar archivos</label>
+                                </div>
+                                @error('evidencias.*') <span class="error text-danger">{{ $message }}</span> @enderror
+                            
+                                <div wire:loading wire:target="evidencias" class="mt-2">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Cargando...
+                                </div>
+                                @if ($evidenciasGuardadas)
+                                    <div class="mt-3">
+                                        <h5>Archivos guardados:</h5>
+                                        <ul>
+                                            @foreach ($evidenciasGuardadas as $index => $evidencia)
+                                                <li class="mb-2 d-flex justify-content-between">
+                                                    <a href="{{ route('download_evidencia_plan', $evidencia['id']) }}" class="btn btn-link">
+                                                        {{ $evidencia['name'] }}
+                                                    </a>                                                  
+													<button class="btn btn-danger" wire:click="removeEvidenciaGuardada({{ $index }})"
+														onclick="confirm('¿Confirma borrar Evidencia : {{$evidencia['name']}}? \n¡Las Evidencias eliminadas no pueden ser recuperadas!')||event.stopImmediatePropagation()"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="removeEvidenciaGuardada({{ $index }})"
+														>
+														<i class="fa fa-trash"></i>
+                                                        <span wire:loading wire:target="removeEvidenciaGuardada({{ $index }})" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+													</button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
 
                     </fieldset>
                 </form>
@@ -109,7 +178,7 @@
 
                 @if ($this->selected_id == 0)                    
                     <button
-                    @if (!$primera_fase_activa)
+                    @if (!$primera_fase_activa && !$segunda_fase_activa)
                         disabled
                     @endif 
                     type="button" 
@@ -118,7 +187,7 @@
                     class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
                 @else
                     <button 
-                    @if (!$primera_fase_activa)
+                    @if (!$primera_fase_activa && !$segunda_fase_activa)
                         disabled
                     @endif 
                     type="button" 

@@ -12,15 +12,18 @@ use App\Models\Evaluacione;
 use App\Models\Gerencia;
 use App\Models\Personal;
 use App\Models\PlanesDeAccion;
+use App\Models\PlanesDeMejoraHasEvidencia;
 use App\Models\Proceso;
 use App\Models\RangosDePlanDeAccion;
 use App\Models\Respuesta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Livewire\WithFileUploads;
 
 class EncargadosPlanesDeAccions extends Component
 {
     use WithPagination;
+    use WithFileUploads;
 
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $encargado_id, $empleado_id, $evaluacion_id, $realizado;
@@ -45,6 +48,10 @@ class EncargadosPlanesDeAccions extends Component
     public $secciones_ordenadas = [];
     public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado, 
     $ingresado_opcional = false, $tieneObligatorioBajo = false, $secciones_opcionales_no_visibles = false;
+    
+    public $evidencias = [];
+    public $evidenciasNombres = [];
+    public $evidenciasGuardadas = [];
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -316,7 +323,7 @@ class EncargadosPlanesDeAccions extends Component
 
     public function render()
     {
-        if ($this->dashboard) {
+        if ($this->dashboard) { //Página en la que se muestra un personal en específico
             $this->proceso_id = 1;
             $this->nombreEmpleado = Personal::find($this->empleado_id)->name;
 
@@ -335,7 +342,7 @@ class EncargadosPlanesDeAccions extends Component
             $this->evaluar_fases();
         }
 
-        if ($this->ingreso) {
+        if ($this->ingreso) { //Pagina principal en la que se muestran los planes de accion a cargao del personal logueado y los planes de acción ingresados para el personal logueado
             return view('livewire.encargados-planes-de-accion.view', [
                 'encargadosPlanesDeAccions' => 
                 EncargadosPlanesDeAccion::latest()
@@ -381,7 +388,51 @@ class EncargadosPlanesDeAccions extends Component
 	public function create() 
 	{
 	}
+
     
+    public function updatedEvidencias()
+    {
+        if ($this->evidencias) {
+            foreach ($this->evidencias as $evidencia) {
+                $this->evidenciasNombres[] = $evidencia->getClientOriginalName();
+            }
+
+            foreach ($this->evidencias as $evidencia) {
+                $name = pathinfo($evidencia->getClientOriginalName(), PATHINFO_FILENAME).'_' . time() . '.' . $evidencia->getClientOriginalExtension();
+                $evidenciaName = $evidencia->store('evidencias_plan_de_mejora', 'public');
+                // Guardar la ruta del archivo en la base de datos
+                PlanesDeMejoraHasEvidencia::create([
+                    'planes_de_accion_id' => $this->selected_id,
+                    'ruta' => $evidenciaName,
+                    'name' => $name,
+                ]);
+            }
+
+            $this->loadEvidenciasGuardadas();
+
+            $this->evidencias = [];
+
+        }
+    
+    }
+    
+    public function loadEvidenciasGuardadas()
+    {
+        $plan = PlanesDeAccion::find($this->selected_id);
+        if ($plan) {
+            $this->evidenciasGuardadas = $plan->evidencias->toArray();
+        }
+    }
+
+    public function removeEvidenciaGuardada($index)
+    {
+        $evidencia = $this->evidenciasGuardadas[$index];
+        PlanesDeMejoraHasEvidencia::find($evidencia['id'])->delete();
+        $this->loadEvidenciasGuardadas();
+        // unset($this->evidenciasGuardadas[$index]);
+        // $this->evidenciasGuardadas = array_values($this->evidenciasGuardadas);
+    }
+
     public function store()
     {
         $this->evaluar_fases();
@@ -427,9 +478,10 @@ class EncargadosPlanesDeAccions extends Component
 			// 'gerencia_id' => 'required',
 			// 'area_id' => 'required',
 			'avance' => 'required',
+            // 'evidencias.*' => 'file|max:10240', // Validación para los archivos
 			]);
 
-        PlanesDeAccion::create([ 
+        $plan = PlanesDeAccion::create([ 
 			'encargado_id' => $this-> encargado_id,
 			'empleado_id' => $this-> empleado_id,
 			'competencia_id' => $this-> competencia_id,
@@ -442,11 +494,9 @@ class EncargadosPlanesDeAccions extends Component
 			'avance' => $this-> avance,
 			'name' => $this-> name
         ]);
-        
+
         $this->resetInput_plan();
 		$this->emit('closeModal');
-        // dd('hola');
-        // $this->emit('dataUpdated');
 		session()->flash('message', 'Planes De Mejora creado correctamente.');
         // return redirect()->route(Route::currentRouteName());
     }
@@ -457,6 +507,8 @@ class EncargadosPlanesDeAccions extends Component
 		$this->avance = null;
         $this->estado_id =null;
 		$this->name = null;
+        $this->evidencias = [];
+        $this->evidenciasNombres = [];
     }
     
     public function edit_plan($id)
@@ -476,6 +528,10 @@ class EncargadosPlanesDeAccions extends Component
 		$this->area_id = $record-> area_id;
 		$this->avance = $record-> avance;
 		$this->name = $record-> name;
+        if ($record) {
+            $this->evidenciasGuardadas = $record->evidencias->toArray();
+        }
+        // $this->evidencias = $record->evidencias;
 		
         $this->updateMode = true;
         // return redirect()->route(Route::currentRouteName());
@@ -505,6 +561,7 @@ class EncargadosPlanesDeAccions extends Component
 			// 'gerencia_id' => 'required',
 			// 'area_id' => 'required',
 			'avance' => 'required',
+            'evidencias.*' => 'file|max:10240', // Validación para los archivos
 			]);
 
         if ($this->selected_id) {
@@ -522,6 +579,21 @@ class EncargadosPlanesDeAccions extends Component
 			'avance' => $this-> avance,
 			'name' => $this-> name
             ]);
+
+            // Procesar y guardar las evidencias
+            if ($this->evidencias) {
+                foreach ($this->evidencias as $evidencia) {
+                    // dd($evidencia);
+                    $name = pathinfo($evidencia->getClientOriginalName(), PATHINFO_FILENAME).'_' . time() . '.' . $evidencia->getClientOriginalExtension();
+                    $evidenciaName = $evidencia->store('evidencias_plan_de_mejora', 'public');
+                    // Guardar la ruta del archivo en la base de datos
+                    PlanesDeMejoraHasEvidencia::create([
+                        'planes_de_accion_id' => $this->selected_id,
+                        'ruta' => $evidenciaName,
+                        'name' => $name,
+                    ]);
+                }
+            }
 
             $this->resetInput_plan();
             $this->updateMode = false;
