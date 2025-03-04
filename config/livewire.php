@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'asset_url' => 'http://localhost:8080/evaluaciones/adm',
+    'asset_url' => env('LIVEWIRE_ASSET_URL', null),
 
     /*
     |--------------------------------------------------------------------------
