@@ -425,7 +425,7 @@ class EncargadosPlanes extends Component
             'habilitado' => 'nullable',
         ]);
 
-        dd(array_filter($this->commonFields));
+        // dd(array_filter($this->commonFields));
 
         foreach ($this->selectedIds as $id) {
             $record = EncargadosPlanesDeAccion::find($id);
