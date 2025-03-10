@@ -129,6 +129,10 @@
             $('#updateEncargadosPlanesModal').modal('show');
         });
         
+        window.livewire.on('openUpdatePlanDataModal', function () {
+            $('#updateEncargadosPlanesModal').modal('show');
+        });
+        
         window.livewire.on('limpiarFile', () => {
             // dd('cargado');
             console.log('Se limpia campo con id File');

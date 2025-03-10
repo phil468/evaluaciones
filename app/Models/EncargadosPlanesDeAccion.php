@@ -31,6 +31,7 @@ class EncargadosPlanesDeAccion extends Model
         'valor_esperado',
         'jerarquia',
         'planes_de_accion_configuracion_id',
+        'habilitado', // Agregar este campo
     ];
 
     public function empleado()

@@ -119,7 +119,7 @@
 				@this.set('planes_de_accion_configuracion_id', planes_de_accion_configuracion_id_select.getValue(true));
 			});
 			
-			Livewire.on('actualizarDatosEncargadosPlanes', function (evaluador_id,evaluado_id,evaluacion_id) {
+			Livewire.on('actualizarDatosEncargadosPlanes', function (evaluador_id,evaluado_id,evaluacion_id) {				
 				encargado_id_select.setChoices(@json($evaluadores), 'value', 'label', true);
 				empleado_id_select.setChoices(@json($evaluados), 'value', 'label', true);
 				planes_de_accion_configuracion_id_select.setChoices(@json($evaluaciones), 'value', 'label', true);
@@ -127,13 +127,33 @@
 				encargado_id_select.setChoiceByValue(evaluador_id ?? '');
 				empleado_id_select.setChoiceByValue(evaluado_id ?? '');
 				planes_de_accion_configuracion_id_select.setChoiceByValue(evaluacion_id ?? '');
-				
 			});
 			
 			Livewire.on('limpiarDatosEncargadosPlanes', function (areas) {
 				encargado_id_select.removeActiveItems();
 				empleado_id_select.removeActiveItems();
 				planes_de_accion_configuracion_id_select.removeActiveItems();
+				encargado_id_select.enable();
+				empleado_id_select.enable();
+				planes_de_accion_configuracion_id_select.enable();
+			});
+
+			Livewire.on('deshabilitar_select', function (select) {
+				if (select == 'encargado_id') {
+					encargado_id_select.disable();
+				}
+				if (select == 'empleado_id') {
+					empleado_id_select.disable();
+				}
+				if (select == 'planes_de_accion_configuracion_id') {
+					planes_de_accion_configuracion_id_select.disable();
+				}
+			});			
+
+			Livewire.on('habilitar_select', function (select) {
+				encargado_id_select.enable();
+				empleado_id_select.enable();
+				planes_de_accion_configuracion_id_select.enable();
 			});
 			
 		});

@@ -4,10 +4,14 @@
         <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">
                 <h5 class="modal-title h5" id="updateModalLabel">
-                    @if ($this->selected_id == 0)
-                        Nuevo Registro Encargado de Planes
+                    @if ($this->massEditMode)
+                        Edición Masiva de Encargados de Planes
                     @else
-                        Actualizar Registro Encargado de Planes
+                        @if ($this->selected_id == 0)
+                            Nuevo Registro Encargado de Planes
+                        @else
+                            Actualizar Registro Encargado de Planes
+                        @endif
                     @endif
                 </h5>
                 <button type="button" class="text-white close" 
@@ -20,11 +24,23 @@
             </div>
             <div class="modal-body">
 
-                @if (!$this->updateMode)
+                @if (!$this->updateMode && !$this->massEditMode)
                 Cargando ...
                 @endif
 
                 <form>
+                    <div class="row">
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                            <label for="habilitado">Habilitado</label>
+                            <select wire:model.defer="{{ $this->massEditMode ? 'commonFields.habilitado' : 'habilitado' }}" class="form-control" id="habilitado"
+                            @if ($this->massEditMode && is_null($this->commonFields['habilitado'])) disabled @endif>
+                                <option value="1">Activo</option>
+                                <option value="0">Cesado</option>
+                            </select>
+                            @error('habilitado') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>                            
+                    
                     <div class="row">
                         <input type="hidden" wire:model="selected_id">
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
@@ -32,6 +48,7 @@
                             <div wire:ignore>
                                 <select name="encargado_id" class="form-control" id="encargado_id"
                                     placeholder="Encargado"
+                                    @if ($this->massEditMode && is_null($this->commonFields['encargado_id'])) disabled @endif
                                     >
                                     <option value="">Seleccione</option>
                                 </select>
@@ -43,6 +60,7 @@
                             <div wire:ignore>
                                 <select name="empleado_id" class="form-control" id="empleado_id"
                                     placeholder="Empleado"
+                                    @if ($this->massEditMode && is_null($this->commonFields['empleado_id'])) disabled @endif
                                     >
                                     <option value="">Seleccione</option>
                                 </select>
@@ -54,6 +72,7 @@
                             <div wire:ignore>
                                 <select name="planes_de_accion_configuracion_id" class="form-control" id="planes_de_accion_configuracion_id"
                                     placeholder="Plan de Mejora"
+                                    @if ($this->massEditMode && is_null($this->commonFields['planes_de_accion_configuracion_id'])) disabled @endif
                                     >
                                     <option value="">Seleccione</option>
                                 </select>
@@ -63,55 +82,64 @@
                     </div>
                         
                     <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled"
-                    @if (!$this->updateMode)                    
+                    @if (!$this->updateMode && !$this->massEditMode)                    
                         disabled
                     @endif
                     >
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="cargo_de_evaluador">Cargo de Evaluador</label>
-                            <input wire:model.defer="cargo_de_evaluador" type="text" class="form-control" id="cargo_de_evaluador" placeholder="Cargo de Evaluador">
+                            <input wire:model.defer="cargo_de_evaluador" type="text" class="form-control" id="cargo_de_evaluador" placeholder="Cargo de Evaluador"
+                            @if ($this->massEditMode && is_null($this->commonFields['cargo_de_evaluador'])) readonly @endif>
                             @error('cargo_de_evaluador') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="area_de_evaluador">Área de Evaluador</label>
-                            <input wire:model.defer="area_de_evaluador" type="text" class="form-control" id="area_de_evaluador" placeholder="Área de Evaluador">
+                            <input wire:model.defer="area_de_evaluador" type="text" class="form-control" id="area_de_evaluador" placeholder="Área de Evaluador"
+                            @if ($this->massEditMode && is_null($this->commonFields['area_de_evaluador'])) readonly @endif>
                             @error('area_de_evaluador') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="gerencia_sub_gerencia_de_evaluador">Gerencia Sub Gerencia de Evaluador</label>
-                            <input wire:model.defer="gerencia_sub_gerencia_de_evaluador" type="text" class="form-control" id="gerencia_sub_gerencia_de_evaluador" placeholder="Gerencia Sub Gerencia de Evaluador">
+                            <input wire:model.defer="gerencia_sub_gerencia_de_evaluador" type="text" class="form-control" id="gerencia_sub_gerencia_de_evaluador" placeholder="Gerencia Sub Gerencia de Evaluador"
+                            @if ($this->massEditMode && is_null($this->commonFields['gerencia_sub_gerencia_de_evaluador'])) readonly @endif>
                             @error('gerencia_sub_gerencia_de_evaluador') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="cargo_de_evaluado">Cargo de Evaluado</label>
-                            <input wire:model.defer="cargo_de_evaluado" type="text" class="form-control" id="cargo_de_evaluado" placeholder="Cargo de Evaluado">
+                            <input wire:model.defer="cargo_de_evaluado" type="text" class="form-control" id="cargo_de_evaluado" placeholder="Cargo de Evaluado"
+                            @if ($this->massEditMode && is_null($this->commonFields['cargo_de_evaluado'])) readonly @endif>
                             @error('cargo_de_evaluado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="area_de_evaluado">Área de Evaluado</label>
-                            <input wire:model.defer="area_de_evaluado" type="text" class="form-control" id="area_de_evaluado" placeholder="Área de Evaluado">
+                            <input wire:model.defer="area_de_evaluado" type="text" class="form-control" id="area_de_evaluado" placeholder="Área de Evaluado"
+                            @if ($this->massEditMode && is_null($this->commonFields['area_de_evaluado'])) readonly @endif>
                             @error('area_de_evaluado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="gerencia_sub_gerencia_de_evaluado">Gerencia Sub Gerencia de Evaluado</label>
-                            <input wire:model.defer="gerencia_sub_gerencia_de_evaluado" type="text" class="form-control" id="gerencia_sub_gerencia_de_evaluado" placeholder="Gerencia Sub Gerencia de Evaluado">
+                            <input wire:model.defer="gerencia_sub_gerencia_de_evaluado" type="text" class="form-control" id="gerencia_sub_gerencia_de_evaluado" placeholder="Gerencia Sub Gerencia de Evaluado"
+                            @if ($this->massEditMode && is_null($this->commonFields['gerencia_sub_gerencia_de_evaluado'])) readonly @endif>
                             @error('gerencia_sub_gerencia_de_evaluado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="cantidad_requerida">Cantidad Requerida</label>
-                            <input wire:model.defer="cantidad_requerida" type="number" inputmode="numeric" class="form-control" id="cantidad_requerida" placeholder="Cantidad Requerida">
+                            <input wire:model.defer="cantidad_requerida" type="number" inputmode="numeric" class="form-control" id="cantidad_requerida" placeholder="Cantidad Requerida"
+                            @if ($this->massEditMode && is_null($this->commonFields['cantidad_requerida'])) readonly @endif>
                             @error('cantidad_requerida') <span class="error text -danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="valor_esperado">Valor Esperado</label>
-                            <input wire:model.defer="valor_esperado" type="number" inputmode="numeric" class="form-control" id="valor_esperado" placeholder="Valor Esperado">
+                            <input wire:model.defer="valor_esperado" type="number" inputmode="numeric" class="form-control" id="valor_esperado" placeholder="Valor Esperado"
+                            @if ($this->massEditMode && is_null($this->commonFields['valor_esperado'])) readonly @endif>
                             @error('valor_esperado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="jerarquia">Jerarquia</label>
-                            <input wire:model.defer="jerarquia" type="text" class="form-control" id="jerarquia" placeholder="Jerarquia">
+                            <input wire:model.defer="jerarquia" type="text" class="form-control" id="jerarquia" placeholder="Jerarquia"
+                            @if ($this->massEditMode && is_null($this->commonFields['jerarquia'])) readonly @endif>
                             @error('jerarquia') <span class="error text -danger">{{ $message }}</span> @enderror
                         </div>
                         
@@ -128,22 +156,32 @@
                 data-dismiss="modal"
                 >Cerrar</button>
 
-                @if ($this->selected_id == 0)
+                @if ($this->massEditMode)
                     <button 
                     type="button" 
-                    wire:target="edit,store,update,tipo_de_evaluacion_id" 
+                    wire:target="edit,store,updateMassive" 
                     wire:loading.attr="disabled" 
-                    wire:click.prevent="store()" 
-                    class="btn btn-lg btn-vanguard rounded-xl close-modal"
-                    >Guardar</button>
-                @else
-                    <button 
-                    type="button" 
-                    wire:target="edit,store,update,tipo_de_evaluacion_id" 
-                    wire:loading.attr="disabled" 
-                    wire:click.prevent="update()" 
+                    wire:click.prevent="updateMassive()" 
                     class="btn btn-lg btn-vanguard rounded-xl"
                     >Guardar</button>
+                @else
+                    @if ($this->selected_id == 0)
+                        <button 
+                        type="button" 
+                        wire:target="edit,store,update,tipo_de_evaluacion_id" 
+                        wire:loading.attr="disabled" 
+                        wire:click.prevent="store()" 
+                        class="btn btn-lg btn-vanguard rounded-xl close-modal"
+                        >Guardar</button>
+                    @else
+                        <button 
+                        type="button" 
+                        wire:target="edit,store,update,tipo_de_evaluacion_id" 
+                        wire:loading.attr="disabled" 
+                        wire:click.prevent="update()" 
+                        class="btn btn-lg btn-vanguard rounded-xl"
+                        >Guardar</button>
+                    @endif
                 @endif
 
             </div>

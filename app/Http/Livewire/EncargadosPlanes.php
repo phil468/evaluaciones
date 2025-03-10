@@ -40,6 +40,7 @@ class EncargadosPlanes extends Component
     $cantidad_requerida,
     $valor_esperado,
     $jerarquia,
+    $habilitado,
     
     $file,$file_objetivos,
     $tipo_de_evaluacion_objetivos_id,
@@ -50,8 +51,15 @@ class EncargadosPlanes extends Component
     public $createMode = false;
 	public $cargando = false;
 	public $actualizandoVista = false;
+    
+    public $selectedIds = [];
+    public $massEditMode = false;
+    public $commonFields = [];
 
-    protected $listeners = ['edit' => 'edit'];
+    protected $listeners = [
+        'edit' => 'edit',
+        'editMassive' => 'editMassive',
+    ];
     
     public function mount() 
     {
@@ -194,6 +202,7 @@ class EncargadosPlanes extends Component
         $this->jerarquia = null;
         $this->file = null;
         $this->file_objetivos = null;
+        $this->habilitado = true;
     }
 
     public function create()
@@ -274,6 +283,7 @@ class EncargadosPlanes extends Component
             $this->cantidad_requerida = $record-> cantidad_requerida;
             $this->valor_esperado = $record-> valor_esperado;
             $this->jerarquia = $record-> jerarquia;
+            $this->habilitado = $record->habilitado;
 		} else {
 			$this->selected_id = 0;
 		}
@@ -305,6 +315,7 @@ class EncargadosPlanes extends Component
             'cantidad_requerida' => 'required|integer',
             'valor_esperado' => 'required|numeric',
             'jerarquia' => 'required',
+            'habilitado' => 'required|boolean',
         ]);
 
         if ($this->selected_id) {
@@ -324,6 +335,7 @@ class EncargadosPlanes extends Component
                 'cantidad_requerida' => $this-> cantidad_requerida,
                 'valor_esperado' => $this-> valor_esperado,
                 'jerarquia' => $this-> jerarquia,
+                'habilitado' => $this->habilitado,
             ]);
 
             $this->emit('limpiarDatosEncargadosPlanes');
@@ -334,6 +346,98 @@ class EncargadosPlanes extends Component
             $this->emit('refreshEncargadosPlanes');
 			session()->flash('messagePlanes', 'Encargado de planes actualizado correctamente.');
         }
+    }
+
+    public function editMassive($ids)
+    {
+        $this->selectedIds = $ids;
+        $this->massEditMode = true;
+
+        // Obtener los registros seleccionados
+        $records = EncargadosPlanesDeAccion::whereIn('id', $ids)->get();
+        // dd($records);
+        // dd($records->pluck('encargado_id')->unique()->count());
+        // dd($records->first()->encargado_id);
+
+        // Determinar los campos comunes
+        
+        $this->commonFields = [
+            'encargado_id' => $records->pluck('encargado_id')->unique()->count() === 1 ? $records->first()->encargado_id : null,
+            'empleado_id' => $records->pluck('empleado_id')->unique()->count() === 1 ? $records->first()->empleado_id : null,
+            'planes_de_accion_configuracion_id' => $records->pluck('planes_de_accion_configuracion_id')->unique()->count() === 1 ? $records->first()->planes_de_accion_configuracion_id : null,
+            'cargo_de_evaluador' => $records->pluck('cargo_de_evaluador')->unique()->count() === 1 ? $records->first()->cargo_de_evaluador : null,
+            'area_de_evaluador' => $records->pluck('area_de_evaluador')->unique()->count() === 1 ? $records->first()->area_de_evaluador : null,
+            'gerencia_sub_gerencia_de_evaluador' => $records->pluck('gerencia_sub_gerencia_de_evaluador')->unique()->count() === 1 ? $records->first()->gerencia_sub_gerencia_de_evaluador : null,
+            'cargo_de_evaluado' => $records->pluck('cargo_de_evaluado')->unique()->count() === 1 ? $records->first()->cargo_de_evaluado : null,
+            'area_de_evaluado' => $records->pluck('area_de_evaluado')->unique()->count() === 1 ? $records->first()->area_de_evaluado : null,
+            'gerencia_sub_gerencia_de_evaluado' => $records->pluck('gerencia_sub_gerencia_de_evaluado')->unique()->count() === 1 ? $records->first()->gerencia_sub_gerencia_de_evaluado : null,
+            'cantidad_requerida' => $records->pluck('cantidad_requerida')->unique()->count() === 1 ? $records->first()->cantidad_requerida : null,
+            'valor_esperado' => $records->pluck('valor_esperado')->unique()->count() === 1 ? $records->first()->valor_esperado : null,
+            'jerarquia' => $records->pluck('jerarquia')->unique()->count() === 1 ? $records->first()->jerarquia : null,
+            'habilitado'=> $records->pluck('habilitado')->unique()->count() === 1 ? $records->first()->habilitado : null,
+        ];
+        // dd($this->commonFields);
+        $this->encargado_id = $this->commonFields['encargado_id'];
+        $this->empleado_id = $this->commonFields['empleado_id'];
+        $this->planes_de_accion_configuracion_id = $this->commonFields['planes_de_accion_configuracion_id'];
+       
+        $this->cargo_de_evaluador = $this->commonFields['cargo_de_evaluador'];
+        $this->area_de_evaluador = $this->commonFields['area_de_evaluador'];
+        $this->gerencia_sub_gerencia_de_evaluador = $this->commonFields['gerencia_sub_gerencia_de_evaluador'];
+        $this->cargo_de_evaluado = $this->commonFields['cargo_de_evaluado'];
+        $this->area_de_evaluado = $this->commonFields['area_de_evaluado'];
+        $this->gerencia_sub_gerencia_de_evaluado = $this->commonFields['gerencia_sub_gerencia_de_evaluado'];
+        $this->cantidad_requerida = $this->commonFields['cantidad_requerida'];
+        $this->valor_esperado = $this->commonFields['valor_esperado'];
+        $this->jerarquia = $this->commonFields['jerarquia'];
+        $this->habilitado = $this->commonFields['habilitado'];
+
+        $this->listarSelects();
+        // Emitir eventos para deshabilitar los selects si los campos son null
+        if (is_null($this->commonFields['encargado_id'])) {
+            $this->emit('deshabilitar_select', 'encargado_id');
+        }
+        if (is_null($this->commonFields['empleado_id'])) {
+            $this->emit('deshabilitar_select', 'empleado_id');
+        }
+        if (is_null($this->commonFields['planes_de_accion_configuracion_id'])) {
+            $this->emit('deshabilitar_select', 'planes_de_accion_configuracion_id');
+        }
+
+        $this->emit('openUpdatePlanDataModal');
+    }
+
+    public function updateMassive()
+    {
+        $this->validate([
+            'encargado_id' => 'nullable',
+            'empleado_id' => 'nullable',
+            'planes_de_accion_configuracion_id' => 'nullable',
+            'cargo_de_evaluador' => 'nullable',
+            'area_de_evaluador' => 'nullable',
+            'gerencia_sub_gerencia_de_evaluador' => 'nullable',
+            'cargo_de_evaluado' => 'nullable',
+            'area_de_evaluado' => 'nullable',
+            'gerencia_sub_gerencia_de_evaluado' => 'nullable',
+            'cantidad_requerida' => 'nullable',
+            'valor_esperado' => 'nullable',
+            'jerarquia' => 'nullable',
+            'habilitado' => 'nullable',
+        ]);
+
+        dd(array_filter($this->commonFields));
+
+        foreach ($this->selectedIds as $id) {
+            $record = EncargadosPlanesDeAccion::find($id);
+            $record->update(array_filter($this->commonFields));
+        }
+
+        $this->resetInput();
+        $this->massEditMode = false;
+        $this->emit('closeModal');
+        session()->flash('message', 'Encargados Planes De Mejora actualizados correctamente.');
+        $this->emit('limpiarSeleccionEncargadosPlanesTable');
+		$this->emit('refreshEncargadosPlanesTable');
     }
 
     public function crear_editar_usuarios() {

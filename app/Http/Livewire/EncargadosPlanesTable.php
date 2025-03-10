@@ -19,12 +19,18 @@ class EncargadosPlanesTable extends LivewireDatatable
 {
     public $hideable = 'inline';
     public $exportable = true;
+    public $beforeTableSlot = 'components.edicionMasiva';
+    public $selected = [];
     public $afterTableSlot = 'components.selected';
     public $numeroSerieValidado=true, $fileUpload;
     public $updateMode = false;
     public $export_name = 'Evaluadores';
+    public $modalEdicionMasiva = '#updateRegistroModal';
 
-    protected $listeners = ['refreshEncargadosPlanes' => '$refresh','limpiarSeleccionTable'=>'limpiarSeleccionTable'];
+    protected $listeners = [
+        'refreshEncargadosPlanesTable' => '$refresh',
+        'limpiarSeleccionEncargadosPlanesTable'=>'limpiarSeleccion'
+    ];
 
     public function builder()
     {       
@@ -33,18 +39,33 @@ class EncargadosPlanesTable extends LivewireDatatable
         ->leftJoin('personal as empleados','empleados.id','=','encargados_planes_de_accion.empleado_id')
         ->leftJoin('planes_de_accion_configuracion', 'planes_de_accion_configuracion.id', '=', 'encargados_planes_de_accion.planes_de_accion_configuracion_id');
         ;
-        // ->leftJoin('personal as evaluado','evaluado.id','=','encargados_planes_de_accion.empleado_id');
     }
 
     public $model = EncargadosPlanesDeAccion::class;
 
+    public function limpiarSeleccion()
+    {
+        $this->selected = [];
+    }
+
+    public function edicionMasiva()
+    {
+        $this->emitUp('editMassive', $this->selected);
+    }
+
     public function columns()
     {
         return [
+            Column::checkbox()->label('Seleccionar'),
             Column::callback(['encargados_planes_de_accion.id'], function ($id) {
                 return view('table-actions-4', ['id' => $id]);
             })->label('Acciones')->unsortable()->excludeFromExport(),
             // Column::name('evaluaciones.title')->label('Evaluacion')->searchable()->filterable(),
+            
+            Column::callback(['habilitado'], function ($habilitado) {
+                return $habilitado ? 'Activo' : 'Cesado';
+            })->label('Estado')->searchable()->filterable(),
+
             BooleanColumn::name('encargados_planes_de_accion.realizado')->label('Realizado')->searchable()->filterable(),
             Column::name('plan_de_mejora.title')->label('Plan de Mejora')->searchable()->filterable(),
 

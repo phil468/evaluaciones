@@ -47,29 +47,27 @@ class PlanesDeAccions extends Component
 
     public function render()
     {
-		// dd(Proceso::orderBy('name','desc')->where('estado',1)->pluck('name','id'));
-
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.planes-de-accion.view', [
             'planesDeAccions' => PlanesDeAccion::latest()
-						->when($this->encargado_id, function ($query, $encargado_id) {
-							return $query->where('encargado_id', $encargado_id);
-						})
-						->when($this->empleado_id, function ($query, $empleado_id) {
-							return $query->where('empleado_id', $empleado_id);
-						})						
-						->orWhere('encargado_id', 'LIKE', $keyWord)
-						->orWhere('empleado_id', 'LIKE', $keyWord)
-						->orWhere('competencia_id', 'LIKE', $keyWord)
-						->orWhere('tipo_de_proceso_id', 'LIKE', $keyWord)
-						->orWhere('proceso_id', 'LIKE', $keyWord)
-						->orWhere('fecha_de_revision', 'LIKE', $keyWord)
-						->orWhere('estado_id', 'LIKE', $keyWord)
-						->orWhere('gerencia_id', 'LIKE', $keyWord)
-						->orWhere('area_id', 'LIKE', $keyWord)
-						->orWhere('avance', 'LIKE', $keyWord)
-						->orWhere('name', 'LIKE', $keyWord)
-						->paginate(10),
+			->when($this->encargado_id, function ($query, $encargado_id) {
+				return $query->where('encargado_id', $encargado_id);
+			})
+			->when($this->empleado_id, function ($query, $empleado_id) {
+				return $query->where('empleado_id', $empleado_id);
+			})						
+			->orWhere('encargado_id', 'LIKE', $keyWord)
+			->orWhere('empleado_id', 'LIKE', $keyWord)
+			->orWhere('competencia_id', 'LIKE', $keyWord)
+			->orWhere('tipo_de_proceso_id', 'LIKE', $keyWord)
+			->orWhere('proceso_id', 'LIKE', $keyWord)
+			->orWhere('fecha_de_revision', 'LIKE', $keyWord)
+			->orWhere('estado_id', 'LIKE', $keyWord)
+			->orWhere('gerencia_id', 'LIKE', $keyWord)
+			->orWhere('area_id', 'LIKE', $keyWord)
+			->orWhere('avance', 'LIKE', $keyWord)
+			->orWhere('name', 'LIKE', $keyWord)
+			->paginate(10),
         ]);
     }
 	

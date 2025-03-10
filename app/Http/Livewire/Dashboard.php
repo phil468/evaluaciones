@@ -173,8 +173,9 @@ class Dashboard extends Component
         $rangos = RangosDePlanDeAccion::where('estado', 1)->orderBy('rango_mayor')->get();
         $valores = $rangos->pluck('rango_mayor')->toArray();
         $colores = $rangos->pluck('color')->toArray();
+        $color_mayor = RangosDePlanDeAccion::where('rango_mayor', 10)->first()->color;
 
-        $this->secciones = $this->secciones->map(function ($respuesta) use ($valores, $colores) {
+        $this->secciones = $this->secciones->map(function ($respuesta) use ($valores, $colores, $color_mayor) {
             $respuesta = (object) $respuesta;
             for ($i = 0; $i < count($valores); $i++) {
                 if ($respuesta->promedio < $valores[$i]) {
@@ -182,6 +183,9 @@ class Dashboard extends Component
                     break;
                 }
             }
+            if ($respuesta->promedio==10)
+                $respuesta->color = $color_mayor;
+
             return $respuesta;
         });
 
