@@ -32,7 +32,7 @@
                     <div class="row">
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="habilitado">Habilitado</label>
-                            <select wire:model.defer="{{ $this->massEditMode ? 'commonFields.habilitado' : 'habilitado' }}" class="form-control" id="habilitado"
+                            <select wire:model.defer="habilitado" class="form-control" id="habilitado"
                             @if ($this->massEditMode && is_null($this->commonFields['habilitado'])) disabled @endif>
                                 <option value="1">Activo</option>
                                 <option value="0">Cesado</option>

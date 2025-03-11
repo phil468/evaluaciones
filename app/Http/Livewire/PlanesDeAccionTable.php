@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\EncargadosPlanesDeAccion;
 use App\Models\Objetivo;
 use App\Models\PlanesDeAccion;
 use App\Models\PlanesDeMejoraHasEvidencia;
@@ -24,7 +25,6 @@ class PlanesDeAccionTable extends LivewireDatatable
     public function builder()
     {
         return PlanesDeAccion::query()
-        // ->select()
         ->where('planes_de_accion.deleted_at',null)
         ->leftJoin('personal as evaluado','evaluado.id','=','planes_de_accion.empleado_id')
         ->leftJoin('personal as evaluador','evaluador.id','=','planes_de_accion.encargado_id')
@@ -39,33 +39,61 @@ class PlanesDeAccionTable extends LivewireDatatable
 
     public $model = PlanesDeAccion::class;
 
+    
+    public function rowClasses($row, $loop)
+    {
+        $classes = 'divide-x divide-gray-100 text-sm text-gray-900 ';
+
+        if ($this->rowIsSelected($row)) {
+            $classes .= 'bg-blue-100 ';
+        } elseif ($row->{'callback_habilitado'} == 'Cesado') {
+            $classes .= 'text-gray-500 italic bg-red-100 ';
+        } else {
+            $classes .= $loop->even ? 'bg-white ' : 'bg-gray-50 ';
+        }
+
+        return $classes;
+    }
+
     public function columns()
     {
         return [
-        // Column::callback(['id'], function ($id) {
-        //         return view('components.lupa-button', ['id' => $id]);
-        //     })->label('Ver historial')->alignCenter(),
         Column::name('name')->label('Descripcion')->searchable()->filterable()->defaultSort('asc'),
         Column::name('tipo_de_evaluaciones.name')->label('Proceso')->searchable()->filterable()->defaultSort('asc'),
         Column::name('tipo.name')->label('Tipo de proceso')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluador.name')->label('Encargado')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluado.name')->label('Personal')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::callback([
+            'planes_de_accion.encargado_id', 
+            'planes_de_accion.empleado_id',
+            'planes_de_accion.proceso_id'
+        ], function ($encargado_id, $empleado_id, $proceso_id) {
+            $encargado = $encargado_id;
+            $empleado = $empleado_id;
+            $proceso = $proceso_id;
+
+            $habilitado = EncargadosPlanesDeAccion::where('encargado_id', $encargado)
+            ->where('empleado_id', $empleado)
+            ->where('planes_de_accion_configuracion_id', $proceso)
+            ->first()
+            ->habilitado ?? false;
+            return $habilitado ? 'Activo' : 'Cesado';
+        },[],'habilitado')->label('Habilitado')->searchable()->filterable(),
+
         Column::name('competencias.name')->label('Competencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('planes_de_accion.fecha_de_revision')->label('Fecha de Revisión')->searchable()->filterable()->defaultSort('asc'),
         Column::name('estados_de_plan_de_accion.name')->label('Estado')->searchable()->filterable()->defaultSort('asc'),
-
         Column::callback(['planes_de_accion.avance'], function ($valor) {
                 return $valor.'%';
             })->label('Avance')->alignCenter()->searchable()->filterable()->defaultSort('asc'),
-
-
         Column::callback(['id'], function ($id) {
             $evidencias = PlanesDeAccion::find($id)->evidencias()->get();
             return view('components.download-button', ['evidencias' => $evidencias, 'ruta' => 'download_evidencia_plan']);
-        },
-        [],'evidencias')
-        ->label('Evidencias')->alignCenter()->excludeFromExport(),
-
+        },[],'evidencias')
+        ->label('Evidencias')
+        ->alignCenter()
+        ->excludeFromExport(),
         Column::name('gerencias.name')->label('Gerencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('subgerencias.name')->label('Subgerencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('areas.name')->label('Area')->searchable()->filterable()->defaultSort('asc'),
@@ -79,7 +107,6 @@ class PlanesDeAccionTable extends LivewireDatatable
         $this->auditorias = Audit::where('auditable_id', $id)->where('auditable_type', PlanesDeAccion::class)->get()->toArray();
         $this->emit('enviarAuditorias', $this->auditorias);
     }
-
     
     public function export()
     {

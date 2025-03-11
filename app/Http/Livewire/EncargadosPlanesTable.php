@@ -42,6 +42,22 @@ class EncargadosPlanesTable extends LivewireDatatable
     }
 
     public $model = EncargadosPlanesDeAccion::class;
+    
+    public function rowClasses($row, $loop)
+    {
+        // dd($row);
+        $classes = 'divide-x divide-gray-100 text-sm text-gray-900 ';
+
+        if ($this->rowIsSelected($row)) {
+            $classes .= 'bg-blue-100 ';
+        } elseif ($row->{'callback_habilitado'} == 'Cesado') {
+            $classes .= 'text-gray-500 italic bg-red-100 ';
+        } else {
+            $classes .= $loop->even ? 'bg-white ' : 'bg-gray-50 ';
+        }
+
+        return $classes;
+    }
 
     public function limpiarSeleccion()
     {
@@ -64,7 +80,7 @@ class EncargadosPlanesTable extends LivewireDatatable
             
             Column::callback(['habilitado'], function ($habilitado) {
                 return $habilitado ? 'Activo' : 'Cesado';
-            })->label('Estado')->searchable()->filterable(),
+            },[],'habilitado')->label('Estado')->searchable()->filterable(),
 
             BooleanColumn::name('encargados_planes_de_accion.realizado')->label('Realizado')->searchable()->filterable(),
             Column::name('plan_de_mejora.title')->label('Plan de Mejora')->searchable()->filterable(),
@@ -136,5 +152,16 @@ class EncargadosPlanesTable extends LivewireDatatable
             $record->delete();
         }
     }
+
+    // public function rowCallback($row)
+    // {
+    //     dd($row->habilitado);
+    //     if ($row->habilitado == 0) {
+    //         return [
+    //             'style' => 'color: gray; font-style: italic;',
+    //         ];
+    //     }
+    //     return [];
+    // }
 
 }

@@ -74,7 +74,6 @@ class EncargadosPlanesDeAccion extends Model
     {
         if($this->plan_de_mejora) {
                 if($this->plan_de_mejora->activa) {
-                    // if($this->evaluacion->tipo_de_evaluacion_id == 2) {
                         if($this->plan_de_mejora->primera_fase_activa) {
                             if($this->cantidad_requerida > $this->planes_de_accion_empleado->count()) {
                                 return true;
@@ -93,18 +92,6 @@ class EncargadosPlanesDeAccion extends Model
                         else {
                             return false;
                         }
-                    // }
-                    // elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
-                    //     if($this->realizado == 1) {
-                    //         return false;
-                    //     }
-                    //     else {
-                    //         return true;
-                    //     }
-                    // }
-                    // else {
-                    //     return false;
-                    // }
                 } else {
                     return false;
                 }
@@ -113,5 +100,11 @@ class EncargadosPlanesDeAccion extends Model
             return false;
         }
         return false;
+    }
+
+    //scope habilitado
+    public function scopeHabilitado($query)
+    {
+        return $query->where('habilitado',1);
     }
 }

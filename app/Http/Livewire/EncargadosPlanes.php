@@ -359,8 +359,7 @@ class EncargadosPlanes extends Component
         // dd($records->pluck('encargado_id')->unique()->count());
         // dd($records->first()->encargado_id);
 
-        // Determinar los campos comunes
-        
+        // Determinar los campos comunes        
         $this->commonFields = [
             'encargado_id' => $records->pluck('encargado_id')->unique()->count() === 1 ? $records->first()->encargado_id : null,
             'empleado_id' => $records->pluck('empleado_id')->unique()->count() === 1 ? $records->first()->empleado_id : null,
@@ -409,27 +408,43 @@ class EncargadosPlanes extends Component
 
     public function updateMassive()
     {
+        // Actualizar los campos comunes con los valores de las variables individuales
+        $this->commonFields['encargado_id'] = $this->encargado_id;
+        $this->commonFields['empleado_id'] = $this->empleado_id;
+        $this->commonFields['planes_de_accion_configuracion_id'] = $this->planes_de_accion_configuracion_id;
+        $this->commonFields['cargo_de_evaluador'] = $this->cargo_de_evaluador;
+        $this->commonFields['area_de_evaluador'] = $this->area_de_evaluador;
+        $this->commonFields['gerencia_sub_gerencia_de_evaluador'] = $this->gerencia_sub_gerencia_de_evaluador;
+        $this->commonFields['cargo_de_evaluado'] = $this->cargo_de_evaluado;
+        $this->commonFields['area_de_evaluado'] = $this->area_de_evaluado;
+        $this->commonFields['gerencia_sub_gerencia_de_evaluado'] = $this->gerencia_sub_gerencia_de_evaluado;
+        $this->commonFields['cantidad_requerida'] = $this->cantidad_requerida;
+        $this->commonFields['valor_esperado'] = $this->valor_esperado;
+        $this->commonFields['jerarquia'] = $this->jerarquia;
+        $this->commonFields['habilitado'] = $this->habilitado;
+    
         $this->validate([
-            'encargado_id' => 'nullable',
-            'empleado_id' => 'nullable',
-            'planes_de_accion_configuracion_id' => 'nullable',
-            'cargo_de_evaluador' => 'nullable',
-            'area_de_evaluador' => 'nullable',
-            'gerencia_sub_gerencia_de_evaluador' => 'nullable',
-            'cargo_de_evaluado' => 'nullable',
-            'area_de_evaluado' => 'nullable',
-            'gerencia_sub_gerencia_de_evaluado' => 'nullable',
-            'cantidad_requerida' => 'nullable',
-            'valor_esperado' => 'nullable',
-            'jerarquia' => 'nullable',
-            'habilitado' => 'nullable',
+            'commonFields.encargado_id' => 'nullable',
+            'commonFields.empleado_id' => 'nullable',
+            'commonFields.planes_de_accion_configuracion_id' => 'nullable',
+            'commonFields.cargo_de_evaluador' => 'nullable',
+            'commonFields.area_de_evaluador' => 'nullable',
+            'commonFields.gerencia_sub_gerencia_de_evaluador' => 'nullable',
+            'commonFields.cargo_de_evaluado' => 'nullable',
+            'commonFields.area_de_evaluado' => 'nullable',
+            'commonFields.gerencia_sub_gerencia_de_evaluado' => 'nullable',
+            'commonFields.cantidad_requerida' => 'nullable',
+            'commonFields.valor_esperado' => 'nullable',
+            'commonFields.jerarquia' => 'nullable',
+            'commonFields.habilitado' => 'nullable',
         ]);
-
-        // dd(array_filter($this->commonFields));
-
+    
+        // dd($this->commonFields); 
         foreach ($this->selectedIds as $id) {
             $record = EncargadosPlanesDeAccion::find($id);
-            $record->update(array_filter($this->commonFields));
+            $record->update(array_filter($this->commonFields, function ($value) {
+                return !is_null($value);
+            }));
         }
 
         $this->resetInput();

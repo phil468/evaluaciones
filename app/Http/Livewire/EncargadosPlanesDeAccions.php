@@ -124,7 +124,10 @@ class EncargadosPlanesDeAccions extends Component
 
         if ($ingreso == 'ingreso') {
             $this->ingreso = true;
-            $this->empleado_ids = EncargadosPlanesDeAccion::where('encargado_id', auth()->user()->personal->id)->pluck('empleado_id');
+            $this->empleado_ids = 
+            EncargadosPlanesDeAccion::where('encargado_id', auth()->user()->personal->id)
+            ->habilitado()
+            ->pluck('empleado_id');
         } else {
             $this->ingreso = false;
             $this->encargado_id = auth()->user()->personal->id;
@@ -347,6 +350,7 @@ class EncargadosPlanesDeAccions extends Component
                 'encargadosPlanesDeAccions' => 
                 EncargadosPlanesDeAccion::latest()
                 ->where('encargado_id', auth()->user()->personal->id)
+                ->habilitado()
                 ->paginate(10),
                 'planesDeAccions' => PlanesDeAccion::latest()
                 ->where('empleado_id', auth()->user()->personal->id)

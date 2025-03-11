@@ -3,18 +3,10 @@
 namespace App\Http\Livewire;
 
 use App\Models\EncargadosPlanesDeAccion;
-use App\Models\EvaluadorHasEvaluado;
-use App\Models\PlanesDeAccion;
-use App\Models\Respuesta;
-use App\Models\TipoDeEvaluacione;
 use Illuminate\Support\Facades\DB;
-use Mediconesystems\LivewireDatatables\Action;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use Mediconesystems\LivewireDatatables\BooleanColumn;
-// use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Exports\DatatableExport;
-use Mediconesystems\LivewireDatatables\NumberColumn;
 
 //en esta tabla vamos a mostrar los evaluadores 
 class SeguimientoEncargadosPlanesTable extends LivewireDatatable
@@ -35,18 +27,12 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
         ->join('personal','encargados_planes_de_accion.encargado_id','=','personal.id')
         ->select('encargados_planes_de_accion.*','personal.name')
         ->groupBy('encargados_planes_de_accion.encargado_id');
-        
     }
 
     public $model = EncargadosPlanes::class;
 
     public function columns()
-    {
-        // dd(EncargadosPlanesDeAccion::
-        // join('personal','encargados_planes_de_accion.encargado_id','=','personal.id')
-        // ->select('encargados_planes_de_accion.*','personal.name')
-        // ->groupBy('encargados_planes_de_accion.encargado_id')->get()->toArray());
-        
+    {        
         return [
             Column::name('personal.name')->label('Encargado')->searchable()->filterable(),
             
@@ -99,8 +85,6 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
                         $class = 'bg-primary';
                     }
                     
-                    // $tipo_de_evaluacion = TipoDeEvaluacione::find($i);
-                    
                     $barra = $barra
                      .'
                     <div class="mb-3 rounded-xl progress" style="height: 25px;">
@@ -111,11 +95,10 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
                 
                 return $barra;
                 
-            })->label('Avance')->excludeFromExport()
-
-            ,
+            })->label('Avance Ingreso')->excludeFromExport(),
+            
             //columna oculta callback de avance de realizados y total
-            Column::callback(['encargado_id','empleado_id'],function ($encargado_id,$empleado_id) {
+            Column::callback(['encargado_id'],function ($encargado_id) {
                 $encargados = EncargadosPlanesDeAccion::
                 select(
                     'encargado.name as encargado',
@@ -149,7 +132,7 @@ class SeguimientoEncargadosPlanesTable extends LivewireDatatable
                 $total = $encargados->count();
                 
                 return $realizados.' de '.$total;
-            },[],'Avances')->label('Planes de Mejora Completos'),
+            },[],'Avances')->label('Planes de Mejora Ingresados')
         ];
     }
 
