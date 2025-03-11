@@ -343,7 +343,10 @@ class EncargadosPlanes extends Component
             $this->resetValidation();
             $this->updateMode=false;
 		    $this->emit('closeModal');
-            $this->emit('refreshEncargadosPlanes');
+            // $this->emit('refreshEncargadosPlanes');
+            
+            $this->emit('limpiarSeleccionEncargadosPlanesTable');
+            $this->emit('refreshEncargadosPlanesTable');
 			session()->flash('messagePlanes', 'Encargado de planes actualizado correctamente.');
         }
     }
