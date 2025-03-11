@@ -5,5 +5,8 @@
     @endif
     >
         Edición Masiva
+    @if (count($selected) != 0)
+        <span class="badge badge-dark">{{count($selected)}}</span>
+    @endif
     </button>    
 </div>

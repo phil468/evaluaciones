@@ -29,17 +29,13 @@
                 @endif
 
                 <form>
-                    <div class="row">
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
-                            <label for="habilitado">Habilitado</label>
-                            <select wire:model.defer="habilitado" class="form-control" id="habilitado"
-                            @if ($this->massEditMode && is_null($this->commonFields['habilitado'])) disabled @endif>
-                                <option value="1">Activo</option>
-                                <option value="0">Cesado</option>
-                            </select>
-                            @error('habilitado') <span class="error text-danger">{{ $message }}</span> @enderror
-                        </div>
-                    </div>                            
+                    @if ($this->massEditMode)
+                        <div>
+                            <div class="alert alert-info">
+                                Se ha habilitado para su edición los campos que comparten los mismos valores en los registros seleccionados
+                            </div>
+                        </div>                        
+                    @endif
                     
                     <div class="row">
                         <input type="hidden" wire:model="selected_id">
@@ -141,6 +137,16 @@
                             <input wire:model.defer="jerarquia" type="text" class="form-control" id="jerarquia" placeholder="Jerarquia"
                             @if ($this->massEditMode && is_null($this->commonFields['jerarquia'])) readonly @endif>
                             @error('jerarquia') <span class="error text -danger">{{ $message }}</span> @enderror
+                        </div>
+                        
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                            <label for="habilitado">Habilitado</label>
+                            <select wire:model.defer="habilitado" class="form-control" id="habilitado"
+                            @if ($this->massEditMode && is_null($this->commonFields['habilitado'])) disabled @endif>
+                                <option value="1">Activo</option>
+                                <option value="0">Cesado</option>
+                            </select>
+                            @error('habilitado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
                     </fieldset>
