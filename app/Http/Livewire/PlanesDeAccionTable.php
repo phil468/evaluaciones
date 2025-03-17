@@ -34,11 +34,12 @@ class PlanesDeAccionTable extends LivewireDatatable
         ->leftJoin('estados_de_plan_de_accion as estados_de_plan_de_accion','estados_de_plan_de_accion.id','=','planes_de_accion.estado_id')
         ->leftJoin('gerencias','gerencias.id','=','planes_de_accion.gerencia_id')
         ->leftJoin('subgerencias','subgerencias.id','=','planes_de_accion.subgerencia_id')
-        ->leftJoin('areas','areas.id','=','planes_de_accion.area_id');
+        ->leftJoin('areas','areas.id','=','planes_de_accion.area_id')
+        ->leftJoin('encargados_planes_de_accion','encargados_planes_de_accion.id','=','planes_de_accion.encargados_planes_de_accion_id')
+        ;
     }
 
     public $model = PlanesDeAccion::class;
-
     
     public function rowClasses($row, $loop)
     {
@@ -51,7 +52,6 @@ class PlanesDeAccionTable extends LivewireDatatable
         } else {
             $classes .= $loop->even ? 'bg-white ' : 'bg-gray-50 ';
         }
-
         return $classes;
     }
 
@@ -65,21 +65,13 @@ class PlanesDeAccionTable extends LivewireDatatable
         Column::name('evaluado.name')->label('Personal')->searchable()->filterable()->defaultSort('asc'),
 
         Column::callback([
-            'planes_de_accion.encargado_id', 
-            'planes_de_accion.empleado_id',
-            'planes_de_accion.proceso_id'
-        ], function ($encargado_id, $empleado_id, $proceso_id) {
-            $encargado = $encargado_id;
-            $empleado = $empleado_id;
-            $proceso = $proceso_id;
-
-            $habilitado = EncargadosPlanesDeAccion::where('encargado_id', $encargado)
-            ->where('empleado_id', $empleado)
-            ->where('planes_de_accion_configuracion_id', $proceso)
-            ->first()
-            ->habilitado ?? false;
+            'encargados_planes_de_accion.habilitado',
+        ], function ($habilitado) {
+            if ($habilitado == null) {
+                return 'No relacionado';
+            }
             return $habilitado ? 'Activo' : 'Cesado';
-        },[],'habilitado')->label('Habilitado')->searchable()->filterable(),
+        },[],'habilitado')->label('Estado')->searchable()->filterable(),
 
         Column::name('competencias.name')->label('Competencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('planes_de_accion.fecha_de_revision')->label('Fecha de Revisión')->searchable()->filterable()->defaultSort('asc'),
@@ -117,5 +109,4 @@ class PlanesDeAccionTable extends LivewireDatatable
         $export->setFileName('Planes.xlsx');
         return $export->download();
     }
-
 }

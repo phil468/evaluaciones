@@ -72,33 +72,36 @@ class EncargadosPlanesDeAccion extends Model
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()
     {
-        if($this->plan_de_mejora) {
-                if($this->plan_de_mejora->activa) {
-                        if($this->plan_de_mejora->primera_fase_activa) {
-                            if($this->cantidad_requerida > $this->planes_de_accion_empleado->count()) {
-                                return true;
-                            }
-                            else {
-                                return false;
-                            }
-                        }elseif($this->plan_de_mejora->segunda_fase_activa) {
-                            if($this->planes_de_accion_empleado->count() > $this->planes_de_accion_empleado_realizados->count()) {
-                                return true;
-                            }
-                            else {
-                                return false;
-                            }
-                        }
-                        else {
-                            return false;
-                        }
+        // Verificar si hay un plan de mejora asociado
+        if ($this->plan_de_mejora) {
+            // Verificar si el plan de mejora está activo
+            if ($this->plan_de_mejora->activa) {
+                // Verificar si la primera fase del plan de mejora está activa
+                if ($this->plan_de_mejora->primera_fase_activa) {
+                    // Comparar la cantidad requerida con el número de planes de acción del empleado
+                    if ($this->cantidad_requerida > $this->planes_de_accion_empleado->count()) {
+                        return true; // Estado pendiente
+                    } else {
+                        return false; // Estado no pendiente
+                    }
+                // Verificar si la segunda fase del plan de mejora está activa
+                } elseif ($this->plan_de_mejora->segunda_fase_activa) {
+                    // Comparar el número de planes de acción del empleado con los realizados
+                    if ($this->planes_de_accion_empleado->count() > $this->planes_de_accion_empleado_realizados->count()) {
+                        return true; // Estado pendiente
+                    } else {
+                        return false; // Estado no pendiente
+                    }
                 } else {
-                    return false;
+                    return false; // Ninguna fase activa, estado no pendiente
                 }
+            } else {
+                return false; // Plan de mejora no activo, estado no pendiente
+            }
+        } else {
+            return false; // No hay plan de mejora asociado, estado no pendiente
         }
-        else {
-            return false;
-        }
+        // Retorno final redundante
         return false;
     }
 
