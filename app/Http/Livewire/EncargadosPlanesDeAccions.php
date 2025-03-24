@@ -44,6 +44,7 @@ class EncargadosPlanesDeAccions extends Component
     public $estado_id;
     public $name,$fecha_de_revision,$avance,$tipo_de_proceso_id,$gerencia_id,$area_id;
     public $valor_esperado = 7.5, $cantidad_requerida, $secciones_bajas = [], $mostrar_grafica = true;
+    public $encargados_planes_de_accion_id;
     public $evaluacionPorCompetenciasFinalizada=false;
     public $secciones_ordenadas = [];
     public $primera_fase_activa, $segunda_fase_activa, $evaluador_has_evaluado, 
@@ -138,9 +139,11 @@ class EncargadosPlanesDeAccions extends Component
             $this->dashboard = true;
             $this->empleado_id = $empleado_id;
             
-		    $this->evaluador_has_evaluado   = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)->get()->first();
-            $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
-            $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida;
+		    $this->evaluador_has_evaluado = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)->get()->first();
+            $this->valor_esperado =         EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
+            $this->cantidad_requerida =     EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida;
+            $this->encargados_planes_de_accion_id = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->id;
+
             $this->secciones = Respuesta::with('pregunta.seccion')
                 ->select(
                     'preguntas.seccion_id',
@@ -458,15 +461,15 @@ class EncargadosPlanesDeAccions extends Component
     public function store_plan()
     {
         $this->evaluar_fases();
-        // contar los planes y si es igual a la catidad_requerida entonces no se puede ingresar mas planes
+        // contar los planes y si es igual a la cantidad_requerida, entonces, no se puede ingresar más planes
         $contador_de_planes = PlanesDeAccion::latest()
-                ->when($this->empleado_id, function ($query, $empleado_id) {
-                    return $query->where('empleado_id', $empleado_id);
-                })->get()->count();
+        ->when($this->empleado_id, function ($query, $empleado_id) {
+            return $query->where('empleado_id', $empleado_id);
+        })->get()->count();
 
         if ($this->cantidad_requerida <= $contador_de_planes) {
             $this->emit('closeModal');
-            session()->flash('message', 'No se puede ingresar mas planes de mejora.');
+            session()->flash('message', 'No se puede ingresar mas planes de mejora. Se llegó a la cantidad_requerida.');
             return;
         }
 
@@ -496,7 +499,8 @@ class EncargadosPlanesDeAccions extends Component
 			'gerencia_id' => $this-> gerencia_id,
 			'area_id' => $this-> area_id,
 			'avance' => $this-> avance,
-			'name' => $this-> name
+			'name' => $this-> name,
+            'encargados_planes_de_accion_id' => $this->encargados_planes_de_accion_id,
         ]);
 
         $this->resetInput_plan();

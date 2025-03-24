@@ -9,10 +9,10 @@
 @section('content')
 
 @livewire('encargados-planes-de-accions', [
-        'ingreso' => $ingreso??null,
-        'dashboard' => $dashboard??null,
-        'empleado_id' => $empleado_id??null
-    ])
+    'ingreso' => $ingreso??null,
+    'dashboard' => $dashboard??null,
+    'empleado_id' => $empleado_id??null
+])
 
 @stop
 
