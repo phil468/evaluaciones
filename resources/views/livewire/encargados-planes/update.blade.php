@@ -30,13 +30,14 @@
 
                 <form>
                     @if ($this->massEditMode)
-                        <div>
-                            <div class="alert alert-info">
-                                Se ha habilitado para su edición los campos que comparten los mismos valores en los registros seleccionados
-                            </div>
-                        </div>                        
+                        <div class="text-info">
+                            <b>
+                                Se ha habilitado para su edición los campos que comparten los mismos valores en los registros seleccionados.                                    
+                            </b>
+                        </div>
+                        <br>
                     @endif
-                    
+
                     <div class="row">
                         <input type="hidden" wire:model="selected_id">
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
@@ -78,7 +79,7 @@
                     </div>
                         
                     <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled"
-                    @if (!$this->updateMode && !$this->massEditMode)                    
+                    @if (!$this->updateMode && !$this->massEditMode)
                         disabled
                     @endif
                     >
@@ -100,7 +101,7 @@
                             @if ($this->massEditMode && is_null($this->commonFields['gerencia_sub_gerencia_de_evaluador'])) readonly @endif>
                             @error('gerencia_sub_gerencia_de_evaluador') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        
+
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="cargo_de_evaluado">Cargo de Evaluado</label>
                             <input wire:model.defer="cargo_de_evaluado" type="text" class="form-control" id="cargo_de_evaluado" placeholder="Cargo de Evaluado"
@@ -131,14 +132,14 @@
                             @if ($this->massEditMode && is_null($this->commonFields['valor_esperado'])) readonly @endif>
                             @error('valor_esperado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        
+
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="jerarquia">Jerarquia</label>
                             <input wire:model.defer="jerarquia" type="text" class="form-control" id="jerarquia" placeholder="Jerarquia"
                             @if ($this->massEditMode && is_null($this->commonFields['jerarquia'])) readonly @endif>
                             @error('jerarquia') <span class="error text -danger">{{ $message }}</span> @enderror
                         </div>
-                        
+
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-4">
                             <label for="habilitado">Habilitado</label>
                             <select wire:model.defer="habilitado" class="form-control" id="habilitado"
@@ -148,7 +149,7 @@
                             </select>
                             @error('habilitado') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        
+
                     </fieldset>
                 </form>
             </div>

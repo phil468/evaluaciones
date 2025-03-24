@@ -156,9 +156,9 @@ class EncargadosPlanes extends Component
 
     public function listarSelects() 
     {
-		$this->evaluadores 	=	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
-		$this->evaluados 	= 	Personal::		orderBy('name')->select('name as label', 'id as value')->get()->toArray();
-		$this->evaluaciones = 	PlanesConfiguracion::		orderBy('title')->activa()->select('title as label', 'id as value')->get()->toArray();
+		$this->evaluadores 	=	Personal::		        orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+		$this->evaluados 	= 	Personal::		        orderBy('name')->select('name as label', 'id as value')->get()->toArray();
+		$this->evaluaciones = 	PlanesConfiguracion::	orderBy('title')->activa()->select('title as label', 'id as value')->get()->toArray();
 
 		// $this->emit('listar_selects_encargados_planes',
 		// 	$this->evaluadores,
@@ -170,7 +170,9 @@ class EncargadosPlanes extends Component
     
 	public function actualizarDatosPersonal ()
     {
-		$this->emit('actualizarDatosEncargadosPlanes',
+        // dd('actualizarDatosPersonal', array ($this->encargado_id, $this->empleado_id, $this->planes_de_accion_configuracion_id));
+
+        $this->emit('actualizarDatosEncargadosPlanes',
 			$this->encargado_id,
 			$this->empleado_id,
 			$this->planes_de_accion_configuracion_id
@@ -338,6 +340,14 @@ class EncargadosPlanes extends Component
                 'habilitado' => $this->habilitado,
             ]);
 
+            $planes = $record->planesDeMejora;
+            
+            foreach ($planes as $p) {
+                $p->update([
+                    'encargado_id' => $this->encargado_id,
+                ]);
+            }
+
             $this->emit('limpiarDatosEncargadosPlanes');
             $this->resetInput();
             $this->resetValidation();
@@ -354,12 +364,10 @@ class EncargadosPlanes extends Component
     {
         $this->selectedIds = $ids;
         $this->massEditMode = true;
+        $this->updateMode = true;
 
         // Obtener los registros seleccionados
         $records = EncargadosPlanesDeAccion::whereIn('id', $ids)->get();
-        // dd($records);
-        // dd($records->pluck('encargado_id')->unique()->count());
-        // dd($records->first()->encargado_id);
 
         // Determinar los campos comunes        
         $this->commonFields = [
@@ -441,16 +449,26 @@ class EncargadosPlanes extends Component
             'commonFields.habilitado' => 'nullable',
         ]);
     
-        // dd($this->commonFields); 
         foreach ($this->selectedIds as $id) {
             $record = EncargadosPlanesDeAccion::find($id);
             $record->update(array_filter($this->commonFields, function ($value) {
                 return !is_null($value);
             }));
+
+            if ($this->commonFields['encargado_id']) {
+                $planes = $record->planesDeMejora;
+
+                foreach ($planes as $p) {
+                    $p->update([
+                        'encargado_id' => $this->commonFields['encargado_id'],
+                    ]);
+                }
+            }
         }
 
         $this->resetInput();
         $this->massEditMode = false;
+        $this->updateMode = false;
         $this->emit('closeModal');
         session()->flash('message', 'Encargados Planes De Mejora actualizados correctamente.');
         $this->emit('limpiarSeleccionEncargadosPlanesTable');

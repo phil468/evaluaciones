@@ -19,7 +19,7 @@ class EncargadosPlanesTable extends LivewireDatatable
 {
     public $hideable = 'inline';
     public $exportable = true;
-    public $beforeTableSlot = 'components.edicionMasiva';
+    public $beforeTableSlot = 'components.edicionMasivaEncargadosPlanes';
     public $selected = [];
     public $afterTableSlot = 'components.selected';
     public $numeroSerieValidado=true, $fileUpload;

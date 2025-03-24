@@ -110,4 +110,9 @@ class EncargadosPlanesDeAccion extends Model
     {
         return $query->where('habilitado',1);
     }
+
+    public function planesDeMejora()
+    {
+        return $this->hasMany(PlanesDeAccion::class, 'encargados_planes_de_accion_id','id');
+    }
 }

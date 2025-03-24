@@ -129,7 +129,7 @@
 				planes_de_accion_configuracion_id_select.setChoiceByValue(evaluacion_id ?? '');
 			});
 			
-			Livewire.on('limpiarDatosEncargadosPlanes', function (areas) {
+			Livewire.on('limpiarDatosEncargadosPlanes', function () {
 				encargado_id_select.removeActiveItems();
 				empleado_id_select.removeActiveItems();
 				planes_de_accion_configuracion_id_select.removeActiveItems();
