@@ -2,7 +2,9 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Personal;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Respuesta;
@@ -110,27 +112,42 @@ class SeguimientoEvaluadores extends Component
 
     public function enviarCorreoEvaluadores()
     {
-        $lista_de_correos_de_evaluadores = array();
+        // /evaluaciones/adm/seguimiento_evaluadores
+        // $lista_de_correos_de_evaluadores = array();
 
-        $evaluadores_id = EvaluadorHasEvaluado::all()->filter(function ($evaluador) {
+        $evaluadores = EvaluadorHasEvaluado::all()
+        ->filter(function ($evaluador) {
             return $evaluador->estado_pendiente;
-        })->pluck('evaluador_id')->toArray();
+        })->pluck('evaluacion_id','evaluador_id')->toArray();
 
-        $usuarios = User::select('email','name')
-        ->whereIn('personal_id',$evaluadores_id)
-        ->distinct()
-        ->get();
+        // dd($evaluadores);
+        // $usuarios = User::select('email','name')
+        // ->whereIn('personal_id',$evaluadores_id)
+        // ->distinct()
+        // ->get();
 
-        // dd($usuarios);
+        // dd($usuarios->pluck('email','name')->toArray());
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 
-        foreach ($usuarios as $evaluacion) {
+        foreach ($evaluadores as $evaluador_id=>$evaluacion_id) {
             // Aquí puedes enviar el correo. Asegúrate de tener una clase de correo creada.
-            $lista_de_correos_de_evaluadores[] = $evaluacion['email'];
-            Mail::to($evaluacion['email'])->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
-//            Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($evaluacion['name'],$evaluacion['evaluador_id'],$lista_de_correos_de_evaluadores));
-            \Log::info('Correo enviado', ['email' => $evaluacion['email']]);
+            $personal = Personal::find($evaluador_id);
+            $user= $personal->user;
+            $email = $user->email;
+            $name = $user->name;
+
+            $evaluacion = Evaluacione::find($evaluacion_id);
+
+            $primera_fase_activa = $evaluacion->tipo_de_evaluacion_id == 1 ? true : $evaluacion->primera_fase_activa;
+            $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
+
+            // $lista_de_correos_de_evaluadores[] = $evaluacion['email'];
+            Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id));
+            // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id));
+            \Log::info('Correo enviado', ['email' => $email]);
+            //interrumpir foreach 
+            // break;
         }
 
         $message = 'Correos enviados correctamente';

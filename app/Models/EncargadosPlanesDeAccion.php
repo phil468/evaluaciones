@@ -72,6 +72,10 @@ class EncargadosPlanesDeAccion extends Model
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()
     {
+        if(!$this->habilitado)
+        {
+            return false;
+        }
         // Verificar si hay un plan de mejora asociado
         if ($this->plan_de_mejora) {
             // Verificar si el plan de mejora está activo
@@ -88,7 +92,13 @@ class EncargadosPlanesDeAccion extends Model
                 } elseif ($this->plan_de_mejora->segunda_fase_activa) {
                     // Comparar el número de planes de acción del empleado con los realizados
                     if ($this->planes_de_accion_empleado->count() > $this->planes_de_accion_empleado_realizados->count()) {
-                        return true; // Estado pendiente
+                        // Nueva lógica: Verificar si algún plan tiene la fecha de revisión pasada y no está realizado
+                        foreach ($this->planes_de_accion_empleado as $plan) {
+                            if ($plan->fecha_de_revision < now() && $plan->estado_id == 1) { // Estado 1 = No realizado
+                                return true; // Estado pendiente
+                            }
+                        }
+                        return false; // Estado no pendiente
                     } else {
                         return false; // Estado no pendiente
                     }
