@@ -27,6 +27,8 @@ class ObjetivosListaTable extends LivewireDatatable
         ->leftJoin('personal as evaluados','evaluados.id','=','objetivos.evaluado_id')
         ->leftJoin('personal as evaluadores','evaluadores.id','=','objetivos.evaluador_id')
         ->leftjoin('evaluador_has_evaluados','evaluador_has_evaluados.id','=','objetivos.evaluador_has_evaluado_id' )
+        ->leftJoin('estados_de_objetivos', 'estados_de_objetivos.id', '=', 'objetivos.estado_id'); // Agregar este join
+
         // ->leftjoin('objetivo_has_evidencias','objetivo_has_evidencias.objetivo_id','=','objetivos.id')
         ;
     }
