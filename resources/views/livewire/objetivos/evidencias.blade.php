@@ -5,7 +5,7 @@
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">
                 <h5 class="modal-title h5" id="evidenciasModalLabel">Subir evidencia</h5>
                 <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
-                    <span wire:click.prevent="cancel_evidencias()" aria-hidden="true">×</span>
+                    <span wire:click.prevent="cancel_evidencias()" aria-hidden="true">×</span> 
                 </button>
             </div>
             <div class="modal-body">

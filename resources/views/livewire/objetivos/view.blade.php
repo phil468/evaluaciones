@@ -227,9 +227,23 @@
 														class="rounded-full btn btn-vanguard" 
 														wire:click="openModalEvidencias({{$row->id}})"										
 														data-toggle="modal" 
+														@if ($row->sin_evidencias)
+															disabled
+														@endif														
 														data-target="#evidenciaModal">
 															<i class="fa fa-plus"></i>
-														</button>
+														</button>											
+														<br>
+														<input 
+															type="checkbox" 
+															wire:click="sin_evidencias({{ $row->id }})" 
+															{{ $row->sin_evidencias ? 'checked' : '' }}
+															@if ($row->evidencias()->count() > 0)
+																disabled																
+															@endif
+															style="width: 20px; height: 20px;" 
+														> Sin evidencias
+														
 													@else
 														@if ($primera_fase_activa && !$readOnly)
 															<button 
@@ -303,7 +317,7 @@
 						</div>
 					
 					</div>
-					<div wire:loading wire:target="store,update,create,edit,destroy">
+					<div wire:loading wire:target="store,update,create,edit,destroy,sin_evidencias,deleteEvidencia">
 						<x-loading-indicator />
 					</div>	
 				</div>

@@ -137,11 +137,21 @@ class Objetivos extends Component
         session()->flash('message', 'Actualizado correctamente.');
     }
 
+    public function sin_evidencias($id)
+    {
+        $objetivo = Objetivo::find($id);
+        // dd($objetivo);
+        $objetivo->update(['sin_evidencias' => !$objetivo->sin_evidencias]);
+        $this->evaluarActualizarObjetivo($id);
+        $this->emit('closeModal');
+        session()->flash('message', 'Actualizado correctamente.');
+    }
+
     public function evaluarActualizarObjetivo($id) {
         // evaluar si objetivo tiene valor y evidencias y cambiar estado a 2
         $objetivo = Objetivo::find($id);
         // dd($objetivo->valor, ($objetivo->evidencias()->get()->count() ));
-        if ($objetivo->valor && $objetivo->evidencias()->get()->count() > 0) {
+        if (($objetivo->valor && $objetivo->evidencias()->get()->count() > 0) || ($objetivo->sin_evidencias)) {
             $objetivo->update(['estado_id' => 2]);
         } elseif (!($objetivo->valor) || $objetivo->evidencias()->get()->count() <= 0)
         {
