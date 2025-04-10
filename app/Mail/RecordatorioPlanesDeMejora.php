@@ -17,15 +17,18 @@ class RecordatorioPlanesDeMejora extends Mailable
     public $name_evaluador;
     public $primera_fase_activa;
     public $segunda_fase_activa;
+    public $fecha_fin_segunda_fase;
 
     public function __construct(
         $name_evaluador,
         $primera_fase_activa,
-        $segunda_fase_activa)
+        $segunda_fase_activa,
+        $fecha_fin_segunda_fase = null)
     {
         $this->name_evaluador = $name_evaluador;
         $this->primera_fase_activa = $primera_fase_activa;
         $this->segunda_fase_activa = $segunda_fase_activa;
+        $this->fecha_fin_segunda_fase = $fecha_fin_segunda_fase;
     }
 
     public function build()

@@ -15,7 +15,7 @@ Ir a la plataforma
 Te recordamos que nos encontramos en las fechas establecidas para la revisión de compromisos de los <b>Planes de Mejora de Competencias.</b> Este seguimiento es clave para evaluar los avances alcanzados y reforzar el desarrollo de cada colaborador.
 <br>
 <br>
-Para ello, te solicitamos que <b>actualices la información de tus colaboradores</b> a cargo en la plataforma de Evaluación de Desempeño. Haz clic en el siguiente botón para ingresar:
+Para ello, te solicitamos que <b>actualices la información de tus colaboradores</b> a cargo en la plataforma de Evaluación de Desempeño hasta el {{ \Carbon\Carbon::parse($fecha_fin_segunda_fase)->format('d/m/Y') }}. Haz clic en el siguiente botón para ingresar:
 <br>
 @component('mail::button', ['url' => url('/planes-de-mejora/ingreso')])
 Ir a la plataforma

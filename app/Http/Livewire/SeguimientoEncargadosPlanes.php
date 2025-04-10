@@ -114,21 +114,11 @@ class SeguimientoEncargadosPlanes extends Component
     public function enviarCorreoEvaluadores()
     {
         //evaluaciones/adm/planes-de-accion
-        // $lista_de_correos_de_evaluadores = array();
 
         $evaluadores = EncargadosPlanesDeAccion::all()
         ->filter(function ($evaluador) {
             return $evaluador->estado_pendiente;
         })->pluck('planes_de_accion_configuracion_id','encargado_id')->toArray();
-        // dd($evaluadores);
-        // dd($evaluadores_id[0]->encargado->personal->user);
-
-        // $usuarios = User::select('email','name')
-        // ->whereIn('personal_id',$evaluadores_id)
-        // ->distinct()
-        // ->get();
-
-        // dd($usuarios->pluck('email','name')->toArray());
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 
@@ -143,10 +133,10 @@ class SeguimientoEncargadosPlanes extends Component
 
             $primera_fase_activa = $planes_configuracion->primera_fase_activa;
             $segunda_fase_activa = $planes_configuracion->segunda_fase_activa;
+            $fecha_fin_segunda_fase = $planes_configuracion->fecha_fin_segunda_fase; 
 
-            // $lista_de_correos_de_evaluadores[] = $evaluacion['email'];
-            Mail::to($email)->send(new \App\Mail\RecordatorioPlanesDeMejora($name, $primera_fase_activa, $segunda_fase_activa));
-            // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioPlanesDeMejora($name, $primera_fase_activa, $segunda_fase_activa));
+            Mail::to($email)->send(new \App\Mail\RecordatorioPlanesDeMejora($name, $primera_fase_activa, $segunda_fase_activa, $fecha_fin_segunda_fase));
+            // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioPlanesDeMejora($name, $primera_fase_activa, $segunda_fase_activa, $fecha_fin_segunda_fase));
             \Log::info('Correo enviado', ['email' => $email]);
             //interrumpir foreach 
             // break;

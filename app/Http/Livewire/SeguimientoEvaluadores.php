@@ -113,20 +113,11 @@ class SeguimientoEvaluadores extends Component
     public function enviarCorreoEvaluadores()
     {
         // /evaluaciones/adm/seguimiento_evaluadores
-        // $lista_de_correos_de_evaluadores = array();
 
         $evaluadores = EvaluadorHasEvaluado::all()
         ->filter(function ($evaluador) {
             return $evaluador->estado_pendiente;
         })->pluck('evaluacion_id','evaluador_id')->toArray();
-
-        // dd($evaluadores);
-        // $usuarios = User::select('email','name')
-        // ->whereIn('personal_id',$evaluadores_id)
-        // ->distinct()
-        // ->get();
-
-        // dd($usuarios->pluck('email','name')->toArray());
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 
@@ -141,10 +132,10 @@ class SeguimientoEvaluadores extends Component
 
             $primera_fase_activa = $evaluacion->tipo_de_evaluacion_id == 1 ? true : $evaluacion->primera_fase_activa;
             $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
+            $fecha_fin_segunda_fase = $evaluacion->fecha_fin_segunda_fase ?? '';
 
-            // $lista_de_correos_de_evaluadores[] = $evaluacion['email'];
-            Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id));
-            // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id));
+            Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+            // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
             \Log::info('Correo enviado', ['email' => $email]);
             //interrumpir foreach 
             // break;
