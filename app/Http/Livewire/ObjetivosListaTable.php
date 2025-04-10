@@ -145,7 +145,7 @@ class ObjetivosListaTable extends LivewireDatatable
 
         $export = new DatatableExport($this->getExportResultsSet());
 
-        $export->setFileName('Resultados.xlsx');
+        $export->setFileName('Resultados de desempeno por objetivos.xlsx');
         return $export->download();
     }
 
