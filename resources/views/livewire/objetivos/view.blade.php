@@ -171,10 +171,10 @@
 												</td> --}}
 												
 												<td>
-													{{-- @if ($segunda_fase_activa && !$readOnly) --}}
+													{{-- @if ($segunda_fase_activa && !$readOnly && !$row->grupal) --}}
 													{{-- QUE SE LEVANTE UN MODAL PARA INGRESAR EL VALOR --}}
 													
-													@if ($segunda_fase_activa && !$readOnly)
+													@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
 														<button 
 														type="button" 
 														class="btn btn-link" 
@@ -192,10 +192,10 @@
 																		: $row->valor)
 																	)
 																: $row->valor )
-															: (($segunda_fase_activa && !$readOnly) ? 'Ingresar Valor' : '')
+															: (($segunda_fase_activa && !$readOnly && !$row->grupal) ? 'Ingresar Valor' : '')
 														}}
 														
-													@if ($segunda_fase_activa && !$readOnly)
+													@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
 														</button>
 													@endif
 
@@ -211,7 +211,7 @@
 															<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
 																{{ $evidencia->name }}
 															</a>
-															@if ($segunda_fase_activa && !$readOnly)
+															@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
 																<button class="btn btn-danger" wire:click="deleteEvidencia({{$evidencia->id}})" 
 																	onclick="confirm('¿Confirma borrar Evidencia : {{$row->name}}? \n¡Las Evidencias eliminadas no pueden ser recuperadas!')||event.stopImmediatePropagation()"
 																	>
@@ -222,7 +222,7 @@
 														<br>
 													@endforeach
 
-													@if ($segunda_fase_activa && !$readOnly)
+													@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
 														<button 
 														class="rounded-full btn btn-vanguard" 
 														wire:click="openModalEvidencias({{$row->id}})"										
