@@ -234,7 +234,8 @@
 															<i class="fa fa-plus"></i>
 														</button>											
 														<br>
-														<input 
+														<input
+															class="mt-2"
 															type="checkbox" 
 															wire:click="sin_evidencias({{ $row->id }})" 
 															{{ $row->sin_evidencias ? 'checked' : '' }}
