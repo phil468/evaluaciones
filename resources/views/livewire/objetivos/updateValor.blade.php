@@ -14,7 +14,7 @@
                         <div class="form-group">
                             <label for="valor">Valor</label>
                             <div class="input-group">
-                                <input type="number" inputmode="decimal" class="form-control" id="valor_actualizado" wire:model.defer="valor_actualizado" placeholder="Ingrese Valor">
+                                <input inputmode="decimal" class="form-control" id="valor_actualizado" wire:model.defer="valor_actualizado" placeholder="Ingrese Valor">
                                 
                                 <div class="input-group-append">
                                     <span class="input-group-text" wire:target="tipo_objetivo_id">

@@ -118,6 +118,7 @@ class SeguimientoEvaluadores extends Component
         ->filter(function ($evaluador) {
             return $evaluador->estado_pendiente;
         })->pluck('evaluacion_id','evaluador_id')->toArray();
+        // dd($evaluadores);
         
         $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 
