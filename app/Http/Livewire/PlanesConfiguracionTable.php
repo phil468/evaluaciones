@@ -22,7 +22,8 @@ class PlanesConfiguracionTable extends LivewireDatatable
 
     public function builder()
     {       
-        return PlanesConfiguracion::query()->where('planes_de_accion_configuracion.deleted_at',null);
+        return PlanesConfiguracion::query()->where('planes_de_accion_configuracion.deleted_at',null)
+        ->leftJoin('campanias','campanias.id','=','planes_de_accion_configuracion.campania_id');
     }
 
     public $model = PlanesConfiguracion::class;
@@ -47,7 +48,9 @@ class PlanesConfiguracionTable extends LivewireDatatable
             ->label('Nombre para mostrar')->searchable()->filterable(),
 
             Column::name('planes_de_accion_configuracion.campania')
-            ->label('Campaña')->searchable()->filterable(),
+            ->label('Campaña (ANTIGUA)')->searchable()->filterable(),
+            
+            Column::name('campanias.name')->label('Campaña')->searchable()->filterable(),
 
             DateColumn::name('planes_de_accion_configuracion.fecha_inicio')
             ->label('Fecha de inicio')->format('d/m/Y h:i:s a')->searchable()->filterable()->sortable(),

@@ -22,6 +22,7 @@ class Evaluacione extends Model
         'status',
         'nombre_para_mostrar',
         'campania',
+        'campania_id',
         'mes',
         'anio',
         'fecha_inicio',
@@ -79,6 +80,32 @@ class Evaluacione extends Model
         return $this->fecha_fin_segunda_fase < now();
     }
 
+    // set y get de minimo
+    public function setMinimoAttribute($value)
+    {
+        $this->attributes['minimo'] = ($value/100.00);
+    }
+
+    public function getMinimoAttribute($value)
+    {
+        return number_format($value*100.00, 2, '.', '');
+    }
+
+    // set y get de maximo
+    public function setMaximoAttribute($value)
+    {
+        $this->attributes['maximo'] = ($value/100.00);
+    }
+
+    public function getMaximoAttribute($value)
+    {
+        return number_format($value*100.00, 2, '.', '');
+    }
+
+    public function campana() {
+        return $this->belongsTo(Campania::class,'campania_id','id');
+    }
+
     public function preguntas() {
         return $this->hasMany(Pregunta::class,'evaluacion_id','id');
     }
@@ -109,28 +136,6 @@ class Evaluacione extends Model
 
     public function tipoDeEvaluacion() {
         return $this->belongsTo(TipoDeEvaluacione::class,'tipo_de_evaluacion_id','id');
-    }
-
-    // set y get de minimo
-    public function setMinimoAttribute($value)
-    {
-        $this->attributes['minimo'] = ($value/100.00);
-    }
-
-    public function getMinimoAttribute($value)
-    {
-        return number_format($value*100.00, 2, '.', '');
-    }
-
-    // set y get de maximo
-    public function setMaximoAttribute($value)
-    {
-        $this->attributes['maximo'] = ($value/100.00);
-    }
-
-    public function getMaximoAttribute($value)
-    {
-        return number_format($value*100.00, 2, '.', '');
     }
 
     // public function evaluacione_has_preguntas()

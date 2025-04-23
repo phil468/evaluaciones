@@ -32,28 +32,6 @@ class EvaluadoresTable extends LivewireDatatable
         // dd(
         EvaluadorHasEvaluado::query()
         ->select('evaluador_has_evaluados.*')
-        // ->addSelect([
-        //     'realizados_competencias' => EvaluadorHasEvaluado::selectRaw('count(*)')->from('evaluador_has_evaluados as eva')->where('eva.evaluador_id', DB::raw('evaluador_has_evaluados.evaluador_id'))
-        //     ->join('evaluaciones','eva.evaluacion_id','=','evaluaciones.id')
-        //     ->where('evaluaciones.tipo_de_evaluacion_id',1)
-        //     ->where('eva.realizado',1),
-        //     'total_compretencias' => EvaluadorHasEvaluado::selectRaw('count(*)')->from('evaluador_has_evaluados as eva1')
-        //     ->where('eva1.evaluador_id', DB::raw('evaluador_has_evaluados.evaluador_id'))
-        //     ->join('evaluaciones','eva1.evaluacion_id','=','evaluaciones.id')
-        //     ->where('evaluaciones.tipo_de_evaluacion_id',1),
-        //     'total_resultados' => EvaluadorHasEvaluado::selectRaw('count(*)')->from('evaluador_has_evaluados as eva2')
-        //     ->where('eva2.evaluador_id', DB::raw('evaluador_has_evaluados.evaluador_id'))
-        //     ->join('evaluaciones','eva2.evaluacion_id','=','evaluaciones.id')
-        //     ->where('evaluaciones.tipo_de_evaluacion_id',2),
-        //     // 'pendientes' => EvaluadorHasEvaluado::all()
-        //     // ->filter(function ($evaluador) {
-        //     //     return $evaluador->estado_pendiente;
-        //     // })->count(),
-        //     // // ->get()
-        //     // ->filter(function ($evaluador) {
-        //     //     return $evaluador->estado_pendiente;
-        //     // }),
-        // ])
         ->from('evaluador_has_evaluados as evaluador_has_evaluados')
         ->groupBy('evaluador_has_evaluados.evaluador_id')
         // ->orderByRaw('realizados_competencias DESC')

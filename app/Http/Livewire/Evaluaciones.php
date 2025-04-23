@@ -18,6 +18,7 @@ class Evaluaciones extends Component
     public $selected_id, $keyWord, $eid, $title, $date, $status,
     $nombre_para_mostrar,
     $campania,
+    $campania_id,
     $mes,
     $anio,
     $fecha_inicio,
@@ -31,7 +32,9 @@ class Evaluaciones extends Component
     $fecha_inicio_segunda_fase,
     $fecha_fin_segunda_fase,
     $fecha_para_mostrar_resultados,
-    $tipos;
+    $tipos,
+    $campanias
+    ;
 
     public $updateMode = false;
     
@@ -41,6 +44,7 @@ class Evaluaciones extends Component
         'status' => 'required',
         'nombre_para_mostrar' => 'required',
         'campania' => 'required',
+        'campania_id' => 'required',
         'fecha_inicio' => 'required|before_or_equal:fecha_fin',
         'fecha_fin' => 'required|after_or_equal:fecha_inicio',
         'minimo' => 'required_if:tipo_de_evaluacion_id,2|exclude_unless:tipo_de_evaluacion_id,2|numeric|lt:maximo|gt:0',
@@ -64,6 +68,7 @@ class Evaluaciones extends Component
         'status' => 'Estado',
         'nombre_para_mostrar' => 'Nombre para mostrar',
         'campania' => 'Campaña',
+        'campania_id' => 'Campaña',
         'fecha_inicio' => 'Fecha de inicio',
         'fecha_fin' => 'Fecha de fin',
         'minimo'=>'Mínimo',
@@ -96,11 +101,13 @@ class Evaluaciones extends Component
     public function mount()
     {
         $this->tipos = TipoDeEvaluacione::get();
+        $this->campanias = \App\Models\Campania::get();
     }
 
     public function render()
     {
         $this->tipos = TipoDeEvaluacione::get();
+        $this->campanias = \App\Models\Campania::get();
         $evaluadores = Evaluacione::select('evaluaciones.title', 'personal.correo_empresa as correo')
         ->join('evaluador_has_evaluados', 'evaluaciones.id', '=', 'evaluador_has_evaluados.evaluacion_id')
         ->join('personal', 'evaluador_has_evaluados.evaluador_id', '=', 'personal.id')
@@ -152,6 +159,7 @@ class Evaluaciones extends Component
 		$this->status = null;
         $this->nombre_para_mostrar = null;
         $this->campania = null;
+        $this->campania_id = null;
         $this->mes = null;
         $this->anio = null;
         $this->fecha_inicio = null;
@@ -187,6 +195,7 @@ class Evaluaciones extends Component
             'status' => $this->status,
             'nombre_para_mostrar' => $this->nombre_para_mostrar,
             'campania' => $this->campania,
+            'campania_id' => $this->campania_id,
             'mes' => $this->mes,
             'anio' => $this->anio,
             'fecha_inicio' => $this->fecha_inicio,
@@ -227,6 +236,7 @@ class Evaluaciones extends Component
             $this->status = $record-> status;
             $this->nombre_para_mostrar = $record->nombre_para_mostrar;
             $this->campania = $record->campania;
+            $this->campania_id = $record->campania_id;
             $this->mes = $record->mes;
             $this->anio = $record->anio;
             $this->fecha_inicio = $record->fecha_inicio ? 
@@ -287,6 +297,7 @@ class Evaluaciones extends Component
                 'status' => $this->status,
                 'nombre_para_mostrar' => $this->nombre_para_mostrar,
                 'campania' => $this->campania,
+                'campania_id' => $this->campania_id,
                 'mes' => $this->mes,
                 'anio' => $this->anio,
                 'fecha_inicio' => $this->fecha_inicio,

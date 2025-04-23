@@ -1,4 +1,3 @@
-
 <div class="container-fluid">
 	@section('title', __('Evaluaciones'))
 	<div class="row justify-content-center">

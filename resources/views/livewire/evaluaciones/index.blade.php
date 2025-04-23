@@ -1,14 +1,3 @@
-{{-- @extends('layouts.app')
-@section('content')
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            @livewire('evaluaciones')
-        </div>     
-    </div>   
-</div>
-@endsection --}}
-
 @extends('adminlte::page')
 
 @section('title', 'Evaluaciones') 
@@ -30,9 +19,6 @@
 
 @section('js')
     <script type="text/javascript">
-        // window.livewire.on('dataReturned', () => {
-        //     location.hash = "#busqueda";
-        //     location.hash = "#resultados";
-        // });
+
     </script>
 @stop

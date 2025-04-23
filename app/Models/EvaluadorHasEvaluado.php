@@ -34,7 +34,6 @@ class EvaluadorHasEvaluado extends Model
         'jerarquia',
         'grupal',
         'tipo_jerarquia_id',
-
     ];
 
     protected $appends = ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente'];
@@ -132,7 +131,7 @@ class EvaluadorHasEvaluado extends Model
         return false;
     }
 
-    //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
+    //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es menor el estado de la evaluacion es pendiente
     public function getEstadoNoRealizadoAttribute()
     {
         if($this->evaluacion) {

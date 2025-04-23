@@ -22,6 +22,7 @@ class PlanesConfiguracion extends Model
         'status',
         'nombre_para_mostrar',
         'campania',
+        'campania_id',
         'mes',
         'anio',
         'fecha_inicio',
@@ -83,6 +84,10 @@ class PlanesConfiguracion extends Model
         return $this->hasMany(EvaluadorHasEvaluado::class,'evaluacion_id','id');
     }
 
+    public function encargadoPlanesDeAccion() {
+        return $this->hasMany(EncargadosPlanesDeAccion::class,'planes_de_accion_configuracion_id','id');
+    }
+
     //lista de correos de evaluadores que tienen evaluaciones realizadas en 0 (evaluador_has_evaluados.realizado = 0 )
     public function evaluadoresSinRealizar() {
         //solo correos
@@ -92,6 +97,10 @@ class PlanesConfiguracion extends Model
 
     public function tipoDeEvaluacion() {
         return $this->belongsTo(TipoDeEvaluacione::class,'tipo_de_evaluacion_id','id');
+    }
+
+    public function campania() {
+        return $this->belongsTo(Campania::class,'campania_id','id');
     }
 
     // set y get de minimo

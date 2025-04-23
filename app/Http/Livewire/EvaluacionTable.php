@@ -31,7 +31,8 @@ class EvaluacionTable extends LivewireDatatable
     {       
         return Evaluacione::query()
         ->where('evaluaciones.deleted_at',null)
-        ->leftJoin('tipo_de_evaluaciones','tipo_de_evaluaciones.id','=','evaluaciones.tipo_de_evaluacion_id');
+        ->leftJoin('tipo_de_evaluaciones','tipo_de_evaluaciones.id','=','evaluaciones.tipo_de_evaluacion_id')
+        ->leftJoin('campanias','campanias.id','=','evaluaciones.campania_id');
     }
 
     public $model = Evaluacione::class;
@@ -50,7 +51,8 @@ class EvaluacionTable extends LivewireDatatable
 
             BooleanColumn::name('evaluaciones.status')->label('Estado')->searchable()->filterable()->sortable(),
             Column::name('evaluaciones.nombre_para_mostrar')->label('Nombre para mostrar')->searchable()->filterable(),
-            Column::name('evaluaciones.campania')->label('Campaña')->searchable()->filterable(),
+            Column::name('evaluaciones.campania')->label('Campaña (antigua)')->searchable()->filterable(),
+            Column::name('campanias.name')->label('Campaña')->searchable()->filterable(),
 
             DateColumn::name('evaluaciones.fecha_inicio')->format('d/m/Y h:i:s a')
             ->label('Fecha de inicio')->searchable()->filterable()->sortable(),

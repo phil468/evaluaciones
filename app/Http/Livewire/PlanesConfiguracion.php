@@ -16,6 +16,7 @@ class PlanesConfiguracion extends Component
     public $selected_id, $keyWord, $eid, $title, $date, $status,
     $nombre_para_mostrar,
     $campania,
+    $campania_id,
     $mes,
     $anio,
     $fecha_inicio,
@@ -27,7 +28,8 @@ class PlanesConfiguracion extends Component
     $fecha_fin_primera_fase_matricula,
     $fecha_inicio_segunda_fase,
     $fecha_fin_segunda_fase,
-    $tipos;
+    $tipos,
+    $campanias;
 
     public $updateMode = false;
     
@@ -36,6 +38,7 @@ class PlanesConfiguracion extends Component
         'status' => 'required',
         'nombre_para_mostrar' => 'required',
         'campania' => 'required',
+        'campania_id' => 'required',
         'fecha_inicio' => 'required|before_or_equal:fecha_fin',
         'fecha_fin' => 'required|after_or_equal:fecha_inicio',
         'fecha_inicio_primera_fase_matricula' => 
@@ -54,6 +57,7 @@ class PlanesConfiguracion extends Component
         'status' => 'Estado',
         'nombre_para_mostrar' => 'Nombre para mostrar',
         'campania' => 'Campaña',
+        'campania_id' => 'Campaña',
         'fecha_inicio' => 'Fecha de inicio',
         'fecha_fin' => 'Fecha de fin',
         'minimo'=>'Mínimo',
@@ -84,13 +88,14 @@ class PlanesConfiguracion extends Component
     public function mount()
     {
         $this->tipos = TipoDeEvaluacione::get();
+        $this->campanias = \App\Models\Campania::get();
     }
 
     public function render()
     {
         $this->tipos = TipoDeEvaluacione::get();
+        $this->campanias = \App\Models\Campania::get();
         
-		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.planes-configuracion.view');
     }
 	
@@ -109,6 +114,7 @@ class PlanesConfiguracion extends Component
 		$this->status = null;
         $this->nombre_para_mostrar = null;
         $this->campania = null;
+        $this->campania_id = null;
         $this->mes = null;
         $this->anio = null;
         $this->fecha_inicio = null;
@@ -140,6 +146,7 @@ class PlanesConfiguracion extends Component
             'status' => $this->status,
             'nombre_para_mostrar' => $this->nombre_para_mostrar,
             'campania' => $this->campania,
+            'campania_id' => $this->campania_id,
             'mes' => $this->mes,
             'anio' => $this->anio,
             'fecha_inicio' => $this->fecha_inicio,
@@ -177,6 +184,7 @@ class PlanesConfiguracion extends Component
             $this->status = $record-> status;
             $this->nombre_para_mostrar = $record->nombre_para_mostrar;
             $this->campania = $record->campania;
+            $this->campania_id = $record->campania_id;
             $this->mes = $record->mes;
             $this->anio = $record->anio;
             $this->fecha_inicio = $record->fecha_inicio ? 
@@ -221,6 +229,7 @@ class PlanesConfiguracion extends Component
                 'status' => $this->status,
                 'nombre_para_mostrar' => $this->nombre_para_mostrar,
                 'campania' => $this->campania,
+                'campania_id' => $this->campania_id,
                 'mes' => $this->mes,
                 'anio' => $this->anio,
                 'fecha_inicio' => $this->fecha_inicio,

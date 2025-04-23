@@ -35,13 +35,17 @@
                         </div> --}}
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="title">Título*</label>
-                            <input wire:model="title" type="text" class="form-control" id="title" placeholder="Título">@error('title') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <input wire:model="title" type="text" class="form-control" id="title" placeholder="Título">
+                            @error('title') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-                        {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="date">Date</label>
-                            <input wire:model="date" type="date" class="form-control" id="date" placeholder="Date">@error('date') <span class="error text-danger">{{ $message }}</span> @enderror
-                        </div> --}}
+
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <label for="nombre_para_mostrar">Nombre Para Mostrar*</label>
+                            <input wire:model="nombre_para_mostrar" type="text" class="form-control" id="nombre_para_mostrar" placeholder="Nombre Para Mostrar">
+                            @error('nombre_para_mostrar') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        
+                        <div class="form-group col-sm-6 col-md-6 col-lg-3 col-xl-3">
                             <label for="status">Estado*</label>
                             <label class="mb-4 checkbox-container">
                                 <input wire:model="status" type="checkbox" class="custom-checkbox" id="status" style="display: none;">
@@ -53,13 +57,19 @@
                             {{-- <input wire:model="status" type="checkbox" class="form-control custom-checkbox" id="status" placeholder="Status">@error('status') <span class="error text-danger">{{ $message }}</span> @enderror --}}
                         </div>
 
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="nombre_para_mostrar">Nombre Para Mostrar*</label>
-                            <input wire:model="nombre_para_mostrar" type="text" class="form-control" id="nombre_para_mostrar" placeholder="Nombre Para Mostrar">@error('nombre_para_mostrar') <span class="error text-danger">{{ $message }}</span> @enderror
+                        <div class="form-group col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                            <label for="campania_id">Campaña*</label>
+                            <select class="form-control" id="campania_id" wire:model="campania_id">
+                                <option value="">Seleccione una campaña</option>
+                                @foreach($campanias as $campania)
+                                    <option value="{{ $campania->id }}">{{ $campania->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('campania_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="campania">Campaña*</label>
-                            <input wire:model="campania" type="text" class="form-control" id="campania" placeholder="Campaña">@error('campania') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <input readonly wire:model="campania" type="text" class="form-control" id="campania" placeholder="Campaña">@error('campania') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="fecha_inicio">Fecha Inicio*</label>

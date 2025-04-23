@@ -16,6 +16,8 @@ mix.js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
         require("tailwindcss"),
     ])
+    .copy('node_modules/tabulator-tables/dist/css', 'public/css/tabulator')
+    .copy('node_modules/tabulator-tables/dist/js', 'public/js/tabulator')
     // .postCss('vendor/filament/filament/resources/css/app.css', 'public/css', [
     //     require("tailwindcss"),
     // ])

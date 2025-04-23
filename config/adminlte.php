@@ -332,7 +332,7 @@ return [
                 
                 [
                     'text' => 'Seguimiento Evaluadores',
-                    'url'  => 'seguimiento_evaluadores',
+                    'url'  => 'seguimiento-evaluadores',
                     'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-capacitacion',
                     'classes' => 'rounded-xl',

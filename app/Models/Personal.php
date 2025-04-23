@@ -114,6 +114,16 @@ class Personal extends Model
         return $this->hasOne('App\Models\User', 'personal_id', 'id');
     }
 
+    public function evaluacionesComoEvaluador()
+    {
+        return $this->hasMany(EvaluadorHasEvaluado::class, 'evaluador_id');
+    }
+
+    public function planesComoEncargado()
+    {
+        return $this->hasMany(EncargadosPlanesDeAccion::class, 'encargado_id');
+    }
+
     public function reporta_a()
     {
         return $this->hasOne('App\Models\Personal', 'id', 'reporta_a');

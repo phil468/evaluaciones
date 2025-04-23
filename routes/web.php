@@ -6,6 +6,8 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
+use App\Http\Controllers\SeguimientoEvaluadoresController;
+// use App\Http\Livewire\ImportarPreguntas;
 use App\Models\Asignacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\User;
@@ -123,6 +125,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     
     Route::view('/evaluaciones','livewire.evaluaciones.index')->name('evaluaciones')->middleware(['can:ver-empresa']);
     Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-empresa']);
+    // Route::view('/importar-preguntas', 'livewire.importar-preguntas.index')->name('importar-preguntas')->middleware(['auth']);
     Route::view('/opciones','livewire.opciones.index')->name('opciones')->middleware(['can:ver-empresa']);
     Route::get('/evaluaciones-de-desempeno/{id}', function ($tipo_de_evaluacion_id) {
         return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id', $tipo_de_evaluacion_id);
@@ -228,6 +231,11 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     Route::resource('users',UserController::class);
     Route::resource('roles',RolController::class);
+
+    Route::get('/seguimiento-evaluadores', [App\Http\Controllers\SeguimientoEvaluadoresController::class, 'index'])->name('seguimiento-evaluadores.index');
+    Route::get('/seguimiento-evaluadores/data',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getData'])->name('seguimiento-evaluadores.data');
+    Route::get('/seguimiento-evaluadores/resumen',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getResumen'])->name('seguimiento-evaluadores.resumen');
+    Route::get('/seguimiento-evaluadores/planes-de-accion-no-resueltos',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getPlanesNoResueltos'])->name('seguimiento-evaluadores.planes-de-accion-no-resueltos');
     
 });
 // Auth::routes();
