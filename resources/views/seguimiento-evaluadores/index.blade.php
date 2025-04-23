@@ -260,7 +260,7 @@
                             title: "Segunda Fase",
                             field: "objetivos_fase2.avance",
                             formatter: function(cell) {
-                                let data = cell.getRow().getData().objetivos_fase1;
+                                let data = cell.getRow().getData().objetivos_fase2;
                                 return `<div class="badge ${data.completo ? 'badge-success' : 'badge-warning'}">
                                     ${data.realizados}/${data.total}
                                 </div>`;
