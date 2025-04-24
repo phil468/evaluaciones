@@ -213,7 +213,7 @@
                     title: "OBJETIVOS",
                     columns: [
                         {
-                            title: "Primera Fase",
+                            title: "1° Fase",
                             field: "objetivos_fase1.avance", // Cambiar field
                             formatter: function(cell) {
                                 let data = cell.getRow().getData().objetivos_fase1;
@@ -257,7 +257,7 @@
                             minWidth: 20
                         },
                         {
-                            title: "Segunda Fase",
+                            title: "2° Fase",
                             field: "objetivos_fase2.avance",
                             formatter: function(cell) {
                                 let data = cell.getRow().getData().objetivos_fase2;
@@ -304,7 +304,7 @@
                     title: "PLANES DE MEJORA",
                     columns: [
                         {
-                            title: "Primera Fase",
+                            title: "1° Fase",
                             field: "planes_fase1.avance",
                             formatter: function(cell) {
                                 let data = cell.getRow().getData().planes_fase1;
@@ -348,7 +348,7 @@
                             minWidth: 20
                         },
                         {
-                            title: "Segunda Fase",
+                            title: "2° Fase",
                             field: "planes_fase2.avance",
                             formatter: function(cell) {                                
                                 // let data = cell.getValue();

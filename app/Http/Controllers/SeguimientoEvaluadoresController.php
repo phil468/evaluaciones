@@ -107,11 +107,11 @@ class SeguimientoEvaluadoresController extends Controller
                 ],
                 'planes_fase2' => [
                     'realizados' => $planes->sum(function($plan) {
-                        return $plan->planesDeMejora->where('estado_id', 2)->count() >= $plan->planesDeMejora->count();
+                        return $plan->planesDeMejora->where('estado_id',"<>",1)->count() >= $plan->planesDeMejora->count();
                     }),
                     'total' => $planes->count(),
                     'completo' => $planes->every(function($plan) {
-                        return $plan->planesDeMejora->where('estado_id', 2)->count() >= $plan->cantidad_requerida;
+                        return $plan->planesDeMejora->where('estado_id',"<>",1)->count() >= $plan->cantidad_requerida;
                     })
                 ]
             ];
