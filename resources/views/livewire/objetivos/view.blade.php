@@ -139,7 +139,7 @@
 															($row->tipo_objetivo->id == 2 ? 
 																($row->resultado_anterior_o_esperado).'%' 
 															: 	($row->tipo_objetivo->id == 1 ? 
-																	number_format($row->resultado_anterior_o_esperado, 2, '.', ',')
+																	number_format($row->resultado_anterior_o_esperado, 4, '.', ',')
 																: $row->resultado_anterior_o_esperado)
 																)
 														: $row->resultado_anterior_o_esperado 
@@ -188,7 +188,7 @@
 																	($row->tipo_objetivo->id == 2 ? 
 																		($row->valor).'%' 
 																	: 	($row->tipo_objetivo->id == 1 ? 
-																			number_format($row->valor, 2, '.', ',')
+																			number_format($row->valor, 4, '.', ',')
 																		: $row->valor)
 																	)
 																: $row->valor )

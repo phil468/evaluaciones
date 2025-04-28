@@ -71,7 +71,7 @@ class PlanesDeAccionTable extends LivewireDatatable
                 return 'No relacionado';
             }
             return $habilitado ? 'Activo' : 'Cesado';
-        },[],'habilitado')->label('Estado')->searchable()->filterable(),
+        },[],'habilitado')->label('Activo / Cesado')->searchable()->filterable(),
 
         Column::name('competencias.name')->label('Competencia')->searchable()->filterable()->defaultSort('asc'),
         Column::name('planes_de_accion.fecha_de_revision')->label('Fecha de Revisión')->searchable()->filterable()->defaultSort('asc'),

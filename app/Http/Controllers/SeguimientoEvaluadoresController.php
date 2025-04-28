@@ -424,4 +424,40 @@ class SeguimientoEvaluadoresController extends Controller
         return response()->json($planesNoResueltos);
     }
 
+    public function getResumenObjetivos(Request $request)
+    {
+        if (!$request->has('campania_id') || $request->campania_id == '') {
+            return response()->json([]);
+        }
+
+        $evaluadores = EvaluadorHasEvaluado::with(['evaluador', 'evaluado', 'objetivos'])
+            ->whereHas('evaluacion', function($q) use ($request) {
+                $q->where('campania_id', $request->campania_id)
+                    ->where('tipo_de_evaluacion_id', 2); // Solo evaluaciones por objetivos
+            })
+            ->get()
+            ->map(function($evaluacion) {
+                $subtotal = $evaluacion->objetivos->sum('peso_ponderado');
+                $total = 0;
+                
+                if ($subtotal >= $evaluacion->evaluacion->maximo) {
+                    $total = $evaluacion->evaluacion->maximo;
+                } elseif ($subtotal >= $evaluacion->evaluacion->minimo) {
+                    $total = $subtotal;
+                }
+
+                return [
+                    'evaluado' => $evaluacion->evaluado->name,
+                    'evaluador' => $evaluacion->evaluador->name,
+                    'area_evaluado' => $evaluacion->evaluado->area->nombre ?? 'Sin área',
+                    'subtotal' => number_format($subtotal, 2),
+                    'total' => number_format($total, 2),
+                    'minimo' => $evaluacion->evaluacion->minimo,
+                    'maximo' => $evaluacion->evaluacion->maximo
+                ];
+            });
+
+        return response()->json($evaluadores);
+    }
+
 }

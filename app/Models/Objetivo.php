@@ -187,7 +187,7 @@ class Objetivo extends Model implements Auditable
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
             return number_format($value*100.00, 2, '.', '');
         } else {
-            return number_format($value, 2, '.', '');
+            return number_format($value, 4, '.', '');
         }
     }
 
@@ -221,7 +221,7 @@ class Objetivo extends Model implements Auditable
         if ($this->tipo_objetivo_id == 2) { // si es porcentaje
             return is_null($value) ? '' : number_format($value*100.00, 2, '.', '');
         } else {
-            return is_null($value) ? '' : number_format($value, 2, '.', '');
+            return is_null($value) ? '' : number_format($value, 4, '.', '');
         }
     }
 }

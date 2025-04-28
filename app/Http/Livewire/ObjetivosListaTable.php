@@ -107,12 +107,23 @@ class ObjetivosListaTable extends LivewireDatatable
         //Boton de desarga para evidencias las evidencias tienen la relacion Objetivo->evidencias
 
         Column::callback(['id'], function ($id) {
-            $evidencias = Objetivo::find($id)->evidencias()->get();
-            
+            $evidencias = Objetivo::find($id)->evidencias()->get();            
             return view('components.download-button', ['evidencias' => $evidencias, 'ruta' => 'download']);
         },
         [],'evidencias')
-        ->label('Evidencias')->alignCenter()->excludeFromExport(),
+        ->label('Evidencias')
+        ->alignCenter()
+        ->exportCallback(
+            function ($id) {
+                $evidencias = Objetivo::find($id)->evidencias()->get();            
+                if ($evidencias->isEmpty()) {
+                    return 'No hay evidencias';
+                } else {
+                    return 'Tiene evidencias';
+                }
+            }
+        ),
+        // ->excludeFromExport(),
 
 
         Column::callback(['objetivos.porcentaje_de_logro_STI','objetivos.tipo_objetivo_id'], function ($porcentaje_de_logro_STI,$tipo_objetivo_id) {

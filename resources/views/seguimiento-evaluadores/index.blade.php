@@ -114,7 +114,12 @@
                         </div>
                     </div>
 
+                    <h5 class="mb-0">Resumen de evaluadores</h5>
+
                     <div id="evaluadores-table"></div>
+                    <br><br>
+                    <h5 class="mb-0">Resumen de Evaluaciones por Objetivos</h5>
+                    <div id="resumen-objetivos-table"></div>
 				</div>
 			</div>
 		</div>
@@ -476,6 +481,69 @@
             
         });
 
+        let tablaResumen = new Tabulator("#resumen-objetivos-table", {
+            ajaxURL: "{{ route('seguimiento-evaluadores.resumen-objetivos') }}",
+            ajaxParams: {
+                campania_id: document.getElementById('campania-filter').value
+            },
+            layout: "fitColumns",
+            pagination: true,
+            paginationSize: 10,
+            paginationSizeSelector: [10, 25, 50, 100],
+            columns: [
+                {
+                    title: "EVALUADO",
+                    field: "evaluado",
+                    headerFilter: true,
+                    sorter: "string",
+                    minWidth: 200
+                },
+                {
+                    title: "EVALUADOR",
+                    field: "evaluador",
+                    headerFilter: true,
+                    sorter: "string",
+                    minWidth: 200
+                },
+                // {
+                //     title: "ÁREA",
+                //     field: "area_evaluado",
+                //     headerFilter: true,
+                //     sorter: "string",
+                //     minWidth: 150
+                // },
+                {
+                    title: "SUBTOTAL",
+                    field: "subtotal",
+                    sorter: "number",
+                    formatter: function(cell) {
+                        return cell.getValue() + '%';
+                    },
+                    minWidth: 120
+                },
+                {
+                    title: "TOTAL",
+                    field: "total",
+                    sorter: "number",
+                    formatter: function(cell) {
+                        const valor = parseFloat(cell.getValue());
+                        const minimo = parseFloat(cell.getRow().getData().minimo);
+                        const maximo = parseFloat(cell.getRow().getData().maximo);
+                        
+                        let clase = 'badge-warning';
+                        if (valor >= maximo) {
+                            clase = 'badge-success';
+                        } else if (valor >= minimo) {
+                            clase = 'badge-info';
+                        }
+                        
+                        return `<div class="badge ${clase}">${valor}%</div>`;
+                    },
+                    minWidth: 120
+                }
+            ],
+            // Configuración de idioma y otros ajustes...
+        });
         // Agregar después de la configuración de la tabla
 table.on("tableBuilt", function(){
     console.log("Tabla construida");
@@ -493,6 +561,8 @@ table.on("dataLoadError", function(error){
         document.getElementById('campania-filter').addEventListener('change', function(e) {
             let campaniaId = e.target.value;
             table.setData("{{ route('seguimiento-evaluadores.data') }}", { campania_id: campaniaId });
+
+            tablaResumen.setData("{{ route('seguimiento-evaluadores.resumen-objetivos') }}", { campania_id: campaniaId });
 
             // Cargar resumen
             if(campaniaId) {
