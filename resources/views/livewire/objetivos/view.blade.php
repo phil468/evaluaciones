@@ -206,6 +206,25 @@
 												<td>{{ $row->porcentaje_de_logro_STI.'%' }}</td>
 												<td>{{ $row->peso_ponderado.'%' }}</td>
 												<td>
+													@if (!$row->grupal)
+														@if ($row->valor >= $row->minimo && $row->evidencias()->count() == 0)
+															<div class="mb-2 text-muted small">
+																<i class="fas fa-info-circle"></i>
+																Si usted ingresa un valor mayor o igual a {{ number_format($row->minimo, 4) }} 
+																(valor mínimo del objetivo planteado), deberá ingresar de manera 
+																obligatoria al menos una evidencia que sustente el resultado.
+															</div>
+														@endif
+														@if ($row->valor < $row->minimo && $row->sin_evidencias == 0 && $row->evidencias()->count() == 0)
+															<div class="mb-2 text-muted small">
+																<i class="fas fa-info-circle"></i>
+																Para valores menores a {{ number_format($row->minimo, 4) }} 
+																(valor mínimo del objetivo planteado), puede opcionalmente 
+																agregar evidencias o marcar como "Sin evidencias".
+															</div>
+														@endif
+													@endif
+
 													@foreach ($row->evidencias()->get() as $evidencia)
 														<div class="mb-2 btn-group" role="group" aria-label="Basic example">
 															<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
@@ -223,6 +242,7 @@
 													@endforeach
 
 													@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
+														{{-- Botón para subir evidencias --}}
 														<button 
 														class="rounded-full btn btn-vanguard" 
 														wire:click="openModalEvidencias({{$row->id}})"										
@@ -234,16 +254,26 @@
 															<i class="fa fa-plus"></i>
 														</button>											
 														<br>
+														
+    													{{-- Checkbox Sin evidencias --}}	
 														<input
 															class="mt-2"
 															type="checkbox" 
 															wire:click="sin_evidencias({{ $row->id }})" 
-															{{ $row->sin_evidencias ? 'checked' : '' }}
-															@if ($row->evidencias()->count() > 0)
-																disabled																
+															@if ($row->evidencias()->count() > 0 || ($row->valor >= $row->minimo))
+																disabled				
+															@else
+																{{ $row->sin_evidencias ? 'checked' : '' }}									
 															@endif
 															style="width: 20px; height: 20px;" 
 														> Sin evidencias
+														
+														{{-- @if ($row->valor < $row->minimo)
+															<div class="mt-1 text-muted small">
+																<i class="fas fa-info-circle"></i>
+																No se requieren evidencias para valores menores a {{ number_format($row->minimo, 2) }}
+															</div>
+														@endif --}}
 														
 													@else
 														@if ($primera_fase_activa && !$readOnly)

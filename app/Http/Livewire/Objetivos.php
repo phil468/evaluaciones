@@ -110,7 +110,6 @@ class Objetivos extends Component
         );
 
         $record = Objetivo::find($this->selected_id);
-
         $this->valor = $this->valor_actualizado;
 
         if ($record->tipo_objetivo_id == TiposDeObjetivo::CONDICIONAL) {
@@ -134,7 +133,12 @@ class Objetivos extends Component
         $this->resetInput();
         $this->resetValidation();
         $this->emit('closeModal');
-        session()->flash('message', 'Actualizado correctamente.');
+        
+        $mensaje = $this->valor_actualizado >= $record->minimo ? 
+        'Actualizado correctamente. Recuerde adjuntar evidencias.' : 
+        'Actualizado correctamente.';
+    
+        session()->flash('message', $mensaje);
     }
 
     public function sin_evidencias($id)
@@ -149,14 +153,41 @@ class Objetivos extends Component
 
     public function evaluarActualizarObjetivo($id) {
         // evaluar si objetivo tiene valor y evidencias y cambiar estado a 2
+        // $objetivo = Objetivo::find($id);
+
+        //  if (($objetivo->valor && $objetivo->evidencias()->get()->count() > 0) || ($objetivo->sin_evidencias)) {
+        //     $objetivo->update(['estado_id' => 2]);
+        // } elseif (!($objetivo->valor) || $objetivo->evidencias()->get()->count() <= 0)
+        // {
+        //     $objetivo->update(['estado_id' => 1]);
+        // }
+
+        //CAMBIO 80%
+
         $objetivo = Objetivo::find($id);
-        // dd($objetivo->valor, ($objetivo->evidencias()->get()->count() ));
-        if (($objetivo->valor && $objetivo->evidencias()->get()->count() > 0) || ($objetivo->sin_evidencias)) {
-            $objetivo->update(['estado_id' => 2]);
-        } elseif (!($objetivo->valor) || $objetivo->evidencias()->get()->count() <= 0)
-        {
-            $objetivo->update(['estado_id' => 1]);
+    
+        // Si el valor es menor al mínimo, no requiere evidencias
+        if ($objetivo->valor < $objetivo->minimo) {
+            if ($objetivo->sin_evidencias || $objetivo->evidencias()->count() > 0) {
+                $objetivo->update(['estado_id' => 2]); // Realizado
+            } else {
+                $objetivo->update(['estado_id' => 1]); // Pendiente
+            }
+            return;
         }
+
+        if (($objetivo->valor >= $objetivo->minimo || $objetivo->evidencias()->count() > 0)) {
+            $objetivo->update(['sin_evidencias' => 0]);
+        }
+    
+        // Si el valor es igual o mayor al mínimo, requiere evidencias
+        if (($objetivo->valor >= $objetivo->minimo && $objetivo->evidencias()->count() > 0)) 
+            {
+                $objetivo->update(['estado_id' => 2]);
+            } else {
+                $objetivo->update(['estado_id' => 1]);
+        }
+
     }
 
     public function openModadActualizarValor($id)
