@@ -188,7 +188,12 @@
     <script type="text/javascript" src="dist/js/tabulator.min.js"></script>
     {{-- <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script> --}}
-        
+    
+    <!-- SweetAlert -->
+    <script type="text/javascript" src="dist/js/sweetalert2.all.min.js"></script>
+    <link href="dist/css/sweetalert2.min.css" rel="stylesheet">
+    <script type="text/javascript" src="js/xlsx.full.min.js"></script>
+    
 </body>
 
 </html>

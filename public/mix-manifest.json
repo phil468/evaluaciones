@@ -61,5 +61,6 @@
     "/js/tabulator/tabulator_esm.min.mjs": "/js/tabulator/tabulator_esm.min.mjs",
     "/js/tabulator/tabulator_esm.min.mjs.map": "/js/tabulator/tabulator_esm.min.mjs.map",
     "/js/tabulator/tabulator_esm.mjs": "/js/tabulator/tabulator_esm.mjs",
-    "/js/tabulator/tabulator_esm.mjs.map": "/js/tabulator/tabulator_esm.mjs.map"
+    "/js/tabulator/tabulator_esm.mjs.map": "/js/tabulator/tabulator_esm.mjs.map",
+    "/css/sweetalert2.css": "/css/sweetalert2.css"
 }

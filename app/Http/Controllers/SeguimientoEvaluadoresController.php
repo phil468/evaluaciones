@@ -9,6 +9,7 @@ use App\Models\Personal;
 use App\Models\PlanesConfiguracion;
 use App\Models\TipoDeEvaluacione;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class SeguimientoEvaluadoresController extends Controller
 {
@@ -458,6 +459,58 @@ class SeguimientoEvaluadoresController extends Controller
             });
 
         return response()->json($evaluadores);
+    }
+
+    public function enviarCorreos(Request $request)
+    {
+        try {
+            $evaluadores = EvaluadorHasEvaluado::whereHas('evaluacion', function($q) use ($request) {
+                    $q->where('campania_id', $request->campania_id);
+                })
+                ->get()
+                ->filter(function ($evaluador) {
+                    return $evaluador->estado_pendiente;
+                });
+                
+            $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
+
+            foreach ($evaluadores as $evaluador) {
+                $personal = $evaluador->evaluador;
+                $user = $personal->user;
+                $email = $user->email;
+                $name = $user->name;
+
+                $evaluacion = $evaluador->evaluacion;
+                $primera_fase_activa = $evaluacion->tipo_de_evaluacion_id == 1 ? true : $evaluacion->primera_fase_activa;
+                $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
+                $fecha_fin_segunda_fase = $evaluacion->fecha_fin_segunda_fase ?? '';
+
+                // Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
+                //     $name, 
+                //     $primera_fase_activa, 
+                //     $segunda_fase_activa, 
+                //     $evaluacion->tipo_de_evaluacion_id, 
+                //     $fecha_fin_segunda_fase
+                // ));
+                Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+
+                \Log::info('Correo enviado', ['email' => $email]);
+                //interrumpir foreach 
+                break;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Correos enviados correctamente',
+                'count' => $evaluadores->count()
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar correos: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar los correos: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

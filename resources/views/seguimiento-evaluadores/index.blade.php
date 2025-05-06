@@ -19,12 +19,12 @@
 						</div>
                         
                         <div>
-                            <button id="download-xlsx" class="mr-2 btn btn-default rounded-xl">
+                            {{-- <button id="download-xlsx" class="mr-2 btn btn-default rounded-xl">
                                 <i class="mr-1 fas fa-file-excel"></i> Exportar Excel
-                            </button>
-                            <button id="download-pdf" class="btn btn-default rounded-xl">
+                            </button> --}}
+                            {{-- <button id="download-pdf" class="btn btn-default rounded-xl">
                                 <i class="mr-1 fas fa-file-pdf"></i> Exportar PDF
-                            </button>
+                            </button> --}}
                         </div>
 						{{-- <button wire:click="enviarCorreoEvaluadores" class="btn btn-sm btn-default rounded-xl">Enviar correo a evaluadores</button> --}}
 					</div>
@@ -114,22 +114,68 @@
                         </div>
                     </div>
 
-                    <h5 class="mb-0">Resumen de evaluadores</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-2">
+						<div class="float-left">
+							<h5 class="h5">Resumen de evaluadores</h5>
+						</div>
+                        
+                        <div>
+                            <button id="send-emails" class="mr-2 btn btn-primary rounded-xl">
+                                <i class="mr-1 fas fa-envelope"></i> Enviar Correos
+                            </button>
+                            <button id="download-xlsx" class="mr-2 btn btn-default rounded-xl">
+                                <i class="mr-1 fas fa-file-excel"></i> Exportar Excel
+                            </button>
+                            <button id="download-pdf" class="btn btn-default rounded-xl">
+                                <i class="mr-1 fas fa-file-pdf"></i> Exportar PDF
+                            </button>
+                        </div>
+						{{-- <button wire:click="enviarCorreoEvaluadores" class="btn btn-sm btn-default rounded-xl">Enviar correo a evaluadores</button> --}}
+					</div>
+                    {{-- <h5 class="mb-0">Resumen de evaluadores</h5> --}}
 
                     <div id="evaluadores-table"></div>
-                    <br><br>
-                    <h5 class="mb-0">Resumen de Evaluaciones por Objetivos</h5>
+                    <br>
+                    <br>
+                    <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-2">
+						<div class="float-left">
+							<h5 class="h5">Resumen de Evaluaciones por Objetivos</h5>
+						</div>
+                        
+                        {{-- <div>
+                            <button id="download-xlsx" class="mr-2 btn btn-default rounded-xl">
+                                <i class="mr-1 fas fa-file-excel"></i> Exportar Excel
+                            </button>
+                            <button id="download-pdf" class="btn btn-default rounded-xl">
+                                <i class="mr-1 fas fa-file-pdf"></i> Exportar PDF
+                            </button>
+                        </div> --}}
+						{{-- <button wire:click="enviarCorreoEvaluadores" class="btn btn-sm btn-default rounded-xl">Enviar correo a evaluadores</button> --}}
+					</div>
                     <div id="resumen-objetivos-table"></div>
 				</div>
 			</div>
 		</div>
 	</div>	
 </div>
-
+ 
+{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
 <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
+    // import Swal from 'sweetalert2';
 
-        
+    document.addEventListener('DOMContentLoaded', function() {     
+        // if (typeof Swal === 'undefined') {
+        //     console.error('❌ SweetAlert2 no está cargado correctamente');
+        // } else {
+        //     console.log('✅ SweetAlert2 está cargado correctamente');
+        //     // Prueba visual
+        //     Swal.fire({
+        //         title: 'Prueba de SweetAlert2',
+        //         text: 'Si ves este mensaje, SweetAlert2 está funcionando correctamente',
+        //         icon: 'success',
+        //         confirmButtonText: 'OK'
+        //     });
+        // }   
         // Función auxiliar para generar barras de progreso
         function generarBarraProgresoCompacta(realizados, total, porcentaje) {
             const clase = realizados === 0 ? 'bg-white' : 
@@ -161,7 +207,7 @@
             paginationSizeSelector: [10, 25, 50, 100],
             responsiveLayout: true,
             responsiveLayoutCollapseStart: 768,
-            placeholder: "No hay datos disponibles",
+            // placeholder: "No hay datos disponibles",
             // Reemplaza la configuración de columns en la inicialización de Tabulator
             columns: [
                 {
@@ -169,7 +215,7 @@
                     field: "evaluador", 
                     sorter: "string",
                     headerFilter: true,
-                    headerFilterPlaceholder: "Filtrar...",
+                    // headerFilterPlaceholder: "Filtrar...",
                     headerSortTristate: true,
                     minWidth: 200
                 },
@@ -177,7 +223,7 @@
                     title: "ÁREA", 
                     field: "area",
                     headerFilter: true,
-                    headerFilterPlaceholder: "Filtrar área...",
+                    // headerFilterPlaceholder: "Filtrar área...",
                     minWidth: 150
                 },
                 {
@@ -542,20 +588,49 @@
                     minWidth: 120
                 }
             ],
+            locale: true,
+            langs: {
+                "es": {
+                    "data":{
+                        "loading":"Cargando", //data loader text
+                        "error":"Error", //data error text
+                    },
+                    "pagination": {
+                        "page_size":"Elementos", //label for the page size select element
+                        "page_title":"Ver Página",//tooltip text for the numeric page button, appears in front of the page number (eg. "Show Page" will result in a tool tip of "Show Page 1" on the page 1 button)
+                    
+                        "first": "Primera",
+                        "first_title": "Primera Página",
+                        "last": "Última",
+                        "last_title": "Última Página",
+                        "prev": "Anterior",
+                        "prev_title": "Página Anterior",
+                        "next": "Siguiente",
+                        "next_title": "Página Siguiente",
+                    },
+                    "headerFilters": {
+                        "default": "filtrar columna...",
+                    },
+                    "groups": {
+                        "item": "elemento",
+                        "items": "elementos"
+                    }
+                }
+            },
             // Configuración de idioma y otros ajustes...
         });
         // Agregar después de la configuración de la tabla
-table.on("tableBuilt", function(){
-    console.log("Tabla construida");
-});
+        table.on("tableBuilt", function(){
+            console.log("Tabla construida");
+        });
 
-table.on("dataLoaded", function(data){
-    console.log("Datos cargados:", data);
-});
+        table.on("dataLoaded", function(data){
+            console.log("Datos cargados:", data);
+        });
 
-table.on("dataLoadError", function(error){
-    console.error("Error al cargar datos:", error);
-});
+        table.on("dataLoadError", function(error){
+            console.error("Error al cargar datos:", error);
+        });
 
         // Agregar evento para el filtro de campaña
         document.getElementById('campania-filter').addEventListener('change', function(e) {
@@ -652,6 +727,80 @@ table.on("dataLoadError", function(error){
                 }
             });
         });
+
+        // Agregar después de los otros event listeners
+        document.getElementById('send-emails').addEventListener('click', function() {
+            // if (typeof Swal === 'undefined') {
+            //     console.error('SweetAlert2 no está cargado');
+            //     alert('No se puede mostrar el diálogo. Por favor, recarga la página.');
+            //     return;
+            // }
+            
+            let campaniaId = document.getElementById('campania-filter').value;
+            
+            if (!campaniaId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Por favor seleccione una campaña primero'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: "Se enviarán correos a todos los evaluadores (de objetivos) pendientes",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3c4651',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, enviar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar loading
+                    Swal.fire({
+                        title: 'Enviando correos...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Realizar la petición
+                    fetch("{{ route('seguimiento-evaluadores.enviar-correos') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            campania_id: campaniaId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                '¡Enviado!',
+                                'Los correos han sido enviados correctamente.',
+                                'success'
+                            );
+                        } else {
+                            throw new Error(data.message || 'Error al enviar los correos');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire(
+                            'Error',
+                            error.message,
+                            'error'
+                        );
+                    });
+                }
+            });
+        });        
+        
     });
 </script>
 
@@ -731,13 +880,13 @@ table.on("dataLoadError", function(error){
 
     /* Cabecera de la tabla */
     .tabulator-header {
-        background-color: #6ecbc9  !important;
+        background-color: #3c4651 !important;
         border: none;
         padding: 10px 0;
     }
 
     .tabulator-header .tabulator-col {
-        background-color: #6ecbc9  !important;
+        background-color: #3c4651 !important;
         border-right: 1px solid rgba(255, 255, 255, 0.5);
     }
 
@@ -863,8 +1012,11 @@ table.on("dataLoadError", function(error){
     {{-- El script de Tabulator ahora viene del asset compilado --}}
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
 
+    {{-- SweetAlert2 --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+    
     {{-- Scripts necesarios para exportación --}}
-    <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+    {{-- <script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 

@@ -238,6 +238,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/seguimiento-evaluadores/planes-de-accion-no-resueltos',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getPlanesNoResueltos'])->name('seguimiento-evaluadores.planes-de-accion-no-resueltos');
     Route::get('/seguimiento-evaluadores/resumen-objetivos', [SeguimientoEvaluadoresController::class, 'getResumenObjetivos'])
     ->name('seguimiento-evaluadores.resumen-objetivos');
+    Route::post('/seguimiento-evaluadores/enviar-correos', [SeguimientoEvaluadoresController::class, 'enviarCorreos'])
+    ->name('seguimiento-evaluadores.enviar-correos');
 });
 // Auth::routes();
 Route::get('/web/capacitaciones/{tipo_user}/{user_id}', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'getCapacitaciones'])->name('capacitaciones.getCapacitaciones'); //FALTA MODIFICAR

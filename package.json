@@ -34,6 +34,7 @@
         "@tailwindcss/typography": "^0.5.9",
         "choices.js": "^10.2.0",
         "select2": "^4.1.0-rc.0",
+        "sweetalert2": "^11.21.0",
         "tabulator-tables": "^6.3.1"
     }
 }

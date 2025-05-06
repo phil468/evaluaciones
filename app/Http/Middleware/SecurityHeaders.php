@@ -72,6 +72,14 @@ class SecurityHeaders
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
 
+        $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
+        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
+        
+        // Eliminar cabeceras que exponen información
+        $response->headers->remove('X-Powered-By');
+        $response->headers->remove('Server');
+
         return $response;
     }
 }
