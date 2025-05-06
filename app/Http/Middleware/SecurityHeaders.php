@@ -67,7 +67,7 @@ class SecurityHeaders
         }
 
         // Permitir el origen de la aplicación
-        $response->headers->set('Access-Control-Allow-Origin', $request->header('Origin', '*'));
+        // $response->headers->set('Access-Control-Allow-Origin', $request->header('Origin', '*'));
         if ($request->header('Origin')) {
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
