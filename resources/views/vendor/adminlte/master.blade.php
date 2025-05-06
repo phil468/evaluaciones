@@ -148,6 +148,8 @@
     @if(!config('adminlte.enabled_laravel_mix'))
         <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
         <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        {{-- <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"> --}}
         <script src="{{ asset('vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 
         {{-- Configured Scripts --}}
@@ -172,10 +174,10 @@
     ></script>
 
     @yield('adminlte_js')
-    <script src=
-    "{{ asset('js/bootstrap4-toggle.min.js')}}"
+    {{-- <script src= --}}
+    {{-- "{{ asset('js/bootstrap4-toggle.min.js')}}" --}}
     {{-- "https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js" --}}
-    ></script>
+    {{-- ></script> --}}
 
     <!-- Include Choices JavaScript (latest) -->
     <script src=

@@ -106,18 +106,30 @@ class ObjetivosListaTable extends LivewireDatatable
 
         //Boton de desarga para evidencias las evidencias tienen la relacion Objetivo->evidencias
 
-        Column::callback(['id'], function ($id) {
-            $evidencias = Objetivo::find($id)->evidencias()->get();            
-            return view('components.download-button', ['evidencias' => $evidencias, 'ruta' => 'download']);
+        Column::callback(['id','sin_evidencias'], function ($id,$sin_evidencias) {
+            $evidencias = Objetivo::find($id)->evidencias()->get();
+            if ($evidencias->isEmpty()) {
+                if ($sin_evidencias) {
+                    return "Marcado check SIN EVIDENCIAS";
+                } else {
+                    return 'No ha cargado evidencias';
+                }
+            } else {
+                return view('components.download-button', ['evidencias' => $evidencias, 'ruta' => 'download']);
+            }
         },
         [],'evidencias')
         ->label('Evidencias')
         ->alignCenter()
         ->exportCallback(
-            function ($id) {
+            function ($id,$sin_evidencias) {
                 $evidencias = Objetivo::find($id)->evidencias()->get();            
                 if ($evidencias->isEmpty()) {
-                    return 'No hay evidencias';
+                    if ($sin_evidencias) {
+                        return "Marcado check SIN EVIDENCIAS";
+                    } else {
+                        return 'No ha cargado evidencias';
+                    }
                 } else {
                     return 'Tiene evidencias';
                 }
@@ -133,6 +145,126 @@ class ObjetivosListaTable extends LivewireDatatable
         Column::callback(['objetivos.peso_ponderado', 'objetivos.tipo_objetivo_id'], function ($peso_ponderado, $tipo_objetivo_id) {
             return $peso_ponderado ? ($peso_ponderado * 100).'%' : $peso_ponderado;
         })->label('Peso ponderado')->searchable()->filterable()->defaultSort('asc'),
+
+        Column::callback(['id', 'grupal', 'valor', 'minimo', 'sin_evidencias', 'estado_id'], function ($id, $grupal, $valor, $minimo, $sin_evidencias, $estado_id) {
+            $objetivo = Objetivo::find($id);
+            $evidencias_count = $objetivo->evidencias()->count();
+            
+            // Si es grupal, está bien
+            if ($grupal) {
+                return 'OK';
+            }
+            
+            // Para objetivos individuales
+            if ($valor >= $minimo) {
+                // Debe tener evidencias obligatoriamente
+                if ($evidencias_count == 0) {
+
+                    if ($estado_id == 1) {
+                        return 'Advertencia';
+                    }
+                    if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
+                        return 'Peligro';
+                    }
+
+                } 
+
+                if ($evidencias_count > 0) {
+                    if ($estado_id == 1) {
+                        return 'Advertencia';
+                    }
+                    if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
+                        return 'OK';
+                    }
+                }
+
+            } else {
+                // Valor menor al mínimo
+                if ($evidencias_count == 0 && $sin_evidencias == 0) {                    
+                    if ($estado_id == 1) {
+                        return 'Advertencia';
+                    }
+                    if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
+                        return 'Peligro';
+                    }
+                }
+            }
+            
+            // Si llegó aquí, está todo correcto
+            return 'OK';
+        },[],'info')->searchable()->filterable()->label('Info')->alignCenter(),
+
+        Column::callback(['id', 'grupal', 'valor', 'minimo', 'sin_evidencias', 'estado_id'], function ($id, $grupal, $valor, $minimo, $sin_evidencias, $estado_id) {
+            $objetivo = Objetivo::find($id);
+            $evidencias_count = $objetivo->evidencias()->count();
+            
+            // Si es grupal, está bien
+            if ($grupal) {
+                return view('components.estado-validacion', [
+                    'estado' => 'success',
+                    'mensaje' => 'OK - Objetivo grupal'
+                ]);
+            }
+            
+            // Para objetivos individuales
+            if ($valor >= $minimo) {
+                // Debe tener evidencias obligatoriamente
+                if ($evidencias_count == 0) {
+
+                    if ($estado_id == 1) {
+                        return view('components.estado-validacion', [
+                            'estado' => 'warning',
+                            'mensaje' => 'Requiere evidencias para valor ≥ ' . number_format($minimo, 4)
+                        ]);
+                    }
+                    if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
+                        return view('components.estado-validacion', [
+                            'estado' => 'danger',
+                            'mensaje' => 'REALIZADO: Requiere evidencias para valor ≥ ' . number_format($minimo, 4)
+                        ]);
+                    }
+
+                } 
+
+                if ($evidencias_count > 0) {
+                    if ($estado_id == 1) {
+                        return view('components.estado-validacion', [
+                            'estado' => 'warning',
+                            'mensaje' => 'Requiere evidencias para valor ≥ ' . number_format($minimo, 4)
+                        ]);
+                    }
+                    if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
+                        return view('components.estado-validacion', [
+                            'estado' => 'success',
+                            'mensaje' => 'OK - Objetivo individual'
+                        ]);
+                    }
+                }
+
+            } else {
+                // Valor menor al mínimo
+                if ($evidencias_count == 0 && $sin_evidencias == 0) {                    
+                    if ($estado_id == 1) {
+                        return view('components.estado-validacion', [
+                            'estado' => 'warning',
+                            'mensaje' => 'Debe marcar sin evidencias o agregar evidencias'
+                        ]);
+                    }
+                    if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
+                        return view('components.estado-validacion', [
+                            'estado' => 'danger',
+                            'mensaje' => 'REALIZADO: Debe marcar sin evidencias o agregar evidencias'
+                        ]);
+                    }
+                }
+            }
+            
+            // Si llegó aquí, está todo correcto
+            return view('components.estado-validacion', [
+                'estado' => 'success',
+                'mensaje' => 'OK'
+            ]);
+        })->label('Validación')->alignCenter(),
 
         DateColumn::name('created_at')->label('Fecha de creacion')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
         DateColumn::name('updated_at')->label('Fecha de Modificación')->format('d/m/Y h:i:s a')->searchable()->filterable()->defaultSort('asc'),
