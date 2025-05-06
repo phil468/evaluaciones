@@ -161,17 +161,17 @@ class ObjetivosListaTable extends LivewireDatatable
                 if ($evidencias_count == 0) {
 
                     if ($estado_id == 1) {
-                        return 'Advertencia';
+                        return 'ADVERTENCIA';
                     }
                     if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
-                        return 'Peligro';
+                        return 'PELIGRO';
                     }
 
                 } 
 
                 if ($evidencias_count > 0) {
                     if ($estado_id == 1) {
-                        return 'Advertencia';
+                        return 'ADVERTENCIA';
                     }
                     if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
                         return 'OK';
@@ -182,10 +182,10 @@ class ObjetivosListaTable extends LivewireDatatable
                 // Valor menor al mínimo
                 if ($evidencias_count == 0 && $sin_evidencias == 0) {                    
                     if ($estado_id == 1) {
-                        return 'Advertencia';
+                        return 'ADVERTENCIA';
                     }
                     if ($estado_id == 2) { // Si el objetivo está en estado "REALIZADO" y sin evidencias el estado es de peligro
-                        return 'Peligro';
+                        return 'PELIGRO';
                     }
                 }
             }
