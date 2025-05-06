@@ -192,7 +192,7 @@ class ObjetivosListaTable extends LivewireDatatable
             
             // Si llegó aquí, está todo correcto
             return 'OK';
-        },[],'info')->searchable()->filterable()->label('Info')->alignCenter(),
+        },[],'info')->searchable()->filterable()->sortable()->label('Info')->alignCenter(),
 
         Column::callback(['id', 'grupal', 'valor', 'minimo', 'sin_evidencias', 'estado_id'], function ($id, $grupal, $valor, $minimo, $sin_evidencias, $estado_id) {
             $objetivo = Objetivo::find($id);
