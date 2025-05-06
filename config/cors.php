@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://evaluaciones.vanguardfresh.pe',
+        // 'http://localhost:8080/evaluaciones',
+        // '*'
+        ],
 
     'allowed_origins_patterns' => [],
 
