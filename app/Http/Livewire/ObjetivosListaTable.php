@@ -192,17 +192,7 @@ class ObjetivosListaTable extends LivewireDatatable
             
             // Si llegó aquí, está todo correcto
             return 'OK';
-        },[],'info')->searchable()->filterable(
-            function ($query, $value) {
-                if ($value == 'OK') {
-                    return $query->where('objetivos.valor', '>=', 'objetivos.minimo');
-                } elseif ($value == 'ADVERTENCIA') {
-                    return $query->where('objetivos.valor', '<', 'objetivos.minimo')->where('objetivos.evidencias_count', 0);
-                } elseif ($value == 'PELIGRO') {
-                    return $query->where('objetivos.valor', '<', 'objetivos.minimo')->where('objetivos.evidencias_count', 0)->where('objetivos.estado_id', 2);
-                }
-            }
-        )->sortable()->label('Info')->alignCenter(),
+        },[],'info')->label('Info')->alignCenter(),
 
         Column::callback(['id', 'grupal', 'valor', 'minimo', 'sin_evidencias', 'estado_id'], function ($id, $grupal, $valor, $minimo, $sin_evidencias, $estado_id) {
             $objetivo = Objetivo::find($id);

@@ -21,6 +21,9 @@
 						<div class="btn btn-sm btn-default" data-toggle="modal" data-target="#createDataModal">
 						<i class="fa fa-plus"></i>  Nuevo
 						</div>
+						{{-- <a href="{{ route('importar-preguntas') }}" class="btn btn-primary">
+							Importar Preguntas
+						</a> --}}
 						@endcan
 					</div>
 				</div>

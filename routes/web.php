@@ -123,19 +123,43 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/tipos_de_capacitaciones','livewire.tipo-de-capacitaciones.index')->name('tipo-de-capacitacion')->middleware(['can:ver-tipo-de-capacitacion']);//tipo_de_activos
     Route::view('/empresas','livewire.empresas.index')->name('empresas')->middleware(['can:ver-empresa']);
     
-    Route::view('/evaluaciones','livewire.evaluaciones.index')->name('evaluaciones')->middleware(['can:ver-empresa']);
-    Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-empresa']);
+    
+
+    // SEGUIMIENTO DE EVALUACIONES -- INICIO
+    Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-seguimiento-respuestas']);
+    Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
+    Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
+    Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-seguimiento-evaluadores']);
+    Route::view('/seguimiento_evaluados','livewire.seguimiento-evaluados.index')->name('seguimiento_evaluados')->middleware(['can:ver-seguimiento-evaluados']);
+    
+    Route::get('/seguimiento-evaluadores', [App\Http\Controllers\SeguimientoEvaluadoresController::class, 'index'])->name('seguimiento-evaluadores.index')->middleware(['can:ver-seguimiento-evaluadores']);
+    Route::get('/seguimiento-evaluadores/data',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getData'])->name('seguimiento-evaluadores.data')->middleware(['can:ver-seguimiento-evaluadores']);
+    Route::get('/seguimiento-evaluadores/resumen',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getResumen'])->name('seguimiento-evaluadores.resumen')->middleware(['can:ver-seguimiento-evaluadores']);
+    Route::get('/seguimiento-evaluadores/planes-de-accion-no-resueltos',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getPlanesNoResueltos'])->name('seguimiento-evaluadores.planes-de-accion-no-resueltos')->middleware(['can:ver-seguimiento-evaluadores']);
+    Route::get('/seguimiento-evaluadores/resumen-objetivos', [SeguimientoEvaluadoresController::class, 'getResumenObjetivos'])
+    ->name('seguimiento-evaluadores.resumen-objetivos')->middleware(['can:ver-seguimiento-evaluadores']);
+    Route::post('/seguimiento-evaluadores/enviar-correos', [SeguimientoEvaluadoresController::class, 'enviarCorreos'])
+    ->name('seguimiento-evaluadores.enviar-correos')->middleware(['can:ver-seguimiento-evaluadores']);
+    // SEGUIMIENTO DE EVALUACIONES -- FIN
+
+
+    // AJUSTE DE EVALUACIONES -- INICIO
+    Route::view('/evaluaciones','livewire.evaluaciones.index')->name('evaluaciones')->middleware(['can:ver-configuracion-evaluaciones']);
+    Route::view('/evaluadores','livewire.evaluadores.index')->name('evaluadores')->middleware(['can:ver-configuracion-evaluadores']);
+    Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-configuracion-secciones']);
+    Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-configuracion-preguntas']);
+    Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
+    Route::view('/objetivos-precargados','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
     // Route::view('/importar-preguntas', 'livewire.importar-preguntas.index')->name('importar-preguntas')->middleware(['auth']);
-    Route::view('/opciones','livewire.opciones.index')->name('opciones')->middleware(['can:ver-empresa']);
+    // AJUSTE DE EVALUACIONES -- FIN    
+
+    
+
     Route::get('/evaluaciones-de-desempeno/{id}', function ($tipo_de_evaluacion_id) {
         return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id', $tipo_de_evaluacion_id);
     })->name('evaluacion_de_desempeno')
     ->middleware(['can:ver-evaluaciones-de-desempeno']);
 
-    Route::view('/evaluadores','livewire.evaluadores.index')->name('evaluadores')->middleware(['can:ver-empresa']);
-    Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-empresa']);
-    Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
-    Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     // Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     
     // Route::get('/evaluacion/{tipo_de_evaluacion_id}/{id}', function ($tipo_de_evaluacion_id,$evaluacion_id) {
@@ -174,11 +198,6 @@ Route::group(['middleware'  =>  ['auth']],function(){
     ->name('evaluacion.show')
     ->middleware(['can:ver-evaluaciones-de-desempeno']);
 
-    Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-empresa']);
-
-    Route::view('/objetivos-precargados','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
-
-    Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-empresa']);
     Route::get('/planes-de-mejora/{ingreso}', function ($ingreso) {
         return view('livewire.planes-de-mejora.index')->with('ingreso', $ingreso);
     })->name('planes-de-mejora.ingreso')->middleware(['can:ver-evaluaciones-de-desempeno']);
@@ -186,9 +205,6 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/planes-de-mejora/{dashboard}/{empleado_id}', function ($dashboard, $empleado_id) {
         return view('livewire.planes-de-mejora.index')->with('dashboard', $dashboard)->with('empleado_id', $empleado_id);
     })->name('planes-de-mejora')->middleware(['can:ver-evaluaciones-de-desempeno']);
-
-    Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-empresa']);
-    Route::view('/seguimiento_evaluados','livewire.seguimiento-evaluados.index')->name('seguimiento_evaluados')->middleware(['can:ver-empresa']);
 
     Route::view('/sedes','livewire.sedes.index')->name('sedes')->middleware(['can:ver-sede']);
     Route::view('/gerencias','livewire.gerencias.index')->name('gerencias')->middleware(['can:ver-gerencia']);
@@ -232,14 +248,6 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::resource('users',UserController::class);
     Route::resource('roles',RolController::class);
 
-    Route::get('/seguimiento-evaluadores', [App\Http\Controllers\SeguimientoEvaluadoresController::class, 'index'])->name('seguimiento-evaluadores.index');
-    Route::get('/seguimiento-evaluadores/data',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getData'])->name('seguimiento-evaluadores.data');
-    Route::get('/seguimiento-evaluadores/resumen',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getResumen'])->name('seguimiento-evaluadores.resumen');
-    Route::get('/seguimiento-evaluadores/planes-de-accion-no-resueltos',[App\Http\Controllers\SeguimientoEvaluadoresController::class, 'getPlanesNoResueltos'])->name('seguimiento-evaluadores.planes-de-accion-no-resueltos');
-    Route::get('/seguimiento-evaluadores/resumen-objetivos', [SeguimientoEvaluadoresController::class, 'getResumenObjetivos'])
-    ->name('seguimiento-evaluadores.resumen-objetivos');
-    Route::post('/seguimiento-evaluadores/enviar-correos', [SeguimientoEvaluadoresController::class, 'enviarCorreos'])
-    ->name('seguimiento-evaluadores.enviar-correos');
 });
 // Auth::routes();
 Route::get('/web/capacitaciones/{tipo_user}/{user_id}', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'getCapacitaciones'])->name('capacitaciones.getCapacitaciones'); //FALTA MODIFICAR

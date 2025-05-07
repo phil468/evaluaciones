@@ -310,7 +310,7 @@ return [
                     'text' => 'Respuestas Ev. por Competencias',
                     'url'  => 'respuestas',
                     'icon' => 'fas fa-list-ol',
-                    'can'  => 'ver-capacitacion',
+                    'can'  => 'ver-seguimiento-respuestas',
                     'classes' => 'rounded-xl',
                 ],
                     
@@ -318,7 +318,7 @@ return [
                     'text' => 'Respuestas Ev. por Resultados',
                     'url'  => 'objetivos',
                     'icon' => 'fas fa-list-ol',
-                    'can'  => 'ver-capacitacion',
+                    'can'  => 'ver-seguimiento-objetivos',
                     'classes' => 'rounded-xl',
                 ],
 
@@ -334,7 +334,7 @@ return [
                     'text' => 'Seguimiento Evaluadores',
                     'url'  => 'seguimiento-evaluadores',
                     'icon' => 'fas fa-list-ol',
-                    'can'  => 'ver-capacitacion',
+                    'can'  => 'ver-seguimiento-evaluadores',
                     'classes' => 'rounded-xl',
                 ],
 
@@ -342,7 +342,7 @@ return [
                     'text' => 'Seguimiento Evaluados',
                     'url'  => 'seguimiento_evaluados',
                     'icon' => 'fas fa-list-ol',
-                    'can'  => 'ver-capacitacion',
+                    'can'  => 'ver-seguimiento-evaluados',
                     'classes' => 'rounded-xl',
                 ],
                 
@@ -495,7 +495,7 @@ return [
                     'text' => 'Evaluaciones',
                     'url'  => 'evaluaciones',
                     'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
+                    'can'  => 'ver-configuracion-evaluaciones',
                     'classes' => 'rounded-xl',
                 ],
                 
@@ -503,7 +503,7 @@ return [
                     'text' => 'Evaluadores',
                     'url'  => 'evaluadores',
                     'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
+                    'can'  => 'ver-configuracion-evaluadores',
                     'classes' => 'rounded-xl',
                 ],
                 
@@ -511,7 +511,7 @@ return [
                     'text' => 'Secciones',
                     'url'  => 'secciones',
                     'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
+                    'can'  => 'ver-configuracion-secciones',
                     'classes' => 'rounded-xl',
                 ],
 
@@ -519,7 +519,7 @@ return [
                     'text' => 'Preguntas',
                     'url'  => 'preguntas',
                     'icon' => 'fas fa-cog fa-xs',
-                    'can'  => 'ver-modalidad',
+                    'can'  => 'ver-configuracion-preguntas',
                     'classes' => 'rounded-xl',
                 ],
 
