@@ -316,7 +316,8 @@ return [
                     
                 [
                     'text' => 'Respuestas Ev. por Resultados',
-                    'url'  => 'objetivos',
+                    // 'url'  => 'objetivos',
+                    'url'  => 'respuesta-evaluacion-resultados',
                     'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-seguimiento-objetivos',
                     'classes' => 'rounded-xl',
@@ -332,6 +333,7 @@ return [
                 
                 [
                     'text' => 'Seguimiento Evaluadores',
+                    'url'  => 'seguimiento_evaluadores',
                     'url'  => 'seguimiento-evaluadores',
                     'icon' => 'fas fa-list-ol',
                     'can'  => 'ver-seguimiento-evaluadores',

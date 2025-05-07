@@ -1,4 +1,4 @@
-<!-- Modal -->
+{{-- <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="auditoriaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="rounded-2xl modal-content">
@@ -93,5 +93,37 @@
                 <button type="button" wire:click.prevent="cancel()" class="btn rounded-xl btn-secondary" data-dismiss="modal">Cerrar</button>
             </div>
        </div>
+    </div>
+</div> --}}
+
+{{-- filepath: c:\laragon\www\evaluaciones\resources\views\livewire\objetivos-lista\historial.blade.php --}}
+<div class="modal fade" id="auditoriaModal" tabindex="-1" role="dialog" aria-labelledby="auditoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content rounded-xl">
+            <div class="text-white modal-header bg-vanguard">
+                <h5 class="modal-title" id="auditoriaModalLabel">Historial de Cambios</h5>
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                                <th>Antiguos Valores</th>
+                                <th>Nuevos Valores</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historial-contenido">
+                            {{-- El contenido se cargará dinámicamente --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

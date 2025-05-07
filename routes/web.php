@@ -130,6 +130,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
     Route::view('/respuesta-evaluacion-resultados','livewire.objetivos-lista.table')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
     Route::get('/objetivos-lista/data', [ObjetivosListaController::class, 'getData'])->name('objetivos-lista.data')->middleware(['can:ver-seguimiento-objetivos']);
+    Route::get('/objetivos-lista/historial/{id}', [ObjetivosListaController::class, 'getHistorial'])->name('objetivos-lista.historial')->middleware(['can:ver-seguimiento-objetivos']);
+
     Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-seguimiento-evaluadores']);
     Route::view('/seguimiento_evaluados','livewire.seguimiento-evaluados.index')->name('seguimiento_evaluados')->middleware(['can:ver-seguimiento-evaluados']);
