@@ -44,7 +44,7 @@ class ObjetivosListaController extends Controller
                     'evaluado' => $objetivo->evaluado_name,
                     'cargo_evaluado' => $objetivo->cargo_de_evaluado,
                     'meta' => $objetivo->meta,
-                    'porcentaje_participacion' => number_format($objetivo->porcentaje_de_participacion, 2) . '%',
+                    'porcentaje_participacion' => number_format($objetivo->porcentaje_de_participacion, 4) . '%',
                     'tipo_objetivo' => $objetivo->unidad,
                     'resultado_anterior' => $this->formatearValor($objetivo->resultado_anterior_o_esperado, $objetivo->tipo_objetivo_id),
                     'minimo' => $this->formatearValor($objetivo->minimo, $objetivo->tipo_objetivo_id),
@@ -62,8 +62,8 @@ class ObjetivosListaController extends Controller
                             ];
                         })
                     ],
-                    'porcentaje_logro' => $objetivo->porcentaje_de_logro_STI ? number_format($objetivo->porcentaje_de_logro_STI, 2) . '%' : '',
-                    'peso_ponderado' => $objetivo->peso_ponderado ? number_format($objetivo->peso_ponderado, 2) . '%' : '',
+                    'porcentaje_logro' => $objetivo->porcentaje_de_logro_STI ? number_format($objetivo->porcentaje_de_logro_STI, 4) . '%' : '',
+                    'peso_ponderado' => $objetivo->peso_ponderado ? number_format($objetivo->peso_ponderado, 4) . '%' : '',
                     'info_estado' => $info_estado,
                     'estado_validacion' => $estado_validacion,                    
                     'created_at' => $objetivo->created_at ? $objetivo->created_at->format('d/m/Y h:i:s a') : '',
@@ -77,9 +77,9 @@ class ObjetivosListaController extends Controller
     private function formatearValor($valor, $tipo_objetivo_id)
     {
         if ($tipo_objetivo_id == 2) { // si es porcentaje
-            return $valor ? number_format($valor, 2, '.', ',') . '%' : '';
+            return $valor ? number_format($valor, 4, '.', ',') . '%' : '';
         }
-        return $valor ? number_format($valor, 2, '.', ',') : '';;
+        return $valor ? number_format($valor, 4, '.', ',') : '';;
     }
 
     private function getEvidenciasTexto($objetivo)
