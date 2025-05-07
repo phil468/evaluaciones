@@ -155,4 +155,6 @@ return [
 
     'render_on_redirect' => false,
 
+    'script_nonce' => true,
+    'style_nonce' => true,
 ];

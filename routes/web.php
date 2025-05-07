@@ -6,6 +6,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
+use App\Http\Controllers\ObjetivosListaController;
 use App\Http\Controllers\SeguimientoEvaluadoresController;
 // use App\Http\Livewire\ImportarPreguntas;
 use App\Models\Asignacione;
@@ -123,11 +124,12 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/tipos_de_capacitaciones','livewire.tipo-de-capacitaciones.index')->name('tipo-de-capacitacion')->middleware(['can:ver-tipo-de-capacitacion']);//tipo_de_activos
     Route::view('/empresas','livewire.empresas.index')->name('empresas')->middleware(['can:ver-empresa']);
     
-    
 
     // SEGUIMIENTO DE EVALUACIONES -- INICIO
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-seguimiento-respuestas']);
     Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
+    Route::view('/respuesta-evaluacion-resultados','livewire.objetivos-lista.table')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
+    Route::get('/objetivos-lista/data', [ObjetivosListaController::class, 'getData'])->name('objetivos-lista.data')->middleware(['can:ver-seguimiento-objetivos']);
     Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-seguimiento-evaluadores']);
     Route::view('/seguimiento_evaluados','livewire.seguimiento-evaluados.index')->name('seguimiento_evaluados')->middleware(['can:ver-seguimiento-evaluados']);
@@ -153,7 +155,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     // Route::view('/importar-preguntas', 'livewire.importar-preguntas.index')->name('importar-preguntas')->middleware(['auth']);
     // AJUSTE DE EVALUACIONES -- FIN    
 
-    
+
 
     Route::get('/evaluaciones-de-desempeno/{id}', function ($tipo_de_evaluacion_id) {
         return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id', $tipo_de_evaluacion_id);

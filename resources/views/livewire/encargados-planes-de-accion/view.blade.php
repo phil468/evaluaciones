@@ -52,13 +52,13 @@
                                         <table class="table table-striped table-hover table-sm">
                                             <thead class="thead">
                                                 <tr>
-	                                                @if ($ingreso)
+                                                    @if ($ingreso)
                                                     @else
                                                         <th>Encargado</th>
                                                     @endif
                                                     <th>Personal</th>
                                                     <th>Planes ingresados</th>
-	                                                <th>ACCIONES</th>
+                                                    <th>ACCIONES</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -69,25 +69,23 @@
                                                             <td>{{ $row->encargado->name }}</td>
                                                         @endif
                                                         <td>{{ $row->empleado->name }}</td>
-                                                        <td>    
-                                                            {{ $row->planes_de_accion_empleado->count() }} / {{ $row->cantidad_requerida }}
+                                                        <td>
+                                                            {{ $row->planes_de_accion_empleado->count() }} /
+                                                            {{ $row->cantidad_requerida }}
                                                         </td>
- 														<td width="90">
+                                                        <td width="90">
                                                             @if ($evaluacionPorCompetenciasFinalizada)
                                                                 <div class="btn-group">
-                                                                    <button class="rounded-xl btn btn-vanguard" data-toggle="tooltip"
-                                                                        data-placement="top" title="Ver"
-                                                                        wire:click="ver({{ $row->id }})">
-                                                                            <i class="fa fa-eye"></i>
+                                                                    <button class="rounded-xl btn btn-vanguard"
+                                                                        data-toggle="tooltip" data-placement="top"
+                                                                        title="Ver" wire:click="ver({{ $row->id }})">
+                                                                        <i class="fa fa-eye"></i>
                                                                     </button>
                                                                 </div>
                                                             @else
-                                                                <button 
-                                                                class="rounded-xl btn btn-vanguard" 
-                                                                data-toggle="tooltip" 
-                                                                data-placement="top" 
-                                                                title="Evaluaciones aun no están finalizadas" 
-                                                                disabled>
+                                                                <button class="rounded-xl btn btn-vanguard"
+                                                                    data-toggle="tooltip" data-placement="top"
+                                                                    title="Evaluaciones aun no están finalizadas" disabled>
                                                                     <i class="fa fa-eye"></i>
                                                                 </button>
                                                                 <br>
@@ -129,46 +127,44 @@
                                     </button>
                                 </p> --}}
                                 <p>
-                                    (Requeridos: {{$cantidad_requerida}} planes)
+                                    (Requeridos: {{ $cantidad_requerida }} planes)
                                 </p>
                             </div>
                             @if ($planesDeAccions->count() < $cantidad_requerida)
                                 <p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
                                 @foreach ($secciones_ordenadas as $row)
-                                {{-- {{dd($secciones_ordenadas)}} --}}
+                                    {{-- {{dd($secciones_ordenadas)}} --}}
                                     @if ($row->bajo)
                                         @if ($row->obligatorio)
                                             @if ($row->ingresado)
-
                                             @else
                                                 <p class="mb-2">
-                                                    <button type="button" 
-                                                    class="rounded-xl btn btn-outline-danger btn-block" 
-                                                    wire:click='setValues({{$row->seccion_id}})'>
-                                                        <div class="h6"> {{ $row->nombre }} (Obligatorio) </div> 
-                                                    </button>										
+                                                    <button type="button"
+                                                        class="rounded-xl btn btn-outline-danger btn-block"
+                                                        wire:click='setValues({{ $row->seccion_id }})'>
+                                                        <div class="h6"> {{ $row->nombre }} (Obligatorio) </div>
+                                                    </button>
                                                 </p>
                                             @endif
                                         @else
-                                                
                                             @if ($row->ingresado)
-
                                             @else
                                                 @if ($row->visible)
                                                     <p class="mb-2">
-                                                        <button type="button" class="rounded-xl btn btn-outline-warning btn-block" wire:click='setValues({{$row->seccion_id}})'>
-                                                            <div class="h6"> {{ $row->nombre }} (Opcional) </div> 
+                                                        <button type="button"
+                                                            class="rounded-xl btn btn-outline-warning btn-block"
+                                                            wire:click='setValues({{ $row->seccion_id }})'>
+                                                            <div class="h6"> {{ $row->nombre }} (Opcional) </div>
                                                         </button>
-                                                    </p>	
+                                                    </p>
                                                 @else
-                                                    
                                                 @endif
-                                            @endif						
+                                            @endif
                                         @endif
                                     @endif
                                 @endforeach
                             @endif
-                            
+
                             {{-- <div class="float-right mb-2">
                                 (Requeridos: {{$cantidad_requerida}} planes)
                             </div> --}}
@@ -203,7 +199,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($planesDeAccions as $row)
-                                            {{-- {{dd($row)}} --}}
+                                                {{-- {{dd($row)}} --}}
                                                 <tr>
                                                     <td width="90">
                                                         <div class="btn-group">
@@ -213,8 +209,8 @@
                                                             @if ($primera_fase_activa)
                                                                 <a class="btn btn-sm btn-danger rounded-xl"
                                                                     onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
-                                                                    wire:click="destroy_plan({{ $row->id }})"> Borrar 
-                                                                </a>                                                                
+                                                                    wire:click="destroy_plan({{ $row->id }})"> Borrar
+                                                                </a>
                                                             @endif
                                                         </div>
                                                     </td>
@@ -227,22 +223,25 @@
                                                     <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
                                                     <td>{{ $row->fecha_de_revision ?? '' }}</td>
-                                                    <td style=" background-color: {{ $row->estado->color ?? '' }};" > {{ $row->estado->name ?? '' }}</td>
+                                                    <td style=" background-color: {{ $row->estado->color ?? '' }};">
+                                                        {{ $row->estado->name ?? '' }}</td>
                                                     <td>{{ $row->avance }}%</td>
-                                                    
+
                                                     <td>
                                                         @foreach ($row->evidencias()->get() as $evidencia)
-                                                            <div class="mb-2 btn-group" role="group" aria-label="Basic example">
-                                                                <a href="{{ route('download_evidencia_plan', $evidencia->id) }}" class="btn btn-link">
+                                                            <div class="mb-2 btn-group" role="group"
+                                                                aria-label="Basic example">
+                                                                <a href="{{ route('download_evidencia_plan', $evidencia->id) }}"
+                                                                    class="btn btn-link">
                                                                     {{ $evidencia->name }}
                                                                 </a>
-                                                            </div> 
+                                                            </div>
                                                             <br>
                                                         @endforeach
-                                                    </td> 
-                                                    
-                                                    <td>{{  '' }}</td>
-                                                    <td>{{  '' }}</td>
+                                                    </td>
+
+                                                    <td>{{ '' }}</td>
+                                                    <td>{{ '' }}</td>
                                                     <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
                                                     <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
                                                 </tr>
@@ -250,7 +249,7 @@
                                         </tbody>
                                     </table>
                                 @endif
-                                
+
                             </div>
                         @endif
                     @endisset
@@ -334,7 +333,7 @@
                                                                 <td>{{ $row->competencia->name ?? '' }}</td>
                                                                 <td>{{ $row->fecha_de_revision ?? '' }}</td>
                                                                 <td>{{ $row->estado->name ?? '' }}</td>
-                                                                <td>{{ $row->avance }}%</td>                                                             
+                                                                <td>{{ $row->avance }}%</td>
                                                                 <td>{{ $row->empleado->area->gerencia->name ?? '' }}</td>
                                                                 <td>{{ $row->empleado->area->name ?? '' }}</td>
                                                                 <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
@@ -358,13 +357,13 @@
 
     @once
         @push('js')
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+            <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
         @endpush
     @endonce
 
-	@push('js')
-		@if ($dashboard)
+    @push('js')
+        @if ($dashboard)
             <script>
                 Chart.defaults.font.size = 16;
 
@@ -375,14 +374,14 @@
                 var seccion_ids = {!! json_encode($this->secciones->pluck('seccion_id')) !!};
 
                 // Add a line with the value from Livewire
-                
+
                 var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
-                
+
                 var borderColors = data.map((value) => 'rgba(75, 192, 192, 1)');
 
                 var sortedData = [...data].sort((a, b) => a - b);
                 var lowestValues = sortedData.slice(0, 2);
-                var secciones_bajas=[];
+                var secciones_bajas = [];
 
                 data.forEach((value, index) => {
                     if (lowestValues.includes(value)) {
@@ -410,13 +409,13 @@
                             backgroundColor: backgroundColors,
                             borderColor: borderColors,
                             borderWidth: 1,
-                            order:1,
+                            order: 1,
                             usePointStyle: false,
                             pointStyle: 'rect',
-                        },{
+                        }, {
                             type: 'line',
                             borderWidth: 2,
-                            label: 'Valor mínimo esperado ({{ $this->valor_esperado }})',//
+                            label: 'Valor mínimo esperado ({{ $this->valor_esperado }})', //
                             data: valor_esperado_data,
                             datalabels: {
                                 display: false,
@@ -427,7 +426,7 @@
                             usePointStyle: true,
                             pointStyle: 'line',
                             pointRadius: 2,
-                            order:2
+                            order: 2
                         }]
                     },
                     plugins: [ChartDataLabels],
@@ -438,25 +437,25 @@
                             }
                         },
                         scales: {
-                                y: {
-                                    title: {
+                            y: {
+                                title: {
                                     display: true,
                                     text: 'Competencias',
-                                    },
                                 },
-                                x: {
-                                    title: {
+                            },
+                            x: {
+                                title: {
                                     display: true,
                                     text: 'Resultado'
-                                    },
-                                    min: 0,
-                                    max: 10,
-                                    ticks: {
-                                    stepSize: 1
-                                    },
-                                }
                                 },
-                        layout:{
+                                min: 0,
+                                max: 10,
+                                ticks: {
+                                    stepSize: 1
+                                },
+                            }
+                        },
+                        layout: {
                             padding: {
                                 left: 20,
                                 right: 80,
@@ -474,7 +473,7 @@
                                 }
                             }
                         },
-                        plugins : {
+                        plugins: {
                             legend: {
                                 display: true,
                                 position: 'top',
@@ -482,7 +481,7 @@
                                     usePointStyle: true,
                                 },
                             },
-                            tooltip : {
+                            tooltip: {
                                 enabled: true,
                             },
                             datalabels: {
@@ -497,18 +496,17 @@
                                     size: 18
                                 }
                             }
-        
+
                         },
-                        
+
                     }
                 });
-                
+
                 Livewire.on('dataUpdated', () => {
                     myChart.update();
                 });
-            
             </script>
-		@endif
-    @endpush  
-    
+        @endif
+    @endpush
+
 </div>

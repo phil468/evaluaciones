@@ -20,7 +20,7 @@
 
 @section('content')
 
-@livewire('secciones')
+    @livewire('secciones')
 
 @stop
 
@@ -29,7 +29,7 @@
 @stop
 
 @section('js')
-    <script type="text/javascript">
+    <script nonce="{{ $nonce }}" type="text/javascript">
         // window.livewire.on('dataReturned', () => {
         //     location.hash = "#busqueda";
         //     location.hash = "#resultados";

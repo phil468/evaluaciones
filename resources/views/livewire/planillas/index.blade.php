@@ -8,7 +8,7 @@
 
 @section('content')
 
-@livewire('planillas')
+    @livewire('planillas')
 
 @stop
 
@@ -17,7 +17,7 @@
 @stop
 
 @section('js')
-    <script type="text/javascript">
+    <script nonce="{{ $nonce }}" type="text/javascript">
         // window.livewire.on('dataReturned', () => {
         //     location.hash = "#busqueda";
         //     location.hash = "#resultados";

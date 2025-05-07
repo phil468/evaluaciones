@@ -8,7 +8,7 @@
 
 @section('content')
 
-@livewire('seguimiento-encargados-planes')
+    @livewire('seguimiento-encargados-planes')
 
 @stop
 
@@ -16,6 +16,5 @@
 @stop
 
 @section('js')
-    <script type="text/javascript">
-    </script>
+    <script nonce="{{ $nonce }}" type="text/javascript"></script>
 @stop

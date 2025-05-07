@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluaciones') 
+@section('title', 'Evaluaciones')
 
 @section('content_header')
     <h1></h1>
@@ -8,7 +8,7 @@
 
 @section('content')
 
-@livewire('planes-configuracion')
+    @livewire('planes-configuracion')
 
 @stop
 
@@ -17,7 +17,5 @@
 @stop
 
 @section('js')
-    <script type="text/javascript">
-
-    </script>
+    <script nonce="{{ $nonce }}" type="text/javascript"></script>
 @stop

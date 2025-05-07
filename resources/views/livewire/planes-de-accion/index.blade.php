@@ -8,9 +8,9 @@
 
 @section('content')
 
-@livewire('planes-de-accions')
+    @livewire('planes-de-accions')
 
-@livewire('seguimiento-encargados-planes')
+    @livewire('seguimiento-encargados-planes')
 
 @stop
 
@@ -19,7 +19,7 @@
 @stop
 
 @section('js')
-    <script type="text/javascript">
+    <script nonce="{{ $nonce }}" type="text/javascript">
         // window.livewire.on('dataReturned', () => {
         //     location.hash = "#busqueda";
         //     location.hash = "#resultados";

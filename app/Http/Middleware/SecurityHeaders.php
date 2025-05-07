@@ -38,9 +38,9 @@ class SecurityHeaders
         $cspDirectives = [
             "default-src 'self'",
             // Permitir scripts necesarios
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://oss.sheetjs.com https://cdnjs.cloudflare.com https://unpkg.com",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
             // Permitir estilos necesarios
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
+            "style-src 'self' 'unsafe-inline'",
             // Permitir fuentes
             "font-src 'self' https://fonts.gstatic.com data:",
             // Permitir imágenes

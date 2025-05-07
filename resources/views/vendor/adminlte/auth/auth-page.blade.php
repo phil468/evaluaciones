@@ -1,39 +1,38 @@
 @extends('adminlte::master')
 
-@php( $dashboard_url = View::getSection('dashboard_url') ?? config('adminlte.dashboard_url', 'home') )
+@php($dashboard_url = View::getSection('dashboard_url') ?? config('adminlte.dashboard_url', 'home'))
 
 @if (config('adminlte.use_route_url', false))
-    @php( $dashboard_url = $dashboard_url ? route($dashboard_url) : '' )
+    @php($dashboard_url = $dashboard_url ? route($dashboard_url) : '')
 @else
-    @php( $dashboard_url = $dashboard_url ? url($dashboard_url) : '' )
+    @php($dashboard_url = $dashboard_url ? url($dashboard_url) : '')
 @endif
 
 @section('adminlte_css')
     @stack('css')
     @yield('css')
-    
-<style>
-    body {
-        
-        background-image: url('{{asset('img/evaluacion/login-10s.mp4')}}');
-        /* url('/img/evaluacion/login-10s.mp4'); */
-        background-size: cover;
-        background-repeat: no-repeat;
-        /* background-color: #568ca5!important; */
-    }
 
-    video {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 105%;
-    min-height: 100%;
-    transform: translateX(calc((100% - 100vw) / 2));
-    z-index: -2;
-    max-width: none !important;
-    }
+    <style nonce="{{ $nonce }}">
+        body {
 
-</style>
+            background-image: url('{{ asset('img/evaluacion/login-10s.mp4') }}');
+            /* url('/img/evaluacion/login-10s.mp4'); */
+            background-size: cover;
+            background-repeat: no-repeat;
+            /* background-color: #568ca5!important; */
+        }
+
+        video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 105%;
+            min-height: 100%;
+            transform: translateX(calc((100% - 100vw) / 2));
+            z-index: -2;
+            max-width: none !important;
+        }
+    </style>
 
 @stop
 
@@ -42,14 +41,15 @@
 @section('body')
 
     <div class="video-background" style="background-image: url('https://carontestudio.com/img/contacto.jpg');">
-        <video class="video-background-content" src="{{url('img/evaluacion/login-10s.mp4')}}" autoplay="true" muted="true" loop="true"></video>
+        <video class="video-background-content" src="{{ url('img/evaluacion/login-10s.mp4') }}" autoplay="true" muted="true"
+            loop="true"></video>
     </div>
 
     <div class="body-bg d-flex h-100 w-100 justify-content-center ">
         <div class="{{ $auth_type ?? 'login' }}-box ">
-            <div class="h-25 d-inline-block" ></div>
+            <div class="h-25 d-inline-block"></div>
             {{-- Logo --}}
-                        {{-- <div class="{{ $auth_type ?? 'login' }}-logo">
+            {{-- <div class="{{ $auth_type ?? 'login' }}-logo">
                             <a href="{{ $dashboard_url }}">
                                 <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}" height="100">
                                 {!! config('adminlte.logo', '<b>Admin</b>LTE') !!}
@@ -61,7 +61,7 @@
                             </a>
                         </div> --}}
             <div class="text-center">
-                <h2 class="text-white h1">EVALUACIÓN <br> DE DESEMPEÑO</h2>            
+                <h2 class="text-white h1">EVALUACIÓN <br> DE DESEMPEÑO</h2>
             </div>
 
             {{-- Card Box --}}
@@ -77,7 +77,8 @@
                 @endif --}}
 
                 {{-- Card Body --}}
-                <div class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95">
+                <div
+                    class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95">
                     <div class="{{ $auth_type ?? 'login' }}-logo mt-2 mb-4">
                         <a href="{{ $dashboard_url }}">
                             <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}" height="100">

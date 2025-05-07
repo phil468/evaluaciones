@@ -17,14 +17,14 @@
     <div class="wrapper">
 
         {{-- Top Navbar --}}
-        @if($layoutHelper->isLayoutTopnavEnabled())
+        @if ($layoutHelper->isLayoutTopnavEnabled())
             @include('adminlte::partials.navbar.navbar-layout-topnav')
         @else
             @include('adminlte::partials.navbar.navbar')
         @endif
 
         {{-- Left Main Sidebar --}}
-        @if(!$layoutHelper->isLayoutTopnavEnabled())
+        @if (!$layoutHelper->isLayoutTopnavEnabled())
             @include('adminlte::partials.sidebar.left-sidebar')
         @endif
 
@@ -41,7 +41,7 @@
         @endif
 
         {{-- Right Control Sidebar --}}
-        @if(config('adminlte.right_sidebar'))
+        @if (config('adminlte.right_sidebar'))
             @include('adminlte::partials.sidebar.right-sidebar')
         @endif
 
@@ -51,8 +51,7 @@
 @section('adminlte_js')
     @stack('js')
     @yield('js')
-    <script type="text/javascript">
-        
+    <script nonce="{{ $nonce }}" type="text/javascript">
         window.livewire.on('closeModal', () => {
             $('#createDataModal').modal('hide');
             $('#updateModal').modal('hide');
@@ -75,11 +74,11 @@
             $('#importEncargadosPlanesDataModal').modal('hide');
             $('#updateEncargadosPlanesModal').modal('hide');
         });
-        
+
         window.livewire.on('opencreatePlanDataModal', () => {
             $('#createPlanDataModal').modal('show');
         });
-        
+
         window.livewire.on('openUpdatePlanDataModal', () => {
             $('#updatePlanDataModal').modal('show');
         });
@@ -87,7 +86,7 @@
         window.livewire.on('openSeleccionarActivoModal', () => {
             $('#seleccionarActivoModal').modal('show');
         });
-        
+
         window.livewire.on('confirmarIngresoDNI', () => {
             $('#confirmarIngresoDNIModal').modal('show');
         });
@@ -95,44 +94,44 @@
         window.livewire.on('openResultadoModal', () => {
             $('#resultadoModal').modal('show');
         });
-        
+
         window.livewire.on('openGuardarNoAsignacionModal', () => {
             $('#guardarNoAsignacionModal').modal('show');
         });
-        
+
         window.livewire.on('openGraciasModal', () => {
             $('#confirmacionModal').modal('hide');
             $('#graciasModal').modal('show');
         });
-        
-        window.livewire.on('openHistorialModal', function () {
+
+        window.livewire.on('openHistorialModal', function() {
             $('#auditoriaModal').modal('show');
         });
-        
-        window.livewire.on('openUpdateModal', function () {
+
+        window.livewire.on('openUpdateModal', function() {
             $('#updateModal').modal('show');
         });
-        
-        window.livewire.on('openUpdatePlanesConfiguracionModal', function () {
+
+        window.livewire.on('openUpdatePlanesConfiguracionModal', function() {
             $('#updatePlanesConfiguracionModal').modal('show');
         });
 
-        window.livewire.on('actualizarValorModal', function () {
+        window.livewire.on('actualizarValorModal', function() {
             $('#actualizarValorModal').modal('show');
         });
-        
-        window.livewire.on('openModalEvidencias', function () {
+
+        window.livewire.on('openModalEvidencias', function() {
             $('#evidenciaModal').modal('show');
         });
-        
-        window.livewire.on('openEncargadosPlanesModal', function () {
+
+        window.livewire.on('openEncargadosPlanesModal', function() {
             $('#updateEncargadosPlanesModal').modal('show');
         });
-        
-        window.livewire.on('openUpdatePlanDataModal', function () {
+
+        window.livewire.on('openUpdatePlanDataModal', function() {
             $('#updateEncargadosPlanesModal').modal('show');
         });
-        
+
         window.livewire.on('limpiarFile', () => {
             // dd('cargado');
             console.log('Se limpia campo con id File');
@@ -145,4 +144,4 @@
             $('.dropdown-toggle').dropdown();
         });
     </script>
-@stop 
+@stop
