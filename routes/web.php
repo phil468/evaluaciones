@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
 use App\Http\Controllers\ObjetivosListaController;
+use App\Http\Controllers\RespuestasController;
 use App\Http\Controllers\SeguimientoEvaluadoresController;
 // use App\Http\Livewire\ImportarPreguntas;
 use App\Models\Asignacione;
@@ -127,6 +128,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     // SEGUIMIENTO DE EVALUACIONES -- INICIO
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-seguimiento-respuestas']);
+    Route::view('/respuesta-evaluacion-competencias','livewire.respuestas.table')->name('respuestas')->middleware(['can:ver-seguimiento-respuestas']);
+    Route::get('/respuestas/data', [RespuestasController::class, 'getData'])->name('respuestas.data')->middleware(['can:ver-seguimiento-respuestas']);
+    Route::get('/respuestas/export-all', [RespuestasController::class, 'exportAll'])->name('respuestas.export-all')->middleware(['can:ver-seguimiento-respuestas']);
     Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
     Route::view('/respuesta-evaluacion-resultados','livewire.objetivos-lista.table')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
     Route::get('/objetivos-lista/data', [ObjetivosListaController::class, 'getData'])->name('objetivos-lista.data')->middleware(['can:ver-seguimiento-objetivos']);
