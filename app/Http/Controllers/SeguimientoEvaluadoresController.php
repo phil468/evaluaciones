@@ -485,18 +485,18 @@ class SeguimientoEvaluadoresController extends Controller
                 $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
                 $fecha_fin_segunda_fase = $evaluacion->fecha_fin_segunda_fase ?? '';
 
-                // Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
-                //     $name, 
-                //     $primera_fase_activa, 
-                //     $segunda_fase_activa, 
-                //     $evaluacion->tipo_de_evaluacion_id, 
-                //     $fecha_fin_segunda_fase
-                // ));
-                Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+                Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
+                    $name, 
+                    $primera_fase_activa, 
+                    $segunda_fase_activa, 
+                    $evaluacion->tipo_de_evaluacion_id, 
+                    $fecha_fin_segunda_fase
+                ));
+                // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
 
                 \Log::info('Correo enviado', ['email' => $email]);
                 //interrumpir foreach 
-                break;
+                // break;
             }
 
             return response()->json([
