@@ -171,13 +171,12 @@
                         field: "valor",
                         headerFilter: true
                     },
-                    // {
-                    //     title: "Evidencias",
-                    //     field: "evidencias",
-                    //     formatter: "html",
-                    //     headerFilter: true
-                    // },
-
+                    {
+                        title: "Evidencias Estado",
+                        field: "evidencias_estado",
+                        formatter: "html",
+                        headerFilter: true,
+                    },
                     {
                         title: "Evidencias",
                         field: "evidencias",
@@ -207,7 +206,7 @@
                                     </div>
                                 </div>
                             `;
-                        },
+                        },                        
                         accessorDownload: function(value, data) {
                             if (value.sin_evidencias) {
                                 return "Marcado check SIN EVIDENCIAS";
@@ -256,7 +255,38 @@
                         accessorDownload: function(value, data) {
                             return value.mensaje;
                         },
-                }],
+                    },
+                    {
+                        title: "Fecha de Creación",
+                        field: "created_at",
+                        headerFilter: true,
+                        // formatter: "timestamp",
+                        // formatterParams: {
+                        //     inputFormat: "YYYY-MM-DD HH:mm:ss",
+                        //     outputFormat: "DD/MM/YYYY HH:mm",
+                        //     invalidPlaceholder: "(invalid date)",
+                        // },
+                        // accessorDownload: function(value, data) {
+                        //     return moment(value).format("DD/MM/YYYY HH:mm");
+                        // },
+                        // download: true,                        
+                    },
+                    {
+                        title: "Fecha de Modificación",
+                        field: "updated_at",
+                        headerFilter: true,
+                        // formatter: "date",
+                        // formatterParams: {
+                        //     inputFormat: "YYYY-MM-DD HH:mm:ss",
+                        //     outputFormat: "DD/MM/YYYY HH:mm",
+                        //     invalidPlaceholder: "(invalid date)",
+                        // },
+                        // accessorDownload: function(value, data) {
+                        //     return moment(value).format("DD/MM/YYYY HH:mm");
+                        // },
+                        // download: true,                        
+                    }
+            ],
                 rowFormatter: function(row) {
                     let data = row.getData();
                     if (data.estado === "REALIZADO") {

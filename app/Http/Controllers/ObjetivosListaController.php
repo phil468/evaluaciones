@@ -50,7 +50,7 @@ class ObjetivosListaController extends Controller
                     'minimo' => $this->formatearValor($objetivo->minimo, $objetivo->tipo_objetivo_id),
                     'maximo' => $this->formatearValor($objetivo->maximo, $objetivo->tipo_objetivo_id),
                     'valor' => $this->formatearValor($objetivo->valor, $objetivo->tipo_objetivo_id),
-                    // 'evidencias' => $this->getEvidenciasTexto($objetivo),
+                    'evidencias_estado' => $this->getEvidenciasTexto($objetivo),
                     'evidencias' => [
                         'tiene_evidencias' => $objetivo->evidencias()->exists(),
                         'sin_evidencias' => $objetivo->sin_evidencias,
@@ -88,9 +88,7 @@ class ObjetivosListaController extends Controller
         if ($evidencias->isEmpty()) {
             return $objetivo->sin_evidencias ? "Marcado check SIN EVIDENCIAS" : "No ha cargado evidencias";
         }
-        return '<button class="btn btn-sm btn-primary rounded-xl" onclick="descargarEvidencias(' . $objetivo->id . ')">
-                    <i class="fas fa-download"></i> Descargar
-                </button>';
+        return 'Tiene Evidencias';
     }
 
     private function getEstadoValidacion($objetivo, $evidencias)
