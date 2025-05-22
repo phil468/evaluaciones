@@ -292,4 +292,37 @@ class PersonalController extends Controller
 		return $personal->id;
     }
 
+    public function searchComite(Request $request)
+    {
+        $search = $request->search;
+        $page = $request->page ?? 1;
+        $per_page = 10;
+
+        $personas = Personal::where('name', 'LIKE', "%$search%")
+            ->select('id', 'name as text')
+            ->orderBy('name')
+            ->skip(($page - 1) * $per_page)
+            ->take($per_page)
+            ->get();
+
+        $count = Personal::where('name', 'LIKE', "%$search%")->count();
+
+        return response()->json([
+            'results' => $personas,
+            'pagination' => [
+                'more' => ($page * $per_page) < $count
+            ]
+        ]);
+    }
+
+    public function verificarCorreo(Request $request)
+    {
+        $personal_ids = $request->input('personal_ids');
+        $personal_sin_correo = Personal::whereIn('id', $personal_ids)
+            ->whereNull('correo_empresa')
+            ->pluck('name');
+
+        return response()->json(['sin_correo' => $personal_sin_correo]);
+    }
+
 }

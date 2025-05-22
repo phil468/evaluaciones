@@ -313,6 +313,14 @@ return [
                     'can'  => 'ver-seguimiento-respuestas',
                     'classes' => 'rounded-xl',
                 ],
+
+                [
+                    'text' => 'Calibración de Ev. Por competencias',
+                    'url'  => 'resumen-evaluacion',
+                    'icon' => 'fas fa-list-ol',
+                    'can'  => 'ver-calibracion',
+                    'classes' => 'rounded-xl',
+                ],
                     
                 [
                     'text' => 'Respuestas Ev. por Resultados',
@@ -613,12 +621,12 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js',
+                    'location' => '/js/select2.min.js',
                 ],
                 [
                     'type' => 'css',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css',
+                    'location' => '/css/select2.min.css',
                 ],
             ],
         ],

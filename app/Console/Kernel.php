@@ -54,6 +54,8 @@ class Kernel extends ConsoleKernel
             }
         })->everyTenMinutes();
         
+        $schedule->command('resumen:actualizar');
+
         // $schedule->command('inspire')->hourly();
     }
 

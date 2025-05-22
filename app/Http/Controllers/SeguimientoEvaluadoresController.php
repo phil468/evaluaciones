@@ -471,6 +471,8 @@ class SeguimientoEvaluadoresController extends Controller
                 ->filter(function ($evaluador) {
                     return $evaluador->estado_pendiente;
                 });
+
+                // dd($evaluadores);
                 
             $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 
@@ -485,6 +487,8 @@ class SeguimientoEvaluadoresController extends Controller
                 $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
                 $fecha_fin_segunda_fase = $evaluacion->fecha_fin_segunda_fase ?? '';
 
+                // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+
                 Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
                     $name, 
                     $primera_fase_activa, 
@@ -492,7 +496,6 @@ class SeguimientoEvaluadoresController extends Controller
                     $evaluacion->tipo_de_evaluacion_id, 
                     $fecha_fin_segunda_fase
                 ));
-                // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
 
                 \Log::info('Correo enviado', ['email' => $email]);
                 //interrumpir foreach 
@@ -501,7 +504,7 @@ class SeguimientoEvaluadoresController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Correos enviados correctamente',
+                'message' => ''.$evaluadores->count(). ' correos enviados correctamente',
                 'count' => $evaluadores->count()
             ]);
         } catch (\Exception $e) {

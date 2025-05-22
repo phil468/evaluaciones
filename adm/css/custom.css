@@ -178,7 +178,7 @@
   overflow: scroll;
 }
 
-.select2-container {
+/* .select2-container {
   display: block;
   width: 100%;
   height: calc(2.25rem + 2px);
@@ -203,7 +203,7 @@
 
 .select2-container--default .select2-selection--single {
   padding: 0;
-}
+} */
 
 .switch {
   position: relative;

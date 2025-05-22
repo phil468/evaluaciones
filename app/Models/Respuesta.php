@@ -17,24 +17,22 @@ class Respuesta extends Model
 
     protected $table = 'respuestas';
 
-    protected $fillable = ['pregunta_id','opcion_id','valor_numerico','valor_texto','evaluado_id'];
+    protected $fillable = ['pregunta_id','opcion_id','valor_numerico','valor_texto','evaluado_id',
+    'peso',
+    'campania_id'];
 	
     protected $casts = [
         'evaluado_id' => 'encrypted',
         'pregunta_id' => 'encrypted',
         'valor_numerico' => 'encrypted',
+        'peso' => 'float',
+        'campania_id' => 'integer',
     ];
 
     public function pregunta()
     {
         return $this->belongsTo(Pregunta::class,'pregunta_id','id');
     }
-
-    // public function pregunta()
-    // {
-    //     $pregunta_id = Crypt::decryptString($this->attributes['pregunta_id']);
-    //     return $this->belongsTo(Pregunta::class, $pregunta_id, 'id');
-    // }
 
     public function evaluado()
     {
@@ -59,26 +57,4 @@ class Respuesta extends Model
         return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
         ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->gerencia_sub_gerencia_de_evaluado;
     }
-
-    // //desencripto el valor numerico
-    // public function getValorNumericoAttribute($value)
-    // {
-    //     return Crypt::decryptString($value);
-    // }
-
-    // //desencripto el valor numerico
-    // public function getPreguntaIdAttribute($value)
-    // {
-    //     return Crypt::decryptString($value);
-    // }
-
-    // //desencripto el valor numerico
-    // public function getEvaluadoIdAttribute($value)
-    // {
-    //     return Crypt::decryptString($value);
-    // }
-
-
-   
-    
 }

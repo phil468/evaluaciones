@@ -1,0 +1,16 @@
+correr estos dos comandos 
+
+php artisan migrate --path=/database/migrations/2025_05_13_091437_add_peso_and_campania_id_to_respuestas_table.php
+php artisan migrate --path=/database/migrations/2025_05_13_091635_create_resumen_respuestas_evaluacion_desempeno_competencias_table.php
+
+luego correr el comando:
+
+php artisan resumen:actualizar
+
+agregar
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-calibracion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-calibracion', 'web', NULL, NULL);
+
+php artisan migrate --path=/database/migrations/2025_05_13_174033_create_comites_calibracion_table.php
+php artisan migrate --path=/database/migrations/2025_05_13_173755_create_comite_has_personas_table.php

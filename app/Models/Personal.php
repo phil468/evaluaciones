@@ -6,11 +6,13 @@ use App\Observers\PersonalObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
 class Personal extends Model
 {
 	use HasFactory;
     use SoftDeletes;
+    use Notifiable;
 	
     public $timestamps = true;
 
@@ -48,11 +50,15 @@ class Personal extends Model
     ];
 	
     protected $dates = ['deleted_at','fecha_ingreso','fecha_cese'];
+    
+    public function routeNotificationForMail($notification)
+    {
+        return $this->correo_empresa;
+    }
 
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'empresa_id', 'id');
-         //) ('App\Models\Empresa', 'id', 'empresa_id');
     }
     
     public function gerencia()
@@ -127,6 +133,11 @@ class Personal extends Model
     public function reporta_a()
     {
         return $this->hasOne('App\Models\Personal', 'id', 'reporta_a');
+    }
+
+    public function comites()
+    {
+        return $this->hasMany(ComiteHasPersona::class, 'personal_id', 'id');
     }
     
     protected static function boot()

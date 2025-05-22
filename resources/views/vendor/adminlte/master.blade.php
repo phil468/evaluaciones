@@ -22,6 +22,8 @@
     {{-- Custom stylesheets (pre AdminLTE) --}}
     @yield('adminlte_css_pre')
 
+    <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}">
     {{-- Base Stylesheets --}}
     @if (!config('adminlte.enabled_laravel_mix'))
         <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
@@ -163,6 +165,7 @@
     @endif
 
     <script nonce="{{ $nonce }}" src="{{ asset('js/bootstrap4-toggle.min.js') }}"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="js/select2.full.min.js"></script>
 
     @yield('adminlte_js')
     {{-- <script nonce="{{ $nonce }}" src= --}}

@@ -22,7 +22,7 @@
 
     <!-- Styles -->
     <link nonce="{{ $nonce }}" href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/sweetalert2.css') }}">
+    {{-- <link nonce="{{ $nonce }}" rel="stylesheet" href="{{ asset('css/sweetalert2.css') }}"> --}}
 </head>
 
 <body>
