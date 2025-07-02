@@ -190,6 +190,22 @@
                 </select>
                 @error('genero') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
+
+            <div class="form-group col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                <label for="reporta_a">Reporta a (Jefe Inmediato)</label>
+                <div wire:ignore>
+                    <select 
+                        name="reporta_a"
+                        class="form-control" 
+                        id="reporta_a"
+                        placeholder="Selecciona jefe inmediato">
+                    </select>
+                </div>
+                @error('reporta_a')
+                    <span class="error text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
                 </fieldset>
 
                 </form>

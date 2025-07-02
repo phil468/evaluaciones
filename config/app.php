@@ -4,6 +4,8 @@ if (env('APP_ENV') == 'production') {
     $url_api = 'http://10.13.10.49:81/';
 } else {
     $url_api = 'http://svpersonal.test:8090/';
+    // $url_api = 'https://apps.vanguardfresh.pe/sv/ivg/';
+    
 }
 
 return [

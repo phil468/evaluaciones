@@ -11,6 +11,7 @@ use App\Models\Planilla;
 use App\Models\Sede;
 use App\Models\TipoDePersonal;
 use App\Models\TipoDeTrabajador;
+use Mediconesystems\LivewireDatatables\Action;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\DateColumn;
@@ -23,6 +24,7 @@ class PersonalTable extends LivewireDatatable
     public $hideable = 'inline';
     public $exportable = true;
     public $afterTableSlot = 'components.selected';
+    // public $beforeTableSlot = 'components.filter';
     public $numeroSerieValidado=true, $fileUpload;
     public $updateMode = false;
     public $selected = [];
@@ -59,31 +61,6 @@ class PersonalTable extends LivewireDatatable
 
     public function builder()
     {
-        // if(Personal::all()->count()){
-        //     return Personal::query()
-        //         ->leftJoin('empresas', function ($join) {
-        //             $join->on('personal.empresa_id', '=', 'empresas.id');
-        //         })
-
-        //         ->leftJoin('sedes', function ($join) {
-        //             $join->on('personal.sede_id', '=', 'sedes.id');
-        //         })
-
-        //         ->leftJoin('gerencias', function ($join) {
-        //             $join->on('personal.gerencia_id', '=', 'gerencias.id');
-        //         })
-
-        //         ->leftJoin('areas', function ($join) {
-        //             $join->on('personal.area_id', '=', 'areas.id');
-        //         })
-
-        //         ->leftJoin('cargos', function ($join) {
-        //             $join->on('personal.cargo_id', '=', 'cargos.id');
-        //         })
-        //     ;
-        // }
-        // else 
-        // {
             // return Personal::query()
             return Personal::query()
             ->leftJoin('empresas', 'empresas.id', 'personal.empresa_id')
@@ -94,6 +71,8 @@ class PersonalTable extends LivewireDatatable
             ->leftJoin('planillas', 'planillas.id', 'personal.planilla_id')
             ->leftJoin('tipo_de_trabajador', 'tipo_de_trabajador.id', 'personal.tipo_de_trabajador_id')
             ->leftJoin('tipo_de_personal', 'tipo_de_personal.id', 'personal.tipo_de_personal_id')
+            ->leftJoin('personal as superior', 'superior.id', 'personal.reporta_a')
+            // ->leftJoin('personal as superior', 'superior.id', 'personal.reporta_a')
             ;
         // }
     }
@@ -101,7 +80,36 @@ class PersonalTable extends LivewireDatatable
     public $model = Personal::class;
 
     public function columns()
-    {
+    {        
+        $campaniaActual = \App\Models\Campania::where('es_campania_actual', true)->first();
+        $evaluaciones = $campaniaActual
+            ? \App\Models\Evaluacione::where('campania_id', $campaniaActual->id)->get()
+            : collect();
+
+        $idsSeleccionados = [];
+        if ($campaniaActual && $evaluaciones->count()) {
+            $fechaCortes = $evaluaciones->pluck('fecha_corte')->filter()->sort()->values();
+            $personales = \App\Models\Personal::with('planilla')->where('cesado', 0)->get();
+            foreach ($personales as $personal) {
+                // Planilla debe empezar con E
+                $planillaOk = $personal->planilla && str_starts_with($personal->planilla->idplanilla_nisira, 'E');
+                // Fecha de ingreso debe ser menor a alguna fecha de corte
+                $fechaIngreso = $personal->fecha_ingreso;
+                $cumpleFecha = $fechaCortes->contains(function($fechaCorte) use ($fechaIngreso) {
+                    return $fechaIngreso && $fechaCorte && $fechaCorte > $fechaIngreso;
+                });
+                if ($planillaOk && $cumpleFecha) {
+                    $idsSeleccionados[] = $personal->id;
+                }
+            }
+        }
+        
+        $this->selected = $idsSeleccionados;
+
+        $this->emit('emitSelectedUpdated', $this->selected);
+
+        // dd($idsSeleccionados);
+    
         if ($this->listaParaAgregar) {
             $columns = [
                 Column::checkbox()
@@ -188,11 +196,11 @@ class PersonalTable extends LivewireDatatable
                     ->label('Tipo de Trabajador'),
                     
                 Column::name('tipo_personal.name')
-                ->filterable($this->tipo_personal)
-                ->searchable()
-                ->sortBy('tipo_personal.name')
-                ->hideable()
-                ->label('Tipo de Personal'),
+                    ->filterable($this->tipo_personal)
+                    ->searchable()
+                    ->sortBy('tipo_personal.name')
+                    ->hideable()
+                    ->label('Tipo de Personal'),
                 
                 DateColumn::name('fecha_ingreso')
                     ->filterable('fecha_ingreso')
@@ -202,18 +210,19 @@ class PersonalTable extends LivewireDatatable
                     ->sortBy('fecha_ingreso'),
                     
                 Column::name('SEXO')
-                ->filterable(['M','F',''])
-                ->searchable()
-                ->hideable()
-                ->label('SEXO')
-                ->sortBy('SEXO'),
+                    ->filterable(['M','F',''])
+                    ->searchable()
+                    ->hideable()
+                    ->label('SEXO')
+                    ->sortBy('SEXO'),
             ];
 
         } else {
         $columns = [
             Column::checkbox()
-            ->label('Add')
-            ,
+            ->label('Add'),
+            // ->selectFilter($idsSeleccionados), // <-- selecciona los que cumplen
+            // ->selectFilter($this->selected), // <-- selecciona los que están en $selected,
 
             NumberColumn::name('id')
                 ->label('ID')
@@ -243,12 +252,28 @@ class PersonalTable extends LivewireDatatable
                 ->label('nombre completo')
                 ->sortBy('name'),
                 
+            // Column::callback(['cesado'], function ($cesado) {
+            //     return $cesado == 0? '<span class="text-red-500">CESADO</span>' : '<span class="text-green-500">ACTIVO</span>';
+            // },[],'cesadoa007')
+            // ->label('Cesado')
+            // ->exportCallback(function ($cesado) {
+            //     return $cesado ? 'CESADO' : 'ACTIVO';
+            // })
+            // ->filterable(['0' => 'ACTIVO', '1' => 'CESADO']),
+
+            NumberColumn::name('cesado')
+                ->filterable('cesado')
+                ->searchable()
+                ->hideable()
+                ->label('Cesado')
+                ->sortBy('cesado'),
+
             Column::name('nombres')
-            ->filterable('nombres')
-            ->searchable()
-            ->hideable()
-            ->label('nombres')
-            ->sortBy('nombres'),
+                ->filterable('nombres')
+                ->searchable()
+                ->hideable()
+                ->label('nombres')
+                ->sortBy('nombres'),
                 
             Column::name('apellido_paterno')
                 ->filterable('apellido_paterno')
@@ -263,7 +288,14 @@ class PersonalTable extends LivewireDatatable
                 ->hideable()
                 ->label('apellido materno')
                 ->sortBy('apellido_materno'),
-            
+
+            // Column::name('superior.name')
+            //     ->filterable($this->personales)
+            //     ->searchable()
+            //     ->sortBy('superior.name')
+            //     ->hideable()
+            //     ->label('Reporta a'),
+                
             BooleanColumn::name('estado')
                 ->filterable('estado')
                 ->searchable()
@@ -277,7 +309,7 @@ class PersonalTable extends LivewireDatatable
             Column::name('empresa.name')
                 ->filterable($this->empresas)
                 ->searchable()
-                ->sortBy('empresas.name')
+                ->sortBy('empresa.name')
                 ->hideable()
                 ->label('empresa'),
 
@@ -316,6 +348,13 @@ class PersonalTable extends LivewireDatatable
                 ->hideable()
                 ->label('planilla'),
 
+            Column::name('planilla.idplanilla_nisira')
+                ->filterable($this->idplanilla_nisira)
+                ->searchable()
+                ->hideable()
+                ->label('id planilla nisira')
+                ->sortBy('planillas.idplanilla_nisira'),
+
             Column::name('tipo_trabajador.name')
                 ->filterable($this->tipo_trabajador)
                 ->searchable()
@@ -324,11 +363,11 @@ class PersonalTable extends LivewireDatatable
                 ->label('Tipo de Trabajador'),
                 
             Column::name('tipo_personal.name')
-            ->filterable($this->tipo_personal)
-            ->searchable()
-            ->sortBy('tipo_personal.name')
-            ->hideable()
-            ->label('Tipo de Personal'),
+                ->filterable($this->tipo_personal)
+                ->searchable()
+                ->sortBy('tipo_personal.name')
+                ->hideable()
+                ->label('Tipo de Personal'),
 
             // Column::name('correo_empresa')
             //     ->filterable('correo_empresa')
@@ -373,7 +412,7 @@ class PersonalTable extends LivewireDatatable
                 ->sortBy('fecha_ingreso'),
                 
 
-                Column::name('SEXO')
+            Column::name('SEXO')
                 ->filterable(['M','F',''])
                 ->searchable()
                 ->hideable()
@@ -418,6 +457,11 @@ class PersonalTable extends LivewireDatatable
     {
         return Cargo::orderBy('name')->pluck('name');
     }
+
+    public function getPersonalesProperty()
+    {
+        return Personal::orderBy('name')->pluck('name');
+    }
     
     public function getPlanillasProperty()
     {
@@ -432,6 +476,11 @@ class PersonalTable extends LivewireDatatable
     public function getTipoPersonalProperty()
     {
         return TipoDePersonal::orderBy('name')->pluck('name');
+    }
+
+    public function getIdplanillaNisiraProperty()
+    {
+        return Planilla::orderBy('idplanilla_nisira')->pluck('idplanilla_nisira','id');
     }
     
 
@@ -487,5 +536,5 @@ class PersonalTable extends LivewireDatatable
             $record = Personal::where('id', $id);
             $record->delete();
         }
-    }
+    }    
 }

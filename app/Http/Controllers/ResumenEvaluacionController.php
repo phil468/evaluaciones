@@ -70,7 +70,7 @@ class ResumenEvaluacionController extends Controller
                     'campania' => optional($first->campania)->name ?? '',
                     'comite' => $first->comite_calibracion_id,
                     'comentario' => optional($first->comite)->comentario ?? '',
-                    'fecha' => $first->comite ? $first->comite->created_at->format('d/m/Y H:i') : '',
+                    'fecha' => $first->comite ? $first->comite->created_at->format('d/m/Y h:i A') : '',
                     
                     'detalle_url' => $this->getDetalleUrl($first->personal_id, $first->competencia_id, $first->campania_id),
                     'calibracion_url' => $this->getCalibracionUrl($first->personal_id, $first->competencia_id, $first->campania_id),

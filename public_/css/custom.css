@@ -138,9 +138,12 @@
   background-color: var(--secondary-color);
 }
 
-.sidebar-dark-lightblue .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-lightblue .nav-sidebar>.nav-item>.nav-link.active {
-    background-color: #6ECBC9;
-    color: #3C4651;
+.sidebar-dark-lightblue 
+.nav-sidebar>.nav-item>.nav-link.active, 
+.sidebar-light-lightblue 
+.nav-sidebar>.nav-item>.nav-link.active {
+    background-color: #568ba5;
+    color: #f2f2f2;
 }
 
 .bg-primary {

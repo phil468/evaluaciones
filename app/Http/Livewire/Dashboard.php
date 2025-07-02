@@ -32,14 +32,14 @@ class Dashboard extends Component
     $showHeader=true,
     $empleado_id=null,
     $evaluacionPorCompetenciasFinalizada=false,
-    $campania,
+    $campania_id,
     $evaluaciones_no_completadas;
 
-    public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true, $campania=2024)
+    public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true, $campania_id=2024)
     {
         $evaluaciones = Evaluacione::
         where('tipo_de_evaluacion_id', 1)
-        ->where('campania', $campania)
+        ->where('campania_id', $campania_id)
         ->vigente()->get();
 
         if ($evaluaciones->count() > 0) {
@@ -54,7 +54,7 @@ class Dashboard extends Component
             ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
             ->select('evaluador_has_evaluados.id')
             ->where('evaluaciones.tipo_de_evaluacion_id', TipoDeEvaluacione::COMPETENCIAS)
-            ->where('evaluaciones.campania', $campania)
+            ->where('evaluaciones.campania_id', $campania_id)
             ->where('evaluador_has_evaluados.realizado',null)
             ->get();
 
@@ -62,7 +62,7 @@ class Dashboard extends Component
             $this->empleado_id = $personal_id;
             $this->valor_esperado = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado ?? 0.00;
             $this->cantidad_requerida = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida ?? 0.00;
-            $this->campania = $campania;
+            $this->campania_id = $campania_id;
 
         }
 
@@ -128,7 +128,10 @@ class Dashboard extends Component
 
     public function datos_promedio()
     {
-        $respuestas = Respuesta::with('pregunta.seccion','evaluado')->whereNull('respuestas.deleted_at')->get();
+        $respuestas = Respuesta::with('pregunta.seccion','evaluado')
+        ->whereNull('respuestas.deleted_at')
+        ->where('respuestas.campania_id', $this->campania_id)
+        ->get();
             
         $this->secciones = $respuestas
         ->when(!empty($this->area_de_evaluado), function ($collection) {

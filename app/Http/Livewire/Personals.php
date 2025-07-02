@@ -46,12 +46,14 @@ class Personals extends Component
 	$genero, 
 	$fecha_ingreso, 
 	$file,
+	$reporta_a,
 
 	$empresas,
 	$gerencias,
 	$sedes,
 	$areas,
 	$cargos,
+	$personales,
 	$access_token;
 	public $token = null;
 
@@ -99,6 +101,13 @@ class Personals extends Component
 		$this->sedes 		= 	Sede::			orderBy('name')->where('estado',1)->select('name as label', 'id as value')->get()->toArray();
 		$this->areas 		= 	Area::			orderBy('name')->where('estado',1)->select('name as label', 'id as value')->get()->toArray();
 		$this->cargos 		=	Cargo::			orderBy('name')->where('estado',1)->select('name as label', 'id as value')->get()->toArray();
+		$this->personales	= Personal::select(
+			'name as label',
+			'id as value',
+		)
+		->where('estado', 1)
+		->orderBy('name')
+		->get()->toArray();
 
 		$this->emit('listar_selects',
 			$this->empresas,
@@ -106,6 +115,7 @@ class Personals extends Component
 			$this->sedes,
 			$this->areas,
 			$this->cargos,
+			$this->personales
 		);
 		$this->actualizarDatosPersonal();
 	}
@@ -148,6 +158,7 @@ class Personals extends Component
 				$this->sede_id = null;
 				$this->area_id = null;
 				$this->cargo_id = null;
+				$this->reporta_a = null;
 
 				$message_error = '';
 
@@ -165,6 +176,7 @@ class Personals extends Component
 						$this->sede_id = null;
 						$this->area_id = null;
 						$this->cargo_id = null;
+						$this->reporta_a = null;
 
 						session()->flash('message-busqueda-dni', 'Se consultó en el ERP NISIRA. DNI '. $this->dni.' no encontrado.');
 
@@ -243,6 +255,7 @@ class Personals extends Component
 			$this->sede_id,
 			$this->area_id,
 			$this->cargo_id,
+			$this->reporta_a
 		);
 	}
 
@@ -316,6 +329,7 @@ class Personals extends Component
 		$this->gerencia_id = null;
 		$this->area_id = null;
 		$this->cargo_id = null;
+		$this->reporta_a = null;
 		$this->correo_empresa = null;
 		$this->celular_empresa = null;
 		$this->correo_personal = null;
@@ -352,6 +366,7 @@ class Personals extends Component
 			'gerencia_id' => $this-> gerencia_id,
 			'area_id' => $this-> area_id,
 			'cargo_id' => $this-> cargo_id,
+			'reporta_a' => $this-> reporta_a,
 			'correo_empresa' => $this-> correo_empresa,
 			'celular_empresa' => $this-> celular_empresa,
 			'correo_personal' => $this-> correo_personal,
@@ -389,6 +404,7 @@ class Personals extends Component
 			$this->gerencia_id = $record-> gerencia_id;
 			$this->area_id = $record-> area_id;
 			$this->cargo_id = $record-> cargo_id;
+			$this->reporta_a = $record-> reporta_a;
 			$this->correo_empresa = $record-> correo_empresa;
 			$this->celular_empresa = $record-> celular_empresa;
 			$this->correo_personal = $record-> correo_personal;
@@ -429,6 +445,7 @@ class Personals extends Component
 			'gerencia_id' => $this-> gerencia_id,
 			'area_id' => $this-> area_id,
 			'cargo_id' => $this-> cargo_id,
+			'reporta_a' => $this-> reporta_a,
 			'correo_empresa' => $this-> correo_empresa,
 			'celular_empresa' => $this-> celular_empresa,
 			'correo_personal' => $this-> correo_personal,

@@ -54,7 +54,12 @@ class Kernel extends ConsoleKernel
             }
         })->everyTenMinutes();
         
-        $schedule->command('resumen:actualizar');
+        // $schedule->command('resumen:actualizar');
+
+        // Actualización diaria de personal a las 9:00 AM
+        $schedule->command('personal:actualizar-general')
+                 ->dailyAt('09:00')
+                 ->appendOutputTo(storage_path('logs/personal-actualizacion.log'));
 
         // $schedule->command('inspire')->hourly();
     }

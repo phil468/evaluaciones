@@ -15,6 +15,10 @@ class Seccione extends Model
 
     protected $table = 'secciones';
 
-    protected $fillable = ['name','color'];
-	
+    protected $fillable = ['name', 'estado', 'color', 'descripcion', 'tipo_competencia_id'];
+
+    public function tipoCompetencia()
+    {
+        return $this->belongsTo(TipoCompetencia::class);
+    }
 }

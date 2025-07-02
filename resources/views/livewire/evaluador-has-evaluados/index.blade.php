@@ -16,11 +16,17 @@
             ->orderBy('evaluaciones.campania', 'desc')
             ->get();
 
-        $campanias = App\Models\Evaluacione::select('evaluaciones.campania')
+        $campanias = App\Models\Evaluacione::select('evaluaciones.campania_id')
             ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
-            ->groupBy('evaluaciones.campania')
-            ->orderBy('evaluaciones.campania', 'desc')
+            ->groupBy('evaluaciones.campania_id')
+            ->orderBy('evaluaciones.campania_id', 'desc')
             ->get();
+
+        // $campanias = App\Models\Campania::select('campanias.id')
+        //     ->groupBy('campanias.id')
+        //     ->orderBy('campanias.id', 'desc')
+        //     ->get();
+
     @endphp
 
     @if ($campania_vigentes->isEmpty())
@@ -57,6 +63,7 @@
     @endif
 
     @if ($tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::COMPETENCIAS)
+    {{-- {{ dd($campanias) }} --}}
         @foreach ($campanias as $value)
             @livewire('dashboard', [
                 'personal_id' => auth()->user()->personal_id,
@@ -64,7 +71,7 @@
                 'title' => 'Resultados de evaluación',
                 'ingresar_plan' => false,
                 'showHeader' => true,
-                'campania' => $value->campania,
+                'campania_id' => $value->campania_id,
             ])
         @endforeach
     @endif

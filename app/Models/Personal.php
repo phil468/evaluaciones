@@ -46,7 +46,8 @@ class Personal extends Model
         'cesado',
         'fecha_cese',
         'importado',
-        'reporta_a'
+        'reporta_a',
+        'seleccionado'
     ];
 	
     protected $dates = ['deleted_at','fecha_ingreso','fecha_cese'];
@@ -130,11 +131,32 @@ class Personal extends Model
         return $this->hasMany(EncargadosPlanesDeAccion::class, 'encargado_id');
     }
 
-    public function reporta_a()
+    public function superior()
     {
         return $this->hasOne('App\Models\Personal', 'id', 'reporta_a');
     }
+    
+    public function subordinados()
+    {
+        return $this->hasMany(Personal::class, 'reporta_a', 'personal_id')
+            ->where('estado', 1)
+            ->where('cesado', 0);
+        // return $this->hasMany(CampaniaHasEvaluado::class, 'superior_personal_id', 'personal_id')
+        //     ->where('campania_id', $this->campania_id);
+    }
 
+    public function paresMismoSuperiorMismoNivelJerarquico()
+    {
+        return $this->hasMany(Personal::class, 'reporta_a', 'reporta_a')
+            ->where('tipo_de_puesto_has_nivel_jerarquico_id', $this->tipo_de_puesto_has_nivel_jerarquico_id)
+            ->where('estado', 1)
+            ->where('cesado', 0)
+            ->where('personal_id', '!=', $this->personal_id);
+        // return $this->hasMany(CampaniaHasEvaluado::class, 'superior_personal_id', 'superior_personal_id')
+        //     ->where('tipo_de_puesto_has_nivel_jerarquico_id', $this->tipo_de_puesto_has_nivel_jerarquico_id)
+        //     ->where('campania_id', $this->campania_id)
+        //     ->where('personal_id', '!=', $this->personal_id);
+    }
     public function comites()
     {
         return $this->hasMany(ComiteHasPersona::class, 'personal_id', 'id');

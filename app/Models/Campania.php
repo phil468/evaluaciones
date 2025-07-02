@@ -15,7 +15,7 @@ class Campania extends Model
 
     protected $table = 'campanias';
 
-    protected $fillable = ['name','estado'];	
+    protected $fillable = ['name','estado','relacionado_anterior_id', 'es_campania_actual'];	
     
     public function setNameAttribute($value)
     {
@@ -30,5 +30,27 @@ class Campania extends Model
     public function planesConfiguracion()
     {
         return $this->hasMany(PlanesConfiguracion::class, 'campania_id', 'id');
+    }
+
+    public function campaniaHasCompetencias()
+    {
+        return $this->hasMany(CampaniaHasCompetencia::class, 'campania_id', 'id');
+    }
+
+    public function dominios()
+    {
+        return $this->hasMany(Dominio::class, 'campania_id', 'id');
+    }
+    
+    public function competencias()
+    {
+        return $this->belongsToMany(Competencia::class, 'campania_has_competencias', 'campania_id', 'competencia_id')
+                    ->withPivot('id', 'estado')
+                    ->withTimestamps();
+    }
+
+    public function relacionadoAnterior()
+    {
+        return $this->belongsTo(Campania::class, 'relacionado_anterior_id');
     }
 }

@@ -12,7 +12,7 @@ class RespuestasController extends Controller
         $respuestas = Respuesta::query()
             ->where('respuestas.deleted_at', null)
             ->with(['evaluado', 'pregunta.seccion'])
-            // ->limit(10000)
+            ->limit(10000)
             ->get()
             ->map(function($respuesta) {
                 return [

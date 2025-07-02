@@ -1,18 +1,35 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CampaniaController;
+use App\Http\Controllers\CampaniaHasCompetenciaController;
+use App\Http\Controllers\CampaniaHasEvaluadoController;
+use App\Http\Controllers\CompetenciaController;
+use App\Http\Controllers\DominioController;
+use App\Http\Controllers\DominioHasPreguntaController;
+use App\Http\Controllers\EscalaMedicionController;
 use App\Http\Controllers\EvaluacionController;
+use App\Http\Controllers\EvaluacionesController;
+use App\Http\Controllers\EvaluadorHasEvaluadoController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneraReporte;
+use App\Http\Controllers\GradoController;
+use App\Http\Controllers\NivelJerarquicoController;
 use App\Http\Controllers\ObjetivosListaController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\PreguntaController;
 use App\Http\Controllers\RespuestasController;
 use App\Http\Controllers\SeguimientoEvaluadoresController;
 use App\Http\Controllers\ResumenEvaluacionController;
+use App\Http\Controllers\TipoCompetenciaController;
+use App\Http\Controllers\TipoDePuestoController;
+use App\Http\Controllers\TipoDePuestoHasNivelJerarquicoController;
+use App\Http\Controllers\TipoMedicionController;
 // use App\Http\Livewire\ImportarPreguntas;
 use App\Models\Asignacione;
+use App\Models\Campania;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
@@ -95,6 +112,7 @@ Route::get('/logout', function () {
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
+// Route::get('/inicio', [App\Http\Controllers\HomeController::class, 'inicio'])->name('dash.inicio');
 Route::get('/personal/importar/{numero}', [App\Http\Controllers\PersonalController::class,'actualizarPersonalNisira'])->name('personal.actualizar');
 Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\PersonalController::class,'actualizarEstadoParaTodos'])->name('personal.actualizarEstadoParaTodos');
 Route::get('/planilla/importar/{empresa}/{val}', [App\Http\Controllers\PlanillaController::class,'upsert'])->name('planilla.upsert');
@@ -105,6 +123,50 @@ Auth::routes();
 
 Route::group(['middleware'  =>  ['auth']],function(){
 
+    Route::get('/inicio', [App\Http\Controllers\HomeController::class,'inicio'])->name('inicio');
+    Route::get('/pendientes2', 
+    [App\Http\Controllers\HomeController::class,'pendientes2'])
+    ->name('pendientes2');
+    Route::get('/inicio/pendientes', 
+    [App\Http\Controllers\HomeController::class, 'pendientes'])
+    ->name('pendientes');
+
+    Route::get('/evaluacion_de_competencias', 
+    [App\Http\Controllers\EvaluacionDeCompetenciasController::class,'index'])   
+    ->name('evaluacion_de_competencias'); // EvaluacionDeCompetenciasController
+
+    //estoy pasando el id de campania como parámetro para mostrar los resultados de la evaluación de competencias
+    Route::post('/evaluacion_de_competencias/resultados',
+    [App\Http\Controllers\EvaluacionDeCompetenciasController::class,'mostrarResultados'])
+    ->name('evaluacion_de_competencias.resultados');
+
+    Route::get('/plan-de-mejora', [App\Http\Controllers\PlanDeMejoraController::class, 'index'])
+        ->name('plan.mejora');
+
+    Route::get('/plan-de-mejora/detalle', [App\Http\Controllers\PlanDeMejoraController::class, 'detalle'])
+        ->name('plan.mejora.detalle');
+    
+    // Resultados de equipo
+    Route::get('/resultados-de-equipo', [App\Http\Controllers\ResultadosDeEquipoController::class, 'index'])
+        ->name('resultados-de-equipo.index');
+    Route::get('/resultados-de-equipo/{id}', [App\Http\Controllers\ResultadosDeEquipoController::class, 'detalle'])
+        ->name('resultados-de-equipo.detalle');
+
+    // Rutas para ver detalles de evaluaciones y dar feedback
+    Route::get('/evaluacion-competencias/detalle', [App\Http\Controllers\EvaluacionDeCompetenciasController::class, 'detalle'])
+        ->name('evaluacion-competencias.detalle');
+    Route::get('/evaluacion-objetivos/detalle', [App\Http\Controllers\EvaluacionPorObjetivosController::class, 'detalle'])
+        ->name('evaluacion-objetivos.detalle');
+    Route::get('/pdi/detalle', [App\Http\Controllers\PdiController::class, 'detalle'])
+        ->name('pdi.detalle');
+    Route::get('/feedback/crear', [App\Http\Controllers\FeedbackController::class, 'crear'])
+        ->name('feedback.crear');
+    Route::get('/informe/descargar', [App\Http\Controllers\InformeController::class, 'descargar'])
+        ->name('informe.descargar');
+
+    Route::get('/recursos-de-apoyo', [App\Http\Controllers\RecursosDeApoyoController::class, 'index'])
+        ->name('recursos.apoyo');
+
     Route::get('/download/{id}', [App\Http\Controllers\EvidenciaController::class,'download'])->name('download');
     Route::get('/download_evidencia_plan/{id}', [App\Http\Controllers\EvidenciaController::class,'download_evidencia_plan'])->name('download_evidencia_plan');
 
@@ -113,7 +175,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
     //Prueba domPDF
     // Route::get('/users/{user_id}/dompdf',[UserController::class,'dompdf'])->name('users.dompdf');
     Route::view('/dashboard','livewire.dashboard.index')->name('dashboard')->middleware(['can:ver-dashboard']);
-    Route::view('/personal','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
+    Route::view('/personal-table','livewire.personals.index')->name('personal')->middleware(['can:ver-personal']);
+    Route::get('/personal-tabulator', [PersonalController::class, 'indexTabulator'])->name('personal.tabulator')->middleware(['can:ver-personal']);
     Route::view('/areas','livewire.areas.index')->name('areas')->middleware(['can:ver-area']);
     Route::view('/capacitaciones','livewire.capacitaciones.index')->name('capacitaciones')->middleware(['can:ver-capacitacion']);
     Route::get('/capacitaciones/{capacitacion_id}', function ($capacitacion_id) {
@@ -122,11 +185,10 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/capacitaciones/{capacitacion_id}/asistencia', function ($capacitacion_id) {
         return view('livewire.asistenciums.index')->with('capacitacion_id', $capacitacion_id);
     })->name('capacitaciones.asistencia')->middleware(['can:ver-capacitacion']);
-    
+
     Route::view('/cargos','livewire.cargos.index')->name('cargos')->middleware(['can:ver-cargo']);
     Route::view('/tipos_de_capacitaciones','livewire.tipo-de-capacitaciones.index')->name('tipo-de-capacitacion')->middleware(['can:ver-tipo-de-capacitacion']);//tipo_de_activos
     Route::view('/empresas','livewire.empresas.index')->name('empresas')->middleware(['can:ver-empresa']);
-    
 
     // SEGUIMIENTO DE EVALUACIONES -- INICIO
     Route::view('/respuestas','livewire.respuestas.index')->name('respuestas')->middleware(['can:ver-seguimiento-respuestas']);
@@ -148,17 +210,21 @@ Route::group(['middleware'  =>  ['auth']],function(){
     // Route::post('/calibracion-evaluacion/guardar', 
     //     [ResumenEvaluacionController::class, 'guardarCalibracion'])->name('calibracion.competencia.guardar');
     Route::get('/calibracion/obtener-datos/{personal_id}/{competencia_id}/{campania_id}', 
-        [ResumenEvaluacionController::class, 'obtenerDatosCalibracion'])->name('calibracion.obtener-datos')->middleware(['can:editar-calibracion']);
-
+        [ResumenEvaluacionController::class, 'obtenerDatosCalibracion'])->name('calibracion.obtener-datos')->middleware(['can:editar-calibracion']);    
     Route::get('/personal/search-comite', [PersonalController::class, 'searchComite'])
         ->name('personal.search-comite');
+    Route::get('/personal/search-evaluado', [PersonalController::class, 'searchComite'])
+        ->name('personal.search-evaluado');
+    Route::get('/personal/details', [PersonalController::class, 'getPersonalDetails'])
+        ->name('personal.details');
     Route::post('/personal/verificar-correo', [PersonalController::class, 'verificarCorreo'])
     ->name('personal.verificar-correo');
 
     Route::view('/objetivos','livewire.objetivos-lista.index')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
     Route::view('/respuesta-evaluacion-resultados','livewire.objetivos-lista.table')->name('objetivos')->middleware(['can:ver-seguimiento-objetivos']);
     Route::get('/objetivos-lista/data', [ObjetivosListaController::class, 'getData'])->name('objetivos-lista.data')->middleware(['can:ver-seguimiento-objetivos']);
-    Route::get('/objetivos-lista/historial/{id}', [ObjetivosListaController::class, 'getHistorial'])->name('objetivos-lista.historial')->middleware(['can:ver-seguimiento-objetivos']);
+    Route::get('/objetivos-lista/historial/{id}', [ObjetivosListaController::class, 'getHistorial'])
+    ->name('objetivos-lista.historial')->middleware(['can:ver-seguimiento-objetivos']);
 
     Route::view('/planes-de-accion','livewire.planes-de-accion.index')->name('planes-de-accion')->middleware(['can:ver-planes-de-accion']);
     Route::view('/seguimiento_evaluadores','livewire.seguimiento-evaluadores.index')->name('seguimiento_evaluadores')->middleware(['can:ver-seguimiento-evaluadores']);
@@ -174,18 +240,90 @@ Route::group(['middleware'  =>  ['auth']],function(){
     ->name('seguimiento-evaluadores.enviar-correos')->middleware(['can:ver-seguimiento-evaluadores']);
     // SEGUIMIENTO DE EVALUACIONES -- FIN
 
-
     // AJUSTE DE EVALUACIONES -- INICIO
     Route::view('/evaluaciones','livewire.evaluaciones.index')->name('evaluaciones')->middleware(['can:ver-configuracion-evaluaciones']);
     Route::view('/evaluadores','livewire.evaluadores.index')->name('evaluadores')->middleware(['can:ver-configuracion-evaluadores']);
-    Route::view('/secciones','livewire.secciones.index')->name('secciones')->middleware(['can:ver-configuracion-secciones']);
-    Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-configuracion-preguntas']);
+    
+    Route::view('/competencias','livewire.secciones.index')->name('secciones')->middleware(['can:ver-configuracion-secciones']);
+    Route::get('/competencias/data', [CompetenciaController::class, 'getData'])->name('competencias.data')->middleware(['can:ver-competencias']);
+    Route::resource('competencias', CompetenciaController::class);
+
+    // Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-configuracion-preguntas']);
     Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
     Route::view('/objetivos-precargados','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
+    
+    Route::get('/personal/data', [App\Http\Controllers\API\PersonalController::class, 'getData'])->name('personal.data')->middleware(['can:ver-personal']);
+    Route::post('personal/marcar-seleccionados', [PersonalController::class, 'marcarSeleccionados'])->name('personal.marcar-seleccionados');
+    // Route::get('personal/data', [PersonalController::class, 'data'])->name('personal.data');
+    // Route::resource('personal', PersonalController::class);
+    // Route::get('/personal/{id}', [App\Http\Controllers\API\PersonalController::class, 'show']);
+    // Route::post('/personal', [App\Http\Controllers\API\PersonalController::class, 'store']);
+    // Route::put('/personal/{id}', [App\Http\Controllers\API\PersonalController::class, 'update']);
+    // Route::delete('/personal/{id}', [App\Http\Controllers\API\PersonalController::class, 'destroy']);
+    
+    Route::get('/escala_mediciones/data', [EscalaMedicionController::class, 'getData'])->name('escala_mediciones.data')->middleware(['can:ver-escala-medicion']);
+    Route::resource('escala_mediciones', EscalaMedicionController::class);
+
+    Route::get('/tipo_mediciones/data', [TipoMedicionController::class, 'getData'])->name('tipo_mediciones.data')->middleware(['can:ver-tipo-medicion']);
+    Route::resource('tipo_mediciones', TipoMedicionController::class);
+
+    Route::get('/tipo_competencias/data', [TipoCompetenciaController::class, 'getData'])->name('tipo_competencias.data');
+    Route::resource('tipo_competencias', TipoCompetenciaController::class);
+    
+    Route::get('/campania_has_competencias/data', [CampaniaHasCompetenciaController::class, 'getData'])->name('campania_has_competencias.data')->middleware(['can:ver-campania-has-competencia']);
+    Route::resource('campania_has_competencias', CampaniaHasCompetenciaController::class);
+
+    // Rutas para evaluados por campaña
+    Route::get('/campania_has_evaluados/selects', [CampaniaHasEvaluadoController::class, 'getSelects'])->name('campania_has_evaluados.selects');
+    Route::post('/campania_has_evaluados/{id}/toggle-competencias', [CampaniaHasEvaluadoController::class, 'toggleCompetencias'])->name('campania_has_evaluados.toggle-competencias');
+    Route::post('/campania_has_evaluados/{id}/toggle-objetivos', [CampaniaHasEvaluadoController::class, 'toggleObjetivos'])->name('campania_has_evaluados.toggle-objetivos');
+    Route::post('/campania_has_evaluados/importar', [CampaniaHasEvaluadoController::class, 'importar'])->name('campania_has_evaluados.importar');
+    Route::post('/campania_has_evaluados/validar-importar', [CampaniaHasEvaluadoController::class, 'validarImportar'])->name('campania_has_evaluados.validar-importar');
+    Route::resource('campania_has_evaluados', CampaniaHasEvaluadoController::class);
+
+    Route::get('/nivel_jerarquicos/data', [NivelJerarquicoController::class, 'getData'])->name('nivel_jerarquicos.data');
+    Route::resource('nivel_jerarquicos', NivelJerarquicoController::class);
+
+    Route::get('/grados/data', [GradoController::class, 'getData'])->name('grados.data');
+    Route::resource('grados', GradoController::class);
+
+    Route::get('/dominios/data', [DominioController::class, 'getData'])->name('dominios.data');
+    Route::resource('dominios', DominioController::class);
+
+    Route::get('/tipo_de_puestos/data', [TipoDePuestoController::class, 'getData'])->name('tipo_de_puestos.data');
+    Route::resource('tipo_de_puestos', TipoDePuestoController::class);
+
+    Route::get('/tipo_puesto_niveles/data', [TipoDePuestoHasNivelJerarquicoController::class, 'getData'])->name('tipo_puesto_niveles.data');
+    Route::resource('tipo_puesto_niveles', TipoDePuestoHasNivelJerarquicoController::class);
+
+    Route::get('dominio-has-preguntas/data', [DominioHasPreguntaController::class, 'getData'])->name('dominio-has-preguntas.data');
+    Route::resource('dominio-has-preguntas', DominioHasPreguntaController::class);
+
+    Route::get('/preguntas/data', [PreguntaController::class, 'getData'])->name('preguntas.data')->middleware(['can:ver-preguntas']);
+    Route::resource('preguntas', PreguntaController::class);
+
+    // Rutas para Cargos
+    Route::get('/cargos/data', [App\Http\Controllers\CargoController::class, 'getData'])->name('cargos.data')->middleware(['can:ver-cargo']);
+    Route::resource('cargos', App\Http\Controllers\CargoController::class);
+    Route::post('/cargos/actualizar-tipos', [App\Http\Controllers\CargoController::class, 'actualizarTiposDePuesto'])
+    ->name('cargos.actualizar-tipos');
+
+    // Rutas para Pesos por campaña
+    Route::get('/campanias/{id}/pesos', [App\Http\Controllers\PesoController::class, 'getByCampania'])->name('campanias.pesos');
+    Route::get('/pesos/selects', [App\Http\Controllers\PesoController::class, 'getSelects'])->name('pesos.selects');
+    Route::resource('pesos', App\Http\Controllers\PesoController::class);
     // Route::view('/importar-preguntas', 'livewire.importar-preguntas.index')->name('importar-preguntas')->middleware(['auth']);
-    // AJUSTE DE EVALUACIONES -- FIN    
+    // AJUSTE DE EVALUACIONES -- FIN
 
+    // routes/web.php (agregar estas rutas junto a las demás rutas de recursos)
+    Route::get('/tipo_relacion_jerarquicas/data', [App\Http\Controllers\TipoRelacionJerarquicoController::class, 'getData'])
+        ->name('tipo_relacion_jerarquicas.data')
+        ->middleware(['can:ver-tipo-relacion-jerarquica']);
+    Route::resource('tipo_relacion_jerarquicas', App\Http\Controllers\TipoRelacionJerarquicoController::class);
 
+    // routes/api.php (opcional, para endpoints API)
+    Route::get('/tipo_relacion_jerarquica/lista', [App\Http\Controllers\API\TipoRelacionJerarquicoController::class, 'lista'])
+        ->name('api.tipo_relacion_jerarquica.lista');
 
     Route::get('/evaluaciones-de-desempeno/{id}', function ($tipo_de_evaluacion_id) {
         return view('livewire.evaluador-has-evaluados.index')->with('tipo_de_evaluacion_id', $tipo_de_evaluacion_id);
@@ -280,6 +418,103 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::resource('users',UserController::class);
     Route::resource('roles',RolController::class);
 
+    Route::get('/campanias/getData', [CampaniaController::class, 'getData'])->name('campanias.getData');
+    Route::get('/campanias/{id}/getAllCompetenciasByCampaniaId', [CampaniaController::class, 'getAllCompetenciasByCampaniaId'])->name('campanias.getAllCompetenciasByCampaniaId');
+    Route::get('/campanias/getSelect', [CampaniaController::class, 'getSelect'])->name('campanias.getAll');
+    Route::get('/campanias/{id}/getAllCompetenciasCampaniaAnterior', [CampaniaController::class, 'getAllCompetenciasCampaniaAnterior'])->name('campanias.getAllCompetenciasCampaniaAnterior')->middleware(['can:ver-campania']);
+
+    Route::get('/campanias/{id}/config', [CampaniaController::class, 'config'])->name('campanias.config');   
+    Route::get('/campanias/{id}/preguntas', [CampaniaController::class, 'getPreguntas'])->name('campanias.preguntas');
+    Route::get('/campanias/{id}/preguntas-estado', [CampaniaController::class, 'getPreguntasEstado'])->name('campanias.preguntas-estado');
+    Route::get('/campanias/{id}/competencias', [CampaniaController::class, 'getCompetencias'])->name('campanias.competencias');
+    Route::get('/campanias/{id}/dominios', [CampaniaController::class, 'getDominios'])->name('campanias.dominios');
+    Route::post('/campanias/{id}/validar-preguntas', [CampaniaController::class, 'validatePreguntas'])->name('campanias.validar-preguntas');
+    Route::post('/campanias/{id}/importar-preguntas', [CampaniaController::class, 'importarPreguntas'])->name('campanias.importar-preguntas');
+        
+    Route::resource('campanias', CampaniaController::class);
+    Route::post('/campanias/{id}/restore', [CampaniaController::class, 'restore'])->name('campanias.restore');
+    Route::delete('/campanias/{id}/force-delete', [CampaniaController::class, 'forceDelete'])->name('campanias.forceDelete');
+
+    // Rutas para evaluaciones
+    Route::get('/campanias/{id}/evaluaciones', [EvaluacionesController::class, 'getByCampania'])->name('campanias.evaluaciones');
+    Route::get('/tipos-evaluacion', [EvaluacionesController::class, 'getTiposEvaluacion'])->name('tipos_evaluacion.data');
+
+    // Rutas para evaluados por campaña
+    // Route::get('/campanias/{id}/evaluados', [CampaniaHasEvaluadoController::class, 'getByCampania'])->name('campanias.evaluados');
+    Route::get('/campanias/{id}/evaluados', [CampaniaHasEvaluadoController::class, 'getByCampania'])->name('campanias.evaluados');
+    Route::get('/campanias/{id}/evaluados/index', [CampaniaHasEvaluadoController::class, 'index'])->name('campania_has_evaluados.index');
+    Route::get('/evaluados/selects', [CampaniaHasEvaluadoController::class, 'getSelects'])->name('campania_has_evaluados.selects');
+    Route::post('/evaluados', [CampaniaHasEvaluadoController::class, 'store'])->name('campania_has_evaluados.store');
+    Route::get('/evaluados/{id}', [CampaniaHasEvaluadoController::class, 'show'])->name('campania_has_evaluados.show');
+    Route::put('/evaluados/{id}', [CampaniaHasEvaluadoController::class, 'update'])->name('campania_has_evaluados.update');
+    Route::delete('/evaluados/{id}', [CampaniaHasEvaluadoController::class, 'destroy'])->name('campania_has_evaluados.destroy');
+    Route::post('/evaluados/{id}/toggle-competencias', [CampaniaHasEvaluadoController::class, 'toggleCompetencias'])->name('campania_has_evaluados.toggle_competencias');
+    Route::post('/evaluados/{id}/toggle-objetivos', [CampaniaHasEvaluadoController::class, 'toggleObjetivos'])->name('campania_has_evaluados.toggle_objetivos');
+    Route::get('/evaluados/{id}/subordinados', [CampaniaHasEvaluadoController::class, 'getSubordinados'])->name('campania_has_evaluados.subordinados');
+    Route::get('/evaluados/{id}/pares', [CampaniaHasEvaluadoController::class, 'getPares'])->name('campania_has_evaluados.pares');
+    Route::post('/campanias/{id}/importar-evaluados', [CampaniaHasEvaluadoController::class, 'importar'])->name('campanias.importar_evaluados');
+    Route::post('/campanias/{campania}/generar-evaluador-has-evaluado', [CampaniaHasEvaluadoController::class, 'generarEvaluadorHasEvaluado'])->name('campanias.generarEvaluadorHasEvaluado');
+    Route::resource('evaluaciones', EvaluacionesController::class);
+
+    // Route::post('/campanias/exportar-personal-a-campania-actual', 
+    // [CampaniaHasEvaluadoController::class, 'exportarPersonalACampaniaActual'])
+    // ->name('campanias.exportarPersonalACampaniaActual');
+
+    Route::post('campanias/exportar-todos-seleccionados', 
+    [CampaniaHasEvaluadoController::class, 'exportarTodosSeleccionados'])
+    ->name('campanias.exportarTodosSeleccionados');
+
+    Route::post('campanias/exportar-personal', 
+    [CampaniaHasEvaluadoController::class, 'exportarPersonalACampaniaActual'])
+    ->name('campanias.exportarPersonalACampaniaActual');
+
+    Route::prefix('campanias/{campania}/evaluador-has-evaluados')->group(function () {
+        Route::get('/', [EvaluadorHasEvaluadoController::class, 'index']);
+        Route::get('/selects', [EvaluadorHasEvaluadoController::class, 'selects']);
+    });
+
+    Route::resource('evaluador-has-evaluados', EvaluadorHasEvaluadoController::class)
+        ->only(['show', 'store', 'update', 'destroy']);
+
+    Route::get('personal/search', function(\Illuminate\Http\Request $request) {
+        $q = $request->input('q');
+        return \App\Models\Personal::where('name', 'like', "%$q%")
+            ->select('id', 'name')
+            ->limit(30)
+            ->get();
+    });
+        
+    Route::get('personal/select2/empresa', [PersonalController::class, 'select2Empresa'])->name('api.personal.select2.empresa');
+    Route::get('personal/select2/gerencia', [PersonalController::class, 'select2Gerencia'])->name('api.personal.select2.gerencia');
+    Route::get('personal/select2/area', [PersonalController::class, 'select2Area'])->name('api.personal.select2.area');
+    Route::get('personal/select2/cargo', [PersonalController::class, 'select2Cargo'])->name('api.personal.select2.cargo');
+    Route::get('personal/select2/reporta', [PersonalController::class, 'select2Reporta'])->name('api.personal.select2.reporta');
+
+    Route::get('organigrama', [App\Http\Controllers\OrgChartController::class, 'index'])->name('organigrama.index');
+
+    // Rutas para actualización de personal
+    Route::post('personal/actualizacion-general', 
+    [App\Http\Controllers\PersonalController::class, 
+    'actualizacionGeneralCompleta']
+    )->name('personal.actualizacion-general');
+
+    Route::post('personal/actualizacion-individual/{dni}', 
+    [App\Http\Controllers\PersonalController::class, 
+    'actualizacionIndividual']
+    )->name('personal.actualizacion-individual');
+
+    Route::post('personal/buscar-por-dni', 
+    [App\Http\Controllers\PersonalController::class, 
+    'buscarPersonalPorDNI']
+    )->name('personal.buscar-por-dni');
+
+    Route::get('personal/historial-actualizaciones', 
+    [App\Http\Controllers\PersonalController::class, 
+    'historialActualizaciones']
+    )->name('personal.historial-actualizaciones');
+    
+    Route::resource('personal', App\Http\Controllers\API\PersonalController::class)->middleware(['can:ver-personal']);
+        
 });
 // Auth::routes();
 Route::get('/web/capacitaciones/{tipo_user}/{user_id}', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'getCapacitaciones'])->name('capacitaciones.getCapacitaciones'); //FALTA MODIFICAR
@@ -289,4 +524,3 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/validar-codigo', [App\Http\Controllers\VerificationController::class, 'verifyCode'])->name('verification.verify');
 
 Route::get('/enviar-correo', [App\Http\Controllers\VerificationController::class, 'enviarCorreo']);
-

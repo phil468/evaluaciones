@@ -1,6 +1,10 @@
 <nav class="main-header navbar
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }}
-    {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
+    {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}"
+     {{-- style="height: 75px;"  --}}
+     style="height: 75px;"
+
+    >
 
     {{-- Navbar left links --}}
     <ul class="navbar-nav">

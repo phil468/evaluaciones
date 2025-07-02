@@ -32,15 +32,28 @@ class ActualizarResumenRespuestas extends Command
             $total_peso = $grupo->sum('peso');
             $puntaje = $total_peso > 0 ? $grupo->sum(function($r) { return $r->valor_numerico * $r->peso; }) / $total_peso : null;
 
-            ResumenRespuestasEvaluacionDesempenoCompetencia::create([
-                'personal_id' => $primera->evaluado_id,
-                'competencia_id' => $competencia_id,
-                'pregunta_id' => $primera->pregunta_id,
-                'puntaje' => $puntaje,
-                'puntaje_calibrado' => null, // Por ahora igual, luego puedes calibrar
-                'area_id' => $area_id,
-                'campania_id' => $primera->campania_id,
-            ]);
+            ResumenRespuestasEvaluacionDesempenoCompetencia::updateOrCreate(
+                [
+                    'personal_id' => $primera->evaluado_id,
+                    'competencia_id' => $competencia_id,
+                    'pregunta_id' => $primera->pregunta_id,
+                    'area_id' => $area_id,
+                    'campania_id' => $primera->campania_id,
+                ],
+                [
+                    'puntaje' => $puntaje,
+                    // 'puntaje_calibrado' => null, // Por ahora igual, luego puedes calibrar
+                ]
+            );
+            // create([
+            //     'personal_id' => $primera->evaluado_id,
+            //     'competencia_id' => $competencia_id,
+            //     'pregunta_id' => $primera->pregunta_id,
+            //     'puntaje' => $puntaje,
+            //     // 'puntaje_calibrado' => null, // Por ahora igual, luego puedes calibrar
+            //     'area_id' => $area_id,
+            //     'campania_id' => $primera->campania_id,
+            // ]);
         }
 
         $this->info('Resumen actualizado correctamente.');

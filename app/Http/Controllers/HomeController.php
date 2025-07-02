@@ -27,6 +27,25 @@ class HomeController extends Controller
         return view('dash.index');
     }
 
+    //inicio
+
+    public function inicio()
+    {
+        $evaluaciones_pendientes = auth()->user()->personal()->evaluacionesPendientes();
+
+        return view('inicio.index');
+    }
+
+    public function pendientes2()
+    {
+        return view('inicio.pendientes2');
+    }
+
+    public function pendientes()
+    {
+        return view('inicio.pendientes');
+    }
+
     // public function redirectToAzure()
     // {
     //     return Socialite::driver('azure')->redirect();

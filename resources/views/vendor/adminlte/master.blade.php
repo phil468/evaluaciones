@@ -52,7 +52,8 @@
         @endif
     @endif
 
-    <script nonce="{{ $nonce }}" src="{{ asset('js/alpine.min.js') }}" defer></script>
+    <script nonce="{{ $nonce }}" src="{{ asset('js/alpine.min.js') }}"></script>
+    {{-- <script nonce="{{ $nonce }}" src="{{ asset('js/app.js') }}" defer></script> --}}
 
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"> --}}
 
@@ -141,6 +142,13 @@
     {{-- Base Scripts --}}
     @if (!config('adminlte.enabled_laravel_mix'))
         <script nonce="{{ $nonce }}" src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+        
+        <script nonce="{{ $nonce }}" src="{{ asset('js/csrf.js') }}"></script>
+        <script nonce="{{ $nonce }}" src="{{ asset('js/utils.js') }}"></script>
+        <script nonce="{{ $nonce }}" src="{{ asset('js/baseModel.js') }}"></script>
+        
+        
+        {{-- <script nonce="{{ $nonce }}" src="{{ asset('js/app.js') }}" defer></script> --}}
         <script nonce="{{ $nonce }}" src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         {{-- <script nonce="{{ $nonce }}" src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         <link nonce="{{ $nonce }}" href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"> --}}
@@ -166,7 +174,16 @@
 
     <script nonce="{{ $nonce }}" src="{{ asset('js/bootstrap4-toggle.min.js') }}"></script>
     <script nonce="{{ $nonce }}" type="text/javascript" src="js/select2.full.min.js"></script>
-
+    <script nonce="{{ $nonce }}" type="text/javascript" src="js/luxon.min.js"></script>
+    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="js/orgchart.js"></script> --}}
+    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-org-chart.js"></script> --}}
+    <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3.v7.min.js"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-org-chart@3.0.1"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-flextree.js"></script>
+    
+    <script nonce="{{ $nonce }}" src="{{ asset('js/chart.js') }}"></script>
+    <script nonce="{{ $nonce }}" src="{{ asset('js/chartjs-plugin-datalabels@2.js') }}"></script>
+    
     @yield('adminlte_js')
     {{-- <script nonce="{{ $nonce }}" src= --}}
     {{-- "{{ asset('js/bootstrap4-toggle.min.js')}}" --}}

@@ -1,6 +1,10 @@
 <nav class="main-header navbar
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand-md') }}
-    {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
+    {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}"
+    {{-- style="background-color: #f2f2f2;"
+      --}}
+      
+    >
 
     <div class="{{ config('adminlte.classes_topnav_container', 'container') }}">
 

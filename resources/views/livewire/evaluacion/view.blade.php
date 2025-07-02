@@ -77,8 +77,33 @@
                             <table class="table table-striped table-inverse table-responsive">
 
                                 <tbody>
+                                    {{-- {{ dd($preguntas) }} --}}
                                     @foreach ($preguntas as $index => $item)
                                         @if ($item['seccion_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
+                                            <tr>
+                                                <td class="row">
+                                                    <div class="align-content-center col-12 col-sm-4 col-lg-3 col-xl-4">
+                                                        {{ $item['numero_orden'] . '. ' . $item['pregunta'] }}</div>
+                                                    <div
+                                                        class="align-content-center col-12 col-sm-8 col-lg-9 col-xl-8 rating-buttons">
+                                                        @for ($i = 1; $i <= 10; $i++)
+                                                            <button
+                                                                class="btn btn-md 
+                                                    @if ($item['valor'] >= $i) btn-primary                                    
+                                                    @else
+                                                        btn-default @endif
+                                                    {{ $i <= 10 ? 'm-1' : '' }}"
+                                                                wire:click="marcarValor({{ $index }}, {{ $i }})">{{ $i }}</button>
+                                                        @endfor
+                                                        @error('preguntas.' . $index . '.valor')
+                                                            <br><span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endif
+
+                                        @if ($item['campania_has_competencia_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
                                                 <td class="row">
                                                     <div class="align-content-center col-12 col-sm-4 col-lg-3 col-xl-4">

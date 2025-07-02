@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\CampaniaHasEvaluado;
+use App\Models\Dominio;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Evaluacione;
@@ -10,6 +12,7 @@ use App\Models\Objetivo;
 use App\Models\Personal;
 use App\Models\Pregunta;
 use App\Models\Respuesta;
+use App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia;
 use App\Models\TiposDeObjetivo;
 
 class Evaluacion extends Component
@@ -18,8 +21,8 @@ class Evaluacion extends Component
 
     protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $eid, $title, $date,
-     $status, $evaluacion_id, $evaluacion, $evaluador,
-      $evaluado, $evaluadorHasEvaluado,$preguntas, $secciones, $seccion_index_select, $seccion_indexs;
+    $status, $evaluacion_id, $evaluacion, $evaluador,
+    $evaluado, $evaluadorHasEvaluado,$preguntas, $secciones, $seccion_index_select, $seccion_indexs;
     public $updateMode = false;
     public $aceptado = false;
     public $realizado = false;
@@ -58,9 +61,27 @@ class Evaluacion extends Component
                         $this->realizado = true;
                     }
             
-                    // Obtener las preguntas de la evaluacion con sus respectivas secciones
-                    $this->preguntas = Pregunta::where('evaluacion_id',$this->evaluacion->id)->with('seccion'
-                    )->orderBy('preguntas.numero_orden')->get()->toArray();
+                    if ($this->evaluacion->id < 5) {
+                        // Obtener las preguntas de la evaluacion con sus respectivas secciones
+                        $this->preguntas = Pregunta::where('evaluacion_id',$this->evaluacion->id)->with('seccion'
+                        )->orderBy('preguntas.numero_orden')->get()->toArray();
+                    } else {
+                        // Si el id de la evaluacion es mayor o igual a 5, obtener las preguntas con sus respectivas secciones
+                        // y ordenarlas por numero_orden de la seccion
+                        // y luego por numero_orden de la pregunta
+                        // a partir de la $this->evaluadorHasEvaluado vasmoa al grado y del grado llegamos al dominio, consultadno el campania_id y el grado_id
+                        // y luego llegamos a las preguntas
+                        $dominio_id = Dominio::where('campania_id',$this->evaluadorHasEvaluado->campania_id)
+                        ->where('grado_id',$this->evaluadorHasEvaluado->grado_id)
+                        ->first()->id;
+
+                        $this->evaluadorHasEvaluado->evaluado->campaniaHasGrado;
+                        
+                        $this->preguntas = Pregunta::where('dominio_id',$dominio_id)
+                        ->with('campaniaHasCompetencias.competencia')
+                        ->orderBy('preguntas.numero_orden')->get()->toArray();
+
+                    }
             
                     // Inicializar los valores de las preguntas en 7
                     foreach ($this->preguntas as $key => $value) {
@@ -77,10 +98,31 @@ class Evaluacion extends Component
             
                     // Obtener las secciones unicas de la evaluacion
                     // $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
-                    $this->secciones =  Evaluacione::find($this->evaluadorHasEvaluado->evaluacion_id)->seccionesUnicas()->toArray();
+                    if ($this->evaluacion->id < 5) {
+                        $this->secciones =  Evaluacione::find($this->evaluadorHasEvaluado->evaluacion_id)->seccionesUnicas()->toArray();
+                    } else {
+                        // si la evaluacion es mayor o igual a 5, obtenemo)s las secciones
+                        // a traves de las preguntas, sin repetirlas
+                        // la lista de las secciones las vamos a obtener a partir del modelo Pregunta
+                        // y vamos a obtener las secciones unicas
+                        // pero en esta caso a traves de la relacion  Pregunta->CampaniaHasCompetencia->competencia->name
+                        $dominio_id = Dominio::where('campania_id',$this->evaluadorHasEvaluado->campania_id)
+                        ->where('grado_id',$this->evaluadorHasEvaluado->grado_id)
+                        ->first()->id;
+
+                        $this->secciones = Dominio::find($dominio_id)->campaniaHasCompetencias()->get()->map(function ($chc) {
+                            return [
+                                'id' => $chc->id,
+                                'name' => $chc->competencia->name,
+                            ];
+                        })->unique('id')->values()->toArray();
+                        // dd($this->secciones);
+
+                    }
                     // dd($this->secciones);
                     $this->secciones = (array) $this->secciones;
                     $this->seccion_indexs = array_keys($this->secciones);
+                    // dd($this->seccion_indexs);
                     //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
                     // $this->seccion_index_select = count($this->seccion_indexs)-1;
                     $this->seccion_index_select = 0;
@@ -176,8 +218,14 @@ class Evaluacion extends Component
     public function siguiente() {
         $seccion = $this->secciones[$this->seccion_indexs[$this->seccion_index_select]]['id'];
         // Obtener el array de preguntas cuando la seccion_id de la pregunta sea igual a la variable seccion
+        if ($this->evaluacion->id < 5) {
+            $preguntas = array_filter($this->preguntas, function ($pregunta) use ($seccion) {
+                return $pregunta['seccion_id'] == $seccion;
+            });
+        }
+
         $preguntas = array_filter($this->preguntas, function ($pregunta) use ($seccion) {
-            return $pregunta['seccion_id'] == $seccion;
+            return $pregunta['campania_has_competencia_id'] == $seccion;
         });
 
         $rules = [];
@@ -238,20 +286,95 @@ class Evaluacion extends Component
             // Guardar las respuestas en el modelo Respuesta
             foreach ($this->preguntas as $key => $value) {
                 // crear o actualizar respuesta siendo claves unicas : evaluado_id, pregunta_id y valor = calor_numerico
-                
                 Respuesta::create([
                     'evaluado_id' => $this->evaluado->id,
                     'pregunta_id' => $value['id'],
-                    'valor_numerico' => $value['valor']
+                    'valor_numerico' => $value['valor'],
+                    'peso' => $this->evaluadorHasEvaluado->peso_prorrateado,
+                    'campania_id' => $this->evaluadorHasEvaluado->campania_id,                
                 ]);
             }
     
             // Cambiar el estado de la evaluacion a realizado = 1
             $this->evaluadorHasEvaluado->realizado = 1;
-            $this->evaluadorHasEvaluado->save();        
+            $this->evaluadorHasEvaluado->save();
+            
+            // voy a revisar si en EvaluadorHasEvaluado , el evaluado_id de este $this->evaluadorHasEvaluado tiene tdos sus evaluaciones realizadas(en esta campaña)
+            // luego voy a correr la función de resumen de respuestas
+            $evaluadoId = $this->evaluadorHasEvaluado->evaluado_id;
+            $campaniaId = $this->evaluadorHasEvaluado->campania_id;
+            $evaluacionesRealizadas = EvaluadorHasEvaluado::where('evaluado_id', $evaluadoId)
+                ->where('campania_id', $campaniaId)
+                ->where('realizado', 1)
+                ->count();
+            $totalEvaluaciones = EvaluadorHasEvaluado::where('evaluado_id', $evaluadoId)
+                ->where('campania_id', $campaniaId)
+                ->count();
+            // si las evaluaciones realizadas son iguales al total de evaluaciones, entonces se puede correr la función de resumen de respuestas
+            if ($evaluacionesRealizadas == $totalEvaluaciones) {
+                // correr la función de resumen de respuestas
+                // ResumenRespuestasEvaluacionDesempenoCompetencia::actualizarResumen($campaniaId, $evaluadoId);
+                // Actualizar el resumen de respuestas
+                $this->actualizarResumenRespuestas($campaniaId, $evaluadoId);
+            }
+            // Emitir el evento para abrir el modal de gracias
+
     
             $this->emit('openGraciasModal');
         }
+    }
+
+    public function actualizarResumenRespuestas($campaniaId, $evaluadoId)
+    {
+        // Limpia la tabla resumen
+        ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campaniaId)
+            ->where('personal_id', $evaluadoId)
+            ->delete();
+
+        // Agrupa por campania, competencia y pregunta
+        $respuestas = Respuesta::with('pregunta')
+            ->where('campania_id', $campaniaId)
+            ->where('evaluado_id', $evaluadoId)
+            ->get()
+            ->groupBy(function($item) {
+                return $item->campania_id . '-' . $item->evaluado_id . '-' . $item->pregunta->seccion_id . '-' . $item->pregunta_id;
+            });
+
+        foreach ($respuestas as $key => $grupo) {
+            $primera = $grupo->first();
+            $competencia_id = $primera->pregunta->seccion_id ?? null;
+            $area_id = $primera->area_de_evaluado ?? null;
+
+            $total_peso = $grupo->sum('peso');
+            $puntaje = $total_peso > 0 ? $grupo->sum(function($r) { return $r->valor_numerico * $r->peso; }) / $total_peso : null;
+
+            ResumenRespuestasEvaluacionDesempenoCompetencia::updateOrCreate(
+                [
+                    'personal_id' => $primera->evaluado_id,
+                    'competencia_id' => $competencia_id,
+                    'pregunta_id' => $primera->pregunta_id,
+                    'area_id' => $area_id,
+                    'campania_id' => $primera->campania_id,
+                ],
+                [
+                    'puntaje' => $puntaje,
+                ]
+            );
+        }
+
+        // actualizar el campaniaHasEvaluado con el puntaje promedio
+        $puntajePromedio = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campaniaId)
+            ->where('personal_id', $evaluadoId)
+            ->avg('puntaje');
+        $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $campaniaId)
+            ->where('personal_id', $evaluadoId)
+            ->first();
+        if ($campaniaHasEvaluado) {
+            $campaniaHasEvaluado->puntaje_de_evaluacion_de_competencias = $puntajePromedio;
+            $campaniaHasEvaluado->evaluacion_de_competencias_completada = true;
+            $campaniaHasEvaluado->save();
+        }
+
     }
 
     public function cancelar()
@@ -285,62 +408,62 @@ class Evaluacion extends Component
         $this->status = null;
     }
 
-    public function store()
-    {
-        $this->validate([
-        ]);
+    // public function store()
+    // {
+    //     $this->validate([
+    //     ]);
 
-        Evaluacione::create([ 
-            'eid' => $this-> eid,
-            'title' => $this-> title,
-            'date' => $this-> date,
-            'status' => $this-> status
-        ]);
+    //     Evaluacione::create([ 
+    //         'eid' => $this-> eid,
+    //         'title' => $this-> title,
+    //         'date' => $this-> date,
+    //         'status' => $this-> status
+    //     ]);
         
-        $this->resetInput();
-        $this->emit('closeModal');
-        session()->flash('message', 'Evaluacione creado correctamente.');
-    }
+    //     $this->resetInput();
+    //     $this->emit('closeModal');
+    //     session()->flash('message', 'Evaluacione creado correctamente.');
+    // }
 
-    public function edit($id)
-    {
-        $record = Evaluacione::findOrFail($id);
+    // public function edit($id)
+    // {
+    //     $record = Evaluacione::findOrFail($id);
 
-        $this->selected_id = $id; 
-        $this->eid = $record-> eid;
-        $this->title = $record-> title;
-        $this->date = $record-> date;
-        $this->status = $record-> status;
+    //     $this->selected_id = $id; 
+    //     $this->eid = $record-> eid;
+    //     $this->title = $record-> title;
+    //     $this->date = $record-> date;
+    //     $this->status = $record-> status;
         
-        $this->updateMode = true;
-    }
+    //     $this->updateMode = true;
+    // }
 
-    public function update()
-    {
-        $this->validate([
-        ]);
+    // public function update()
+    // {
+    //     $this->validate([
+    //     ]);
 
-        if ($this->selected_id) {
-            $record = Evaluacione::find($this->selected_id);
-            $record->update([ 
-                'eid' => $this-> eid,
-                'title' => $this-> title,
-                'date' => $this-> date,
-                'status' => $this-> status
-            ]);
+    //     if ($this->selected_id) {
+    //         $record = Evaluacione::find($this->selected_id);
+    //         $record->update([ 
+    //             'eid' => $this-> eid,
+    //             'title' => $this-> title,
+    //             'date' => $this-> date,
+    //             'status' => $this-> status
+    //         ]);
 
-            $this->resetInput();
-            $this->updateMode = false;
-            $this->emit('closeModal');
-            session()->flash('message', 'Evaluacione actualizado correctamente.');
-        }
-    }
+    //         $this->resetInput();
+    //         $this->updateMode = false;
+    //         $this->emit('closeModal');
+    //         session()->flash('message', 'Evaluacione actualizado correctamente.');
+    //     }
+    // }
 
-    public function destroy($id)
-    {
-        if ($id) {
-            $record = Evaluacione::where('id', $id);
-            $record->delete();
-        }
-    }
+    // public function destroy($id)
+    // {
+    //     if ($id) {
+    //         $record = Evaluacione::where('id', $id);
+    //         $record->delete();
+    //     }
+    // }
 }

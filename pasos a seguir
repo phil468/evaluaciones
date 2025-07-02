@@ -12,5 +12,95 @@ agregar
 INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-calibracion', 'web', NULL, NULL);
 INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-calibracion', 'web', NULL, NULL);
 
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-escala-medicion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-escala-medicion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-escala-medicion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-escala-medicion', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-medicion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-medicion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-medicion', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-medicion', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-competencia', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-competencia', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-competencia', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-competencia', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-competencias', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-competencias', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-competencias', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-competencias', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-configuracion-campania-competencia', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-configuracion-campania-competencia', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-configuracion-campania-competencia', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-configuracion-campania-competencia', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-nivel-jerarquico', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-nivel-jerarquico', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-nivel-jerarquico', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-nivel-jerarquico', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-grado', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-grado', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-grado', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-grado', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-dominio', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-dominio', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-dominio', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-dominio', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-de-puesto', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-de-puesto', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-de-puesto', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-de-puesto', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-dominio-has-pregunta', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-dominio-has-pregunta', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-dominio-has-pregunta', 'web', NULL, NULL);
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-dominio-has-pregunta', 'web', NULL, NULL);
+
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES 
+('ver-campania', 'web', NULL, NULL),
+('crear-campania', 'web', NULL, NULL),
+('editar-campania', 'web', NULL, NULL),x
+('borrar-campania', 'web', NULL, NULL),
+('restaurar-campania', 'web', NULL, NULL);
+
 php artisan migrate --path=/database/migrations/2025_05_13_174033_create_comites_calibracion_table.php
 php artisan migrate --path=/database/migrations/2025_05_13_173755_create_comite_has_personas_table.php
+
+php artisan migrate --path=/database/migrations/2025_05_23_071046_create_escala_mediciones_table.php
+php artisan migrate --path=/database/migrations/2025_05_26_120631_create_tipo_mediciones_table.php
+php artisan migrate --path=/database/migrations/2025_05_26_153800_create_tipo_competencias_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_072902_alter_secciones_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_102311_create_campania_has_competencias_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_120510_create_nivel_jerarquicos_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_121503_create_grados_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_122937_create_dominios_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_125710_create_tipo_de_puestos_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_140538_create_tipo_de_puesto_has_nivel_jerarquicos_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_165635_alter_preguntas_table.php
+php artisan migrate --path=/database/migrations/2025_05_27_170202_create_dominio_has_pregunta_table.php
+php artisan migrate --path=/database/migrations/2025_06_03_162526_alter_campanias_table.php
+php artisan migrate --path=/database/migrations/2025_06_06_093634_add_fecha_corte_to_evaluaciones_table.php
+php artisan migrate --path=/database/migrations/2025_06_06_111640_create_campania_has_evaluados_table.php
+php artisan migrate --path=/database/migrations/2025_06_09_123137_add_tipo_de_puesto_to_cargo_table.php
+php artisan migrate --path=/database/migrations/2025_06_17_155412_create_tipo_relacion_jerarquicas_table.php
+php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions.php
+php artisan migrate --path=/database/migrations/2025_06_17_172012_create_pesos_table.php
+php artisan migrate --path=/database/migrations/2025_06_17_172116_add_peso_permissions.php
+php artisan migrate --path=/database/migrations/2025_06_18_121315_add_campos_to_evaluador_has_evaluados.php
+php artisan migrate --path=/database/migrations/2025_06_19_155939_add_campos_to_campania_has_evaluados.php
+php artisan migrate --path=/database/migrations/2025_06_20_094439_add_campos_to_campania.php
+php artisan migrate --path=/database/migrations/2025_06_24_143340_add_campo_seleccionado_to_personal.php
+php artisan migrate --path=/database/migrations/2025_06_26_091336_create_actualizaciones_personal_table.php
+
+corregir la carpeta: adm a public

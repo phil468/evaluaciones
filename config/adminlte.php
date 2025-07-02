@@ -47,8 +47,8 @@ return [
 
     'logo' => 'Vanguard	Perú &trade;',
     'logo_img' => 'img/icon/Vanguard-Intl-icon-blue-1cWeb-med.png',
-    'logo_img_class' => 'brand-image',
-    'logo_img_xl' => 'img/icon/Logotipo Horizontal - Grupo Vanguard Internacional - blanco.png',    
+    'logo_img_class' => 'brand-image ml-0',
+    'logo_img_xl' => 'img/icon/Logotipo Vertical - Grupo Vanguard Internacional.png',    
     'logo_img_xl_alt' => 'img/icon/Logotipo Vertical - Grupo Vanguard Internacional.png',
     'logo_img_xl_class' => 'brand-image-xs',
     'logo_img_alt' => 'Vanguard',
@@ -128,7 +128,7 @@ return [
     'classes_content_wrapper' => ( env('APP_ENV')=='testing' || env('APP_ENV')=='local') ? 'bg-gradient-warning' : '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-lightblue elevation-4',
+    'classes_sidebar' => 'sidebar-light-lightblue elevation-4',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-vanguard navbar-dark',
     'classes_topnav_nav' => 'navbar-expand',
@@ -276,10 +276,47 @@ return [
         //     'icon' => 'fas fa-sign-in-alt',
         //     'can'  => 'ver-capacitacion',
         // ],
+        // pantalla de inicio 
+        ['header' => 'Inicio', 'can'  => ['ver-dashboard']],
+
+        [
+            'text' => 'Inicio',
+            // url: inicio e inicio/pendientes
+            'url' => 'inicio',
+            'icon' => 'fas fa-tachometer-alt',
+            // 'can'  => 'ver-dashboard',
+            'classes' => 'rounded-xl',
+            'active' => ['inicio', 'inicio/*'],
+        ],
+
+        // [
+        //     'text' => 'Capacitación',
+        //     'url'  => 'capacitacion',
+        //     'icon' => 'fas fa-sign-in-alt',
+        //     'can'  => 'ver-capacitacion',
+        //     'classes' => 'rounded-xl',
+        // ],
+
+        // [
+        //     'text' => 'Asistencias',
+        //     'url'  => 'asistencias',
+        //     'icon' => 'fas fa-sign-in-alt',
+        //     'can'  => 'ver-capacitacion',
+        //     'classes' => 'rounded-xl',
+        // ],
         ['header' => 'Evaluaciones', 'can'  => ['ver-evaluaciones-de-desempeno']],
 
         [
-            'text' => 'Ev. de Desempeño por competencias',
+            'text' => 'Evaluación por Competencias',
+            'url'  => 'evaluacion_de_competencias',
+            'icon' => 'fas fa-pencil-alt',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+            'active' => ['evaluacion_de_competencias', 'evaluacion_de_competencias/*'],
+        ],
+
+        [
+            'text' => 'Evaluación por Competencias (ant.)',
             'url'  => 'evaluaciones-de-desempeno/1',
             'icon' => 'fas fa-pencil-alt',
             'can'  => 'ver-evaluaciones-de-desempeno',
@@ -287,7 +324,7 @@ return [
         ],
 
         [
-            'text' => 'Ev. de Desempeño por Resultados',
+            'text' => 'Evaluación por Objetivos',
             'url'  => 'evaluaciones-de-desempeno/2',
             'icon' => 'fas fa-pencil-alt',
             'can'  => 'ver-evaluaciones-de-desempeno',
@@ -295,14 +332,48 @@ return [
         ],
 
         [
-            'text' => 'Planes de mejora',
+            'text' => 'Feedback y Retroalimentación',
+            'url'  => 'feedback',
+            'icon' => 'fas fa-comments',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+        ],
+
+        [
+            'text' => 'Planes de Acción/ Desarrollo',
             'url'  => 'planes-de-mejora/ingreso',
             'icon' => 'fas fa-pencil-alt',
             'can'  => 'ver-evaluaciones-de-desempeno',
             'classes' => 'rounded-xl',
         ],
 
-        ['text' => 'Seguimiento de Evaluaciones', 'can'  => ['ver-capacitacion'],
+        [
+            'text' => 'Plan De Mejora',
+            'url'  => 'plan-de-mejora',
+            'icon' => 'fas fa-pencil-alt',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl'
+        ],
+
+        [ 
+            'text' => 'Recursos de apoyo',
+            'url'  => 'recursos-de-apoyo',
+            'icon' => 'fas fa-book',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+        ],
+
+        [
+            'text' => 'Resultados de Equipo',
+            'url'  => 'resultados-de-equipo',
+            'icon' => 'fas fa-chart-bar',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+            'active' => ['resultados-de-equipo', 'resultados-de-equipo/*']
+        ],
+
+        ['text' => 'Seguimiento de Evaluaciones',
+        'can'  => ['ver-capacitacion'],
         'icon' => 'fas fa-tasks',
         'classes' => 'rounded-xl',
         'submenu' => [
@@ -373,9 +444,23 @@ return [
         'submenu' => [
                 [
                     'text' => 'Personal',
-                    'url'  => 'personal',
+                    'url'  => 'personal-table',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-personal',
+                    'classes' => 'rounded-xl',
+                ],
+                [
+                    'text' => 'Cargos',
+                    'url'  => 'cargos',
+                    'icon' => 'fas fa-briefcase fa-xs',
+                    'can'  => 'ver-cargo',
+                    'classes' => 'rounded-xl',
+                ],
+                [
+                    'text' => 'Tipos de Relación Jerárquica',
+                    'url'  => 'tipo_relacion_jerarquicas',
+                    'icon' => 'fas fa-sitemap fa-xs',
+                    'can'  => 'ver-tipo-relacion-jerarquica',
                     'classes' => 'rounded-xl',
                 ],
                 [
@@ -502,6 +587,14 @@ return [
             'icon' => 'fas fa-cogs',
             'submenu' =>[
                 [
+                    'text' => 'Campañas',
+                    'url'  => 'campanias',
+                    'icon' => 'fas fa-flag',
+                    'can'  => 'ver-campania',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
                     'text' => 'Evaluaciones',
                     'url'  => 'evaluaciones',
                     'icon' => 'fas fa-cog fa-xs',
@@ -518,8 +611,8 @@ return [
                 ],
                 
                 [
-                    'text' => 'Secciones',
-                    'url'  => 'secciones',
+                    'text' => 'Competencias',
+                    'url'  => 'competencias',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-configuracion-secciones',
                     'classes' => 'rounded-xl',
@@ -549,6 +642,94 @@ return [
                     'classes' => 'rounded-xl',
                 ],
 
+                [
+                    'text' => 'Escalas de medicion',
+                    'url'  => 'escala_mediciones',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-escala-medicion',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Tipos de medicion',
+                    'url'  => 'tipo_mediciones',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-tipo-medicion',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Tipos de Competencias',
+                    'url'  => 'tipo_competencias',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-tipo-competencia',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Conf. Campaña Competencias',
+                    'url'  => 'campania_has_competencias',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-campania-has-competencia',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Niveles Jerárquicos',
+                    'url'  => 'nivel_jerarquicos',
+                    'icon' => 'fas fa-sitemap',
+                    'can'  => 'ver-nivel-jerarquico',
+                    'classes' => 'rounded-xl',
+                ],
+                
+                [
+                    'text' => 'Grados',
+                    'url'  => 'grados',
+                    'icon' => 'fas fa-sort-numeric-up', // Puedes cambiar el icono
+                    'can'  => 'ver-grado',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Dominios',
+                    'url'  => 'dominios',
+                    'icon' => 'fas fa-th-large', // Puedes cambiar el icono
+                    'can'  => 'ver-dominio',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Tipos de Puesto',
+                    'url'  => 'tipo_de_puestos',
+                    'icon' => 'fas fa-briefcase', // Puedes cambiar el icono
+                    'can'  => 'ver-tipo-de-puesto',
+                    'classes' => 'rounded-xl',
+                ],                
+
+                [
+                    'text' => 'Conf. Campaña Puestos',
+                    'url'  => 'tipo_puesto_niveles',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-tipo-de-puesto-has-nivel-jerarquico',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Conf. Campaña puestos.',
+                    'url'  => 'campania_has_objetivos',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-campania-has-objetivo',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Dominio Pregunta',
+                    'url'  => 'dominio-has-preguntas',
+                    'icon' => 'fas fa-link',
+                    'can'  => 'ver-dominio-pregunta',
+                    'classes' => 'rounded-xl',
+                ],
+
                 // [
                 //     'text' => 'Opciones',
                 //     'url'  => 'opciones',
@@ -557,7 +738,7 @@ return [
                 //     'classes' => 'rounded-xl',
                 // ],
             ],
-        ]
+        ],
     ],
 
     /*

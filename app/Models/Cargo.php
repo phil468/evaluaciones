@@ -15,7 +15,14 @@ class Cargo extends Model
 
     protected $table = 'cargos';
 
-    protected $fillable = ['name','estado','empresa_id','idcargo_nisira','fechacreacion_nisira'];
+    protected $fillable = [
+        'name',
+        'tipo_de_puesto_id',
+        'estado',
+        'empresa_id',
+        'idcargo_nisira',
+        'fechacreacion_nisira'
+    ];
 	
     public function setNameAttribute($value)
     {
@@ -26,4 +33,13 @@ class Cargo extends Model
     {
         return mb_strtoupper(trim($value));
     }
+
+    public function tipoDePuesto()
+    {
+        return $this->belongsTo(TipoDePuesto::class, 'tipo_de_puesto_id');
+    }
+    public function personals()
+{
+    return $this->hasMany(Personal::class, 'cargo_id');
+}
 }

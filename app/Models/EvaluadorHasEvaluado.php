@@ -34,6 +34,10 @@ class EvaluadorHasEvaluado extends Model
         'jerarquia',
         'grupal',
         'tipo_jerarquia_id',
+        'campania_id',
+        'grado_id',
+        'peso',
+        'peso_prorrateado',
     ];
 
     protected $appends = ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente'];
@@ -64,6 +68,11 @@ class EvaluadorHasEvaluado extends Model
         return $this->evaluacion->campania;
     }
 
+    public function grado()
+    {
+        return $this->belongsTo(Grado::class,'grado_id','id');
+    }
+
     public function objetivos()
     {
         return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id');
@@ -83,7 +92,7 @@ class EvaluadorHasEvaluado extends Model
     public function objetivosRealizados()
     {
         return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id')->where('estado_id',2);
-    }
+    }    
 
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PersonalController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('sesiones/updates', [App\Http\Controllers\Api\ws\SesionesController::class, 'getUpdatesFromServer'])->name('sesiones.getUpdatesFromServer');
     Route::get('capacitacionHasPersonal/updates', [App\Http\Controllers\Api\ws\CapacitacionesHasPersonalController::class, 'getUpdatesFromServer'])->name('capacitaciones_has_personal.getUpdatesFromServer');
     Route::get('asistencias/updates', [App\Http\Controllers\Api\ws\AsistenciasController::class, 'getUpdatesFromServer'])->name('asistencias.getUpdatesFromServer');
+    
+    Route::get('personal/select2/empresa', [PersonalController::class, 'select2Empresa'])->name('api.personal.select2.empresa');
+    Route::get('personal/select2/gerencia', [PersonalController::class, 'select2Gerencia'])->name('api.personal.select2.gerencia');
+    Route::get('personal/select2/area', [PersonalController::class, 'select2Area'])->name('api.personal.select2.area');
+    Route::get('personal/select2/cargo', [PersonalController::class, 'select2Cargo'])->name('api.personal.select2.cargo');
+    Route::get('personal/select2/reporta', [PersonalController::class, 'select2Reporta'])->name('api.personal.select2.reporta');
+
     // Route::post('refresh-token', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'refreshToken']);
 
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
@@ -56,9 +64,11 @@ Route::post('/refresh-token', function (Request $request) {
     return response()->json(['token' => $token]);
 });
 
+// Rutas API no protegidas
+Route::get('/tipo_puesto/lista', [App\Http\Controllers\API\TipoDePuestoController::class, 'getLista'])->name('api.tipo_puesto.lista');
 
 Route::get('login', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'login'])->name('login');
 //FALTA MODIFICAR
 
 // Route::post('/login', CapacitacionesController::class->login());
-// 'Api/ws/CapacitacionesController@login');    
+// 'Api/ws/CapacitacionesController@login');

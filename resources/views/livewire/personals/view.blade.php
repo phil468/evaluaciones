@@ -2,6 +2,39 @@
 <div class="container-fluid">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
+			@php
+				$campaniaActual = \App\Models\Campania::where('es_campania_actual', true)->first();
+				$evaluaciones = $campaniaActual
+					? \App\Models\Evaluacione::where('campania_id', $campaniaActual->id)->get()
+					: collect();
+			@endphp
+
+
+			@if($campaniaActual)
+				{{-- Mostrar información de la campaña actual --}}
+				{{-- Si no hay campaña actual, no se muestra nada --}}
+				{{-- Si no hay evaluaciones, no se muestra la lista --}}
+				{{-- Si hay evaluaciones, se muestra la lista --}}
+				<div class="mb-3 card">
+					<div class="text-white card-header bg-primary">
+						<strong>Campaña Actual:</strong> {{ $campaniaActual->name }}
+					</div>
+					<div class="card-body">
+						<p><strong>Fecha de creación:</strong> {{ $campaniaActual->created_at }}</p>
+						<p><strong>Estado:</strong> {{ $campaniaActual->status ? 'Activo' : 'Inactivo' }}</p>
+						<h6>Evaluaciones relacionadas:</h6>
+						<ul>
+							@foreach($evaluaciones as $ev)
+								<li>
+									<strong>{{ $ev->nombre_para_mostrar }}</strong>
+									(Fecha de corte: {{ $ev->fecha_corte }})
+								</li>
+							@endforeach
+						</ul>
+					</div>
+				</div>
+			@endif
+
 			<div class="card rounded-xl">
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
@@ -118,7 +151,13 @@
 						@can('importar-personal')
 							@include('livewire.personals.importar')
 						@endcan
+					<div class="mb-2">
+						<button class="btn btn-success" id="exportarSeleccionadosCampania">
+							<i class="fas fa-upload"></i> Exportar seleccionados a Campaña Actual
+						</button>
+					</div>
 					@livewire('personal-table')
+					{{-- @livewire('personal-table-preseleccionados') --}}
 				</div>
 				
 				<div wire:loading wire:target="importar,exportar,create,edit,destroy,buscar_dni">
@@ -202,10 +241,19 @@
 					@this.set('cargo_id', null);
 				}
 			});
+
+			const reporta_a_select = new Choices('#reporta_a', opciones);
+			reporta_a_select.passedElement.element.addEventListener('change', function (event) {
+				if (reporta_a_select.getValue(true) !== undefined) {
+					@this.set('reporta_a', reporta_a_select.getValue(true));
+				} else {
+					@this.set('reporta_a', null);
+				}
+			});
 			
 			Livewire.on('actualizarDatosP', function (
 				// personal_id,
-				empresa_id,gerencia_id,sede_id,area_id,cargo_id) {
+				empresa_id, gerencia_id, sede_id, area_id, cargo_id, reporta_a) {
 				habilitarDatosPersonal();
 	
 				// personal_id_select.setChoiceByValue(personal_id ?? '');
@@ -214,6 +262,7 @@
 				sede_id_select.setChoiceByValue(sede_id ?? '');
 				area_id_select.setChoiceByValue(area_id ?? '');				
 				cargo_id_select.setChoiceByValue(cargo_id ?? '');
+    			reporta_a_select.setChoiceByValue(reporta_a ?? '');
 			});
 			
 			// Livewire.on('actualizarDatosR', function (personal_id,area_id,cargo_id) {
@@ -226,7 +275,7 @@
 	
 			Livewire.on('listar_selects', function (
 				// personal,
-			empresas,gerencias,sedes,areas,cargos
+			empresas,gerencias,sedes,areas,cargos, personales
 			// ,responsables
 			) {
 
@@ -240,6 +289,8 @@
 				sede_id_select.setChoices(sedes);
 				area_id_select.setChoices(areas);
 				cargo_id_select.setChoices(cargos);
+    			reporta_a_select.setChoices(personales);
+				// personal_id_select.setChoices(personales);
 				// responsable_id_select.setChoices(responsables);
 				// responsable_area_id_select.setChoices(areas);
 				// responsable_cargo_id_select.setChoices(cargos);
@@ -257,18 +308,21 @@
 				sede_id_select.clearChoices();
 				area_id_select.clearChoices();
 				cargo_id_select.clearChoices();
+				reporta_a_select.clearChoices();
 
 				empresa_id_select.clearStore();
 				gerencia_id_select.clearStore();
 				sede_id_select.clearStore();
 				area_id_select.clearStore();
 				cargo_id_select.clearStore();
+				reporta_a_select.clearStore();
 				
 				empresa_id_select.setChoices(placeholder);
 				gerencia_id_select.setChoices(placeholder);
 				sede_id_select.setChoices(placeholder);
 				area_id_select.setChoices(placeholder);
 				cargo_id_select.setChoices(placeholder);
+				reporta_a_select.setChoices(placeholder);
 
 				// empresa_id_select.unhighlightAll();
 			}
@@ -280,6 +334,7 @@
 				sede_id_select.disable();
 				area_id_select.disable();
 				cargo_id_select.disable();
+				reporta_a_select.disable();
 			};
 			
 			// const deshabilitarDatosResponsable = () => {
@@ -295,6 +350,7 @@
 				sede_id_select.enable();
 				area_id_select.enable();
 				cargo_id_select.enable();
+				reporta_a_select.enable();
 			};
 			
 			// const habilitarDatosResponsable = () => {
@@ -302,7 +358,56 @@
 			// 	responsable_area_id_select.enable();
 			// 	responsable_cargo_id_select.enable();
 			// };
+			
+			$('#exportarSeleccionadosCampania').on('click', function () {
+				// Obtén los IDs seleccionados desde Livewire
+				console.log('Exportar seleccionados a campaña actual');
+				let ids = @this.selectedFromPersonalTable ?? [];
+				console.log('IDs seleccionados:', ids);
+				if (!ids.length) {
+					Swal.fire('Atención', 'No hay personal seleccionado.', 'warning');
+					return;
+				}
+				Swal.fire({
+					title: '¿Está seguro?',
+					text: `Se exportarán ${ids.length} personas a la campaña actual.`,
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonText: 'Sí, exportar',
+					cancelButtonText: 'Cancelar'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$.ajax({
+							url: {{ 'route("campanias.exportarPersonalACampaniaActua")' }},
+							method: 'POST',
+							data: {
+								ids: ids,
+								_token: '{{ csrf_token() }}'
+							},
+							success: function (resp) {
+								Swal.fire('¡Listo!', resp.message, 'success');
+							},
+							error: function (xhr) {
+								Swal.fire('Error', xhr.responseJSON?.message || 'Error al exportar', 'error');
+							}
+						});
+					}
+				});
+			});
 		})
 	</script>
+	@endpush
+
+	@push('css')
+	<style>
+		.bg-red-100 td {
+			background-color: rgba(254, 202, 202, 0.8) !important; /* Un rojo claro */
+		}
+
+		.bg-red-100:hover td {
+			background-color: rgba(254, 202, 202, 1) !important; /* Un rojo más intenso al hover */
+		}
+		
+	</style>
 	@endpush
 </div>
