@@ -580,14 +580,31 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="editEvaluacionNombreParaMostrar">Nombre para Mostrar*</label>
-                                    <input type="text" class="form-control" id="editEvaluacionNombreParaMostrar"
-                                        required>
+                                    <input type="text" class="form-control" id="editEvaluacionNombreParaMostrar" required>
+                                </div>
+                            </div>
+                            {{-- title --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editEvaluacionTitle">Título*</label>
+                                    <input type="text" class="form-control" id="editEvaluacionTitle" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="editEvaluacionIdentificador">Identificador*</label>
                                     <input type="text" class="form-control" id="editEvaluacionIdentificador" required>
+                                </div>
+                            </div>
+                            {{-- status --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editEvaluacionStatus">Estado*</label>
+                                    <select class="form-control" id="editEvaluacionStatus" required>
+                                        <option value="1">Activo</option>
+                                        <option value="0">Inactivo</option>
+                                        <option value="2">Realizado</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1152,6 +1169,33 @@
                         field: "relacionado_anterior.name",
 
                     },
+                    {
+                        title: "Es Campaña Actual",
+                        field: "es_campania_actual",
+                        formatter: "tickCross",
+                        headerSort: false,
+                        width: 150
+                    },
+                    // {
+                    //     title: "Fecha de Inicio",
+                    //     field: "fecha_inicio",
+                    //     formatter: "datetime",
+                    //     formatterParams: {
+                    //         outputFormat: "DD/MM/YYYY HH:mm"
+                    //     },
+                    //     headerSort: false,
+                    //     width: 150
+                    // },
+                    // {
+                    //     title: "Fecha de Fin",
+                    //     field: "fecha_fin",
+                    //     formatter: "datetime",
+                    //     formatterParams: {
+                    //         outputFormat: "DD/MM/YYYY HH:mm"
+                    //     },
+                    //     headerSort: false,
+                    //     width: 150
+                    // },
                     {
                         title: "Estado",
                         field: "estado",

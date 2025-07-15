@@ -1,43 +1,48 @@
 @section('title', __('Evaluaciones'))
 <div class="container-fluid">
+    <!-- Agrega esto justo después de la apertura del div container-fluid -->
+    <div id="escala-tooltip" style="display: none; position: absolute; background: transparent; padding: 2px 8px; font-weight: 600; font-size: 0.8rem; text-align: center; pointer-events: none; z-index: 1000;"></div>
+    
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card rounded-xl">
-                <div class="text-white card-header bg-vanguard rounded-t-xl">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <h4 class="h4">EVALUACIÓN DE COMPETENCIAS</h4>
-                        </div>
-                        @if ($errors->any())
-                            <div wire:poll.4s class="btn btn-sm btn-danger" style="margin-top:0px; margin-bottom:0px;">
-                                Debe responder todas las preguntas.
-                            </div>
-                        @endif
-
-                        <div class="float-right">
-                            <a type="button" class="btn btn-default rounded-xl"
-                                href="{{ url('/evaluaciones-de-desempeno/1') }}">Volver</a>
-                        </div>
-                    </div>
-                </div>
 
                 {{-- Hacer del card body algo transparente --}}
                 <div class="card-body">
 
                     @include('livewire.evaluacion.indicaciones')
+                    @include('livewire.evaluacion.indicaciones-view')
                     @include('livewire.evaluacion.confirmacion')
                     @include('livewire.evaluacion.gracias')
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <h5 class='h5'>Evaluado:</h5>
                             <p>{{ $evaluado->name ?? 'No identificado' }}</p>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <h5 class='h5'>Cargo:</h5>
-                            <p>{{ $evaluadorHasEvaluado->cargo_de_evaluado ?? 'No identificado' }}</p>
+                            <p>{{ $evaluadorHasEvaluado->campaniaHasEvaluado->puesto->name ?? 'No identificado' }}</p>
                         </div>
+                        
+                        <div class="col-md-2">
+                            <div class="text-right">
+                                
+                                <button type="button"  
+                                style="
+                                background-color: #6ECBC9;
+                                border-color: #6ECBC9;
+                                
+                                    border-radius: 50%; 
+                                    "
+                                class="btn btn-lg btn-vanguard" data-toggle="modal" data-target="#indicacionesModalView">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        
                     </div>
                     <br>
                     @if ($realizado)
@@ -57,43 +62,39 @@
                                 aria-valuenow="{{ $porcentaje }}" aria-valuemin="0" aria-valuemax="100">
                                 {{ $label }} </div>
                         </div>
-
+                        
                         <br>
-                        <span class="p-2 text-white h5 d-block bg-vanguard rounded-xl">
+                        <span class="p-2 text-white h5 d-block rounded-xl"
+                        style="background-color: {{ $secciones[$seccion_indexs[$seccion_index_select]]['color'] ?? '#568BA5' }} " 
+                        >
                             {{ $secciones[$seccion_indexs[$seccion_index_select]]['name'] }}
                         </span>
 
                         <p class="mt-4 ml-4">
-                            La escala contiene <u> 10 grados posibles</u> de calificación: el extremo más alto
-                            y favorable es 10, mientras que el extremo más bajo y desfavorable es 1.
-                            Debes elegir uno de los 10 grados posibles. Considerando que
-                            las calificaciones más altas son 8, 9 y 10.
-                            Las calificaciones más bajas son 1, 2 y 3. Cuando usted elige 4, 5, 6 y 7 está
-                            indicando que la <b>afirmación</b> refleja de manera parcial o intermedia la conducta que
-                            usted observa habitualmente en el <b>calificado (a)</b>.
+                            {{ $secciones[$seccion_indexs[$seccion_index_select]]['descripcion'] }}
                         </p>
                         <br>
                         <div class="ml-4">
                             <table class="table table-striped table-inverse table-responsive">
 
                                 <tbody>
-                                    {{-- {{ dd($preguntas) }} --}}
                                     @foreach ($preguntas as $index => $item)
                                         @if ($item['seccion_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
                                                 <td class="row">
                                                     <div class="align-content-center col-12 col-sm-4 col-lg-3 col-xl-4">
                                                         {{ $item['numero_orden'] . '. ' . $item['pregunta'] }}</div>
-                                                    <div
-                                                        class="align-content-center col-12 col-sm-8 col-lg-9 col-xl-8 rating-buttons">
+                                                    <div class="align-content-center col-12 col-sm-8 col-lg-9 col-xl-8 rating-buttons">
                                                         @for ($i = 1; $i <= 10; $i++)
-                                                            <button
-                                                                class="btn btn-md 
-                                                    @if ($item['valor'] >= $i) btn-primary                                    
-                                                    @else
-                                                        btn-default @endif
-                                                    {{ $i <= 10 ? 'm-1' : '' }}"
-                                                                wire:click="marcarValor({{ $index }}, {{ $i }})">{{ $i }}</button>
+                                                            <button class="btn btn-md 
+                                                                @if ($item['valor'] == $i) btn-primary 
+                                                                @else btn-outline-{{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : 'secondary' }} @endif
+                                                                {{ $i <= 10 ? 'm-1' : '' }}"
+                                                                wire:click="marcarValor({{ $index }}, {{ $i }})"
+                                                                data-toggle="tooltip"
+                                                                title="{{ isset($escalasArray[$i]) ? $escalasArray[$i]['name'] : '' }}">
+                                                                {{ $i }}
+                                                            </button>
                                                         @endfor
                                                         @error('preguntas.' . $index . '.valor')
                                                             <br><span class="text-danger">{{ $message }}</span>
@@ -106,18 +107,28 @@
                                         @if ($item['campania_has_competencia_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
                                                 <td class="row">
-                                                    <div class="align-content-center col-12 col-sm-4 col-lg-3 col-xl-4">
+                                                    <div class="mt-3 align-content-center col-sm-12 col-lg-3 col-xl-4">
                                                         {{ $item['numero_orden'] . '. ' . $item['pregunta'] }}</div>
-                                                    <div
-                                                        class="align-content-center col-12 col-sm-8 col-lg-9 col-xl-8 rating-buttons">
+                                                    <div class="mt-3 align-content-center col-sm-12 col-lg-9 col-xl-8 rating-buttons">
                                                         @for ($i = 1; $i <= 10; $i++)
-                                                            <button
-                                                                class="btn btn-md 
-                                                    @if ($item['valor'] >= $i) btn-primary                                    
-                                                    @else
-                                                        btn-default @endif
-                                                    {{ $i <= 10 ? 'm-1' : '' }}"
-                                                                wire:click="marcarValor({{ $index }}, {{ $i }})">{{ $i }}</button>
+                                                            <button class="btn btn-md rating-btn"
+                                                                wire:click="marcarValor({{ $index }}, {{ $i }})"
+                                                                data-escala="{{ isset($escalasArray[$i]) ? $escalasArray[$i]['name'] : '' }}"
+                                                                data-escala-color="{{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : '#6ECBC9' }}"
+
+                                                                @if ($item['valor'] === $i)
+                                                                    style="background-color: {{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : '#6ECBC9' }};
+                                                                    border-color: {{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : '#6ECBC9' }};
+                                                                    color: white; font-weight: bold;
+                                                                    "
+                                                                @else 
+                                                                    style="border-color: {{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : '#6ECBC9' }};
+                                                                    color: {{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : '#6ECBC9' }};
+                                                                    "
+                                                                @endif
+                                                                >
+                                                                {{ $i }}
+                                                            </button>
                                                         @endfor
                                                         @error('preguntas.' . $index . '.valor')
                                                             <br><span class="text-danger">{{ $message }}</span>
@@ -168,6 +179,56 @@
                     console.log('no aceptado');
                     $('#indicacionesModal').modal('show');
                 }
+
+                // Tooltip flotante personalizado
+                const tooltip = document.getElementById('escala-tooltip');
+                
+                function initializeTooltips() {
+                    // Elimina los tooltips de Bootstrap para evitar conflictos
+                    $('[data-toggle="tooltip"]').tooltip('dispose');
+                    
+                    // Selecciona todos los botones de calificación
+                    const ratingButtons = document.querySelectorAll('.rating-btn');
+                    
+                    ratingButtons.forEach(button => {
+                        // Elimina eventos previos para evitar duplicados
+                        button.removeEventListener('mouseenter', showTooltip);
+                        button.removeEventListener('mouseleave', hideTooltip);
+                        
+                        // Agrega nuevos event listeners
+                        button.addEventListener('mouseenter', showTooltip);
+                        button.addEventListener('mouseleave', hideTooltip);
+                    });
+                }
+                
+                function showTooltip(e) {
+                    const button = e.target;
+                    const escala = button.getAttribute('data-escala');
+                    const color = button.getAttribute('data-escala-color');
+                    
+                    if (escala) {
+                        tooltip.textContent = escala;
+                        tooltip.style.color = color;
+                        tooltip.style.display = 'block';
+                        
+                        // Posicionar el tooltip encima del botón
+                        const rect = button.getBoundingClientRect();
+                        tooltip.style.left = (rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)) + 'px';
+                        tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + window.scrollY + 'px';
+                    }
+                }
+                
+                function hideTooltip() {
+                    tooltip.style.display = 'none';
+                }
+                
+                // Inicializar tooltips
+                initializeTooltips();
+                
+                // Reinicializar tooltips después de actualizaciones de Livewire
+                Livewire.hook('message.processed', () => {
+                    setTimeout(initializeTooltips, 100);
+                });
             })
         </script>
     @endpush
@@ -188,12 +249,65 @@
                 padding: 6px;
             }
 
-            .question {
+            /* Nuevos estilos para los colores de las escalas */
+            .btn-outline-alto {
+                color: #28a745;
+                border-color: #28a745;
+            }
+            
+            .btn-outline-medio-alto {
+                color: #88c34a;
+                border-color: #88c34a;
+            }
+            
+            .btn-outline-medio {
+                color: #ffc107;
+                border-color: #ffc107;
+            }
+            
+            .btn-outline-bajo {
+                color: #dc3545;
+                border-color: #dc3545;
+            }
+
+            /* Estilo para la lista de escala */
+            .escala-lista {
+                counter-reset: item;
+                list-style-position: inside;
+                padding-left: 20px;
+            }
+            
+            .escala-lista li {
+                margin-bottom: 10px;
+                list-style-type: decimal;
+            }
+    
+            /* Añade estos estilos */
+            .rating-btn {
+                transition: transform 0.2s, box-shadow 0.2s;
+                position: relative;
+            }
+            
+            .rating-btn:hover {
+                transform: scale(1.1);
+                z-index: 50;
+                box-shadow: 0 0 8px rgba(0,0,0,0.3);
+            }
+            
+            #escala-tooltip {
+                border-radius: 3px;
+                transition: all 0.2s;
+                white-space: nowrap;
+                /* transform: translateY(-5px); */
+                /* font-weight: bold; */
+            }
+
+            /* .question {
                 border: 1px solid #ccc;
                 border-radius: 10px;
                 padding: 10px;
                 margin-bottom: 10px;
-            }
+            } */
         </style>
     @endpush
 </div>

@@ -7,20 +7,12 @@
 @stop
 
 @section('content')
-
     @livewire('dashboard', ['title' => 'Dashboard General'])
-
 @stop
 
 @section('css')
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
 @stop
 
 @section('js')
-    <script nonce="{{ $nonce }}" type="text/javascript">
-        // window.livewire.on('dataReturned', () => {
-        //     location.hash = "#busqueda";
-        //     location.hash = "#resultados";
-        // });
-    </script>
+    <script nonce="{{ $nonce }}" type="text/javascript"></script>
 @stop

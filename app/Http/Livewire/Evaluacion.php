@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\CampaniaHasEvaluado;
 use App\Models\Dominio;
+use App\Models\EscalaMedicion;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Evaluacione;
@@ -36,6 +37,11 @@ class Evaluacion extends Component
     $cantidad2,
     $tipo_objetivo_id2;
 
+    // Añade la propiedad
+    public $acepto_escala = false;
+    public $escalaMediciones = [];
+    public $escalasArray = []; // Para acceder fácilmente por valor
+    
     protected $listeners = ['guardar' => 'guardar'];
 
     public function mount($evaluacion_id)
@@ -43,18 +49,44 @@ class Evaluacion extends Component
             $this->evaluacion_id = $evaluacion_id;
         
             // Obtener el evaluadorHasEvaluado correspondiente a la evaluacion_id
-            // $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::where('id',$evaluacion_id)->first();
             $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::find($evaluacion_id);
+            // buscaremos el campaniaHasEvaluado correspondiente al evaluadorHasEvaluado
+            if ($this->evaluadorHasEvaluado) {
+                $this->evaluadorHasEvaluado->campaniaHasEvaluado;
+            }
 
-            // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
-                // $this->evaluacion = Evaluacione::where('id',$this->evaluadorHasEvaluado->evaluacion_id)->first();
+                // Obtener la evaluacion correspondiente al evaluadorHasEvaluado
                 $this->evaluacion = Evaluacione::find($this->evaluadorHasEvaluado->evaluacion_id);
-    // dd($this->evaluacion);
+                // dd($this->evaluacion);
                 if ($this->evaluacion->tipo_de_evaluacion_id == 2) {
                     $this->evaluacion_por_objetivos = true;
-                    // $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
                     $this->evaluado = Personal::find($this->evaluadorHasEvaluado->evaluado_id);
                 } else {
+                    
+                    // Cargar las escalas de medición
+                    $this->escalaMediciones = EscalaMedicion::where('estado', true)
+                        ->orderBy('valor_menor', 'asc')
+                        ->get();
+                   
+                    // Crear un array asociativo para facilitar el acceso por valor
+                    foreach ($this->escalaMediciones as $escala) {
+                        for ($i = $escala->valor_menor; $i <= $escala->valor_mayor; $i++) {
+                            $this->escalasArray[$i] = [
+                                // name con mayuscula la primera letra y minúscula el resto
+                                
+                                'name' => $escala->name,
+                                // 'name' => ucfirst(strtolower($escala->name)),
+                                'color' => $escala->color,
+                                'interpretacion' => $escala->interpretacion
+                            ];
+                        }
+                    }
+                                        
+                    // Verificar si ya aceptó la escala previamente
+                    if ($this->evaluadorHasEvaluado && $this->evaluadorHasEvaluado->acepto_escala) {
+                        $this->acepto_escala = true;
+                        $this->aceptado = true;
+                    }
                     
                     if($this->evaluadorHasEvaluado->realizado == 1){
                         $this->aceptado = true;
@@ -89,15 +121,12 @@ class Evaluacion extends Component
                     }
             
                     // Obtener el evaluador correspondiente al evaluadorHasEvaluado
-                    // $this->evaluador = Personal::where('id',$this->evaluadorHasEvaluado->evaluador_id)->first();
                     $this->evaluador = Personal::find($this->evaluadorHasEvaluado->evaluador_id);
             
                     // Obtener el evaluado correspondiente al evaluadorHasEvaluado
-                    // $this->evaluado = Personal::where('id',$this->evaluadorHasEvaluado->evaluado_id)->first();
                     $this->evaluado = Personal::find($this->evaluadorHasEvaluado->evaluado_id);
             
                     // Obtener las secciones unicas de la evaluacion
-                    // $this->secciones =  Evaluacione::where('id', $this->evaluadorHasEvaluado->evaluacion_id)->first()->seccionesUnicas()->toArray();
                     if ($this->evaluacion->id < 5) {
                         $this->secciones =  Evaluacione::find($this->evaluadorHasEvaluado->evaluacion_id)->seccionesUnicas()->toArray();
                     } else {
@@ -114,12 +143,14 @@ class Evaluacion extends Component
                             return [
                                 'id' => $chc->id,
                                 'name' => $chc->competencia->name,
+                                'descripcion' => $chc->competencia->descripcion,
+                                'color' => $chc->color,
                             ];
                         })->unique('id')->values()->toArray();
+
                         // dd($this->secciones);
 
                     }
-                    // dd($this->secciones);
                     $this->secciones = (array) $this->secciones;
                     $this->seccion_indexs = array_keys($this->secciones);
                     // dd($this->seccion_indexs);
@@ -192,7 +223,6 @@ class Evaluacion extends Component
         ]);
 
 
-        //$this->descripcion2,$this->cantidad2,$this->evaluado->id,$this->tipo_objetivo_id2 que no sean vacuio ni null 
         if($this->descripcion2 != null && $this->descripcion2 != '' && $this->tipo_objetivo_id2 != null && $this->tipo_objetivo_id2 != '' ){
             Objetivo::create([
                 'descripcion' => $this->descripcion2,
@@ -383,8 +413,19 @@ class Evaluacion extends Component
         return redirect()->to('/evaluaciones-de-desempeno/1');
     }
         
+    // Modificar el método aceptar para guardar el estado del checkbox
     public function aceptar()
-    {        
+    {
+        $this->validate([
+            'acepto_escala' => 'required|accepted',
+        ], [
+            'acepto_escala.required' => 'Debes leer y entender la definición de la escala.',
+            'acepto_escala.accepted' => 'Debes confirmar que has leído y entendido la escala.',
+        ]);
+        
+        $this->evaluadorHasEvaluado->acepto_escala = true;
+        $this->evaluadorHasEvaluado->save();
+        
         $this->aceptado = true;
     }
 
@@ -408,62 +449,4 @@ class Evaluacion extends Component
         $this->status = null;
     }
 
-    // public function store()
-    // {
-    //     $this->validate([
-    //     ]);
-
-    //     Evaluacione::create([ 
-    //         'eid' => $this-> eid,
-    //         'title' => $this-> title,
-    //         'date' => $this-> date,
-    //         'status' => $this-> status
-    //     ]);
-        
-    //     $this->resetInput();
-    //     $this->emit('closeModal');
-    //     session()->flash('message', 'Evaluacione creado correctamente.');
-    // }
-
-    // public function edit($id)
-    // {
-    //     $record = Evaluacione::findOrFail($id);
-
-    //     $this->selected_id = $id; 
-    //     $this->eid = $record-> eid;
-    //     $this->title = $record-> title;
-    //     $this->date = $record-> date;
-    //     $this->status = $record-> status;
-        
-    //     $this->updateMode = true;
-    // }
-
-    // public function update()
-    // {
-    //     $this->validate([
-    //     ]);
-
-    //     if ($this->selected_id) {
-    //         $record = Evaluacione::find($this->selected_id);
-    //         $record->update([ 
-    //             'eid' => $this-> eid,
-    //             'title' => $this-> title,
-    //             'date' => $this-> date,
-    //             'status' => $this-> status
-    //         ]);
-
-    //         $this->resetInput();
-    //         $this->updateMode = false;
-    //         $this->emit('closeModal');
-    //         session()->flash('message', 'Evaluacione actualizado correctamente.');
-    //     }
-    // }
-
-    // public function destroy($id)
-    // {
-    //     if ($id) {
-    //         $record = Evaluacione::where('id', $id);
-    //         $record->delete();
-    //     }
-    // }
 }

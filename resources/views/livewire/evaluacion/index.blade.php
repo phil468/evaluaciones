@@ -3,7 +3,7 @@
 @section('title', 'Evaluación')
 
 @section('content_header')
-    <h1></h1>
+    <h1 class="text-center font-style-class"> Evaluación de Desempeño por <span class="text-vanguard" style="color: #568ba5;">Competencias</span> </h1>
 @stop
 
 @section('content')

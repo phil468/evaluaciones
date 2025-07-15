@@ -65,7 +65,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(Role::class,'model_has_roles','model_id','role_id');
     }
-    
+
     public function personal()
     {
         return $this->hasOne('App\Models\Personal', 'id', 'personal_id');
@@ -113,4 +113,48 @@ class User extends Authenticatable implements JWTSubject
         return 'users/'.auth()->user()->id.'';
     }
     
+    public function hasPendingEvaluations()
+    {
+        // Si no tiene un personal asociado, no puede tener evaluaciones
+        if (!$this->personal_id || !$this->personal) {
+            return false;
+        }
+        
+        // Verificar evaluaciones pendientes como evaluador
+        $pendientesComoEvaluador = $this->personal->evaluadorHasEvaluados()
+            ->whereHas('evaluacion', function($query) {
+                // Usar condiciones que representen "activa" basadas en columnas reales
+                // Por ejemplo, si "activa" significa que está en fechas válidas:
+                $today = now()->format('Y-m-d H:i:s');
+                // Ajusta las condiciones según tu modelo de Evaluacion
+                // Aquí asumimos que 'estado' es una columna que indica si la evaluación está activa
+                // y que 'fecha_inicio' y 'fecha_fin' son las fechas de inicio y
+                // fin de la evaluación.
+                // Asegúrate de que estas columnas existan en tu modelo Evaluacion.                
+                $query->where('status', 1) // Asumiendo que estado=1 significa activa
+                    ->where('fecha_inicio', '<=', $today)
+                    ->where('fecha_fin', '>=', $today);
+                // Ajusta estas condiciones según cómo se calcula realmente "activa" en tu modelo
+            })
+            ->get()
+            ->filter(function($evaluacion) {
+                return $evaluacion->estado_pendiente;
+            })
+            ->count() > 0;
+        
+        // Verificar evaluaciones pendientes como evaluado
+        // $pendientesComoEvaluado = $this->personal->evaluadoHasEvaluadors()
+        //     ->whereHas('evaluacion', function($query) {
+        //         $query->where('activa', true);
+        //     })
+        //     ->get()
+        //     ->filter(function($evaluacion) {
+        //         return $evaluacion->estado_pendiente;
+        //     })
+        //     ->count() > 0;
+        
+        // return $pendientesComoEvaluador || $pendientesComoEvaluado;
+        return $pendientesComoEvaluador;
+    }
+
 }

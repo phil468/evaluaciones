@@ -3,11 +3,9 @@
 @section('title', 'Competencias')
 
 @section('content_header')
-    {{-- <h1 class="font-style-class"></h1> --}}
-    <h3 class="h3">
-                    Evaluación de Desempeño por <span class="text-vanguard"
-                    style="color: #568ba5;">Competencias</span>
-                </h3>
+    <h3 class="h3" class="font-style-class">
+        Evaluación de Desempeño por <span class="text-vanguard" style="color: #568ba5;">Competencias</span>
+    </h3>
 @stop
 
 @section('content')

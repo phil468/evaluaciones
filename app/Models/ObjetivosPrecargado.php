@@ -17,7 +17,7 @@ class ObjetivosPrecargado extends Model
 
     protected $fillable = [
         'meta','grupal','porcentaje_de_participacion','evidencias','resultado_anterior_o_esperado','tipo_objetivo_id','minimo','maximo','valor',
-        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id','tipo_de_jerarquia_id'];
+        'porcentaje_de_logro_STI','peso_ponderado','evaluacion_id','tipo_de_jerarquia_id', 'estado_id'];
 	
     public function tipo_objetivo()
     {
@@ -27,6 +27,11 @@ class ObjetivosPrecargado extends Model
     public function evaluacion()
     {
         return $this->belongsTo(Evaluacione::class,'evaluacion_id','id');
+    }
+
+    public function evidencias()
+    {
+        return $this->hasMany(ObjetivoPrecargadoHasEvidencia::class,'objetivo_precargado_id','id');
     }
 
     // set y get de porcentaje_de_participacion

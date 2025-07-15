@@ -81,9 +81,6 @@
 													<th class="text-center text-white bg-vanguard">% Participac.</th>
 													<th class="text-center text-white bg-vanguard">Tipo de Objetivo</th>
 													<th class="text-center text-white bg-vanguard">Result. Anterior / Esperado</th>
-													{{-- <th class="text-center text-white bg-vanguard">Mínimo {{ $evaluador_has_evaluado->evaluacion->minimo}}%</th> --}}
-													{{-- <th class="text-center text-white bg-vanguard">Máximo {{ $evaluador_has_evaluado->evaluacion->maximo}}%</th> --}}
-													{{-- <th class="text-center text-white bg-vanguard">Evaluación</th> --}}
 													<th class="text-center text-white bg-vanguard">Valor</th>
 													<th class="text-center text-white bg-vanguard">% Logr. STI</th>
 													<th class="text-center text-white bg-vanguard">Peso Pond.</th>
@@ -145,30 +142,6 @@
 														: $row->resultado_anterior_o_esperado 
 													}}
 												</td>
-												{{-- <td>
-													{{ 
-														$row->tipo_objetivo ? 
-															($row->tipo_objetivo->id == 2 ? 
-																($row->minimo).'%' 
-															: 	($row->tipo_objetivo->id == 1 ? 
-																	number_format($row->minimo, 2, '.', ',')
-																: $row->minimo)
-																)
-														: $row->minimo 
-													}}
-												</td>
-												<td>
-													{{ 
-														$row->tipo_objetivo ? 
-															($row->tipo_objetivo->id == 2 ? 
-																($row->maximo).'%' 
-															: 	($row->tipo_objetivo->id == 1 ? 
-																	number_format($row->maximo, 2, '.', ',')
-																: $row->maximo)
-																)
-														: $row->maximo 
-													}}
-												</td> --}}
 												
 												<td>
 													{{-- @if ($segunda_fase_activa && !$readOnly && !$row->grupal) --}}
@@ -183,16 +156,22 @@
 														wire:click="openModadActualizarValor({{$row->id}})">
 													@endif
 														{{ 
-															$row->valor ?
-																( $row->tipo_objetivo ? 
-																	($row->tipo_objetivo->id == 2 ? 
-																		($row->valor).'%' 
-																	: 	($row->tipo_objetivo->id == 1 ? 
-																			number_format($row->valor, 4, '.', ',')
-																		: $row->valor)
-																	)
-																: $row->valor )
-															: (($segunda_fase_activa && !$readOnly && !$row->grupal) ? 'Ingresar Valor' : '')
+															$row->grupal ?
+																$row->objetivo_precargado->valor :
+																($row->valor ?
+																	( $row->tipo_objetivo ? 
+																		($row->tipo_objetivo->id == 2 ? 
+																			($row->valor).'%' 
+																		: 	($row->tipo_objetivo->id == 1 ? 
+																				number_format($row->valor, 4, '.', ',')
+																			: $row->valor)
+																		)
+																	: $row->valor )
+																: (
+																	($segunda_fase_activa && !$readOnly && !$row->grupal) ? 
+																	'Ingresar Valor' 
+																	: ''
+																	))
 														}}
 														
 													@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
@@ -203,8 +182,21 @@
 														Actualizando
 													</div>
 												</td>
-												<td>{{ $row->porcentaje_de_logro_STI.'%' }}</td>
-												<td>{{ $row->peso_ponderado.'%' }}</td>
+												<td>
+													{{
+														$row->grupal ?
+														$row->objetivo_precargado->porcentaje_de_logro_STI.'%' :
+														$row->porcentaje_de_logro_STI.'%'
+													
+													}}
+												</td>
+												<td>
+													{{ 
+														$row->grupal ?
+														$row->objetivo_precargado->peso_ponderado.'%' :
+														$row->peso_ponderado.'%'
+													}}
+												</td>
 												<td>
 													@if (!$row->grupal)
 														@if ($row->valor >= $row->minimo && $row->evidencias()->count() == 0)
@@ -227,7 +219,14 @@
 
 													@foreach ($row->evidencias()->get() as $evidencia)
 														<div class="mb-2 btn-group" role="group" aria-label="Basic example">
-															<a href="{{ route('download', $evidencia->id) }}" class="btn btn-link">
+															<a href=
+															@if ($row->grupal)
+																{{ route('download_evidencia_objetivo_precargado', $evidencia->id) }}
+															@else
+																{{ route('download', $evidencia->id) }}																
+															@endif
+															
+															 class="btn btn-link">
 																{{ $evidencia->name }}
 															</a>
 															@if ($segunda_fase_activa && !$readOnly && !$row->grupal)
@@ -268,13 +267,6 @@
 															style="width: 20px; height: 20px;" 
 														> Sin evidencias
 														
-														{{-- @if ($row->valor < $row->minimo)
-															<div class="mt-1 text-muted small">
-																<i class="fas fa-info-circle"></i>
-																No se requieren evidencias para valores menores a {{ number_format($row->minimo, 2) }}
-															</div>
-														@endif --}}
-														
 													@else
 														@if ($primera_fase_activa && !$readOnly)
 															<button 
@@ -283,19 +275,44 @@
 																<i class="fa fa-plus"></i>
 															</button>
 														@endif
+														@if ($row->grupal)														
+															@foreach ($row->objetivo_precargado->evidencias()->get() as $evidencia)
+																<div class="mb-2 btn-group" role="group" aria-label="Basic example">
+																	<a
+																	href={{ route('download_evidencia_objetivo_precargado', $evidencia->id) }}
+																	class="btn btn-link">
+																		{{ $evidencia->name }}
+																	</a>
+																</div> 
+																<br>
+															@endforeach
+														@endif
 													@endif
 																						
 												</td>
 
 												<td>
-													@if (!$row->estado_id)
-														<span class="badge badge-danger">No Registrado</span>
+													@if (!$row->grupal)
+														@if (!$row->estado_id)
+															<span class="badge badge-danger">No Registrado</span>
+														@endif
+														@if ($row->estado_id == 1)
+															<span class="badge badge-warning">Registrado</span>
+														@endif
+														@if ($row->estado_id == 2)
+															<span class="badge badge-success">Realizado</span>
+														@endif														
 													@endif
-													@if ($row->estado_id == 1)
-														<span class="badge badge-warning">Registrado</span>
-													@endif
-													@if ($row->estado_id == 2)
-														<span class="badge badge-success">Realizado</span>
+													@if ($row->grupal)
+														@if (!$row->objetivo_precargado->estado_id)
+															<span class="badge badge-danger">No Registrado</span>
+														@endif
+														@if ($row->objetivo_precargado->estado_id == 1)
+															<span class="badge badge-warning">Registrado</span>
+														@endif
+														@if ($row->objetivo_precargado->estado_id == 2)
+															<span class="badge badge-success">Realizado</span>
+														@endif	
 													@endif
 												</td>
 

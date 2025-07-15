@@ -22,11 +22,6 @@
             ->orderBy('evaluaciones.campania_id', 'desc')
             ->get();
 
-        // $campanias = App\Models\Campania::select('campanias.id')
-        //     ->groupBy('campanias.id')
-        //     ->orderBy('campanias.id', 'desc')
-        //     ->get();
-
     @endphp
 
     @if ($campania_vigentes->isEmpty())
@@ -63,7 +58,6 @@
     @endif
 
     @if ($tipo_de_evaluacion_id == App\Models\TipoDeEvaluacione::COMPETENCIAS)
-    {{-- {{ dd($campanias) }} --}}
         @foreach ($campanias as $value)
             @livewire('dashboard', [
                 'personal_id' => auth()->user()->personal_id,
@@ -79,14 +73,9 @@
 @stop
 
 @section('css')
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
 @stop
 
 @section('js')
     <script nonce="{{ $nonce }}" type="text/javascript">
-        // window.livewire.on('dataReturned', () => {
-        //     location.hash = "#busqueda";
-        //     location.hash = "#resultados";
-        // });
     </script>
 @stop

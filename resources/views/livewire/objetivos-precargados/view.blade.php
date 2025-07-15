@@ -38,7 +38,7 @@
 					<table class="table table-striped table-hover table-sm">
 						<thead class="thead">
 							<tr class="text-center"> 
-								<th>#</th> 
+								<th>Id</th> 
 								<th>Tipo de Jerarquia</th>
 								<th>Grupal</th>
 								<th>Meta</th>
@@ -63,7 +63,7 @@
 						<tbody>
 							@foreach($objetivosPrecargados as $row)
 							<tr class="text-center">
-								<td>{{ $loop->iteration }}</td> 
+								<td>{{ $row->id }}</td> 
 								<td>{{ 'TIPO '.$row->tipo_de_jerarquia_id  }}</td>
 								<td>{{ $row->grupal? 'Sí' : 'No' }}</td>
 								<td @class(['table-secondary' => !($row->grupal)])>{{ $row->meta }}</td>

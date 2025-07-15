@@ -31,7 +31,7 @@ function initEvaluacionesTable(campaniaId) {
             'fechaInicio', 'fechaFin', 'fechaCorte', 'minimo', 'maximo',
             'fechaInicioPrimeraFaseMatricula', 'fechaFinPrimeraFaseMatricula',
             'fechaInicioSegundaFase', 'fechaFinSegundaFase',
-            'fechaParaMostrarResultados'
+            'fechaParaMostrarResultados', 'title'
         ],
         locale: true,
         columns: [
@@ -47,7 +47,22 @@ function initEvaluacionesTable(campaniaId) {
                 },
                 width: 150
             },
-            { title: "Nombre", field: "nombre_para_mostrar" },
+            { title: "Nombre para mostrar", field: "nombre_para_mostrar" },
+            { title: "Title", field: "title" },
+            { title: "Status", field: "status", formatter: function (cell) {
+                // activo = 1, inactivo = 0, realizado = 2
+                var status = cell.getValue();
+                if (status === 1) {
+                    return '<span class="badge badge-primary">Activo</span>';
+                }
+                if (status === 0) {
+                    return '<span class="badge badge-secondary">Inactivo</span>';
+                }
+                if (status === 2) {
+                    return '<span class="badge badge-success">Realizado</span>';
+                }
+            } 
+        },
             { title: "Identificador", field: "identificador" },
             { title: "Tipo", field: "tipo_de_evaluacion.name" },
             {
@@ -120,12 +135,15 @@ function openEvaluacionModal(data) {
     // Asignar valores a los campos del formulario
     $('#editEvaluacionNombreParaMostrar').val(data.nombre_para_mostrar);
     $('#editEvaluacionIdentificador').val(data.identificador);
+    //status
+    $('#editEvaluacionStatus').val(data.status); // Por defecto activo
     $('#editEvaluacionTipoDeEvaluacionId').val(data.tipo_de_evaluacion_id);
     $('#editEvaluacionFechaInicio').val(data.fecha_inicio ? formatDateTimeForInput(data.fecha_inicio) : '');
     $('#editEvaluacionFechaFin').val(data.fecha_fin ? formatDateTimeForInput(data.fecha_fin) : '');
     $('#editEvaluacionFechaCorte').val(data.fecha_corte ? formatDateForInput(data.fecha_corte) : '');
     $('#editEvaluacionMinimo').val(data.minimo);
     $('#editEvaluacionMaximo').val(data.maximo);
+    $('#editEvaluacionTitle').val(data.title || ''); // Si es nuevo, el título estará vacío
 
     // Campos para tipo 2 (evaluación por objetivos)
     $('#editEvaluacionFechaInicioPrimeraFaseMatricula').val(data.fecha_inicio_primera_fase_matricula ? formatDateTimeForInput(data.fecha_inicio_primera_fase_matricula) : '');

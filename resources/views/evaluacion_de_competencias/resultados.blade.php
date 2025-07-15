@@ -3,7 +3,7 @@
 @section('title', 'Resultados por Competencias')
 
 @section('content_header')
-    <h1 class="m-0 text-center text-dark font-weight-bold">
+    <h1 class="m-0 text-center text-dark font-weight-bold ">
         {{-- botón de atrás alineado a la izquierda --}}
         
         <a href="{{ url()->previous() }}" class="mr-2 btn-link btn-light btn-sm">
@@ -11,7 +11,9 @@
             Atrás
         </a>
 
-        Evaluación de Desempeño por <span style="color: #568ba5;">Competencias</span>
+        <div class="font-style-class">
+            Evaluación de Desempeño por <span style="color: #568ba5;">Competencias</span>            
+        </div>
     </h1>
     {{-- <h3 class="h3">
     </h3> --}}

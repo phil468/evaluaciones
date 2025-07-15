@@ -8,6 +8,9 @@
 
 @section('content')
 
+
+    {{-- {{ dd('Evaluaciones') }} --}}
+
     @livewire('evaluaciones')
     @livewire('planes-configuracion')
 

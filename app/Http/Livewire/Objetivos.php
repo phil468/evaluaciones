@@ -151,20 +151,9 @@ class Objetivos extends Component
         session()->flash('message', 'Actualizado correctamente.');
     }
 
-    public function evaluarActualizarObjetivo($id) {
-        // evaluar si objetivo tiene valor y evidencias y cambiar estado a 2
-        // $objetivo = Objetivo::find($id);
-
-        //  if (($objetivo->valor && $objetivo->evidencias()->get()->count() > 0) || ($objetivo->sin_evidencias)) {
-        //     $objetivo->update(['estado_id' => 2]);
-        // } elseif (!($objetivo->valor) || $objetivo->evidencias()->get()->count() <= 0)
-        // {
-        //     $objetivo->update(['estado_id' => 1]);
-        // }
-
-        //CAMBIO 80%
-
-        $objetivo = Objetivo::find($id);
+    public function evaluarActualizarObjetivo($id)
+    {
+         $objetivo = Objetivo::find($id);
     
         // Si el valor es menor al mínimo, no requiere evidencias
         if ($objetivo->valor < $objetivo->minimo) {
@@ -220,7 +209,8 @@ class Objetivos extends Component
         $this->emit('actualizarValorModal');
     }
 
-    public function openModalEvidencias($id) {
+    public function openModalEvidencias($id)
+    {
         $this->selected_id = $id;
         $this->emit('openModalEvidencias');
     }
@@ -321,21 +311,24 @@ class Objetivos extends Component
         $this->evaluar_fases();
         
         $this->objetivoss =Objetivo::latest()->where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->get();
+    
+        $this->subtotal = Objetivo::calcularSubtotal($this->evaluador_has_evaluado_id);
+        $this->total = Objetivo::calcularTotal($this->evaluador_has_evaluado_id);
 
         $this->objetivos = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)
         ->orderByDesc('grupal')
         ->get();
 
-        $this->subtotal = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->sum('peso_ponderado')*100;
+        // $this->subtotal = Objetivo::where('evaluador_has_evaluado_id',$this->evaluador_has_evaluado_id)->sum('peso_ponderado')*100;
 
-        // dd($this->subtotal,$this->evaluador_has_evaluado->evaluacion->maximo);
-        if ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->maximo) {
-            $this->total = $this->evaluador_has_evaluado->evaluacion->maximo;
-        } elseif ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->minimo) {
-            $this->total = $this->subtotal;
-        } else {
-            $this->total = 0.00;
-        }
+        // // dd($this->subtotal,$this->evaluador_has_evaluado->evaluacion->maximo);
+        // if ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->maximo) {
+        //     $this->total = $this->evaluador_has_evaluado->evaluacion->maximo;
+        // } elseif ($this->subtotal >= $this->evaluador_has_evaluado->evaluacion->minimo) {
+        //     $this->total = $this->subtotal;
+        // } else {
+        //     $this->total = 0.00;
+        // }
 
         $keyWord = '%'.$this->keyWord .'%';
         return view('livewire.objetivos.view', [

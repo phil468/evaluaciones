@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EvaluadorHasEvaluado;
+use App\Models\Personal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class HomeController extends Controller
@@ -31,9 +34,35 @@ class HomeController extends Controller
 
     public function inicio()
     {
-        $evaluaciones_pendientes = auth()->user()->personal()->evaluacionesPendientes();
+        // $evaluaciones_pendientes = 
+        // EvaluadorHasEvaluado::where('evaluador_id', Auth::user()->personal_id)
+        //     ->get();
+        //     // ->count();
+//         $evaluacionesPendientes = EvaluadorHasEvaluado::where('evaluador_id', Auth::user()->personal_id)
+//         ->with(['evaluado', 'evaluacion'])
+//         ->get()
+//         ->filter(function($evaluacion) {
+//             return $evaluacion->estado_pendiente;
+//         })
+//         ->count();
 
-        return view('inicio.index');
+//         // dd($evaluacionesPendientes);
+// hasPendingEvaluations
+
+        $user = Auth::user();
+        // Cargar las relaciones necesarias para evitar consultas N+1
+        if ($user->personal_id) {
+            $user->load([
+                'personal.evaluadorHasEvaluados.evaluacion', 
+                // 'personal.evaluadoHasEvaluadors.evaluacion'
+            ]);
+        }
+
+        $evaluacionesPendientes = $user->hasPendingEvaluations();
+
+        return view('inicio.index', [
+            'evaluacionesPendientes' => $evaluacionesPendientes,
+        ]);
     }
 
     public function pendientes2()

@@ -22,6 +22,7 @@ class EvaluadorHasEvaluado extends Model
         'evaluado_id',
         'evaluacion_id',
         'realizado',
+        'acepto_escala',
         'tipo_de_evaluacion_id',
         'cargo_de_evaluador',
         'area_de_evaluador',
@@ -92,7 +93,14 @@ class EvaluadorHasEvaluado extends Model
     public function objetivosRealizados()
     {
         return $this->hasMany(Objetivo::class,'evaluador_has_evaluado_id','id')->where('estado_id',2);
-    }    
+    }
+    
+    //campaniaHasEvaluado
+    public function campaniaHasEvaluado()
+    {
+        return $this->belongsTo(CampaniaHasEvaluado::class,'campania_id','campania_id')
+            ->where('personal_id', $this->evaluador_id);
+    }
 
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()

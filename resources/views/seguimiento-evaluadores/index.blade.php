@@ -146,7 +146,17 @@
                             <div class="float-left">
                                 <h5 class="h5">Resumen de Evaluaciones por Objetivos</h5>
                             </div>
-
+                            <div class="mb-3 btn-group">
+                                <button id="export-csv-resumen" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-file-csv"></i> CSV
+                                </button>
+                                <button id="export-xlsx-resumen" class="btn btn-sm btn-success">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                                <button id="export-pdf-resumen" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </button>
+                            </div>
                             {{-- <div>
                                 <button id="download-xlsx" class="mr-2 btn btn-default rounded-xl">
                                     <i class="mr-1 fas fa-file-excel"></i> Exportar Excel
@@ -632,6 +642,21 @@
                         }
                     }
                 },
+
+                downloadConfig: {
+                    // Formatear los datos para exportación
+                    formatData: function(data) {
+                        return data.map(row => ({
+                            "EVALUADO": row.evaluado,
+                            "EVALUADOR": row.evaluador,
+                            "SUBTOTAL": row.subtotal + '%',
+                            "TOTAL": row.total + '%'
+                        }));
+                    },
+                    columnHeaders: true,
+                    columnGroups: true
+                }
+    
                 // Configuración de idioma y otros ajustes...
             });
             // Agregar después de la configuración de la tabla
@@ -834,6 +859,43 @@
                                     'error'
                                 );
                             });
+                    }
+                });
+            });
+
+            // Exportar a CSV
+            document.getElementById("export-csv-resumen").addEventListener("click", function() {
+                tablaResumen.download("csv", "resumen_objetivos.csv");
+            });
+
+            // Exportar a Excel
+            document.getElementById("export-xlsx-resumen").addEventListener("click", function() {
+                tablaResumen.download("xlsx", "resumen_objetivos.xlsx", {
+                    sheetName: "Resumen Objetivos",
+                    documentProcessing: function(workbook) {
+                        var worksheet = workbook.Sheets["Resumen Objetivos"];
+                        worksheet["!cols"] = [
+                            { wch: 40 }, // Evaluado
+                            { wch: 40 }, // Evaluador
+                            { wch: 15 }, // Subtotal
+                            { wch: 15 }  // Total
+                        ];
+                        return workbook;
+                    }
+                });
+            });
+
+            // Exportar a PDF
+            document.getElementById("export-pdf-resumen").addEventListener("click", function() {
+                tablaResumen.download("pdf", "resumen_objetivos.pdf", {
+                    orientation: "portrait",
+                    title: "Resumen de Objetivos",
+                    autoTable: {
+                        styles: {
+                            cellPadding: 2,
+                            fontSize: 8,
+                            font: 'helvetica'
+                        }
                     }
                 });
             });

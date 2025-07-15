@@ -20,14 +20,11 @@
     {{-- card --}}
 
     <div class="card rounded-xl">
-        {{-- <div class="text-white card-header bg-vanguard">
-            <h5 class="m-0 h5">Evaluaciones Pendientes</h5>
-        </div> --}}
         <div class="card-body">
 
             <!-- Evaluación de Desempeño por Competencias -->
             <div class="mb-4">
-                <h4 class="mb-3 h5">Evaluación de Desempeño por Competencias</h4>
+                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Competencias</h1>
                 
                 <div class="mb-4 progress rounded-2xl" style="height: 25px;">
                     <div class="progress-bar bg-vanguard" role="progressbar" style="width: 65%;" 
@@ -35,10 +32,6 @@
                         65% completado
                     </div>
                 </div>
-
-                {{-- <div class="mb-4 progress">
-                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 6%" aria-valuenow="6" aria-valuemin="0" aria-valuemax="100">6%</div>
-                </div> --}}
                 
                 <div class="row">
                     <!-- Tarjeta de empleado - Competencias -->
@@ -61,10 +54,7 @@
             
             <!-- Evaluación de Desempeño por Objetivos -->
             <div class="mb-4">
-                <h4 class="mb-3 h5">Evaluación de Desempeño por Objetivos</h4>
-                {{-- <div class="mb-4 progress">
-                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                </div>         --}}
+                <h4 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Objetivos</h4>
                 
                 <div class="mb-4 progress rounded-2xl" style="height: 25px;">
                     <div class="progress-bar bg-primary" role="progressbar" style="width: 30%;" 
@@ -110,10 +100,7 @@
             
             <!-- Feedback y Planes de Mejora Individual -->
             <div class="mb-4">
-                <h4 class="mb-3 h5">Feedback y Planes de Mejora Individual</h4>
-                {{-- <div class="mb-4 progress">
-                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                </div> --}}
+                <h4 class="mb-3 h5 font-style-poppins font-weight-bold">Feedback y Planes de Mejora Individual</h4>
                 
                 <div class="mb-4 progress rounded-2xl" style="height: 25px;">
                     <div class="progress-bar bg-primary" role="progressbar" style="width: 30%;" 
@@ -156,16 +143,8 @@
                     </div>
                 </div>
             </div>
-
-            {{-- <p class="text-muted">Aquí puedes ver las evaluaciones pendientes de tus empleados.</p> --}}
         </div>
-        {{-- <div class="card-footer">
-            <a href="{{ route('evaluaciones.pendientes') }}" class="btn btn-vanguard rounded-xl">
-                Ir a Evaluaciones Pendientes
-            </a>
-        </div> --}}
     </div>
-
 </div>
 @stop
 

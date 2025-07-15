@@ -18,6 +18,7 @@ use App\Http\Controllers\GeneraReporte;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\NivelJerarquicoController;
 use App\Http\Controllers\ObjetivosListaController;
+use App\Http\Controllers\ObjetivosPrecargadosController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PreguntaController;
 use App\Http\Controllers\RespuestasController;
@@ -50,7 +51,6 @@ use GuzzleHttp\Client;
 
 // Route::get('/', function () {
 //     // return redirect('entregas');
-//     view('dash.index');
 // });
 
 //Ruta HOME:
@@ -62,7 +62,7 @@ Route::get('/auth/redirect', function () {
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/Contacts.Read',
     //     'api://e5a37484-1e31-499f-94af-fd254c7422d4/User.ReadBasic.All'
     //     ]) // Solicita el ámbito específico
-    ->redirect('/home');
+    ->redirect('/inicio');
 });
  
 Route::get('/auth/callback', function () {
@@ -94,8 +94,7 @@ Route::get('/auth/callback', function () {
     // dd($response->json());
 
     // Redirige al usuario a la página de inicio o a donde quieras
-    return redirect('/home');
-    //return redirect(route('dash.index'));
+    return redirect('/inicio');
 
 });
 
@@ -110,8 +109,8 @@ Route::get('/logout', function () {
     // return redirect($azureLogoutUrl);
 })->name('logout');
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dash.index');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'inicio'])->name('dash.inicio');
+Route::get('/inico', [App\Http\Controllers\HomeController::class, 'inicio'])->name('dash.inicio');
 // Route::get('/inicio', [App\Http\Controllers\HomeController::class, 'inicio'])->name('dash.inicio');
 Route::get('/personal/importar/{numero}', [App\Http\Controllers\PersonalController::class,'actualizarPersonalNisira'])->name('personal.actualizar');
 Route::get('/personal/actualizarEstadoParaTodos', [App\Http\Controllers\PersonalController::class,'actualizarEstadoParaTodos'])->name('personal.actualizarEstadoParaTodos');
@@ -167,6 +166,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/recursos-de-apoyo', [App\Http\Controllers\RecursosDeApoyoController::class, 'index'])
         ->name('recursos.apoyo');
 
+    Route::get('/download_evidencia_objetivo_precargado/{id}', 
+    [App\Http\Controllers\EvidenciaController::class,'download_evidencia_objetivo_precargado'])
+    ->name('download_evidencia_objetivo_precargado');
     Route::get('/download/{id}', [App\Http\Controllers\EvidenciaController::class,'download'])->name('download');
     Route::get('/download_evidencia_plan/{id}', [App\Http\Controllers\EvidenciaController::class,'download_evidencia_plan'])->name('download_evidencia_plan');
 
@@ -241,7 +243,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     // SEGUIMIENTO DE EVALUACIONES -- FIN
 
     // AJUSTE DE EVALUACIONES -- INICIO
+    Route::resource('evaluaciones', EvaluacionesController::class);
     Route::view('/evaluaciones','livewire.evaluaciones.index')->name('evaluaciones')->middleware(['can:ver-configuracion-evaluaciones']);
+
     Route::view('/evaluadores','livewire.evaluadores.index')->name('evaluadores')->middleware(['can:ver-configuracion-evaluadores']);
     
     Route::view('/competencias','livewire.secciones.index')->name('secciones')->middleware(['can:ver-configuracion-secciones']);
@@ -250,7 +254,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     // Route::view('/preguntas','livewire.preguntas.index')->name('preguntas')->middleware(['can:ver-configuracion-preguntas']);
     Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
-    Route::view('/objetivos-precargados','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
+    Route::view('/objetivos-precargados-old','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
     
     Route::get('/personal/data', [App\Http\Controllers\API\PersonalController::class, 'getData'])->name('personal.data')->middleware(['can:ver-personal']);
     Route::post('personal/marcar-seleccionados', [PersonalController::class, 'marcarSeleccionados'])->name('personal.marcar-seleccionados');
@@ -454,7 +458,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/evaluados/{id}/pares', [CampaniaHasEvaluadoController::class, 'getPares'])->name('campania_has_evaluados.pares');
     Route::post('/campanias/{id}/importar-evaluados', [CampaniaHasEvaluadoController::class, 'importar'])->name('campanias.importar_evaluados');
     Route::post('/campanias/{campania}/generar-evaluador-has-evaluado', [CampaniaHasEvaluadoController::class, 'generarEvaluadorHasEvaluado'])->name('campanias.generarEvaluadorHasEvaluado');
-    Route::resource('evaluaciones', EvaluacionesController::class);
+    
 
     // Route::post('/campanias/exportar-personal-a-campania-actual', 
     // [CampaniaHasEvaluadoController::class, 'exportarPersonalACampaniaActual'])
@@ -514,6 +518,22 @@ Route::group(['middleware'  =>  ['auth']],function(){
     )->name('personal.historial-actualizaciones');
     
     Route::resource('personal', App\Http\Controllers\API\PersonalController::class)->middleware(['can:ver-personal']);
+
+    // Rutas para Objetivos Precargados
+    Route::prefix('objetivos-precargados')->name('objetivos-precargados.')->middleware(['auth'])->group(function () {
+        Route::get('/', [ObjetivosPrecargadosController::class, 'index'])->name('index');
+        Route::get('/data', [ObjetivosPrecargadosController::class, 'getData'])->name('data');
+        Route::post('/', [ObjetivosPrecargadosController::class, 'store'])->name('store');
+        Route::get('/{id}', [ObjetivosPrecargadosController::class, 'show'])->name('show');
+        Route::put('/{id}', [ObjetivosPrecargadosController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ObjetivosPrecargadosController::class, 'destroy'])->name('destroy');
+        
+        // Nuevas rutas
+        Route::put('/{id}/actualizar-valor', [ObjetivosPrecargadosController::class, 'actualizarValor'])->name('actualizar-valor');
+        Route::post('/{id}/subir-evidencia', [ObjetivosPrecargadosController::class, 'subirEvidencia'])->name('subir-evidencia');
+        Route::delete('/evidencias/{id}', [ObjetivosPrecargadosController::class, 'eliminarEvidencia'])->name('eliminar-evidencia');
+        Route::get('/{id}/evidencias', [ObjetivosPrecargadosController::class, 'getEvidencias'])->name('get-evidencias');
+    });
         
 });
 // Auth::routes();

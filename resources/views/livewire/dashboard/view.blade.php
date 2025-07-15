@@ -46,61 +46,9 @@
                                 <select name="area_de_evaluado" class="form-control" multiple id="area_de_evaluado"
                                     placeholder="Areas">
                                     <option value="">Seleccione</option>
-                                    {{-- @foreach ($area_de_evaluados as $label => $value)
-										<option value="{{ $label }}">{{ $value }}</option>
-									@endforeach											 --}}
                                 </select>
                             </div>
 
-                            {{-- <div class="form-group col-md-4 col-sm-4" wire:ignore>
-								<label for="evaluado">Personal</label>
-								<select name="evaluado" class="form-control" multiple class="form-control" id="evaluado" placeholder="Areas">
-									<option value="">Seleccione</option>
-								</select>
-							</div> --}}
-
-                            {{-- <div class="form-group col-md-4 col-sm-4" wire:ignore>
-								<label for="area_id">Área</label>
-								<select name="area_id" class="form-control" wire:model.defer="area_id" multiple class="form-control" id="area_id" placeholder="Área">
-									<option value="">Seleccione</option>
-									@foreach ($areas as $id => $name)
-										<option value="{{ $id }}">{{ $name }}</option>
-									@endforeach											
-								</select>
-							</div> --}}
-                            {{-- <div class="form-group col-md-4 col-sm-4" wire:ignore>
-								<label for="status_id">Estado</label>
-								<select name="status_id" class="form-control" wire:model.defer="status_id" multiple class="form-control" id="status_id" placeholder="Estado">
-									<option value="">Seleccione</option>
-									@foreach ($estados as $id => $name)
-										<option value="{{ $id }}">{{ $name }}</option>
-									@endforeach											
-								</select>
-							</div>
-
-							<div class="form-group col-md-4 col-sm-4">
-								<label for="fecha_inicio">Fecha Inicio </label>
-								<input name="fecha_inicio"								
-								@if ($fecha_inicio)										
-									style="   
-									border: 2px solid;
-									border-color: #ffc107;"
-								@endif
-								wire:model.defer="fecha_inicio" type="date" class="form-control" id="fecha_inicio" placeholder="Fecha Inicio">@error('fecha_inicio') <span class="error text-danger">{{ $message }}</span> @enderror							
-							</div>
-							<div class="form-group col-md-4 col-sm-4">
-								<label for="fecha_final" >Fecha Final </label>
-									<input name="fecha_final"									
-									@if ($fecha_final)										
-										style="   
-										border: 2px solid;
-										border-color: #ffc107;"
-									@endif
-									wire:model.defer="fecha_final" type="date" class="form-control" id="fecha_final" placeholder="Fecha Final">@error('fecha_final') <span class="error text-danger">{{ $message }}</span> @enderror							
-							</div> --}}
-                            {{-- <div class="form-group col-md-4 col-sm-4">
-								<button type="button" wire:click.prevent="generar_grafica()" class="align-bottom btn btn-primary close-modal w-100 h-100">Actualizar Gráfica</button>
-							</div> --}}
                         </div>
                     @else
                     @endif

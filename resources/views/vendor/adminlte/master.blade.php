@@ -35,7 +35,8 @@
         <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-        <link rel="stylesheet" href={{ asset('css/jfl4jsk.css') }} {{-- "https://use.typekit.net/jfl4jsk.css" --}}>
+        <link href="{{ asset('css/fonts.css') }}" rel="stylesheet">
+        
     @else
         <link rel="stylesheet" href="{{ mix(config('adminlte.laravel_mix_css_path', 'css/app.css')) }}">
     @endif
@@ -94,7 +95,7 @@
     <style nonce="{{ $nonce }}">
         .body-bg {
             /* background-color: #6ECBC9; */
-            background-image: url('{{ asset('img/evaluacion/login-10s.mp4') }}');
+            background-image: url('{{ asset('img/evaluacion/Login - Plataforma de Desarrollo.mp4') }}');
             /* url('/img/evaluacion/login-10s.mp4'); */
 
             /* background-image: url('{{ asset('img/evaluacion/login-10s.mp4') }}'); */
@@ -103,6 +104,23 @@
             background-attachment: fixed;
             background-size: cover;
         }
+
+        /* Estilos personalizados */
+        .font-style-class {
+            font-family: "poppins", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+            font-size: 2.5em;
+        }
+        
+        /* Estilos personalizados */
+        .font-style-poppins {
+            font-family: "poppins", sans-serif;
+            /* font-weight: 700; */
+            /* font-style: normal; */
+            /* font-size: 2.5em; */
+        }
+
     </style>
 
 </head>

@@ -14,12 +14,9 @@
 
     <style nonce="{{ $nonce }}">
         body {
-
             background-image: url('{{ asset('img/evaluacion/login-10s.mp4') }}');
-            /* url('/img/evaluacion/login-10s.mp4'); */
             background-size: cover;
             background-repeat: no-repeat;
-            /* background-color: #568ca5!important; */
         }
 
         video {
@@ -40,57 +37,49 @@
 
 @section('body')
 
-    <div class="video-background" style="background-image: url('https://carontestudio.com/img/contacto.jpg');">
-        <video class="video-background-content" src="{{ url('img/evaluacion/login-10s.mp4') }}" autoplay="true" muted="true"
-            loop="true"></video>
+    <div class="video-background">
+        <video class="video-background-content" 
+        src="{{ url('img/evaluacion/Login - Plataforma de Desarrollo.mp4') }}" 
+        autoplay="true" 
+        muted="true"
+        loop="true">
+        </video>
     </div>
 
-    <div class="body-bg d-flex h-100 w-100 justify-content-center ">
+    <div class="body-bg d-flex h-100 w-75 justify-content-center ">
         <div class="{{ $auth_type ?? 'login' }}-box ">
             <div class="h-25 d-inline-block"></div>
-            {{-- Logo --}}
-            {{-- <div class="{{ $auth_type ?? 'login' }}-logo">
-                            <a href="{{ $dashboard_url }}">
-                                <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}" height="100">
-                                {!! config('adminlte.logo', '<b>Admin</b>LTE') !!}
-                            </a>
-                        </div>
-                        <div class="{{ $auth_type ?? 'login' }}-logo">
-                            <a href="{{ $dashboard_url }}">
-                                <img src="{{ asset('img/icon/inventario.png') }}" height="100">
-                            </a>
-                        </div> --}}
             <div class="text-center">
-                <h2 class="text-white h1">EVALUACIÓN <br> DE DESEMPEÑO</h2>
+                <h5 class="text-white font-style-class">Evaluación<br>de Desempeño</h5>
+                <br>
             </div>
 
             {{-- Card Box --}}
             <div class="card {{ config('adminlte.classes_auth_card', 'card-primary') }} opacity-95">
-
+                <div class="mt-4" align="center">
+                    <img src="{{ asset('img/evaluacion/logoEVD.png') }}" 
+                    height="50%" style="max-width: 66%;"
+                    >
+                </div>
                 {{-- Card Header --}}
-                {{-- @hasSection('auth_header')
-                    <div class="card-header {{ config('adminlte.classes_auth_header', '') }} opacity-50">
-                        <h3 class="float-none text-center card-title">
-                            @yield('auth_header')
-                        </h3>
-                    </div>
-                @endif --}}
 
                 {{-- Card Body --}}
                 <div
                     class="card-body {{ $auth_type ?? 'login' }}-card-body {{ config('adminlte.classes_auth_body', '') }} opacity-95">
-                    <div class="{{ $auth_type ?? 'login' }}-logo mt-2 mb-4">
-                        <a href="{{ $dashboard_url }}">
-                            <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}" height="100">
-                            {{-- {!! config('adminlte.logo', '<b>Admin</b>LTE') !!} --}}
-                        </a>
-                    </div>
+
                     <div class="mb-2 text-center text-bold">
                         <h3 class="float-none card-title text-bold">
                             @yield('auth_header')
                         </h3>
                     </div>
                     @yield('auth_body')
+                    <div class="mt-2 mb-4" align="center">
+                        <a href="{{ $dashboard_url }}">
+                            <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}"
+                            height="100"
+                            style="max-width: 50%;">
+                        </a>
+                    </div>
                 </div>
 
                 {{-- Card Footer --}}

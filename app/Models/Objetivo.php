@@ -77,6 +77,60 @@ class Objetivo extends Model implements Auditable
         return $this->belongsTo(EstadosDeObjetivo::class, 'estado_id','id');
     }
 
+    public function objetivo_precargado()
+    {
+        return $this->belongsTo(ObjetivosPrecargado::class, 'objetivo_precargado_id','id');
+    }
+
+    public function getPorcentajeDeLogroSTIAttribute($value)
+    {
+        // Si es grupal y tiene objetivo_precargado relacionado, usa los valores del objetivo precargado
+        if ($this->grupal && $this->objetivo_precargado_id && $this->objetivo_precargado) {
+            $valorPrecargado = $this->objetivo_precargado->porcentaje_de_logro_STI;
+            return $valorPrecargado;
+        }
+        
+        // Comportamiento original
+        return number_format($value*100.00, 2, '.', '');
+    }
+
+    public function getPesoPonderadoAttribute($value)
+    {
+        // Si es grupal y tiene objetivo_precargado relacionado, usa los valores del objetivo precargado
+        if ($this->grupal && $this->objetivo_precargado_id && $this->objetivo_precargado) {
+            $valorPrecargado = $this->objetivo_precargado->peso_ponderado;
+            return $valorPrecargado;
+        }
+        
+        // Comportamiento original
+        return number_format($value*100.00, 2, '.', '');
+    }
+
+    public function getValorAttribute($value)
+    {
+        // if ($this->grupal && $this->objetivo_precargado_id) {
+        //     return $this->objetivo_precargado->valor;
+        // }
+        // return $value;
+        // Si es grupal y tiene objetivo_precargado relacionado, usa los valores del objetivo precargado
+        if ($this->grupal && $this->objetivo_precargado_id && $this->objetivo_precargado) {
+            if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+                $valorPrecargado = $this->objetivo_precargado->valor;
+                return is_null($valorPrecargado) ? '' : $valorPrecargado;
+            } else {
+                $valorPrecargado = $this->objetivo_precargado->valor;
+                return is_null($valorPrecargado) ? '' : $valorPrecargado;
+            }
+        }
+        
+        // Comportamiento original
+        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+            return is_null($value) ? '' : number_format($value*100.00, 2, '.', '');
+        } else {
+            return is_null($value) ? '' : number_format($value, 4, '.', '');
+        }
+    }
+
     public function scopeRegistrados()
     {
         return $this->where('estado_id',1);
@@ -118,10 +172,10 @@ class Objetivo extends Model implements Auditable
         $this->attributes['porcentaje_de_logro_STI'] = ($value/100.00);
     }
 
-    public function getPorcentajeDeLogroSTIAttribute($value)
-    {
-        return number_format($value*100.00, 2, '.', '');// ($value*100.00);
-    }
+    // public function getPorcentajeDeLogroSTIAttribute($value)
+    // {
+    //     return number_format($value*100.00, 2, '.', '');// ($value*100.00);
+    // }
 
     // set y get de peso_ponderado
     public function setPesoPonderadoAttribute($value)
@@ -129,10 +183,10 @@ class Objetivo extends Model implements Auditable
         $this->attributes['peso_ponderado'] = ($value/100.00);
     }
 
-    public function getPesoPonderadoAttribute($value)
-    {
-        return number_format($value*100.00, 2, '.', '');// ($value*100.00);
-    }
+    // public function getPesoPonderadoAttribute($value)
+    // {
+    //     return number_format($value*100.00, 2, '.', '');// ($value*100.00);
+    // }
     
     // set y get de minimo
     public function setMinimoAttribute($value)
@@ -216,12 +270,59 @@ class Objetivo extends Model implements Auditable
         }
     }
 
-    public function getValorAttribute($value)
+    // public function getValorAttribute($value)
+    // {
+    //     if ($this->tipo_objetivo_id == 2) { // si es porcentaje
+    //         return is_null($value) ? '' : number_format($value*100.00, 2, '.', '');
+    //     } else {
+    //         return is_null($value) ? '' : number_format($value, 4, '.', '');
+    //     }
+    // }
+
+    public static function calcularSubtotal($evaluador_has_evaluado_id)
     {
-        if ($this->tipo_objetivo_id == 2) { // si es porcentaje
-            return is_null($value) ? '' : number_format($value*100.00, 2, '.', '');
+        // Obtener todos los objetivos del evaluador
+        $objetivos = static::where('evaluador_has_evaluado_id', $evaluador_has_evaluado_id)
+            ->with('objetivo_precargado') // Cargar la relación para evitar consultas N+1
+            ->get();
+        
+        // Calcular suma manual usando los accessors
+        $suma = 0;
+        foreach ($objetivos as $objetivo) {
+            // Al acceder a $objetivo->peso_ponderado ya se aplica el accessor
+            $suma += floatval(str_replace(',', '', $objetivo->peso_ponderado)) / 100;
+        }
+        
+        return $suma * 100;
+        // // Obtener todos los objetivos del evaluador
+        // $objetivos = static::where('evaluador_has_evaluado_id', $evaluador_has_evaluado_id)
+        //     ->with('objetivo_precargado') // Cargar la relación para evitar consultas N+1
+        //     ->get();
+        
+        // // Calcular suma manual usando los accessors
+        // $suma = 0;
+        // foreach ($objetivos as $objetivo) {
+        //     // Al acceder a $objetivo->peso_ponderado ya se aplica el accessor
+        //     $suma += floatval(str_replace(',', '', $objetivo->peso_ponderado)) / 100;
+        // }
+        
+        // return $suma * 100;
+        // // // dd(static::where('evaluador_has_evaluado_id', $evaluador_has_evaluado_id)->get());
+        // // return static::where('evaluador_has_evaluado_id', $evaluador_has_evaluado_id)
+        // //     ->sum('peso_ponderado') * 100;
+    }
+
+    public static function calcularTotal($evaluador_has_evaluado_id)
+    {
+        $subtotal = static::calcularSubtotal($evaluador_has_evaluado_id);
+        $evaluacion = EvaluadorHasEvaluado::find($evaluador_has_evaluado_id)->evaluacion;
+        
+        if ($subtotal >= $evaluacion->maximo) {
+            return $evaluacion->maximo;
+        } elseif ($subtotal >= $evaluacion->minimo) {
+            return $subtotal;
         } else {
-            return is_null($value) ? '' : number_format($value, 4, '.', '');
+            return 0.00;
         }
     }
 }

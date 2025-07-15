@@ -1,3 +1,5 @@
+// const { sortBy } = require("lodash");
+
 window.initCompetenciasTable = initCompetenciasTable;
 window.onConfigurarCampania = onConfigurarCampania;
 // window.openCompetenciaModal = openCompetenciaModal;
@@ -122,7 +124,30 @@ function initCompetenciasTable(campaniaId) {
                     if (value === null || value === undefined) return "";
                     if (typeof value === 'object') return value.competencia.name + " - " + value.campania.name;
                     return value;
-                }
+                },
+                // headerFilter: "input",
+                // headerFilterPlaceholder: "Buscar relacionado...",
+                width: 200,
+                hozAlign: "left",
+                sorter: function(a, b) {
+                    if (a && b) {
+                        return a.competencia.name.localeCompare(b.competencia.name);
+                    }
+                    return 0;
+                },
+                filter: function(value, row) {
+                    console.log(value, row);
+                    if (value && typeof value === 'object') {
+                        return value.competencia.name.toLowerCase().includes(row.getFilterValue().toLowerCase());
+                    }
+                    return false;
+                },
+                // sortBy: function(a, b) {
+                //     if (a && b) {
+                //         return a.competencia.name.localeCompare(b.competencia.name);
+                //     }
+                //     return 0;
+                // },
             },
             { title: "Tipo de Competencia", field: "tipo_competencia.name" },
             { title: "Tipo de Medición", field: "tipo_medicion.name" },

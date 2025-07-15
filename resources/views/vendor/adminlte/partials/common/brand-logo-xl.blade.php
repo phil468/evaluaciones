@@ -20,12 +20,12 @@
     <img src="{{ asset(config('adminlte.logo_img', 'vendor/adminlte/dist/img/AdminLTELogo.png')) }}"
          alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
          class="{{ config('adminlte.logo_img_class', 'brand-image-xl') }} logo-xs"
-         style="max-height: 60px;">
+         style="max-height: 60px; left: 0px">
 
     {{-- Large brand logo --}}
     <img src="{{ asset(config('adminlte.logo_img_xl')) }}"
          alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
-         class="{{ config('adminlte.logo_img_xl_class', 'brand-image-xs') }} logo-xl"
+         class="{{ config('adminlte.logo_img_xl_class', 'brand-image-xs') }} logo-xl pl-4"
          style="max-height: 60px;">
 
 </a>

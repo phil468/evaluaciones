@@ -10,7 +10,9 @@
 <div class="container-fluid">
     <!-- Sección de evaluaciones pendientes -->
     {{-- @if(isset($evaluacionesPendientes) && count($evaluacionesPendientes) > 0) --}}
-    @if(1 > 0) {{-- Simulación de evaluación pendiente --}}
+    {{-- @if(Auth::user()->hasPendingEvaluations()) --}}
+    @if($evaluacionesPendientes)
+     {{-- Simulación de evaluación pendiente --}}
     <div class="row">
         <div class="col-12">
             <div class="card rounded-xl">
@@ -49,17 +51,17 @@
                     <div class="row">
                         <div class="col-8">
                             <p>Evalúa el desarrollo de habilidades blandas, alineadas a nuestros valores y cultura.</p>
-                            <p class="text-sm">Resultados de última evaluación</p>
                         </div>
                         <div class="text-center col-4">
                             <div class="puntaje-medio">
                                 <h2 class="font-weight-bold">7.34</h2>
                                 <span class="text-warning">Puntaje medio</span>
+                                <p class="text-sm">Resultados de última evaluación</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.competencias') }}"  --}}
                     class="rounded-xl btn btn-vanguard btn-block">
@@ -79,7 +81,6 @@
                     <div class="row">
                         <div class="col-8">
                             <p>Evalúa el cumplimiento de metas claras y medibles, establecidas previamente.</p>
-                            <p class="text-sm">Resultados de última evaluación</p>
                         </div>
                         <div class="text-center col-4">
                             <div class="progress-chart">
@@ -88,10 +89,11 @@
                                     <span>80%</span>
                                 </div>
                             </div>
+                            <p class="text-sm">Resultados de última evaluación</p>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.objetivos') }}"  --}}
                     class="rounded-xl btn btn-vanguard btn-block">
@@ -112,7 +114,7 @@
                 <div class="card-body">
                     <p>Consulta y gestiona tus evaluaciones recibidas</p>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.feedback') }}"  --}}
                     class="rounded-xl btn btn-vanguard btn-block">
@@ -140,6 +142,7 @@
                                     <span>80%</span>
                                 </div>
                             </div>
+                            <p class="text-sm">Resultados de última evaluación</p>
                         </div>
                     </div>
                 </div>

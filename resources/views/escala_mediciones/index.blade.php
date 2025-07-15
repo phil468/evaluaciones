@@ -140,7 +140,7 @@
                     title: "", 
                     field: "actions", 
                     formatter: function(cell, formatterParams) {
-                        return "<button class='text-white btn btn-sm btn-warning edit-button' data-id='" + cell.getRow().getData().id + "'><i class='fas fa-edit'></i></button>" +
+                        return "<button class='mr-1 text-white btn btn-sm btn-info edit-button' data-id='" + cell.getRow().getData().id + "'><i class='fas fa-edit'></i></button>" +
                                "<button class='btn btn-sm btn-danger delete-button' data-id='" + cell.getRow().getData().id + "'><i class='fas fa-trash'></i></button>";
                     }
                 },

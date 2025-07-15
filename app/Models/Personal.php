@@ -126,6 +126,17 @@ class Personal extends Model
         return $this->hasMany(EvaluadorHasEvaluado::class, 'evaluador_id');
     }
 
+    //EvaluacionsHasEvaluado en estado no realizado o pendiente
+    public function evaluacionesPendientes()
+    {
+        return $this->hasMany(EvaluadorHasEvaluado::class, 'evaluador_id')
+            ->where('evaluador_has_evaluados.realizado', 0)
+            // ->whereHas('evaluacion', function($query) {
+            //     // $query->where('evaluador_has_evaluados.estado', 1); // Estado activo
+            // })
+            ;
+    }
+
     public function planesComoEncargado()
     {
         return $this->hasMany(EncargadosPlanesDeAccion::class, 'encargado_id');
@@ -178,4 +189,16 @@ class Personal extends Model
         $this->attributes['name'] = mb_strtoupper(trim($value));
     }
     
+    // Relación para evaluaciones donde este personal es evaluador
+    public function evaluadorHasEvaluados()
+    {
+        return $this->hasMany(EvaluadorHasEvaluado::class, 'evaluador_id', 'id');
+    }
+
+    // Relación para evaluaciones donde este personal es evaluado
+    public function evaluadoHasEvaluadors()
+    {
+        return $this->hasMany(EvaluadorHasEvaluado::class, 'evaluado_id', 'id');
+    }
+
 }
