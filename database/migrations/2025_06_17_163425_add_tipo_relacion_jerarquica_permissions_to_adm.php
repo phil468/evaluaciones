@@ -14,16 +14,28 @@ class AddTipoRelacionJerarquicaPermissionsToAdm extends Migration
      */
     public function up()
     {
-        // Crear permisos primero y forzar guardado
         $permissions = [
             'ver-tipo-relacion-jerarquica',
             'crear-tipo-relacion-jerarquica', 
             'editar-tipo-relacion-jerarquica',
             'borrar-tipo-relacion-jerarquica'
         ];
-                
-        // Asignar permisos en una nueva transacción
-        $adminRole = Role::findByName('Administrador');
+        
+        // Primero verificar y crear los permisos si no existen
+        foreach ($permissions as $permission) {
+            // Verificar si el permiso ya existe
+            if (!Permission::where('name', $permission)->where('guard_name', 'web')->exists()) {
+                // Crear el permiso si no existe
+                Permission::create(['name' => $permission, 'guard_name' => 'web']);
+            }
+        }
+        
+        // Forzar que se guarden los cambios en la base de datos
+        DB::commit();
+        DB::beginTransaction();
+        
+        // Ahora asignar los permisos al rol administrador
+        $adminRole = Role::findByName('Administrador', 'web');
         if ($adminRole) {
             $adminRole->givePermissionTo($permissions);
         }
@@ -35,10 +47,18 @@ class AddTipoRelacionJerarquicaPermissionsToAdm extends Migration
      * @return void
      */
     public function down()
-    {        
-        // Actualizar tabla de migraciones para reflejar el rollback
-        DB::table('migrations')
-            ->where('migration', '2025_06_17_163425_add_tipo_relacion_jerarquica_permissions_to_adm')
-            ->delete();
+    {
+        // Desasignar permisos del rol administrador
+        $permissions = [
+            'ver-tipo-relacion-jerarquica',
+            'crear-tipo-relacion-jerarquica', 
+            'editar-tipo-relacion-jerarquica',
+            'borrar-tipo-relacion-jerarquica'
+        ];
+        
+        $adminRole = Role::findByName('Administrador', 'web');
+        if ($adminRole) {
+            $adminRole->revokePermissionTo($permissions);
+        }
     }
 }
