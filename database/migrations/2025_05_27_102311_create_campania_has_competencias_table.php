@@ -37,7 +37,7 @@ class CreateCampaniaHasCompetenciasTable extends Migration
             // Insertar campaña 1 si no existe
             DB::table('campanias')->insert([
                 'id' => 1,
-                'nombre' => '2024-2025',
+                'name' => '2024-2025',
                 'descripcion' => 'Campaña de evaluación 2024',
                 'created_at' => now(),
                 'updated_at' => now()
@@ -48,7 +48,7 @@ class CreateCampaniaHasCompetenciasTable extends Migration
             // Insertar campaña 2 si no existe
             DB::table('campanias')->insert([
                 'id' => 2,
-                'nombre' => '2025-2026',
+                'name' => '2025-2026',
                 'relacionado_anterior_id' => 1,
                 'estado' => true,
                 'es_campania_actual' => true,
