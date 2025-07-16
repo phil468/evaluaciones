@@ -83,6 +83,7 @@ php artisan migrate --path=/database/migrations/2025_05_23_071046_create_escala_
 php artisan migrate --path=/database/migrations/2025_05_26_120631_create_tipo_mediciones_table.php
 php artisan migrate --path=/database/migrations/2025_05_26_153800_create_tipo_competencias_table.php
 php artisan migrate --path=/database/migrations/2025_05_27_072902_alter_secciones_table.php
+php artisan migrate --path=/database/migrations/2025_07_16_100735_alter_campania_id_campania_table.php
 php artisan migrate --path=/database/migrations/2025_05_27_102311_create_campania_has_competencias_table.php
 php artisan migrate --path=/database/migrations/2025_05_27_120510_create_nivel_jerarquicos_table.php
 php artisan migrate --path=/database/migrations/2025_05_27_121503_create_grados_table.php
