@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -15,22 +14,28 @@ class AddTipoRelacionJerarquicaPermissions extends Migration
      */
     public function up()
     {
-        // Crear permisos
-        Permission::create(['name' => 'ver-tipo-relacion-jerarquica']);
-        Permission::create(['name' => 'crear-tipo-relacion-jerarquica']);
-        Permission::create(['name' => 'editar-tipo-relacion-jerarquica']);
-        Permission::create(['name' => 'borrar-tipo-relacion-jerarquica']);
-
-        // Asignar permisos al rol de administrador (ajusta esto según tus roles)
-        $adminRole = Role::findByName('Administrador');
-        if ($adminRole) {
-            $adminRole->givePermissionTo([
-                'ver-tipo-relacion-jerarquica',
-                'crear-tipo-relacion-jerarquica',
-                'editar-tipo-relacion-jerarquica',
-                'borrar-tipo-relacion-jerarquica'
-            ]);
+        // Crear permisos primero y forzar guardado
+        $permissions = [
+            'ver-tipo-relacion-jerarquica',
+            'crear-tipo-relacion-jerarquica', 
+            'editar-tipo-relacion-jerarquica',
+            'borrar-tipo-relacion-jerarquica'
+        ];
+        
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'guard_name' => 'web']);
         }
+        
+        // Forzar commit de la transacción actual
+        DB::commit();
+        
+        // Asignar permisos en una nueva transacción
+        DB::beginTransaction();
+        $adminRole = Role::findByName('Administrador', 'web');
+        if ($adminRole) {
+            $adminRole->givePermissionTo($permissions);
+        }
+        DB::commit();
     }
 
     /**
@@ -41,11 +46,22 @@ class AddTipoRelacionJerarquicaPermissions extends Migration
     public function down()
     {
         // Eliminar permisos
-        Permission::whereIn('name', [
+        $permissions = [
             'ver-tipo-relacion-jerarquica',
-            'crear-tipo-relacion-jerarquica',
+            'crear-tipo-relacion-jerarquica', 
             'editar-tipo-relacion-jerarquica',
             'borrar-tipo-relacion-jerarquica'
-        ])->delete();
+        ];
+        
+        foreach ($permissions as $permission) {
+            Permission::where('name', $permission)
+                ->where('guard_name', 'web')
+                ->delete();           
+        }
+        
+        // Actualizar tabla de migraciones para reflejar el rollback
+        DB::table('migrations')
+            ->where('migration', '2025_06_17_163425_add_tipo_relacion_jerarquica_permissions')
+            ->delete();
     }
 }
