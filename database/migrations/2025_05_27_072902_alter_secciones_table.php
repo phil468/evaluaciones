@@ -17,7 +17,7 @@ class AlterSeccionesTable extends Migration
         Schema::table('secciones', function (Blueprint $table) {            
             $table->unsignedBigInteger('id')->autoIncrement()->change();
             $table->text('descripcion')->nullable()->after('color');
-            $table->boolean('estado')->default(true)->after('name');
+            // $table->boolean('estado')->default(true)->after('name');
             $table->unsignedBigInteger('tipo_competencia_id')->nullable()->after('descripcion');
 
             $table->foreign('tipo_competencia_id')->references('id')->on('tipo_competencias');
@@ -54,77 +54,77 @@ class AlterSeccionesTable extends Migration
         DB::table('secciones')->insert([
             [
                 'name' => 'Integridad',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => '',
                 'tipo_competencia_id' => 1,
                 'estado' => true,
             ],
             [
                 'name' => 'Comunicación efectiva',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => 'Es la comunicación asertiva y activa que persigue trasmitir igualdad entre los interlocutores, horizontalidad, sensaciones que motiven a los usuarios a comunicar y relacionarse, favoreciendo la implicación y la modificación de actitudes y conductas.',
                 'tipo_competencia_id' => 2,
                 'estado' => true,
             ],
             [
                 'name' => 'Proactividad',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => '',
                 'tipo_competencia_id' => 2,
                 'estado' => true,
             ],
             [
                 'name' => 'Inteligencia emocional',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => 'Es capaz de regular sus sentimientos de acuerdo a cada ocasión.',
                 'tipo_competencia_id' => 2,
                 'estado' => true,
             ],
             [
                 'name' => 'Visión integral del negocio',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => '',
                 'tipo_competencia_id' => 3,
                 'estado' => true,
             ],
             [
                 'name' => 'Accountability',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => '',
                 'tipo_competencia_id' => 4,
                 'estado' => true,
             ],
             [
                 'name' => 'Calidad del trabajo',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => 'Es el valor que muestra la persona al conjunto de recursos, procedimientos, estrategias, documentos y estructura organizacional, con el objetivo de mejorar aquellos elementos de la organización que influyen en el logro de los resultados deseados por la misma.',
                 'tipo_competencia_id' => 5,
                 'estado' => true,
             ],
             [
                 'name' => 'Desarrollo de relaciones',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => '',
                 'tipo_competencia_id' => null,
                 'estado' => true,
             ],
             [
                 'name' => 'Innovación',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => '',
                 'tipo_competencia_id' => null,
                 'estado' => true,
             ],
             [
                 'name' => 'Toma de decisiones críticas',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => 'Es la elección después de un análisis entre las opciones o formas para resolver diferentes situaciones considerando la experiencia y el buen juicio en busca de un logro de resultado nuevo y útil.',
                 'tipo_competencia_id' => 3,
                 'estado' => true,
             ],
             [
                 'name' => 'Negociación y gestión de acuerdos',
-                'color' => '#ffffff',
+                'color' => '#568BA5 ',
                 'descripcion' => 'Capacidad de comunicarse de manera fluida, hacerse escuchar y persistencia en mantener sus puntos de vista, a fin de lograr soluciones negociadas; sin perder sus objetivos esenciales.',
                 'tipo_competencia_id' => 3,
                 'estado' => true,
