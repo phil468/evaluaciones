@@ -15,7 +15,7 @@ class AlterCampaniaIdCampaniaTable extends Migration
     {
         // cambiar el tipo de dato de campania_id en la tabla campanias
         Schema::table('campanias', function (Blueprint $table) {
-            $table->unsignedBigInteger('campania_id')->change();
+            $table->unsignedBigInteger('id')->change();
         });
     }
 
