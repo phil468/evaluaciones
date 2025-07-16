@@ -24,18 +24,7 @@ class AddTipoRelacionJerarquicaPermissions extends Migration
         
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'guard_name' => 'web']);
-        }
-        
-        // Forzar commit de la transacción actual
-        DB::commit();
-        
-        // Asignar permisos en una nueva transacción
-        DB::beginTransaction();
-        $adminRole = Role::findByName('Administrador', 'web');
-        if ($adminRole) {
-            $adminRole->givePermissionTo($permissions);
-        }
-        DB::commit();
+        }        
     }
 
     /**
@@ -58,10 +47,5 @@ class AddTipoRelacionJerarquicaPermissions extends Migration
                 ->where('guard_name', 'web')
                 ->delete();           
         }
-        
-        // Actualizar tabla de migraciones para reflejar el rollback
-        DB::table('migrations')
-            ->where('migration', '2025_06_17_163425_add_tipo_relacion_jerarquica_permissions')
-            ->delete();
     }
 }
