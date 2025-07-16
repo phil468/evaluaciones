@@ -30,7 +30,33 @@ class CreateCampaniaHasCompetenciasTable extends Migration
             $table->foreign('campania_id')->references('id')->on('campanias');
             $table->foreign('tipo_competencia_id')->references('id')->on('tipo_competencias');
             $table->foreign('tipo_medicion_id')->references('id')->on('tipo_mediciones');
-        });
+        });        
+
+        // Verificar si existen las campañas necesarias
+        if (DB::table('campanias')->where('id', 1)->doesntExist()) {
+            // Insertar campaña 1 si no existe
+            DB::table('campanias')->insert([
+                'id' => 1,
+                'nombre' => '2024-2025',
+                'descripcion' => 'Campaña de evaluación 2024',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+        if (DB::table('campanias')->where('id', 2)->doesntExist()) {
+            // Insertar campaña 2 si no existe
+            DB::table('campanias')->insert([
+                'id' => 2,
+                'nombre' => '2025-2026',
+                'relacionado_anterior_id' => 1,
+                'estado' => true,
+                'es_campania_actual' => true,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
 
         // Insertar datos iniciales (registros 1 al 15)
         DB::table('campania_has_competencias')->insert([
