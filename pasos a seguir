@@ -99,6 +99,7 @@ php artisan migrate --path=/database/migrations/2025_06_06_111640_create_campani
 php artisan migrate --path=/database/migrations/2025_06_09_123137_add_tipo_de_puesto_to_cargo_table.php
 php artisan migrate --path=/database/migrations/2025_06_17_155412_create_tipo_relacion_jerarquicas_table.php
 php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions.php
+php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions_to_adm.php
 php artisan migrate --path=/database/migrations/2025_06_17_172012_create_pesos_table.php
 php artisan migrate --path=/database/migrations/2025_06_17_172116_add_peso_permissions.php
 php artisan migrate --path=/database/migrations/2025_06_18_121315_add_campos_to_evaluador_has_evaluados.php

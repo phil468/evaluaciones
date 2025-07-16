@@ -24,7 +24,7 @@ class AddTipoRelacionJerarquicaPermissionsToAdm extends Migration
                 
         // Asignar permisos en una nueva transacción
         DB::beginTransaction();
-        $adminRole = Role::findByName('Administrador', 'web');
+        $adminRole = Role::findByName('Administrador');
         if ($adminRole) {
             $adminRole->givePermissionTo($permissions);
         }
