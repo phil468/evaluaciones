@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -15,7 +14,6 @@ class AddPesoPermissions extends Migration
      */
     public function up()
     {
-        // Crear permisos para Pesos
         $permissions = [
             'ver-peso',
             'crear-peso',
@@ -23,14 +21,44 @@ class AddPesoPermissions extends Migration
             'borrar-peso',
         ];
 
+        // Crear permisos con DB directamente
+        $now = now();
+        $createdPermissionIds = [];
+        
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            // Insertar permisos ignorando duplicados
+            DB::table('permissions')->insertOrIgnore([
+                'name' => $permission,
+                'guard_name' => 'web',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+            
+            // Obtener el ID del permiso recién insertado o existente
+            $permId = DB::table('permissions')
+                      ->where('name', $permission)
+                      ->where('guard_name', 'web')
+                      ->value('id');
+                      
+            if ($permId) {
+                $createdPermissionIds[] = $permId;
+            }
         }
-
-        // Asignar permisos al rol de administrador
-        $role = Role::findByName('Administrador');
-        if ($role) {
-            $role->givePermissionTo($permissions);
+        
+        // Obtener ID del rol administrador
+        $adminRoleId = DB::table('roles')
+            ->where('name', 'Administrador')
+            ->where('guard_name', 'web')
+            ->value('id');
+            
+        // Asignar permisos al rol
+        if ($adminRoleId) {
+            foreach ($createdPermissionIds as $permissionId) {
+                DB::table('role_has_permissions')->insertOrIgnore([
+                    'permission_id' => $permissionId,
+                    'role_id' => $adminRoleId,
+                ]);
+            }
         }
     }
 
@@ -41,19 +69,27 @@ class AddPesoPermissions extends Migration
      */
     public function down()
     {
-        // Eliminar permisos
+        // Eliminar asignaciones y permisos
         $permissions = [
             'ver-peso',
             'crear-peso',
             'editar-peso',
             'borrar-peso',
         ];
-
-        foreach ($permissions as $permission) {
-            // Verificamos si el permiso existe antes de intentar eliminarlo
-            if (Permission::where('name', $permission)->exists()) {
-                Permission::where('name', $permission)->delete();
-            }
-        }
+        
+        $permissionIds = DB::table('permissions')
+            ->whereIn('name', $permissions)
+            ->where('guard_name', 'web')
+            ->pluck('id');
+            
+        // Eliminar relaciones de role_has_permissions
+        DB::table('role_has_permissions')
+            ->whereIn('permission_id', $permissionIds)
+            ->delete();
+            
+        // Eliminar permisos
+        DB::table('permissions')
+            ->whereIn('id', $permissionIds)
+            ->delete();
     }
 }
