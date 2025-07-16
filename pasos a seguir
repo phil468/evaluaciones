@@ -74,6 +74,8 @@ INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VAL
 ('borrar-campania', 'web', NULL, NULL),
 ('restaurar-campania', 'web', NULL, NULL);
 
+php artisan migrate --path=/database/migrations/2025_07_16_090838_add_permissions_for_evaluaciones.php
+
 php artisan migrate --path=/database/migrations/2025_05_13_174033_create_comites_calibracion_table.php
 php artisan migrate --path=/database/migrations/2025_05_13_173755_create_comite_has_personas_table.php
 
@@ -102,5 +104,9 @@ php artisan migrate --path=/database/migrations/2025_06_19_155939_add_campos_to_
 php artisan migrate --path=/database/migrations/2025_06_20_094439_add_campos_to_campania.php
 php artisan migrate --path=/database/migrations/2025_06_24_143340_add_campo_seleccionado_to_personal.php
 php artisan migrate --path=/database/migrations/2025_06_26_091336_create_actualizaciones_personal_table.php
+
+php artisan migrate --path=/database/migrations/2025_07_03_093554_add_campo_estado_id_to_objetivo_precargado.php
+php artisan migrate --path=/database/migrations/2025_07_03_171843_create_objetivo_precargado_has_evidencias.php
+php artisan migrate --path=/database/migrations/2025_07_10_100746_add_acepto_escala_to_evaluador_has_evaluados_table.php
 
 corregir la carpeta: adm a public
