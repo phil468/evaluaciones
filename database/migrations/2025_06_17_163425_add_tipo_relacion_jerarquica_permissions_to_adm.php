@@ -14,31 +14,45 @@ class AddTipoRelacionJerarquicaPermissionsToAdm extends Migration
      */
     public function up()
     {
-        $permissions = [
-            'ver-tipo-relacion-jerarquica',
-            'crear-tipo-relacion-jerarquica', 
-            'editar-tipo-relacion-jerarquica',
-            'borrar-tipo-relacion-jerarquica'
-        ];
+    $permissions = [
+        'ver-tipo-relacion-jerarquica',
+        'crear-tipo-relacion-jerarquica', 
+        'editar-tipo-relacion-jerarquica',
+        'borrar-tipo-relacion-jerarquica'
+    ];
+    
+    // Crear permisos si no existen
+    $now = now();
+    foreach ($permissions as $permission) {
+        DB::table('permissions')->insertOrIgnore([
+            'name' => $permission,
+            'guard_name' => 'web',
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
+    }
+    
+    // Obtener ID del rol administrador
+    $adminRoleId = DB::table('roles')
+        ->where('name', 'Administrador')
+        ->where('guard_name', 'web')
+        ->value('id');
+    
+    if ($adminRoleId) {
+        // Obtener IDs de los permisos
+        $permissionIds = DB::table('permissions')
+            ->whereIn('name', $permissions)
+            ->where('guard_name', 'web')
+            ->pluck('id');
         
-        // Primero verificar y crear los permisos si no existen
-        foreach ($permissions as $permission) {
-            // Verificar si el permiso ya existe
-            if (!Permission::where('name', $permission)->where('guard_name', 'web')->exists()) {
-                // Crear el permiso si no existe
-                Permission::create(['name' => $permission, 'guard_name' => 'web']);
-            }
+        // Asignar permisos al rol
+        foreach ($permissionIds as $permissionId) {
+            DB::table('role_has_permissions')->insertOrIgnore([
+                'permission_id' => $permissionId,
+                'role_id' => $adminRoleId
+            ]);
         }
-        
-        // Forzar que se guarden los cambios en la base de datos
-        DB::commit();
-        DB::beginTransaction();
-        
-        // Ahora asignar los permisos al rol administrador
-        $adminRole = Role::findByName('Administrador', 'web');
-        if ($adminRole) {
-            $adminRole->givePermissionTo($permissions);
-        }
+    }
     }
 
     /**
@@ -48,17 +62,6 @@ class AddTipoRelacionJerarquicaPermissionsToAdm extends Migration
      */
     public function down()
     {
-        // Desasignar permisos del rol administrador
-        $permissions = [
-            'ver-tipo-relacion-jerarquica',
-            'crear-tipo-relacion-jerarquica', 
-            'editar-tipo-relacion-jerarquica',
-            'borrar-tipo-relacion-jerarquica'
-        ];
         
-        $adminRole = Role::findByName('Administrador', 'web');
-        if ($adminRole) {
-            $adminRole->revokePermissionTo($permissions);
-        }
     }
 }
