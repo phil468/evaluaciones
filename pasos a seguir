@@ -110,5 +110,6 @@ php artisan migrate --path=/database/migrations/2025_06_26_091336_create_actuali
 php artisan migrate --path=/database/migrations/2025_07_03_093554_add_campo_estado_id_to_objetivo_precargado.php
 php artisan migrate --path=/database/migrations/2025_07_03_171843_create_objetivo_precargado_has_evidencias.php
 php artisan migrate --path=/database/migrations/2025_07_10_100746_add_acepto_escala_to_evaluador_has_evaluados_table.php
+php artisan migrate --path=/database/migrations/2025_07_16_143437_insert_evaluaciones_data.php
 
 corregir la carpeta: adm a public
