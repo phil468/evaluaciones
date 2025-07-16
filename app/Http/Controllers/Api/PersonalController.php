@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PersonalController extends Controller
 {
+    
     /**
      * Obtiene los datos de todos los registros de personal para la tabla
      *
