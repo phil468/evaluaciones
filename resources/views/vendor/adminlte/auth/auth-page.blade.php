@@ -73,7 +73,7 @@
                         </h3>
                     </div>
                     @yield('auth_body')
-                    <div class="mt-2 mb-4" align="center">
+                    <div class="mt-2" align="center">
                         <a href="{{ $dashboard_url }}">
                             <img src="{{ asset(config('adminlte.logo_img_xl_alt')) }}"
                             height="100"
