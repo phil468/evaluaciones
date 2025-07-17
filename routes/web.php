@@ -28,6 +28,7 @@ use App\Http\Controllers\TipoCompetenciaController;
 use App\Http\Controllers\TipoDePuestoController;
 use App\Http\Controllers\TipoDePuestoHasNivelJerarquicoController;
 use App\Http\Controllers\TipoMedicionController;
+use App\Http\Controllers\TipoRelacionJerarquicoController;
 // use App\Http\Livewire\ImportarPreguntas;
 use App\Models\Asignacione;
 use App\Models\Campania;
@@ -258,12 +259,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     
     Route::get('/personal/data', [PersonalController::class, 'getData'])->name('personal.data')->middleware(['can:ver-personal']);
     Route::post('personal/marcar-seleccionados', [PersonalController::class, 'marcarSeleccionados'])->name('personal.marcar-seleccionados');
-    // Route::get('personal/data', [PersonalController::class, 'data'])->name('personal.data');
-    // Route::resource('personal', PersonalController::class);
-    // Route::get('/personal/{id}', [App\Http\Controllers\API\PersonalController::class, 'show']);
-    // Route::post('/personal', [App\Http\Controllers\API\PersonalController::class, 'store']);
-    // Route::put('/personal/{id}', [App\Http\Controllers\API\PersonalController::class, 'update']);
-    // Route::delete('/personal/{id}', [App\Http\Controllers\API\PersonalController::class, 'destroy']);
+
     
     Route::get('/escala_mediciones/data', [EscalaMedicionController::class, 'getData'])->name('escala_mediciones.data')->middleware(['can:ver-escala-medicion']);
     Route::resource('escala_mediciones', EscalaMedicionController::class);
@@ -326,7 +322,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::resource('tipo_relacion_jerarquicas', App\Http\Controllers\TipoRelacionJerarquicoController::class);
 
     // routes/api.php (opcional, para endpoints API)
-    Route::get('/tipo_relacion_jerarquica/lista', [App\Http\Controllers\API\TipoRelacionJerarquicoController::class, 'lista'])
+    Route::get('/tipo_relacion_jerarquica/lista', [TipoRelacionJerarquicoController::class, 'lista'])
         ->name('api.tipo_relacion_jerarquica.lista');
 
     Route::get('/evaluaciones-de-desempeno/{id}', function ($tipo_de_evaluacion_id) {
@@ -517,7 +513,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     'historialActualizaciones']
     )->name('personal.historial-actualizaciones');
     
-    Route::resource('personal', App\Http\Controllers\API\PersonalController::class)->middleware(['can:ver-personal']);
+    Route::resource('personal', PersonalController::class)->middleware(['can:ver-personal']);
 
     // Rutas para Objetivos Precargados
     Route::prefix('objetivos-precargados')->name('objetivos-precargados.')->middleware(['auth'])->group(function () {

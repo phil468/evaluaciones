@@ -444,7 +444,8 @@ return [
         'submenu' => [
                 [
                     'text' => 'Personal',
-                    'url'  => 'personal-table',
+                    // 'url'  => 'personal-table',
+                    'url'  => 'personal-tabulator',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-personal',
                     'classes' => 'rounded-xl',

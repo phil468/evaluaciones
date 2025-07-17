@@ -102,4 +102,10 @@ class TipoRelacionJerarquicoController extends Controller
             return response()->json(['message' => 'Error al eliminar Tipo de Relación Jerárquica'], 500);
         }
     }
+    
+    public function lista()
+    {
+        $tipos = TipoRelacionJerarquica::where('estado', true)->get();
+        return response()->json($tipos);
+    }
 }
