@@ -256,7 +256,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::view('/estados-de-plan-de-accion','livewire.estados-de-plan-de-accion.index')->name('estados-de-plan-de-accion')->middleware(['can:ver-estados-de-plan-de-accion']);
     Route::view('/objetivos-precargados-old','livewire.objetivos-precargados.index')->name('objetivos-precargados')->middleware(['can:ver-objetivos-precargados']);
     
-    Route::get('/personal/data', [App\Http\Controllers\API\PersonalController::class, 'getData'])->name('personal.data')->middleware(['can:ver-personal']);
+    Route::get('/personal/data', [PersonalController::class, 'getData'])->name('personal.data')->middleware(['can:ver-personal']);
     Route::post('personal/marcar-seleccionados', [PersonalController::class, 'marcarSeleccionados'])->name('personal.marcar-seleccionados');
     // Route::get('personal/data', [PersonalController::class, 'data'])->name('personal.data');
     // Route::resource('personal', PersonalController::class);

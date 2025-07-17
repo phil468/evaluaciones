@@ -18,6 +18,33 @@ use Illuminate\Support\Facades\Gate;
 class PersonalController extends Controller
 {    
     public $token = null;
+    
+    public function getData(Request $request)
+    {
+        if (Gate::denies('ver-personal')) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        try {
+            $personal = Personal::with([
+                'empresa', 'gerencia', 'subgerencia', 'sede', 
+                'area', 'cargo', 'planilla', 'tipo_trabajador', 'tipo_personal', 'superior'
+            ])
+            ->where('cesado', false)
+            ->get();
+
+            return response()->json($personal);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener datos de personal: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json([
+                'message' => 'Error al obtener datos de personal',
+                'error' => $e->getMessage(),
+                'trace' => app()->environment('local') ? $e->getTraceAsString() : null
+            ], 500);
+        }
+    }
 
     public function obtenerResponse(string $numero) {
         // si numero == 0 entonces trae toda la información actual del personal 
