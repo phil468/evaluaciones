@@ -29,7 +29,6 @@ class Kernel extends ConsoleKernel
                 select('evaluaciones.title', 'personal.correo_empresa as correo')
                 ->join('evaluador_has_evaluados', 'evaluaciones.id', '=', 'evaluador_has_evaluados.evaluacion_id')
                 ->join('personal', 'evaluador_has_evaluados.evaluador_id', '=', 'personal.id')
-        //        ->pluck('personal.correo_empresa,personal.correo_empresa')
                 ->whereNull('evaluador_has_evaluados.realizado')
                 ->whereNull('evaluador_has_evaluados.deleted_at')
                 ->whereNull('evaluaciones.deleted_at')

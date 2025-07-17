@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PersonalController extends Controller
 {
-    
+
     /**
      * Obtiene los datos de todos los registros de personal para la tabla
      *
@@ -170,15 +170,28 @@ class PersonalController extends Controller
 
         $personal = Personal::findOrFail($id);
     
-        // Determinar si es una actualización parcial (solo seleccionado)
-        $isPartialUpdate = $request->has('seleccionado') && count($request->all()) == 1;
+        // Detectar automáticamente si es una actualización parcial
+        $isPartialUpdate = count($request->all()) < 2; // Permitir hasta 2 campos para actualizaciones parciales
         
         if ($isPartialUpdate) {
-            // Para edición inline de seleccionado, solo validamos ese campo
-            $validator = Validator::make($request->all(), [
-                'seleccionado' => 'boolean',
-            ]);
+            // Validaciones específicas según el campo
+            $rules = [];
+            
+            if ($request->has('seleccionado')) {
+                $rules['seleccionado'] = 'boolean';
+            }
+            
+            if ($request->has('correo_empresa')) {
+                $rules['correo_empresa'] = 'nullable|email';
+            }
+            
+            if ($request->has('cargo_id')) {
+                $rules['cargo_id'] = 'exists:cargos,id';
+            }
+            
+            $validator = Validator::make($request->all(), $rules);
         } else {
+            // Validación completa para actualizaciones normales
             $validator = Validator::make($request->all(), [
                 'dni' => 'required|string|unique:personal,dni,' . $id,
                 'name' => 'required|string',
@@ -206,35 +219,103 @@ class PersonalController extends Controller
                 'fecha_cese' => 'nullable|date',
                 'reporta_a' => 'nullable|exists:personal,id',
             ]);
-            
         }
+
+        // Determinar si es una actualización parcial (solo seleccionado)
+        // $isPartialUpdate = $request->has('seleccionado') && count($request->all()) == 1;
+        
+        // if ($isPartialUpdate) {
+        //     // Para edición inline de seleccionado, solo validamos ese campo
+        //     $validator = Validator::make($request->all(), [
+        //         'seleccionado' => 'boolean',
+        //     ]);
+        // } else {
+        //     $validator = Validator::make($request->all(), [
+        //         'dni' => 'required|string|unique:personal,dni,' . $id,
+        //         'name' => 'required|string',
+        //         'nombres' => 'required|string',
+        //         'apellido_paterno' => 'required|string',
+        //         'apellido_materno' => 'nullable|string',
+        //         'empresa_id' => 'required|exists:empresas,id',
+        //         'gerencia_id' => 'nullable|exists:gerencias,id',
+        //         'subgerencia_id' => 'nullable|exists:subgerencias,id',
+        //         'sede_id' => 'nullable|exists:sedes,id',
+        //         'area_id' => 'nullable|exists:areas,id',
+        //         'cargo_id' => 'nullable|exists:cargos,id',
+        //         'correo_empresa' => 'nullable|email',
+        //         'celular_empresa' => 'nullable|string',
+        //         'correo_personal' => 'nullable|email',
+        //         'telefono_personal' => 'nullable|string',
+        //         'celular_personal' => 'nullable|string',
+        //         'estado' => 'nullable|boolean',
+        //         'genero' => 'nullable|string|in:M,F',
+        //         'fecha_ingreso' => 'nullable|date',
+        //         'tipo_de_trabajador_id' => 'nullable|exists:tipo_de_trabajador,id',
+        //         'tipo_de_personal_id' => 'nullable|exists:tipo_de_personal,id',
+        //         'planilla_id' => 'nullable|exists:planillas,id',
+        //         'cesado' => 'nullable|boolean',
+        //         'fecha_cese' => 'nullable|date',
+        //         'reporta_a' => 'nullable|exists:personal,id',
+        //     ]);
+            
+        // }
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
         try {
-            // $personal = Personal::findOrFail($id);
-            // $personal->update($request->all());
-            // return response()->json($personal);
-
-            // Actualizar según el tipo de actualización
+            // Para actualizaciones parciales, solo actualizar campos específicos
             if ($isPartialUpdate) {
-                $personal->seleccionado = $request->seleccionado;
-                // dd($personal->seleccionado, $request->seleccionado);
-                // dd($personal);
+                // Permitir solo ciertos campos para actualización directa
+                $allowedFields = ['seleccionado', 'correo_empresa', 'cargo_id'];
+                $dataToUpdate = array_intersect_key($request->all(), array_flip($allowedFields));
+                
+                foreach ($dataToUpdate as $field => $value) {
+                    $personal->$field = $value;
+                }
                 $personal->save();
-                // dd($personal);
+                
+                // Registrar la actualización (opcional)
+                Log::info("Campo {$field} actualizado para personal ID: {$id}");
+                
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Campo actualizado correctamente',
+                    'updated_field' => array_keys($dataToUpdate)[0] ?? null
+                ]);
             } else {
+                // Actualización completa normal
                 $personal->update($request->all());
+                return response()->json(['success' => true, 'message' => 'Personal actualizado correctamente']);
             }
-            
-            return response()->json(['success' => true, 'message' => 'Personal actualizado correctamente']);
-
         } catch (\Exception $e) {
             Log::error('Error al actualizar personal: ' . $e->getMessage());
-            return response()->json(['message' => 'Error al actualizar personal'], 500);
+            return response()->json(['message' => 'Error al actualizar personal: ' . $e->getMessage()], 500);
         }
+
+        // try {
+        //     // $personal = Personal::findOrFail($id);
+        //     // $personal->update($request->all());
+        //     // return response()->json($personal);
+
+        //     // Actualizar según el tipo de actualización
+        //     if ($isPartialUpdate) {
+        //         $personal->seleccionado = $request->seleccionado;
+        //         // dd($personal->seleccionado, $request->seleccionado);
+        //         // dd($personal);
+        //         $personal->save();
+        //         // dd($personal);
+        //     } else {
+        //         $personal->update($request->all());
+        //     }
+            
+        //     return response()->json(['success' => true, 'message' => 'Personal actualizado correctamente']);
+
+        // } catch (\Exception $e) {
+        //     Log::error('Error al actualizar personal: ' . $e->getMessage());
+        //     return response()->json(['message' => 'Error al actualizar personal'], 500);
+        // }
     }
 
     /**

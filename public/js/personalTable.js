@@ -1,5 +1,13 @@
 // const { default: Swal } = require("sweetalert2");
 
+// Inicializar toastr con opciones adecuadas
+// toastr.options = {
+//     closeButton: true,
+//     progressBar: true,
+//     positionClass: "toast-bottom-right",
+//     timeOut: 2000 // 2 segundos
+// };
+
 $(function() {
     // Inicializar Select2 con AJAX
     function initSelect2(selector, url, extraData = {}) {
@@ -208,8 +216,33 @@ $(function() {
                     if (value === 'F') return '<span class="badge bg-danger">Femenino</span>';
                     return '<span class="badge bg-secondary">No especificado</span>';
                 } 
-            },          
-            { title: "Correo Empresa", field: "correo_empresa", headerFilter: "input" },
+            },
+            { 
+                title: "Correo Empresa", 
+                field: "correo_empresa", 
+                headerFilter: "input",
+                editor: true,
+                editorParams: {
+                    elementAttributes: {
+                        maxlength: "100", // Limitar longitud
+                        placeholder: "email@empresa.com"
+                    },
+                    // Validación en cliente antes de enviar al servidor
+                    validator: function(cell, value) {
+                        if (!value) return true; // Permitir valores vacíos
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        return emailRegex.test(value) ? true : "Email inválido";
+                    }
+                }
+            },
+
+            // { 
+            //     title: "Correo Empresa", 
+            //     field: "correo_empresa", 
+            //     headerFilter: "input",
+            //     editor: true,
+
+            // },
             { title: "Planilla", field: "planilla.name", headerFilter: "input" },
             { title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input" },
             { title:  "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input" },
@@ -239,30 +272,62 @@ $(function() {
     
     // Detectar cuando un celda ha sido editada directamente en la tabla
     personalModel.table.on("cellEdited", function(cell) {
-        const row = cell.getRow();
-        const data = row.getData();
-        const id = data.id;
-        const field = cell.getField();
-        const value = cell.getValue();
-        
-        // Solo para el campo 'seleccionado'
-        // if (field === 'seleccionado') {
+        // Implementar debounce para evitar múltiples solicitudes
+        clearTimeout(window.updateCellTimeout);
+    
+        window.updateCellTimeout = setTimeout(() => {
+
+            const row = cell.getRow();
+            const data = row.getData();
+            const id = data.id;
+            const field = cell.getField();
+            const value = cell.getValue();
+            
+            // Solo para el campo 'seleccionado'
+            // if (field === 'seleccionado') {
             // Mostrar indicador de carga en la celda
             row.getElement().style.backgroundColor = "#f3f9ff";
-
-            // Determinar qué campo se está editando y preparar los datos
-            let updateData = {};
+        
+            // Determinar el campo y preparar los datos de forma más eficiente
+            const updateData = {};
+            let needsFullRowUpdate = false;
             
-            if (field === 'seleccionado') {
-                // Para campo seleccionado
-                updateData = { seleccionado: value ? 1 : 0 };
-            } else if (field === 'cargo.name') {
-                // Para campo cargo, el valor seleccionado es el ID del cargo
-                updateData = { cargo_id: value };
-            } else {
-                // Para otros campos que puedas agregar en el futuro
-                return; // No continuar si el campo no está configurado para edición
+            // if (field === 'seleccionado') {
+            //     // Para campo seleccionado
+            //     updateData = { seleccionado: value ? 1 : 0 };
+            // } else if (field === 'cargo.name') {
+            //     // Para campo cargo, el valor seleccionado es el ID del cargo
+            //     updateData = { cargo_id: value };
+            // // campo correo_empresa
+            // } else if (field === 'correo_empresa') {
+            //     // Para campo correo_empresa, simplemente asignar el valor
+            //     updateData = { correo_empresa: value };
+
+            // } else {
+            //     // Para otros campos que puedas agregar en el futuro
+            //     return; // No continuar si el campo no está configurado para edición
+            // }
+
+            switch (field) {
+                case 'seleccionado':
+                    updateData.seleccionado = value ? 1 : 0;
+                    break;
+                case 'cargo.name':
+                    updateData.cargo_id = value;
+                    needsFullRowUpdate = true; // Este campo requiere actualización completa
+                    break;
+                case 'correo_empresa':
+                    updateData.correo_empresa = value;
+                    break;
+                default:
+                    cell.restoreOldValue();
+                    row.getElement().style.backgroundColor = "";
+                    return;
             }
+
+            // Enviar actualización al servidor con indicador visual mejorado
+            const cellElement = cell.getElement();
+            cellElement.classList.add('updating-cell');
             
             // Enviar actualización al servidor
             $.ajax({
@@ -275,39 +340,61 @@ $(function() {
                 success: function(response) {
                     // Éxito: restaurar color de fondo
                     row.getElement().style.backgroundColor = "";
+                    cellElement.classList.remove('updating-cell');
             
-                    if (field === 'seleccionado') {
+                    // if (field === 'seleccionado') {
                     
-                        // Importante: aplicar el cambio directamente al objeto de datos
-                        data.seleccionado = Boolean(value);
+                    //     // Importante: aplicar el cambio directamente al objeto de datos
+                    //     data.seleccionado = Boolean(value);
                         
-                        // Método 1: Forzar actualización explícita de la celda de acciones
+                    //     // Método 1: Forzar actualización explícita de la celda de acciones
+                    //     const actionsCell = row.getCell("actions");
+                    //     if (actionsCell) {
+                    //         // Forzar recreación del contenido de la celda de acciones
+                    //         actionsCell.getElement().innerHTML = personalModel.table.columnManager.columnsByField.actions.definition.formatter(actionsCell, null, data);
+                    //     }
+
+                    // } else if (field === 'cargo.name') {
+                    //     // Para cargo, necesitamos recargar la fila para mostrar el nuevo valor
+                    //     // ya que puede incluir otros datos relacionados
+                    //     personalModel.table.updateRow(id, function() {
+                    //         return $.ajax({
+                    //             url: PERSONAL_SHOW_URL.replace(':id', id),
+                    //             method: 'GET'
+                    //         });
+                    //     });
+                    // }
+
+                    // Optimización: solo actualizar lo necesario según el tipo de campo
+                    if (field === 'seleccionado') {
+                        data.seleccionado = Boolean(value);
                         const actionsCell = row.getCell("actions");
                         if (actionsCell) {
-                            // Forzar recreación del contenido de la celda de acciones
                             actionsCell.getElement().innerHTML = personalModel.table.columnManager.columnsByField.actions.definition.formatter(actionsCell, null, data);
                         }
-                        // personalModel.table.replaceData(); // Reemplazar la fila completa con el nuevo estado
-
-                    } else if (field === 'cargo.name') {
-                        // Para cargo, necesitamos recargar la fila para mostrar el nuevo valor
-                        // ya que puede incluir otros datos relacionados
+                    } else if (needsFullRowUpdate) {
+                        // Para campos que requieren actualización completa
+                        row.getElement().classList.add('row-updating');
                         personalModel.table.updateRow(id, function() {
                             return $.ajax({
                                 url: PERSONAL_SHOW_URL.replace(':id', id),
                                 method: 'GET'
                             });
+                        }).then(() => {
+                            row.getElement().classList.remove('row-updating');
                         });
                     }
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Actualización exitosa',
-                        text: 'Campo actualizado correctamente'
-                    });
+                    // Notificación discreta en lugar de un modal completo
+                    toastr.success('Campo actualizado correctamente');
+
+                    // Swal.fire({
+                    //     icon: 'success',
+                    //     title: 'Actualización exitosa',
+                    //     text: 'Campo actualizado correctamente'
+                    // });
                     
                     // actualizar la tabla
-                    // personalModel.table.setData();
                     // este cambio de selccionado, tiene que actualizar la columna acciones también
                     
 
@@ -317,16 +404,20 @@ $(function() {
                     cell.restoreOldValue();
                     row.getElement().style.backgroundColor = "";
                     // Mostrar mensaje de error
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error al actualizar',
-                        text: 'No se pudo actualizar el campo. Intente nuevamente.'
-                    });
-                    // toastr.error('Error al actualizar el campo');
+                    // Swal.fire({
+                    //     icon: 'error',
+                    //     title: 'Error al actualizar',
+                    //     text: 'No se pudo actualizar el campo. Intente nuevamente.'
+                    // });
+                    // // toastr.error('Error al actualizar el campo');
+                    // console.error('Error:', xhr);                    
+                
+                    toastr.error('No se pudo actualizar el campo');
                     console.error('Error:', xhr);
                 }
             });
         // }
+        }, 300); // Debounce de 300ms para evitar múltiples solicitudes
     });
 
     // Botón para marcar seleccionados según criterios específicos

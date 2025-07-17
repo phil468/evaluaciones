@@ -301,6 +301,30 @@
 @stop
 
 @section('css')
+    <style>
+
+        /* Agregar al CSS existente */
+        .updating-cell {
+            position: relative;
+        }
+
+        .updating-cell::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid rgba(0, 123, 255, 0.5);
+            pointer-events: none;
+        }
+
+        .row-updating {
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+    </style> 
     {{-- <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>

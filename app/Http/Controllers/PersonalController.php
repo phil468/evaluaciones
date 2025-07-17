@@ -190,6 +190,16 @@ class PersonalController extends Controller
                     $personal->importado = 1;
                     $personal->fecha_cese = NULL;
                     $personal->fecha_ingreso  = trim($row['FECHA_INGRESO']) == '' ? NULL : (Carbon::createFromFormat('Y-m-d H:i:s.u', trim($row['FECHA_INGRESO']))->toDateString());
+
+                    //vERIFICar si este personal  tiene usuario y actualizar el campo correo_empresa, con su campo email del modelo user
+                    if($personal->user) {
+                        $personal->correo_empresa = $personal->user->email;
+                    } else {
+                        // $personal->correo_empresa = null]
+                    }
+
+
+
                     
                     if ($personal->isDirty()) {
                         // si el personal es selccionado no se actualiza ni se guarda
@@ -576,15 +586,28 @@ class PersonalController extends Controller
 
         $personal = Personal::findOrFail($id);
     
-        // Determinar si es una actualización parcial (solo seleccionado)
-        $isPartialUpdate = $request->has('seleccionado') && count($request->all()) == 1;
+        // Detectar automáticamente si es una actualización parcial
+        $isPartialUpdate = count($request->all()) < 2; // Permitir hasta 2 campos para actualizaciones parciales
         
         if ($isPartialUpdate) {
-            // Para edición inline de seleccionado, solo validamos ese campo
-            $validator = Validator::make($request->all(), [
-                'seleccionado' => 'boolean',
-            ]);
+            // Validaciones específicas según el campo
+            $rules = [];
+            
+            if ($request->has('seleccionado')) {
+                $rules['seleccionado'] = 'boolean';
+            }
+            
+            if ($request->has('correo_empresa')) {
+                $rules['correo_empresa'] = 'nullable|email';
+            }
+            
+            if ($request->has('cargo_id')) {
+                $rules['cargo_id'] = 'exists:cargos,id';
+            }
+            
+            $validator = Validator::make($request->all(), $rules);
         } else {
+            // Validación completa para actualizaciones normales
             $validator = Validator::make($request->all(), [
                 'dni' => 'required|string|unique:personal,dni,' . $id,
                 'name' => 'required|string',
@@ -620,26 +643,33 @@ class PersonalController extends Controller
         }
 
         try {
-            // $personal = Personal::findOrFail($id);
-            // $personal->update($request->all());
-            // return response()->json($personal);
-
-            // Actualizar según el tipo de actualización
+            // Para actualizaciones parciales, solo actualizar campos específicos
             if ($isPartialUpdate) {
-                $personal->seleccionado = $request->seleccionado;
-                // dd($personal->seleccionado, $request->seleccionado);
-                // dd($personal);
+                // Permitir solo ciertos campos para actualización directa
+                $allowedFields = ['seleccionado', 'correo_empresa', 'cargo_id'];
+                $dataToUpdate = array_intersect_key($request->all(), array_flip($allowedFields));
+                
+                foreach ($dataToUpdate as $field => $value) {
+                    $personal->$field = $value;
+                }
                 $personal->save();
-                // dd($personal);
+                
+                // Registrar la actualización (opcional)
+                Log::info("Campo {$field} actualizado para personal ID: {$id}");
+                
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Campo actualizado correctamente',
+                    'updated_field' => array_keys($dataToUpdate)[0] ?? null
+                ]);
             } else {
+                // Actualización completa normal
                 $personal->update($request->all());
+                return response()->json(['success' => true, 'message' => 'Personal actualizado correctamente']);
             }
-            
-            return response()->json(['success' => true, 'message' => 'Personal actualizado correctamente']);
-
         } catch (\Exception $e) {
             Log::error('Error al actualizar personal: ' . $e->getMessage());
-            return response()->json(['message' => 'Error al actualizar personal'], 500);
+            return response()->json(['message' => 'Error al actualizar personal: ' . $e->getMessage()], 500);
         }
     }
 
