@@ -39,7 +39,18 @@ class Cargo extends Model
         return $this->belongsTo(TipoDePuesto::class, 'tipo_de_puesto_id');
     }
     public function personals()
-{
-    return $this->hasMany(Personal::class, 'cargo_id');
-}
+    {
+        return $this->hasMany(Personal::class, 'cargo_id');
+    }
+
+    public function cargoSuperior()
+    {
+        return $this->belongsTo(Cargo::class, 'reporta_a');
+    }
+
+    public function cargosDependientes()
+    {
+        return $this->hasMany(Cargo::class, 'reporta_a');
+    }
+
 }

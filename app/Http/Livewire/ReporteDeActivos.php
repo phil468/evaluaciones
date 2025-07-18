@@ -169,7 +169,6 @@ class ReporteDeActivos extends Component
 								// 'area_id' => $area->id??NULL,
 								// 'sede_id' => $sede->id??NULL,
 								'cargo_id' => $cargo->id??NULL,
-								// 'correo_empresa' => trim($row['correo_empresa']),
 								// 'celular_empresa' => trim($row['celular_empresa']),
 								'correo_personal' => trim($row['EMAIL']),
 								// 'telefono_personal' => trim($row['telefono']),

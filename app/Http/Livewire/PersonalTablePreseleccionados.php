@@ -346,12 +346,7 @@ class PersonalTablePreseleccionados extends LivewireDatatable
             ->hideable()
             ->label('Tipo de Personal'),
 
-            // Column::name('correo_empresa')
-            //     ->filterable('correo_empresa')
-            //     ->searchable()
-            //     ->hideable()
-            //     ->label('correo cmpresa')
-            //     ->sortBy('correo_empresa'),
+
             
             // Column::name('celular_empresa')
             // ->filterable('celular_empresa')

@@ -1,13 +1,3 @@
-// const { default: Swal } = require("sweetalert2");
-
-// Inicializar toastr con opciones adecuadas
-// toastr.options = {
-//     closeButton: true,
-//     progressBar: true,
-//     positionClass: "toast-bottom-right",
-//     timeOut: 2000 // 2 segundos
-// };
-
 $(function() {
     // Inicializar Select2 con AJAX
     function initSelect2(selector, url, extraData = {}) {
@@ -35,8 +25,7 @@ $(function() {
     initSelect2('#personalGerenciaId', SELECT2_GERENCIA_URL);
     initSelect2('#personalAreaId', SELECT2_AREA_URL);
     initSelect2('#personalCargoId', SELECT2_CARGO_URL);
-    initSelect2('#personalReportaA', SELECT2_REPORTA_URL);
-    
+    initSelect2('#personalReportaA', SELECT2_REPORTA_URL);    
 
     // Reporta a: excluir a sí mismo si es edición
     function initReportaA(excludeId = null) {
@@ -82,10 +71,10 @@ $(function() {
         showURL: PERSONAL_SHOW_URL,
         deleteURL: PERSONAL_DELETE_URL,
         fields: [
-            "id", "dni", "name", "nombres", "apellido_paterno", "apellido_materno",
-            "empresa_id", "gerencia_id", "area_id", "cargo_id", "reporta_a",
-            "correo_empresa", "celular_empresa", "correo_personal", "telefono_personal",
-            "celular_personal", "estado", "genero", "fecha_ingreso", "cesado", "fecha_cese",
+            "id", "dni", "name", "nombres", "apellidoPaterno", "apellidoMaterno",
+            "empresaId", "gerenciaId", "areaId", "cargoId", "reportaA",
+            "correoEmpresa", "celularEmpresa", "correoPersonal", "telefonoPersonal",
+            "celularPersonal", "estado", "genero", "fechaIngreso", "cesado", "fechaCese",
             "seleccionado"
         ],
         columns: [
@@ -170,7 +159,43 @@ $(function() {
                     }
                 }
             },
-            { title: "Reporta a", field: "superior.name", headerFilter: "input" },
+            // { title: "Reporta a", field: "superior.name", headerFilter: "input" },
+            { 
+                title: "Reporta a", 
+                field: "superior.name", 
+                headerFilter: "input",
+                editor: "list",
+                editorParams: {
+                    // Cargar opciones de personal dinámicamente
+                    values: function(cell) {
+                        const currentPersonalId = cell.getRow().getData().id;
+                        
+                        return new Promise((resolve, reject) => {
+                            $.ajax({
+                                url: SELECT2_REPORTA_URL,
+                                dataType: 'json',
+                                data: { 
+                                    q: "", 
+                                    exclude: currentPersonalId, // Excluir el personal actual
+                                    solo_activos: true // Solo personal activo
+                                },
+                                success: function(data) {
+                                    // Convertir el resultado a formato {value1: "label1", value2: "label2"}
+                                    let values = {};
+                                    data.results.forEach(item => {
+                                        values[item.id] = item.text;
+                                    });
+                                    resolve(values);
+                                },
+                                error: function(error) {
+                                    console.error("Error cargando personal:", error);
+                                    reject(error);
+                                }
+                            });
+                        });
+                    }
+                }
+            },
             { title: "Ingreso", field: "fecha_ingreso",
                 formatter: function(cell) {
                     return cell.getValue() 
@@ -221,33 +246,53 @@ $(function() {
                 title: "Correo Empresa", 
                 field: "correo_empresa", 
                 headerFilter: "input",
-                editor: true,
-                editorParams: {
-                    elementAttributes: {
-                        maxlength: "100", // Limitar longitud
-                        placeholder: "email@empresa.com"
-                    },
-                    // Validación en cliente antes de enviar al servidor
-                    validator: function(cell, value) {
-                        if (!value) return true; // Permitir valores vacíos
-                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        return emailRegex.test(value) ? true : "Email inválido";
+                formatter: function(cell) {
+                    const value = cell.getValue() || '';
+                    const row = cell.getRow();
+                    const data = row.getData();
+                    
+                    // Si el personal no tiene user_id o user relacionado, solo mostrar el valor
+                    if (!data.user || !data.user.email) {
+                        return `<div class="d-flex align-items-center">
+                                <span class="me-2">${value}</span>
+                                <button class="btn btn-sm btn-link p-0 edit-correo-button" data-id="${data.id}" title="Editar correo">
+                                    <i class="fas fa-edit text-primary"></i>
+                                </button>
+                                </div>`;
                     }
+                    
+                    const userEmail = data.user.email;
+                    
+                    // Comprobar si el correo_empresa es diferente al email del usuario
+                    if (value.toLowerCase() !== userEmail.toLowerCase() && userEmail) {
+                        return `<div class="d-flex align-items-center">
+                                <span class="me-2">${value}</span>
+                                <button class="btn btn-sm btn-link p-0 edit-correo-button" data-id="${data.id}" title="Editar correo">
+                                    <i class="fas fa-edit text-primary"></i>
+                                </button>
+                                <button class="btn btn-sm btn-link p-0 ms-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Diferente al email del usuario: ${userEmail}">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                </button>
+                                <button class="btn btn-sm btn-link p-0 ms-1 update-correo-empresa"
+                                        data-user-email="${userEmail}" data-personal-id="${data.id}"
+                                        title="Actualizar correo empresarial">
+                                    <i class="fas fa-sync-alt text-primary"></i>
+                                </button>
+                                </div>`;
+                    }
+                    
+                    return `<div class="d-flex align-items-center">
+                            <span class="me-2">${value}</span>
+                            <button class="btn btn-sm btn-link p-0 edit-correo-button" data-id="${data.id}" title="Editar correo">
+                                <i class="fas fa-edit text-primary"></i>
+                            </button>
+                            </div>`;
                 }
             },
-
-            // { 
-            //     title: "Correo Empresa", 
-            //     field: "correo_empresa", 
-            //     headerFilter: "input",
-            //     editor: true,
-
-            // },
             { title: "Planilla", field: "planilla.name", headerFilter: "input" },
             { title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input" },
             { title:  "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input" },
-            // { title: "Celular Empresa", field: "celular_empresa", headerFilter: "input" },
-            // { title: "Superior", field: "superior.name", headerFilter: "input" },
         ],
         beforeOpenModal: function(data) {
             // Si hay datos (modo edición)
@@ -292,22 +337,6 @@ $(function() {
             const updateData = {};
             let needsFullRowUpdate = false;
             
-            // if (field === 'seleccionado') {
-            //     // Para campo seleccionado
-            //     updateData = { seleccionado: value ? 1 : 0 };
-            // } else if (field === 'cargo.name') {
-            //     // Para campo cargo, el valor seleccionado es el ID del cargo
-            //     updateData = { cargo_id: value };
-            // // campo correo_empresa
-            // } else if (field === 'correo_empresa') {
-            //     // Para campo correo_empresa, simplemente asignar el valor
-            //     updateData = { correo_empresa: value };
-
-            // } else {
-            //     // Para otros campos que puedas agregar en el futuro
-            //     return; // No continuar si el campo no está configurado para edición
-            // }
-
             switch (field) {
                 case 'seleccionado':
                     updateData.seleccionado = value ? 1 : 0;
@@ -318,6 +347,11 @@ $(function() {
                     break;
                 case 'correo_empresa':
                     updateData.correo_empresa = value;
+                    break;
+                case 'superior.name':
+                    updateData.reporta_a = value; // El value es el ID del superior seleccionado
+                    updateData.actualizar_cargo = true; // Flag para indicar que también debe actualizar el cargo
+                    needsFullRowUpdate = true; // Necesitamos actualizar toda la fila
                     break;
                 default:
                     cell.restoreOldValue();
@@ -341,29 +375,6 @@ $(function() {
                     // Éxito: restaurar color de fondo
                     row.getElement().style.backgroundColor = "";
                     cellElement.classList.remove('updating-cell');
-            
-                    // if (field === 'seleccionado') {
-                    
-                    //     // Importante: aplicar el cambio directamente al objeto de datos
-                    //     data.seleccionado = Boolean(value);
-                        
-                    //     // Método 1: Forzar actualización explícita de la celda de acciones
-                    //     const actionsCell = row.getCell("actions");
-                    //     if (actionsCell) {
-                    //         // Forzar recreación del contenido de la celda de acciones
-                    //         actionsCell.getElement().innerHTML = personalModel.table.columnManager.columnsByField.actions.definition.formatter(actionsCell, null, data);
-                    //     }
-
-                    // } else if (field === 'cargo.name') {
-                    //     // Para cargo, necesitamos recargar la fila para mostrar el nuevo valor
-                    //     // ya que puede incluir otros datos relacionados
-                    //     personalModel.table.updateRow(id, function() {
-                    //         return $.ajax({
-                    //             url: PERSONAL_SHOW_URL.replace(':id', id),
-                    //             method: 'GET'
-                    //         });
-                    //     });
-                    // }
 
                     // Optimización: solo actualizar lo necesario según el tipo de campo
                     if (field === 'seleccionado') {
@@ -386,13 +397,14 @@ $(function() {
                     }
 
                     // Notificación discreta en lugar de un modal completo
-                    toastr.success('Campo actualizado correctamente');
+                    // toastr.success('Campo actualizado correctamente');
 
-                    // Swal.fire({
-                    //     icon: 'success',
-                    //     title: 'Actualización exitosa',
-                    //     text: 'Campo actualizado correctamente'
-                    // });
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Actualización exitosa',
+                        text: 'Campo actualizado correctamente',
+                        toast: true
+                    });
                     
                     // actualizar la tabla
                     // este cambio de selccionado, tiene que actualizar la columna acciones también
@@ -404,15 +416,16 @@ $(function() {
                     cell.restoreOldValue();
                     row.getElement().style.backgroundColor = "";
                     // Mostrar mensaje de error
-                    // Swal.fire({
-                    //     icon: 'error',
-                    //     title: 'Error al actualizar',
-                    //     text: 'No se pudo actualizar el campo. Intente nuevamente.'
-                    // });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al actualizar',
+                        text: 'No se pudo actualizar el campo. Intente nuevamente.',
+                        toast: true
+                    });
                     // // toastr.error('Error al actualizar el campo');
                     // console.error('Error:', xhr);                    
                 
-                    toastr.error('No se pudo actualizar el campo');
+                    // toastr.error('No se pudo actualizar el campo');
                     console.error('Error:', xhr);
                 }
             });
@@ -743,5 +756,160 @@ $(function() {
             timerProgressBar: type === 'success'
         });
     }
+
+    // Delegación de eventos para el botón de actualizar correo_empresa
+    $(document).on("click", ".update-correo-empresa", function(e) {
+        e.stopPropagation(); // Evitar que se propague al editor de celda
+        
+        const userEmail = $(this).data('user-email');
+        const personalId = $(this).data('personal-id');
+        
+        if (!userEmail || !personalId) {
+            // toastr.error('Datos insuficientes para realizar la actualización');
+            //swall en formato toast
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Datos insuficientes para realizar la actualización',
+                toast: true,
+            });
+            return;
+        }
+        
+        // Confirmar la actualización
+        Swal.fire({
+            title: '¿Actualizar correo empresarial?',
+            text: `Se cambiará al email del usuario: ${userEmail}`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, actualizar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar indicador de carga
+                const row = personalModel.table.getRow(personalId);
+                row.getElement().style.backgroundColor = "#f3f9ff";
+                
+                // Realizar la actualización
+                $.ajax({
+                    url: PERSONAL_UPDATE_URL.replace(':id', personalId),
+                    method: 'PUT',
+                    data: {
+                        correo_empresa: userEmail,
+                        update_from_user: true
+                    },
+                    success: function(response) {
+                        // Actualizar la fila completa para reflejar el cambio
+                        row.getElement().classList.add('row-updating');
+                        personalModel.table.updateRow(personalId, function() {
+                            return $.ajax({
+                                url: PERSONAL_SHOW_URL.replace(':id', personalId),
+                                method: 'GET'
+                            });
+                        }).then(() => {
+                            row.getElement().classList.remove('row-updating');
+                            row.getElement().style.backgroundColor = "";
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Actualizado',
+                                text: 'Correo actualizado correctamente',
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
+                            
+                            // toastr.success('Correo empresarial actualizado correctamente');
+                        });
+                    },
+                    error: function(xhr) {
+                        row.getElement().style.backgroundColor = "";
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error al actualizar',
+                            text: 'No se pudo actualizar el correo empresarial. Intente nuevamente.',
+                            toast: true,
+                            position: 'top-end',                            
+                        });
+
+                        // toastr.error('Error al actualizar el correo empresarial');
+                        console.error('Error:', xhr);
+                    }
+                });
+            }
+        });
+    });
+
+    
+    // Inicializar tooltips para elementos dinámicos
+    $('body').tooltip({
+        selector: '[data-bs-toggle="tooltip"]'
+    });
+
+    // Delegación de eventos para el botón de editar correo
+    $(document).on("click", ".edit-correo-button", function(e) {
+        e.stopPropagation();
+        const id = $(this).data('id');
+        const row = personalModel.table.getRow(id);
+        const currentValue = row.getData().correo_empresa || '';
+        
+        Swal.fire({
+            title: 'Editar correo empresarial',
+            input: 'email',
+            inputValue: currentValue,
+            inputPlaceholder: 'email@empresa.com',
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+            inputValidator: (value) => {
+                if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    return 'Email inválido';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Actualizar el valor en el servidor
+                $.ajax({
+                    url: PERSONAL_UPDATE_URL.replace(':id', id),
+                    method: 'PUT',
+                    data: { correo_empresa: result.value },
+                    success: function(response) {
+                        // Actualizar la fila en la tabla TTabulator 6.3
+                        // encontar la fila que el campo id sea id
+                        row.update(response.personal).then(() => {
+                            // Mostrar notificación de éxito
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Actualizado',
+                                text: 'Correo actualizado correctamente',
+                                toast: true,
+                                position: 'top-end',
+                                timer: 3000,
+                            });
+                        });
+
+                        // Swal.fire({
+                        //     icon: 'success',
+                        //     title: 'Actualizado',
+                        //     text: 'Correo actualizado correctamente',
+                        //     toast: true,
+                        //     position: 'top-end',
+                        //     timer: 3000,
+                        //     showConfirmButton: false
+                        // });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo actualizar el correo',
+                            toast: true
+                        });
+                    }
+                });
+            }
+        });
+    });
 
 });

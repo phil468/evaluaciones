@@ -112,4 +112,7 @@ php artisan migrate --path=/database/migrations/2025_07_03_171843_create_objetiv
 php artisan migrate --path=/database/migrations/2025_07_10_100746_add_acepto_escala_to_evaluador_has_evaluados_table.php
 php artisan migrate --path=/database/migrations/2025_07_16_143437_insert_evaluaciones_data.php
 
+php artisan migrate --path=/database/migrations/2025_07_17_162935_add_reporta_a_to_cargos_table.php
+php artisan migrate --path=/database/migrations/2025_07_18_075521_copy_user_email_to_personal_correo_empresa.php
+
 corregir la carpeta: adm a public

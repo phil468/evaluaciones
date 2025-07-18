@@ -324,6 +324,42 @@
             opacity: 0.7;
             transition: opacity 0.3s;
         }
+
+        .update-correo-empresa {
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .update-correo-empresa:hover {
+            opacity: 1;
+        }
+
+        .correo-editable {
+            cursor: text;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .correo-editable:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        /* Estilos para indicar que la celda es editable */
+        .tabulator-cell[tabulator-field="correo_empresa"] {
+            cursor: text;
+        }
+
+        /* Indicador visual para botones */
+        .btn-link {
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn-link:hover {
+            transform: scale(1.2);
+            opacity: 1 !important;
+        }
+        
     </style> 
     {{-- <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

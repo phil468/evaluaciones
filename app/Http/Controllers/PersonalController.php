@@ -30,7 +30,8 @@ class PersonalController extends Controller
         try {
             $personal = Personal::with([
                 'empresa', 'gerencia', 'subgerencia', 'sede', 
-                'area', 'cargo', 'planilla', 'tipo_trabajador', 'tipo_personal', 'superior'
+                'area', 'cargo', 'planilla', 'tipo_trabajador', 'tipo_personal', 
+                'superior', 'user'
             ])
             ->where('cesado', false)
             ->get();
@@ -579,7 +580,6 @@ class PersonalController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($request->all());
         if (Gate::denies('editar-personal')) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
@@ -587,7 +587,7 @@ class PersonalController extends Controller
         $personal = Personal::findOrFail($id);
     
         // Detectar automáticamente si es una actualización parcial
-        $isPartialUpdate = count($request->all()) < 2; // Permitir hasta 2 campos para actualizaciones parciales
+        $isPartialUpdate = count($request->all()) <= 3; // Permitir hasta 2 campos para actualizaciones parciales
         
         if ($isPartialUpdate) {
             // Validaciones específicas según el campo
@@ -605,6 +605,14 @@ class PersonalController extends Controller
                 $rules['cargo_id'] = 'exists:cargos,id';
             }
             
+            if ($request->has('reporta_a')) {
+                $rules['reporta_a'] = 'nullable|exists:personal,id';
+                $rules['actualizar_cargo'] = 'boolean';
+            }
+            
+            // Nuevo: detectar si viene de actualización de email de usuario
+            $updateFromUser = $request->has('update_from_user') && $request->update_from_user;
+                    
             $validator = Validator::make($request->all(), $rules);
         } else {
             // Validación completa para actualizaciones normales
@@ -646,25 +654,92 @@ class PersonalController extends Controller
             // Para actualizaciones parciales, solo actualizar campos específicos
             if ($isPartialUpdate) {
                 // Permitir solo ciertos campos para actualización directa
-                $allowedFields = ['seleccionado', 'correo_empresa', 'cargo_id'];
+                $allowedFields = ['seleccionado', 'correo_empresa', 'cargo_id', 'reporta_a'];
                 $dataToUpdate = array_intersect_key($request->all(), array_flip($allowedFields));
                 
                 foreach ($dataToUpdate as $field => $value) {
                     $personal->$field = $value;
                 }
+            
+                // // Si la actualización viene del email del usuario, registrar en log (opcional)
+                // if ($updateFromUser && isset($dataToUpdate['correo_empresa'])) {
+                //     Log::info("Correo empresarial actualizado desde email de usuario para personal ID: {$id}");
+                // }
+
                 $personal->save();
+            
+                // // Actualizar el cargo correspondiente si se indica
+                // if ($request->has('actualizar_cargo') && $request->actualizar_cargo && $personal->cargo_id) {
+                //     $cargo = Cargo::find($personal->cargo_id);
+                //     if ($cargo) {
+                //         $cargo->reporta_a = $personal->reporta_a;
+                //         $cargo->save();
+                        
+                //         Log::info("Campo 'reporta_a' actualizado en cargo ID: {$cargo->id} para sincronizar con personal ID: {$id}");
+                //     }
+                // }
+
+                // Actualizar el cargo correspondiente si se indica
+                if ($request->has('actualizar_cargo') && $request->actualizar_cargo && $personal->cargo_id) {
+                    // Obtener el cargo del personal
+                    $cargo = Cargo::find($personal->cargo_id);
+                    
+                    if ($cargo && $personal->reporta_a) {
+                        // Obtener el cargo del superior
+                        $superior = Personal::find($personal->reporta_a);
+                        
+                        if ($superior && $superior->cargo_id) {
+                            // Asignar el cargo_id del superior al reporta_a del cargo
+                            $cargo->reporta_a = $superior->cargo_id;
+                            $cargo->save();
+                            
+                            Log::info("Campo 'reporta_a' actualizado en cargo ID: {$cargo->id} al cargo_id {$superior->cargo_id} del personal superior");
+                        }
+                    } else if ($cargo && $personal->reporta_a === null) {
+                        // Si se eliminó el superior, también eliminar la relación en el cargo
+                        $cargo->reporta_a = null;
+                        $cargo->save();
+                        
+                        Log::info("Campo 'reporta_a' limpiado en cargo ID: {$cargo->id}");
+                    }
+                }
                 
                 // Registrar la actualización (opcional)
-                Log::info("Campo {$field} actualizado para personal ID: {$id}");
+                // Log::info("Campo {$field} actualizado para personal ID: {$id}");
                 
                 return response()->json([
                     'success' => true, 
                     'message' => 'Campo actualizado correctamente',
-                    'updated_field' => array_keys($dataToUpdate)[0] ?? null
+                    'updated_field' => array_keys($dataToUpdate)[0] ?? null,
+                    'cargo_updated' => $request->has('actualizar_cargo') && $request->actualizar_cargo,
+                    'personal' => $personal
                 ]);
             } else {
                 // Actualización completa normal
                 $personal->update($request->all());
+            
+                // Si se actualizó reporta_a, actualizar también el cargo
+                if ($request->has('reporta_a') && $personal->cargo_id) {
+                    $cargo = Cargo::find($personal->cargo_id);
+                    $superior = Personal::find($request->reporta_a);
+                    
+                    if ($cargo && $superior && $superior->cargo_id) {
+                        $cargo->reporta_a = $superior->cargo_id;
+                        $cargo->save();
+                    } else if ($cargo && $request->reporta_a === null) {
+                        $cargo->reporta_a = null;
+                        $cargo->save();
+                    }
+                }
+            
+                // // Si se actualizó reporta_a, actualizar también el cargo
+                // if ($request->has('reporta_a') && $personal->cargo_id) {
+                //     $cargo = Cargo::find($personal->cargo_id);
+                //     if ($cargo) {
+                //         $cargo->reporta_a = $request->reporta_a;
+                //         $cargo->save();
+                //     }
+                // }
                 return response()->json(['success' => true, 'message' => 'Personal actualizado correctamente']);
             }
         } catch (\Exception $e) {
