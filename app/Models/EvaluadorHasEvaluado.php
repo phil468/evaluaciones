@@ -315,9 +315,16 @@ class EvaluadorHasEvaluado extends Model
     // campo calculado dominio_nombre
     public function getDominioNombreAttribute()
     {
+        $nivel_jerarquico = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
+            ->where('personal_id', $this->evaluado_id)
+            ->first()
+            ->tipoPuestoHasNivelJerarquico
+            ->nivelJerarquico
+            ->id;
         $dominio = Dominio::where('grado_id', $this->grado_id)
-
             ->where('campania_id', $this->campania_id)
+            ->where('nivel_jerarquico_id', $nivel_jerarquico)
+            ->where('estado', true)
             ->first();
         return $dominio ? $dominio->name : '';
 

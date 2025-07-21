@@ -361,7 +361,7 @@
             // const nombreCompleto = `${row.evaluado.nombres} ${row.evaluado.apellido_paterno} ${row.evaluado.apellido_materno}`;
             const cargoNombre = row.cargo_nombre;
             // const gradoNombre = row.grado ? row.grado.name : '';
-            const dominioNombre = row.dominio_nombre || 'Sin dominio asignado';
+            // const dominioNombre = row.dominio_nombre || 'Sin dominio asignado';
 
             nueva_ruta=RUTA_EVALUACION.replace(':id', row.id);
             
@@ -373,8 +373,8 @@
                                 <i class="fas fa-user-circle fa-4x text-secondary"></i>
                             </div>
                             <h5 class="mb-0 employee-name">${nombreCompleto}</h5>
-                            <p class="mb-1 text-muted small">${cargoNombre}</p>
-                            <div class="mb-2 badge badge-light">Dominio ${dominioNombre}</div>
+                            <p class="mb-1 text-muted small">${row.cargo_nombre_evaluado}</p>
+                            <div class="mb-2 badge badge-light">Dominio ${row.dominio_nombre}</div>
 
                             <a href='${nueva_ruta}'
                                class="btn btn-vanguard btn-block btn-sm rounded-xl ${row.realizado ? 'disabled' : ''}"

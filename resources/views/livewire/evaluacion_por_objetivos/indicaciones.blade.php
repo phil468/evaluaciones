@@ -34,7 +34,7 @@
                     border-radius: 25px;
                 "  --}}
                 data-dismiss="modal" >Aceptar</button>
-                    <a type="button" href="{{url('/evaluaciones-de-desempeno/1')}}" class="rounded-full btn btn-outline-vanguard " 
+                    <a type="button" href="{{url('/inicio/pendientes')}}" class="rounded-full btn btn-outline-vanguard " 
                     {{-- style="
                     border-radius: 25px;
                 "  --}}

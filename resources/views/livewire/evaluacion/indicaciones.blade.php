@@ -34,7 +34,7 @@
                 <div class="mt-3 text-center align-center">
                     <button type="button" wire:click.prevent="aceptar()" class="rounded-full btn btn-vanguard" 
                             data-dismiss="modal" {{ !$acepto_escala ? 'disabled' : '' }}>Aceptar</button>
-                    <a type="button" href="{{url('/evaluaciones-de-desempeno/1')}}" class="rounded-full btn btn-outline-vanguard">Volver</a>
+                    <a type="button" href="{{url('/inicio/pendientes')}}" class="rounded-full btn btn-outline-vanguard">Volver</a>
                 </div>
             </div>
         </div>    

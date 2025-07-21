@@ -161,6 +161,10 @@
             // Tabla de previsualización para importación
             var previewTable = new Tabulator("#preview-table", {
                 layout: "fitColumns",
+                //paginacion
+                // tamaño de registro spor pagina
+                // pagination: "local",
+                // paginationSize: 10,
                 columns: [{
                         title: "Pregunta",
                         field: "pregunta"
@@ -194,7 +198,43 @@
                                 '<i class="fas fa-times text-danger"></i>';
                         }
                     }
-                ]
+                ],
+                
+                locale: true,
+                langs: {
+                    "es-419": {
+                        "data": {
+                            "loading": "Cargando",
+                            "error": "Error",
+                        },
+                        "columns": {},
+                        "ajax": {
+                            "loading": "Cargando",
+                            "error": "Error"
+                        },
+                        "groups": {
+                            "item": "item",
+                            "items": "items"
+                        },
+                        "pagination": {
+                            "page_size": "Tamaño de página",
+                            "page_title": "Mostrar página",
+                            "first": "Primera",
+                            "first_title": "Primera página",
+                            "last": "Última",
+                            "last_title": "Última página",
+                            "prev": "Anterior",
+                            "prev_title": "Página anterior",
+                            "next": "Siguiente",
+                            "next_title": "Página siguiente",
+                            "all": "Todo"
+                        },
+                        "headerFilters": {
+                            "default": "Filtrar columna...",
+                            "columns": {}
+                        }
+                    }
+                }
             });
 
             // Evento para importar archivo

@@ -333,6 +333,12 @@
                             <small class="form-text text-muted">El archivo debe contener las columnas: pregunta,
                                 competencia, dominio, campaña, numero_orden, quitar</small>
                         </div>
+                        <div>
+                            {{-- <button type="button" class="btn-sm" data-dismiss="modal">Cerrar</button> --}}
+                            <button type="button" class="btn btn-primary" id="validateButton">Validar</button>
+                            <button type="button" class="btn btn-success" id="importButton"
+                                style="display: none;">Importar</button>
+                        </div>
 
                         <!-- Panel de Validación -->
                         <div id="validationSummary" class="mt-3" style="display: none;">
@@ -370,12 +376,12 @@
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
+                {{-- <div class="modal-footer">
                     <button type="button" class="btn-sm" data-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" id="validateButton">Validar</button>
                     <button type="button" class="btn btn-success" id="importButton"
                         style="display: none;">Importar</button>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
