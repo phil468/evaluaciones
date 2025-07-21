@@ -15,7 +15,7 @@
      {{-- Simulación de evaluación pendiente --}}
     <div class="row">
         <div class="col-12">
-            <div class="card rounded-xl shadow">
+            <div class="shadow card rounded-xl">
                 <div class="card-body justify-content-between align-items-center">
                     <div class=" d-flex">
                         <h5 class="m-0 h5">¡Tienes evaluaciones pendientes por realizar!</h5>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                         <a href="{{ route('pendientes') }}"
-                        class="mt-4 rounded-xl btn btn-vanguard shadow">
+                        class="mt-4 shadow rounded-xl btn btn-vanguard">
                             Ingresar a Pendientes
                         </a>
                 </div>
@@ -38,24 +38,24 @@
     </div>
     @endif
 
-    <div class="h4 font-style-poppins font-weight-bold mb-0 mt-2">Resultados de Evaluaciones</div>
+    <div class="mt-2 mb-0 h4 font-style-poppins font-weight-bold">Resultados de Evaluaciones</div>
     <!-- Secciones principales en tarjetas -->
     <div class="row">
         <!-- Evaluación por Competencias -->
         <div class="mt-3 col-md-4">
-            <div class="card h-100 shadow">
+            <div class="shadow card h-100">
                 <div class="card-header">
-                    <div class="h5 mb-0">Evaluación por Competencias</div>
+                    <div class="mb-0 h5">Evaluación por Competencias</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 mb-4">
+                        <div class="mb-4 col-12">
                             <p>Evalúa el desarrollo de habilidades blandas, alineadas a nuestros valores y cultura.</p>
                         </div>
-                        <div class="text-center col-12 mt-8 mb-10">
-                            <div class="puntaje-medio mb-3">
-                                <h2 class="font-weight-bold">X.XX</h2>
-                                <span class="text-warning">Puntaje esperado: XX.XX</span>
+                        <div class="mt-8 mb-10 text-center col-12">
+                            <div class="mb-3 puntaje-medio">
+                                <h2 class="font-weight-bold">7.34</h2>
+                                <span class="text-warning">Puntaje esperado: 6.50</span>
                             </div>
                             <p class="text-sm">Resultados de última evaluación</p>
                         </div>
@@ -64,7 +64,7 @@
                 <div class="card-footer rounded-b-xl">
                     <a href=
                     "{{ route('evaluacion_de_competencias') }}" 
-                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                    class="shadow rounded-xl btn btn-vanguard btn-block">
                         Ver Resultados
                     </a>
                 </div>
@@ -73,17 +73,17 @@
 
         <!-- Evaluación por Objetivos -->
         <div class="mt-3 col-md-4">
-            <div class="card h-100 shadow">
+            <div class="shadow card h-100">
                 <div class="card-header">
-                    <div class="h5 mb-0">Evaluación por Objetivos</div>
+                    <div class="mb-0 h5">Evaluación por Objetivos</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 mb-4">
+                        <div class="mb-4 col-12">
                             <p>Evalúa el cumplimiento de metas claras y medibles, establecidas previamente.</p>
                         </div>
-                        <div class="text-center col-12 mb-4">
-                            <div class="progress-chart mb-4">
+                        <div class="mb-4 text-center col-12">
+                            <div class="mb-4 progress-chart">
                                 <canvas id="chartObjetivos"></canvas>
                                 <div class="progress-percent">
                                     <span>80%</span>
@@ -96,7 +96,7 @@
                 <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.objetivos') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                    class="shadow rounded-xl btn btn-vanguard btn-block">
                         Ver Resultados
                     </a>
                 </div>
@@ -107,9 +107,9 @@
     <div class="row"> --}}
         <!-- Feedback y Retroalimentación  - ocultar -->
         <div class="mt-3 col-md-4" style="display: none;">
-            <div class="card h-100 shadow">
+            <div class="shadow card h-100">
                 <div class="card-header">
-                    <h5 class="h5 mb-0">Feedback y Retroalimentación</h5>
+                    <h5 class="mb-0 h5">Feedback y Retroalimentación</h5>
                 </div>
                 <div class="card-body">
                     <p>Consulta y gestiona tus evaluaciones recibidas</p>
@@ -117,7 +117,7 @@
                 <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.feedback') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                    class="shadow rounded-xl btn btn-vanguard btn-block">
                         Ingresar a Feedback
                     </a>
                 </div>
@@ -126,17 +126,17 @@
 
         <!-- Plan de Desarrollo Individual -->
         <div class="mt-3 col-md-4">
-            <div class="card h-100 shadow">
+            <div class="shadow card h-100">
                 <div class="card-header">
-                    <div class="h5 mb-0">Plan de Desarrollo Individual</div>
+                    <div class="mb-0 h5">Plan de Desarrollo Individual</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 mb-4">
+                        <div class="mb-4 col-12">
                             <p>Crea y sigue metas para tu crecimiento profesional</p>
                         </div>
-                        <div class="text-center col-12 mb-4">
-                            <div class="progress-chart mb-4">
+                        <div class="mb-4 text-center col-12">
+                            <div class="mb-4 progress-chart">
                                 <canvas id="chartDesarrollo"></canvas>
                                 <div class="progress-percent">
                                     <span>80%</span>
@@ -151,7 +151,7 @@
                     {{ route('plan.mejora') }}
                     {{-- "#" --}}
                     {{-- "{{ route('evaluaciones.desarrollo') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                    class="shadow rounded-xl btn btn-vanguard btn-block">
                         Ver Resultados
                     </a>
                 </div>
@@ -165,7 +165,7 @@
             <a href=
             "#"
             {{-- "{{ route('evaluaciones.descargar-informe') }}"  --}}
-            class="rounded-xl btn btn-vanguard btn-block disabled shadow">
+            class="shadow rounded-xl btn btn-vanguard btn-block disabled">
                 <i class="mr-2 fas fa-download"></i> Descargar informe
             </a>
         </div>

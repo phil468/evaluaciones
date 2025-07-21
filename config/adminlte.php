@@ -315,13 +315,14 @@ return [
             'active' => ['evaluacion_de_competencias', 'evaluacion_de_competencias/*'],
         ],
 
-        [
-            'text' => 'Evaluación por Competencias (ant.)',
-            'url'  => 'evaluaciones-de-desempeno/1',
-            'icon' => 'fas fa-pencil-alt',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl',
-        ],
+        // quitado de producción
+        // [
+        //     'text' => 'Evaluación por Competencias (ant.)',
+        //     'url'  => 'evaluaciones-de-desempeno/1',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        // ],
 
         [
             'text' => 'Evaluación por Objetivos',
@@ -331,21 +332,23 @@ return [
             'classes' => 'rounded-xl',
         ],
 
-        [
-            'text' => 'Feedback y Retroalimentación',
-            'url'  => 'feedback',
-            'icon' => 'fas fa-comments',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl',
-        ],
+        // quitado de producción
+        // [
+        //     'text' => 'Feedback y Retroalimentación',
+        //     'url'  => 'feedback',
+        //     'icon' => 'fas fa-comments',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        // ],
 
-        [
-            'text' => 'Planes de Acción/ Desarrollo',
-            'url'  => 'planes-de-mejora/ingreso',
-            'icon' => 'fas fa-pencil-alt',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl',
-        ],
+        // quitado de producción
+        // [
+        //     'text' => 'Planes de Acción/ Desarrollo',
+        //     'url'  => 'planes-de-mejora/ingreso',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        // ],
 
         [
             'text' => 'Plan De Mejora',

@@ -28,8 +28,8 @@
                 <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Competencias</h1>
                 
                 <!-- Barra de progreso que se actualizará dinámicamente -->
-                <div class="mb-4 progress rounded-2xl" style="height: 25px; background-color: #6ECBC9">
-                    <div id="progress-bar" class="progress-bar bg-vanguard" role="progressbar" style="width: 0%;" 
+                <div class="mb-4 progress rounded-2xl bg-primary" style="height: 25px;">
+                    <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" 
                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                         0% completado
                     </div>
@@ -298,9 +298,9 @@
                     if (stats.realizados === 0) {
                         $("#progress-bar").removeClass("bg-secondary").addClass("bg-primary").addClass("w-100");
                     } else if (stats.total === stats.realizados) {
-                        $("#progress-bar").removeClass("bg-primary").addClass("bg-secondary");
+                        $("#progress-bar").removeClass("bg-primary").addClass("bg-vanguard");
                     } else {
-                        $("#progress-bar").removeClass("bg-secondary").addClass("bg-primary");
+                        $("#progress-bar").removeClass("bg-vanguard").addClass("bg-secondary");
                     }
                     
                     // Generar contenido de tarjetas
@@ -352,9 +352,16 @@
         // Función para generar el HTML de cada tarjeta
         function generarTarjetaEvaluado(row) {
             console.log(row);
+            // sino tiene nombre o ap pat o ap part, no colocar cada uno de ellos
+            if (!row.evaluado.nombres) row.evaluado.nombres = '';
+            if (!row.evaluado.apellido_paterno) row.evaluado.apellido_paterno = '';
+            if (!row.evaluado.apellido_materno) row.evaluado.apellido_materno = '';
+            // Concatenar nombres y apellidos
             const nombreCompleto = `${row.evaluado.nombres} ${row.evaluado.apellido_paterno} ${row.evaluado.apellido_materno}`;
+            // const nombreCompleto = `${row.evaluado.nombres} ${row.evaluado.apellido_paterno} ${row.evaluado.apellido_materno}`;
             const cargoNombre = row.cargo_nombre;
-            const gradoNombre = row.grado ? row.grado.name : '';
+            // const gradoNombre = row.grado ? row.grado.name : '';
+            const dominioNombre = row.dominio_nombre || 'Sin dominio asignado';
 
             nueva_ruta=RUTA_EVALUACION.replace(':id', row.id);
             
@@ -367,7 +374,7 @@
                             </div>
                             <h5 class="employee-name mb-0">${nombreCompleto}</h5>
                             <p class="text-muted small mb-1">${cargoNombre}</p>
-                            <div class="badge badge-light mb-2">Evaluación ${gradoNombre}</div>
+                            <div class="badge badge-light mb-2">Dominio ${dominioNombre}</div>
 
                             <a href='${nueva_ruta}'
                                class="btn btn-info btn-block btn-sm rounded-xl ${row.realizado ? 'disabled' : ''}"

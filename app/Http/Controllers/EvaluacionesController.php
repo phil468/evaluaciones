@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CampaniaHasEvaluado;
+use App\Models\Dominio;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\TipoDeEvaluacione;
@@ -187,10 +188,16 @@ class EvaluacionesController extends Controller
                 ->where('personal_id', $item->evaluado_id)
                 ->with('puesto')
                 ->first();
+
+            $dominio = Dominio::where('grado_id', $item->grado_id)
+                ->where('campania_id', $item->campania_id)
+                ->first();
             
             $item->cargo_nombre = $campaniaHasEvaluado && $campaniaHasEvaluado->puesto 
                 ? $campaniaHasEvaluado->puesto->name 
                 : 'Sin cargo asignado';
+
+            $item->dominio_nombre = $dominio ? $dominio->name : '';
         });
         
         // Calcular estadísticas

@@ -13,7 +13,7 @@
 
                 <p class="text-center" style="font-size:1.5rem;">¡Gracias por contribuir con el desarrollo de nuestro equipo!</p>
                 <div class="text-center align-center">
-                    <a type="button"  href="{{url('/evaluaciones-de-desempeno/1')}}" class="rounded-full btn btn-vanguard" 
+                    <a type="button"  href="{{url('/inicio/pendientes')}}" class="rounded-full btn btn-vanguard" 
                     {{-- style="
                     border-radius: 25px;
                 " --}}

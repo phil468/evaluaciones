@@ -23,7 +23,7 @@
 
                         <div class="col-md-5">
                             <h5 class='h5'>Cargo:</h5>
-                            <p>{{ $evaluadorHasEvaluado->campaniaHasEvaluado->puesto->name ?? 'No identificado' }}</p>
+                            <p>{{ $evaluadorHasEvaluado->cargo_nombre_evaluado ?? 'No identificado' }}</p>
                         </div>
                         
                         <div class="col-md-2">

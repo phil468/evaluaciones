@@ -433,7 +433,7 @@ class CampaniaController extends Controller
                 'preguntas.*.dominio' => 'required|string',
                 'preguntas.*.campaña' => 'required|string',
                 'preguntas.*.numero_orden' => 'required|integer',
-                'preguntas.*.quitar' => 'nullable|string'
+                // 'preguntas.*.quitar' => 'nullable|string'
             ]);
 
             DB::beginTransaction();

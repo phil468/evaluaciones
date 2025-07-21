@@ -12,12 +12,14 @@ class EvaluacionController extends Controller
         $evaluadorHasEvaluado = EvaluadorHasEvaluado::where('evaluador_has_evaluados.id', $evaluacion_id)
             ->where('evaluador_id', auth()->user()->personal_id)
             ->when($tipo_de_evaluacion_id == 1, function ($query) {
-                return $query->where('evaluador_has_evaluados.realizado', null);
+                return $query->where('evaluador_has_evaluados.realizado', null)
+                    
+                ;
             })
             ->leftJoin('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
             ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
-            ->first();
-
+            ->first();        
+        
         if ($evaluadorHasEvaluado) {
             if ($tipo_de_evaluacion_id == 1) {
                 return view('livewire.evaluacion.index', ['evaluacion_id' => $evaluacion_id]);

@@ -14,9 +14,9 @@
                 <p class="text-center" style="font-size:1.5rem;">¡Gracias por contribuir con el desarrollo de nuestro equipo!</p>
                 <div class="text-center align-center">
                     @if ($evaluacion_por_objetivos)
-                        <a type="button"  href="{{url('/evaluaciones-de-desempeno/2')}}" class="rounded-full btn btn-vanguard" >Aceptar</a>                 
+                        <a type="button"  href="{{url('/inicio/pendientes')}}" class="rounded-full btn btn-vanguard" >Aceptar</a>                 
                     @else
-                        <a type="button"  href="{{url('/evaluaciones-de-desempeno/1')}}" class="rounded-full btn btn-vanguard" >Aceptar</a>                 
+                        <a type="button"  href="{{url('/inicio/pendientes')}}" class="rounded-full btn btn-vanguard" >Aceptar</a>                 
                     @endif
                 </div>
             </div>

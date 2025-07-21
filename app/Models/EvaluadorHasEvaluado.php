@@ -41,7 +41,9 @@ class EvaluadorHasEvaluado extends Model
         'peso_prorrateado',
     ];
 
-    protected $appends = ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente'];
+    protected $appends = ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente', 
+    // 'cantidad_de_objetivos_completados', 'cantidad_de_objetivos_no_completados', 'estado_no_realizado', 'total_realizados', 
+    'dominio_nombre', 'cargo_nombre_evaluado', 'cargo_nombre_evaluador'];
 	
     public function evaluador()
     {
@@ -309,5 +311,39 @@ class EvaluadorHasEvaluado extends Model
         ->whereIn('estado_id',[null,1])
         ->count();
     }
-    
+
+    // campo calculado dominio_nombre
+    public function getDominioNombreAttribute()
+    {
+        $dominio = Dominio::where('grado_id', $this->grado_id)
+
+            ->where('campania_id', $this->campania_id)
+            ->first();
+        return $dominio ? $dominio->name : '';
+
+    }
+
+    //campo calculado cargo_nombre
+    public function getCargoNombreEvaluadoAttribute()
+    {
+        $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
+            ->where('personal_id', $this->evaluado_id)
+            ->with('puesto')
+            ->first();
+
+        return $campaniaHasEvaluado ? $campaniaHasEvaluado->puesto->name : '';
+
+    }
+
+    //campo calculado cargo_nombre
+    public function getCargoNombreEvaluadorAttribute()
+    {
+        $campaniaHasEvaluador = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
+            ->where('personal_id', $this->evaluador_id)
+            ->with('puesto')
+            ->first();
+
+        return $campaniaHasEvaluador ? $campaniaHasEvaluador->puesto->name : '';
+
+    }
 }
