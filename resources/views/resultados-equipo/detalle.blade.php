@@ -17,10 +17,10 @@
                     <p class="mb-0 text-muted">{{ $miembro['cargo'] ?? 'Asistente de Producción' }}</p>
                 </div>
                 <div class="col-md-6 text-md-right">
-                    <a href="{{ route('feedback.crear', ['empleado_id' => $miembro['id'] ?? 1]) }}" class="mr-2 btn rounded-xl btn-vanguard">
+                    <a href="{{ route('feedback.crear', ['empleado_id' => $miembro['id'] ?? 1]) }}" class="mr-2 btn rounded-xl btn-vanguard disabled">
                         Dar Feedback
                     </a>
-                    <a href="{{ route('informe.descargar', ['empleado_id' => $miembro['id'] ?? 1]) }}" class="btn rounded-xl btn-secondary">
+                    <a href="{{ route('informe.descargar', ['empleado_id' => $miembro['id'] ?? 1]) }}" class="btn rounded-xl btn-secondary disabled">
                         Descargar informe
                     </a>
                 </div>

@@ -351,7 +351,7 @@ return [
         // ],
 
         [
-            'text' => 'Plan De Mejora',
+            'text' => 'Plan De Mejora Individual',
             'url'  => 'plan-de-mejora',
             'icon' => 'fas fa-pencil-alt',
             'can'  => 'ver-evaluaciones-de-desempeno',

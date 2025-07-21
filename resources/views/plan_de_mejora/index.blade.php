@@ -4,7 +4,7 @@
 
 @section('content_header')
     <h1 class="text-center font-weight-bold">
-        Plan de Mejora
+        Plan de Mejora Individual
     </h1>
 @stop
 
@@ -12,14 +12,14 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-body">
-            <h5 class="mb-4 font-weight-bold">Mi Plan de Mejora</h5>
+            <h5 class="mb-4 font-weight-bold">Mi Plan de Mejora Individual</h5>
 
             <div class="table-responsive">
                 <table class="table table-borderless">
                     <tbody>
                         {{-- Fila para Plan de Mejora 2025 --}}
                         <tr>
-                            <td>Plan de Mejora 2025</td>
+                            <td>Plan de Mejora Individual 2025</td>
                             <td style="width: 50%">
                                 {{-- Barra de progreso - Datos dinámicos --}}
                                 <div class="progress" style="height: 25px;">
@@ -46,7 +46,7 @@
                         
                         {{-- Fila para Plan de Mejora 2024 --}}
                         <tr>
-                            <td>Plan de Mejora 2024</td>
+                            <td>Plan de Mejora Individual 2024</td>
                             <td>
                                 {{-- Barra de progreso con color personalizado - Datos dinámicos --}}
                                 <div class="progress" style="height: 25px;">

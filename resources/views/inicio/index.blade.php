@@ -94,8 +94,7 @@
                     </div>
                 </div>
                 <div class="card-footer rounded-b-xl">
-                    <a href="#"
-                    {{-- "{{ route('evaluaciones.objetivos') }}"  --}}
+                    <a href="{{ url('evaluaciones-de-desempeno/2') }}"
                     class="shadow rounded-xl btn btn-vanguard btn-block">
                         Ver Resultados
                     </a>

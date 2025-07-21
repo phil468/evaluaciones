@@ -187,7 +187,7 @@ class Evaluacion extends Component
                 $porcentaje = 100;
                 $label = '0%';
             } else if ($totalPreguntas == $totalPreguntasNoNulas) {
-                $class = 'bg-vanguad';
+                $class = 'bg-vanguard';
                 $label = $porcentaje.'%';
             } else {
                 $class = 'bg-vanguard';
