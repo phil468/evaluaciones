@@ -79,6 +79,7 @@
 
                                 <tbody>
                                     @foreach ($preguntas as $index => $item)
+                                    {{-- {{ dd($preguntas) }}
                                         @if ($item['seccion_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
                                                 <td class="row">
@@ -102,7 +103,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @endif
+                                        @endif --}}
 
                                         @if ($item['campania_has_competencia_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
