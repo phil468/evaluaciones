@@ -56,7 +56,7 @@
 
                         </div>
                     @else
-                        <div class="progress" style="height: 35px; border-radius: 20px; background-color: #6ECBC9">
+                        <div class="progress bg-primary" style="height: 35px; border-radius: 20px;">
                             <div class="progress-bar {{ $class }}" role="progressbar"
                                 style="width: {{ $porcentaje }}%; font-size: 18px; font-weight: bold; border-radius: 20px;"
                                 aria-valuenow="{{ $porcentaje }}" aria-valuemin="0" aria-valuemax="100">

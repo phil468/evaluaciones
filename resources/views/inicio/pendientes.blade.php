@@ -38,7 +38,7 @@
                 <!-- Contenedor donde se cargarán dinámicamente las tarjetas de evaluados -->
                 <div id="evaluados-container" class="row">
                     <!-- Las tarjetas de evaluados se cargarán aquí mediante JavaScript -->
-                    <div class="text-center w-100 py-4">
+                    <div class="py-4 text-center w-100">
                         <i class="fas fa-spinner fa-spin fa-2x"></i>
                         <p class="mt-2">Cargando evaluaciones pendientes...</p>
                     </div>
@@ -281,7 +281,7 @@
                 beforeSend: function() {
                     // Mostrar indicador de carga
                     $("#evaluados-container").html(`
-                        <div class="text-center w-100 py-4">
+                        <div class="py-4 text-center w-100">
                             <i class="fas fa-spinner fa-spin fa-2x"></i>
                             <p class="mt-2">Cargando evaluaciones pendientes...</p>
                         </div>
@@ -296,11 +296,11 @@
                     
                     // Si hay clases específicas para el color
                     if (stats.realizados === 0) {
-                        $("#progress-bar").removeClass("bg-secondary").addClass("bg-primary").addClass("w-100");
+                        $("#progress-bar").removeClass("bg-primary").addClass("bg-primary").addClass("w-100");
                     } else if (stats.total === stats.realizados) {
                         $("#progress-bar").removeClass("bg-primary").addClass("bg-vanguard");
                     } else {
-                        $("#progress-bar").removeClass("bg-vanguard").addClass("bg-secondary");
+                        $("#progress-bar").removeClass("bg-vanguard").addClass("bg-vanguard");
                     }
                     
                     // Generar contenido de tarjetas
@@ -351,7 +351,7 @@
         
         // Función para generar el HTML de cada tarjeta
         function generarTarjetaEvaluado(row) {
-            console.log(row);
+            // console.log(row);
             // sino tiene nombre o ap pat o ap part, no colocar cada uno de ellos
             if (!row.evaluado.nombres) row.evaluado.nombres = '';
             if (!row.evaluado.apellido_paterno) row.evaluado.apellido_paterno = '';
@@ -366,18 +366,18 @@
             nueva_ruta=RUTA_EVALUACION.replace(':id', row.id);
             
             return `
-                <div class="col-md-3 mb-4">
+                <div class="mb-4 col-md-3">
                     <div class="card employee-card h-100">
-                        <div class="card-body pt-3 text-center">
-                            <div class="employee-avatar mb-2">
+                        <div class="pt-3 text-center card-body">
+                            <div class="mb-2 employee-avatar">
                                 <i class="fas fa-user-circle fa-4x text-secondary"></i>
                             </div>
-                            <h5 class="employee-name mb-0">${nombreCompleto}</h5>
-                            <p class="text-muted small mb-1">${cargoNombre}</p>
-                            <div class="badge badge-light mb-2">Dominio ${dominioNombre}</div>
+                            <h5 class="mb-0 employee-name">${nombreCompleto}</h5>
+                            <p class="mb-1 text-muted small">${cargoNombre}</p>
+                            <div class="mb-2 badge badge-light">Dominio ${dominioNombre}</div>
 
                             <a href='${nueva_ruta}'
-                               class="btn btn-info btn-block btn-sm rounded-xl ${row.realizado ? 'disabled' : ''}"
+                               class="btn btn-vanguard btn-block btn-sm rounded-xl ${row.realizado ? 'disabled' : ''}"
                                
                                data-toggle="tooltip" 
                                data-placement="top" 

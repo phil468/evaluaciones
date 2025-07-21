@@ -183,14 +183,14 @@ class Evaluacion extends Component
             $porcentaje = round($porcentaje,2);
             
             if ($totalPreguntasNoNulas == 0) {
-                $class = 'bg-secondary';
+                $class = 'bg-primary';
                 $porcentaje = 100;
                 $label = '0%';
             } else if ($totalPreguntas == $totalPreguntasNoNulas) {
-                $class = 'bg-primary';
+                $class = 'bg-vanguad';
                 $label = $porcentaje.'%';
             } else {
-                $class = 'bg-primary';
+                $class = 'bg-vanguard';
                 $label = $porcentaje.'%';
             }
 
