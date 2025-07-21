@@ -263,6 +263,11 @@
         // Por ejemplo, tooltips o popups
         $('[data-toggle="tooltip"]').tooltip();
 
+        //colocar una constante de la url para ser reemplazado más abajo
+       //  la ruta copnfigurada en web.ph es : wire:    Route::get('/evaluacion/{tipo_de_evaluacion_id}/{id}', [EvaluacionController::class, 'show'])->name('evaluacion.show')->middleware(['can:ver-evaluaciones-de-desempeno']);
+        const RUTA_EVALUACION = "{{ route('evaluacion.show', ['tipo_de_evaluacion_id' => 1, 'id' => ':id']) }}";
+        //const EVALUACIONES_BY_CAMPANIA_URL = "{{ route('campanias.evaluaciones', ':id') }}";
+
         // Cargar datos de evaluaciones pendientes
         function cargarEvaluacionesPendientes() {
             $.ajax({
@@ -350,6 +355,8 @@
             const nombreCompleto = `${row.evaluado.nombres} ${row.evaluado.apellido_paterno} ${row.evaluado.apellido_materno}`;
             const cargoNombre = row.cargo_nombre;
             const gradoNombre = row.grado ? row.grado.name : '';
+
+            nueva_ruta=RUTA_EVALUACION.replace(':id', row.id);
             
             return `
                 <div class="col-md-3 mb-4">
@@ -361,16 +368,24 @@
                             <h5 class="employee-name mb-0">${nombreCompleto}</h5>
                             <p class="text-muted small mb-1">${cargoNombre}</p>
                             <div class="badge badge-light mb-2">Evaluación ${gradoNombre}</div>
-                            
-                            <a href="/evaluacion/${row.evaluacion.tipo_de_evaluacion_id}/${row.id}" 
-                            class="btn btn-info btn-block btn-sm rounded-xl">
-                                Pendiente de evaluar
+
+                            <a href='${nueva_ruta}'
+                               class="btn btn-info btn-block btn-sm rounded-xl ${row.realizado ? 'disabled' : ''}"
+                               
+                               data-toggle="tooltip" 
+                               data-placement="top" 
+                               title="${row.realizado ? 'Evaluación completada' : 'Pendiente de evaluar'}">
+                                ${row.realizado ? 'Completado' : 'Pendiente de evaluar'}
                             </a>
                         </div>
                     </div>
                 </div>
             `;
         }
+
+        // Cargar datos al iniciar la página
+        cargarEvaluacionesPendientes();
+
         
         // Cargar datos al iniciar la página
         cargarEvaluacionesPendientes();
