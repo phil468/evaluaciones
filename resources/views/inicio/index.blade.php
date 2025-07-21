@@ -15,7 +15,7 @@
      {{-- Simulación de evaluación pendiente --}}
     <div class="row">
         <div class="col-12">
-            <div class="card rounded-xl">
+            <div class="card rounded-xl shadow">
                 <div class="card-body justify-content-between align-items-center">
                     <div class=" d-flex">
                         <h5 class="m-0 h5">¡Tienes evaluaciones pendientes por realizar!</h5>
@@ -26,64 +26,64 @@
                         </div>
                     </div>
                         <a href="{{ route('pendientes') }}"
-                        {{-- "#" --}}                         
-                        class="mt-4 rounded-xl btn btn-vanguard">
+                        class="mt-4 rounded-xl btn btn-vanguard shadow">
                             Ingresar a Pendientes
                         </a>
                 </div>
-                <div class="bg-white card-footer text-muted rounded-b-xl">
+                {{-- <div class="bg-white card-footer text-muted rounded-b-xl">
                     <small>*Sección solo aparece cuando se tengan pendientes</small>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
     @endif
 
+    <div class="h4 font-style-poppins font-weight-bold mb-0 mt-2">Resultados de Evaluaciones</div>
     <!-- Secciones principales en tarjetas -->
     <div class="row">
         <!-- Evaluación por Competencias -->
-        <div class="mt-3 col-md-6">
-            <div class="card h-100">
+        <div class="mt-3 col-md-4">
+            <div class="card h-100 shadow">
                 <div class="card-header">
-                    <h5 class="h5">Evaluación por Competencias</h5>
+                    <div class="h5 mb-0">Evaluación por Competencias</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-8">
+                        <div class="col-12 mb-4">
                             <p>Evalúa el desarrollo de habilidades blandas, alineadas a nuestros valores y cultura.</p>
                         </div>
-                        <div class="text-center col-4">
-                            <div class="puntaje-medio">
-                                <h2 class="font-weight-bold">7.34</h2>
-                                <span class="text-warning">Puntaje medio</span>
-                                <p class="text-sm">Resultados de última evaluación</p>
+                        <div class="text-center col-12 mt-8 mb-10">
+                            <div class="puntaje-medio mb-3">
+                                <h2 class="font-weight-bold">X.XX</h2>
+                                <span class="text-warning">Puntaje esperado: XX.XX</span>
                             </div>
+                            <p class="text-sm">Resultados de última evaluación</p>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer rounded-b-xl">
-                    <a href="#"
-                    {{-- "{{ route('evaluaciones.competencias') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block">
-                        Ingresar a Competencias
+                    <a href=
+                    "{{ route('evaluacion_de_competencias') }}" 
+                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                        Ver Resultados
                     </a>
                 </div>
             </div>
         </div>
 
         <!-- Evaluación por Objetivos -->
-        <div class="mt-3 col-md-6">
-            <div class="card h-100">
+        <div class="mt-3 col-md-4">
+            <div class="card h-100 shadow">
                 <div class="card-header">
-                    <h5 class="h5">Evaluación por Objetivos</h5>
+                    <div class="h5 mb-0">Evaluación por Objetivos</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-8">
+                        <div class="col-12 mb-4">
                             <p>Evalúa el cumplimiento de metas claras y medibles, establecidas previamente.</p>
                         </div>
-                        <div class="text-center col-4">
-                            <div class="progress-chart">
+                        <div class="text-center col-12 mb-4">
+                            <div class="progress-chart mb-4">
                                 <canvas id="chartObjetivos"></canvas>
                                 <div class="progress-percent">
                                     <span>80%</span>
@@ -96,20 +96,20 @@
                 <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.objetivos') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block">
-                        Ingresar a Objetivos
+                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                        Ver Resultados
                     </a>
                 </div>
             </div>
         </div>
-    </div>
+    {{-- </div>
 
-    <div class="row">
-        <!-- Feedback y Retroalimentación -->
-        <div class="mt-3 col-md-6">
-            <div class="card h-100">
+    <div class="row"> --}}
+        <!-- Feedback y Retroalimentación  - ocultar -->
+        <div class="mt-3 col-md-4" style="display: none;">
+            <div class="card h-100 shadow">
                 <div class="card-header">
-                    <h5 class="h5">Feedback y Retroalimentación</h5>
+                    <h5 class="h5 mb-0">Feedback y Retroalimentación</h5>
                 </div>
                 <div class="card-body">
                     <p>Consulta y gestiona tus evaluaciones recibidas</p>
@@ -117,7 +117,7 @@
                 <div class="card-footer rounded-b-xl">
                     <a href="#"
                     {{-- "{{ route('evaluaciones.feedback') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block">
+                    class="rounded-xl btn btn-vanguard btn-block shadow">
                         Ingresar a Feedback
                     </a>
                 </div>
@@ -125,18 +125,18 @@
         </div>
 
         <!-- Plan de Desarrollo Individual -->
-        <div class="mt-3 col-md-6">
-            <div class="card h-100">
+        <div class="mt-3 col-md-4">
+            <div class="card h-100 shadow">
                 <div class="card-header">
-                    <h5 class="h5">Plan de Desarrollo Individual</h5>
+                    <div class="h5 mb-0">Plan de Desarrollo Individual</div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-8">
+                        <div class="col-12 mb-4">
                             <p>Crea y sigue metas para tu crecimiento profesional</p>
                         </div>
-                        <div class="text-center col-4">
-                            <div class="progress-chart">
+                        <div class="text-center col-12 mb-4">
+                            <div class="progress-chart mb-4">
                                 <canvas id="chartDesarrollo"></canvas>
                                 <div class="progress-percent">
                                     <span>80%</span>
@@ -146,12 +146,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer rounded-b-xl">
                     <a href=
-                    "#"
+                    {{ route('plan.mejora') }}
+                    {{-- "#" --}}
                     {{-- "{{ route('evaluaciones.desarrollo') }}"  --}}
-                    class="rounded-xl btn btn-vanguard btn-block">
-                        Ingresar a Plan de Desarrollo
+                    class="rounded-xl btn btn-vanguard btn-block shadow">
+                        Ver Resultados
                     </a>
                 </div>
             </div>
@@ -164,7 +165,7 @@
             <a href=
             "#"
             {{-- "{{ route('evaluaciones.descargar-informe') }}"  --}}
-            class="rounded-xl btn btn-vanguard btn-block">
+            class="rounded-xl btn btn-vanguard btn-block disabled shadow">
                 <i class="mr-2 fas fa-download"></i> Descargar informe
             </a>
         </div>

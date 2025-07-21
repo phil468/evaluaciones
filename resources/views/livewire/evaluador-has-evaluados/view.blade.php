@@ -53,44 +53,34 @@
                                 <div class="progress-bar {{ $class }}" role="progressbar"
                                     style="width: {{ $porcentaje }}%; font-size: 18px; font-weight: bold; border-radius: 20px;"
                                     aria-valuenow="{{ $porcentaje }}" aria-valuemin="0" aria-valuemax="100">
-                                    {{ $label }}
+                                    {{ $label }} completado
                                 </div>
                             </div>
                             <br>
 
                             @if ($view_alternative == false)
-                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
+                                <div class="row row-cols-1 row-cols-xs-3 row-cols-sm-2 row-cols-md-4 row-cols-xl-4">
                                     @foreach ($evaluadorHasEvaluados as $row)
                                         <div class="mb-4 col">
                                             <div class="h-full bg-gray-100 card rounded-2xl">
                                                 <div class="text-center align-content-top card-body bg-default">
-                                                    <div class="mb-2 h-3/4 align-content-end">
-                                                        <p class="align-content-end">
-                                                            <i class="fas fa-user bg-primary rounded-circle"
-                                                                style=
-                                                                "width: 40px;
-                                                                height: 40px;
-                                                                font-size: x-large;
-                                                                align-content: center;">
-                                                            </i>
-                                                        <h5 class="mb-2 text-center"
-                                                            style=
-                                                                "font-size: 1.40rem;
-                                                                font-weight: 700;
-                                                                margin: 0;">
-                                                            {{ $row->evaluado->name }}
-                                                            <hr class=""
-                                                                style="
-                                                                    border-top-width: 3px;
-                                                                    border-color: #3c4651;">
-                                                        </h5>
-                                                        </p>
-
-                                                        <div class="mb-2 card-subtitle text-muted">
-                                                            {{ $row->cargo_de_evaluado }}
+                                                    <div class="mb-2 h-3/4 align-content-end">                                                        
+                                                        <div class="mb-2 employee-avatar">
+                                                            <i class="fas fa-user-circle fa-4x text-secondary"></i>
                                                         </div>
-                                                        <p class="mb-1 card-text">
-                                                            {{ ucfirst(strtolower($row->evaluacion->nombre_para_mostrar)) }}
+                                                        <p class="align-content-end">
+                                                        <h5 class="mb-0 h6 employee-name">
+                                                            {{-- {{ $row->evaluado->name }} --}}
+                                                            {{ $row->evaluado->nombres . ' ' . $row->evaluado->apellido_paterno . ' ' . $row->evaluado->apellido_materno }}
+                                                        </h5>
+                                                        <p class="mb-1 text-muted small">
+                                                            {{-- ASISTENTE DE PRODUCCIÓN --}}
+                                                            @if($row->campaniaHasEvaluado && $row->campaniaHasEvaluado->puesto)
+                                                                {{ $row->campaniaHasEvaluado->puesto->name }}
+                                                            @else
+                                                                Sin cargo asignado
+                                                            @endif
+                                                            <div class="mb-2 badge badge-light">Evaluación {{ $row->grado->name }}</div>
                                                         </p>
                                                     </div>
 
@@ -103,12 +93,9 @@
                                                                     style="width: 9rem; height: 2rem; font-size: 90%; line-height: inherit;">REALIZADO</span>
                                                             @else
                                                                 <a
-                                                                    href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}"><span
-                                                                        class="badge badge-primary badge-pill"
-                                                                        style="width: 11rem; height: 2rem; font-size: 90%; line-height: inherit;">
-                                                                        PENDIENTE
-                                                                        <i class="far fa-hand-point-up"></i>
-                                                                    </span>
+                                                                    href="{{ route('evaluacion.show', [$tipo_de_evaluacion_id, $row->id]) }}" 
+                                                                    class="btn btn-vanguard btn-block btn-sm rounded-xl">
+                                                                    Pendiente de evaluar
                                                                 </a>
                                                             @endif
                                                         @else

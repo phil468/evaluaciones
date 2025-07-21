@@ -102,6 +102,18 @@ class EvaluadorHasEvaluado extends Model
             ->where('personal_id', $this->evaluador_id);
     }
 
+    public function campaniaHasEvaluado_evaluado()
+    {
+        return $this->belongsTo(CampaniaHasEvaluado::class, 'campania_id', 'campania_id')
+            ->where('personal_id', $this->evaluado_id);
+    }
+
+    public function campaniaHasEvaluado_evaluador()
+    {
+        return $this->belongsTo(CampaniaHasEvaluado::class, 'campania_id', 'campania_id')
+            ->where('personal_id', $this->evaluador_id);
+    }
+
     //cuando evaluacion->tipo_evaluacion_id sea 2 comparar objetivos con la cantidad de objetivos, si es mejor el estado de la evaluacion es pendiente
     public function getEstadoPendienteAttribute()
     {

@@ -29,6 +29,8 @@ $(function() {
 
     // Reporta a: excluir a sí mismo si es edición
     function initReportaA(excludeId = null) {
+        $('#personalReportaA').empty(); // Limpiar las opciones existentes
+
         $('#personalReportaA').select2({
             theme: 'bootstrap-5',
             width: "100%",
@@ -37,17 +39,54 @@ $(function() {
                 dataType: 'json',
                 delay: 250,
                 data: function(params) {
-                    let data = { q: params.term };
+                    let data = { 
+                        q: params.term || '',  // Enviar cadena vacía si no hay término
+                        solo_activos: true 
+                    };
                     if (excludeId) data.exclude = excludeId;
                     return data;
                 },
                 processResults: function(data) {
                     return { results: data.results };
-                }
+                },
+                cache: true // Habilitar caché para mejor rendimiento
             },
             placeholder: 'Seleccione...',
             allowClear: true,
-            minimumInputLength: 2
+            minimumInputLength: 2,  // Cambiar a 0 para permitir ver opciones sin escribir
+            language: {
+                inputTooShort: function() {
+                    return "Escriba para buscar...";
+                },
+                noResults: function() {
+                    return "No se encontraron resultados";
+                },
+                searching: function() {
+                    return "Buscando...";
+                }
+            }
+        });
+    
+        // Cargar datos iniciales (primeros 20 registros)
+        $.ajax({
+            url: SELECT2_REPORTA_URL,
+            dataType: 'json',
+            data: { 
+                q: '', 
+                exclude: excludeId,
+                solo_activos: true,
+                limit: 20 // Solicitar primeros 20 registros
+            },
+            success: function(data) {
+                // Agregar opciones iniciales
+                if (data.results && data.results.length > 0) {
+                    var initialOptions = '';
+                    data.results.forEach(function(item) {
+                        initialOptions += '<option value="' + item.id + '">' + item.text + '</option>';
+                    });
+                    $('#personalReportaA').append(initialOptions);
+                }
+            }
         });
     }
 
@@ -160,15 +199,29 @@ $(function() {
                 }
             },
             // { title: "Reporta a", field: "superior.name", headerFilter: "input" },
+
             { 
                 title: "Reporta a", 
                 field: "superior.name", 
                 headerFilter: "input",
                 editor: "list",
+                editable: function(cell) {
+                    // Solo permitir edición si la celda tiene un ID válido
+                    return cell.getRow().getData() && cell.getRow().getData().id;
+                },
                 editorParams: {
-                    // Cargar opciones de personal dinámicamente
+                    elementAttributes: {
+                        autocomplete: "off" // Evitar problemas con el autocompletado del navegador
+                    },
+                    listItemFormatter: function(value, title) {
+                        // Formato mejorado para los elementos de la lista
+                        return "<div style='padding: 5px;'>" + title + "</div>";
+                    },
                     values: function(cell) {
                         const currentPersonalId = cell.getRow().getData().id;
+                        
+                        // Mostrar indicador de carga
+                        cell.getElement().innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
                         
                         return new Promise((resolve, reject) => {
                             $.ajax({
@@ -176,26 +229,85 @@ $(function() {
                                 dataType: 'json',
                                 data: { 
                                     q: "", 
-                                    exclude: currentPersonalId, // Excluir el personal actual
-                                    solo_activos: true // Solo personal activo
+                                    exclude: currentPersonalId, 
+                                    solo_activos: true,
+                                    limit: 100 // Aumentar límite para mostrar más opciones
                                 },
                                 success: function(data) {
-                                    // Convertir el resultado a formato {value1: "label1", value2: "label2"}
-                                    let values = {};
+                                    if (!data.results || data.results.length === 0) {
+                                        console.warn("No se recibieron resultados del servidor para el campo 'Reporta a'");
+                                        // Proporcionar al menos una opción vacía
+                                        resolve({"": "Ninguno"});
+                                        return;
+                                    }
+                                    
+                                    console.log("Opciones cargadas para 'Reporta a':", data.results);
+                                    
+                                    // Siempre incluir una opción para "Ninguno"
+                                    let values = {"": "Ninguno"};
+                                    
+                                    // Añadir las opciones del servidor
                                     data.results.forEach(item => {
                                         values[item.id] = item.text;
                                     });
+                                    
                                     resolve(values);
                                 },
                                 error: function(error) {
                                     console.error("Error cargando personal:", error);
-                                    reject(error);
+                                    // En caso de error, mostrar al menos la opción vacía
+                                    resolve({"": "Ninguno"});
                                 }
                             });
                         });
                     }
+                },
+                formatter: function(cell) {
+                    // Si no hay valor, mostrar "Ninguno" en gris
+                    const value = cell.getValue();
+                    if (!value) {
+                        return '<span class="text-muted">Ninguno</span>';
+                    }
+                    return value;
                 }
             },
+
+            // { 
+            //     title: "Reporta a", 
+            //     field: "superior.name", 
+            //     headerFilter: "input",
+            //     editor: "list",
+            //     editorParams: {
+            //         // Cargar opciones de personal dinámicamente
+            //         values: function(cell) {
+            //             const currentPersonalId = cell.getRow().getData().id;
+                        
+            //             return new Promise((resolve, reject) => {
+            //                 $.ajax({
+            //                     url: SELECT2_REPORTA_URL,
+            //                     dataType: 'json',
+            //                     data: { 
+            //                         q: "", 
+            //                         exclude: currentPersonalId, // Excluir el personal actual
+            //                         solo_activos: true // Solo personal activo
+            //                     },
+            //                     success: function(data) {
+            //                         // Convertir el resultado a formato {value1: "label1", value2: "label2"}
+            //                         let values = {};
+            //                         data.results.forEach(item => {
+            //                             values[item.id] = item.text;
+            //                         });
+            //                         resolve(values);
+            //                     },
+            //                     error: function(error) {
+            //                         console.error("Error cargando personal:", error);
+            //                         reject(error);
+            //                     }
+            //                 });
+            //             });
+            //         }
+            //     }
+            // },
             { title: "Ingreso", field: "fecha_ingreso",
                 formatter: function(cell) {
                     return cell.getValue() 
@@ -297,10 +409,25 @@ $(function() {
         beforeOpenModal: function(data) {
             // Si hay datos (modo edición)
             if (data && data.id) {
+                // Primero inicializar los select2 básicos
+                $('#personalEmpresaId').val(null).trigger('change');
+                $('#personalGerenciaId').val(null).trigger('change');
+                $('#personalAreaId').val(null).trigger('change');
+                $('#personalCargoId').val(null).trigger('change');
+                $('#personalReportaA').val(null).trigger('change');
+                
+                // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
+                initReportaA(data.id);
+                
+                // Esperar un momento para asegurarse de que select2 esté inicializado
+                setTimeout(() => {
+                    // Ahora llenar el formulario con los datos
+                    fillPersonalForm(data);
+                }, 300);
                 // Usar la función existente para llenar todos los campos                
                 // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
                 // initReportaA(data.id);
-                fillPersonalForm(data);
+                // fillPersonalForm(data);
             } else {
                 // Modo creación - limpiar selects
                 $('#personalEmpresaId').val(null).trigger('change');
@@ -308,7 +435,7 @@ $(function() {
                 $('#personalAreaId').val(null).trigger('change');
                 $('#personalCargoId').val(null).trigger('change');
                 $('#personalReportaA').val(null).trigger('change');
-                // initReportaA();
+                initReportaA();
             }
         }
     });
@@ -349,7 +476,7 @@ $(function() {
                     updateData.correo_empresa = value;
                     break;
                 case 'superior.name':
-                    updateData.reporta_a = value; // El value es el ID del superior seleccionado
+                    updateData.reporta_a = value === "" ? null : value; // El value es el ID del superior seleccionado
                     updateData.actualizar_cargo = true; // Flag para indicar que también debe actualizar el cargo
                     needsFullRowUpdate = true; // Necesitamos actualizar toda la fila
                     break;
@@ -718,17 +845,37 @@ $(function() {
         if (personal.reporta_a) {
             setSelect2Value('personalReportaA', personal.reporta_a, personal.superior ? personal.superior.name : '');
         }
+
+        // Agregar al final de fillPersonalForm
+        console.log('Datos de personal cargados:', personal);
+        if (personal.reporta_a) {
+            console.log('Intentando establecer reporta_a:', personal.reporta_a, personal.superior?.name);
+        }
     }
     
     // Función para establecer valores en controles Select2
     function setSelect2Value(elementId, id, text) {
         const select = $(`#${elementId}`);
         
-        // Crear una nueva opción y agregarla
-        if (id && text) {
-            const newOption = new Option(text, id, true, true);
-            select.append(newOption).trigger('change');
-        }
+        // Limpiar selecciones anteriores
+        select.val(null).trigger('change');
+        
+        // Esperar un momento para asegurar que Select2 esté completamente inicializado
+        setTimeout(() => {
+            // Verificar si la opción ya existe
+            if (select.find(`option[value="${id}"]`).length === 0) {
+                // Crear una nueva opción y agregarla
+                if (id && text) {
+                    const newOption = new Option(text, id, true, true);
+                    select.append(newOption);
+                }
+            }
+            
+            // Establecer el valor
+            select.val(id).trigger('change');
+            
+            console.log(`Valor establecido para ${elementId}: ${id} - ${text}`);
+        }, 200);
     }
     
     // Funciones auxiliares para mostrar/ocultar cargando y alertas
@@ -889,15 +1036,6 @@ $(function() {
                             });
                         });
 
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: 'Actualizado',
-                        //     text: 'Correo actualizado correctamente',
-                        //     toast: true,
-                        //     position: 'top-end',
-                        //     timer: 3000,
-                        //     showConfirmButton: false
-                        // });
                     },
                     error: function(xhr) {
                         Swal.fire({

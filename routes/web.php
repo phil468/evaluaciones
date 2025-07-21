@@ -133,6 +133,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
     [App\Http\Controllers\HomeController::class, 'pendientes'])
     ->name('pendientes');
 
+    Route::get('/evaluaciones/pendientes/data', 'App\Http\Controllers\EvaluacionesController@pendientesData')->name('evaluaciones.pendientes.data');
+
     Route::get('/evaluacion_de_competencias', 
     [App\Http\Controllers\EvaluacionDeCompetenciasController::class,'index'])   
     ->name('evaluacion_de_competencias'); // EvaluacionDeCompetenciasController

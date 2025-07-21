@@ -3,7 +3,7 @@
 @section('title', 'Competencias')
 
 @section('content_header')
-    <h3 class="h3" class="font-style-class">
+    <h3 class="h4 font-style-poppins font-weight-bold mb-0">
         Evaluación de Desempeño por <span class="text-vanguard" style="color: #568ba5;">Competencias</span>
     </h3>
 @stop
@@ -71,8 +71,10 @@
                     </div>
                 @else
                     <div class="mt-4 text-center">
-                        <button class="px-4 btn btn-vanguard rounded-xl btn-sm" disabled>Ver histórico</button>
-                        <div class="mt-2 text-muted small">*Botón habilitado cuando se tengan resultados 2025</div>
+                        <button class="px-4 btn btn-vanguard rounded-xl btn-sm" disabled
+                        style="display: none;"
+                        >Ver histórico</button>
+                        {{-- <div class="mt-2 text-muted small">*Botón habilitado cuando se tengan resultados 2025</div> --}}
                     </div>
                 @endif
             </div>

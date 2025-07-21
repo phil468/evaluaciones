@@ -359,6 +359,27 @@
             transform: scale(1.2);
             opacity: 1 !important;
         }
+
+        /* Estilo para el editor de lista desplegable */
+        .tabulator-edit-list {
+            max-height: 300px !important; /* Aumentar altura máxima */
+            overflow-y: auto !important;
+            width: auto !important;
+            min-width: 200px !important; /* Ancho mínimo para mejor visibilidad */
+            z-index: 10000 !important; /* Asegurar que aparezca por encima de otros elementos */
+        }
+
+        /* Estilo para filas en edición */
+        .updating-cell {
+            position: relative;
+            background-color: rgba(0, 123, 255, 0.1) !important;
+        }
+
+        /* Estilo para elementos seleccionados */
+        .tabulator-edit-list .tabulator-edit-list-item.active {
+            background-color: #007bff !important;
+            color: white !important;
+        }
         
     </style> 
     {{-- <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">

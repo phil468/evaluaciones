@@ -6,12 +6,13 @@
     <h1 class="m-0 text-center text-dark font-weight-bold ">
         {{-- botón de atrás alineado a la izquierda --}}
         
-        <a href="{{ url()->previous() }}" class="mr-2 btn-link btn-light btn-sm">
+
+
+        <div class="font-style-poppins font-weight-bold">
+                    <a href="{{ url()->previous() }}" class="mr-2 btn-link btn-light btn-sm">
             <i class="fas fa-arrow-left"></i>
             Atrás
         </a>
-
-        <div class="font-style-class">
             Evaluación de Desempeño por <span style="color: #568ba5;">Competencias</span>            
         </div>
     </h1>
@@ -38,11 +39,13 @@
                         
                         {{-- Etiqueta de puntaje medio --}}
                         <div style="color: #FFD966; font-weight: bold;">
-                            Puntaje medio
+                            {{-- Puntaje medio --}}
                         </div>
                         
                         <div class="mt-4 text-center">
-                            <p>
+                            <p
+                            style="display:none;"
+                            >
                                 Muestra los comportamientos esperados
                                 en situaciones simples, con
                                 oportunidades de mejora.

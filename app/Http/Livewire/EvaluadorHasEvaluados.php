@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\CampaniaHasEvaluado;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\EvaluadorHasEvaluado;
@@ -82,17 +83,27 @@ class EvaluadorHasEvaluados extends Component
             $class = 'bg-primary';
             $label = $porcentaje.'%';
         }
-
-        return view('livewire.evaluador-has-evaluados.view', [
-            'evaluadorHasEvaluados' => EvaluadorHasEvaluado::
-            latest('evaluador_has_evaluados.created_at')
+        
+        // En el método render del componente Livewire
+        $evaluadorHasEvaluados = EvaluadorHasEvaluado::latest('evaluador_has_evaluados.created_at')
             ->select('evaluador_has_evaluados.*')
             ->where('evaluador_has_evaluados.evaluador_id', '=', $id_personal)
-            ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
-            ->where('evaluaciones.campania',$this->campania)
-            ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
-            ->with('evaluacion')
-            ->get(),
+            ->where('evaluaciones.tipo_de_evaluacion_id', $this->tipo_de_evaluacion_id)
+            ->where('evaluaciones.campania', $this->campania)
+            ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
+            ->with(['evaluacion', 'evaluado', 'grado'])
+            ->get();
+
+        // Cargar manualmente la relación con CampaniaHasEvaluado para cada registro
+        $evaluadorHasEvaluados->each(function($item) {
+            $item->cargoCampania = CampaniaHasEvaluado::where('campania_id', $item->campania_id)
+                ->where('personal_id', $item->evaluado_id)
+                ->with('puesto')
+                ->first();
+        });
+
+        return view('livewire.evaluador-has-evaluados.view', [
+            'evaluadorHasEvaluados' => $evaluadorHasEvaluados,
             // ->paginate(10),
             'class' => $class,
             'porcentaje' => $porcentaje,

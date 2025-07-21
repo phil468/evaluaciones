@@ -23,7 +23,28 @@
         <div class="card-body">
 
             <!-- Evaluación de Desempeño por Competencias -->
+
             <div class="mb-4">
+                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Competencias</h1>
+                
+                <!-- Barra de progreso que se actualizará dinámicamente -->
+                <div class="mb-4 progress rounded-2xl" style="height: 25px; background-color: #6ECBC9">
+                    <div id="progress-bar" class="progress-bar bg-vanguard" role="progressbar" style="width: 0%;" 
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0% completado
+                    </div>
+                </div>
+                
+                <!-- Contenedor donde se cargarán dinámicamente las tarjetas de evaluados -->
+                <div id="evaluados-container" class="row">
+                    <!-- Las tarjetas de evaluados se cargarán aquí mediante JavaScript -->
+                    <div class="text-center w-100 py-4">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        <p class="mt-2">Cargando evaluaciones pendientes...</p>
+                    </div>
+                </div>
+            </div>
+            {{-- <div class="mb-4">
                 <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Competencias</h1>
                 
                 <div class="mb-4 progress rounded-2xl" style="height: 25px;">
@@ -50,9 +71,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
+            </div> --}}
             
-            <!-- Evaluación de Desempeño por Objetivos -->
+            {{-- <!-- Evaluación de Desempeño por Objetivos -->
             <div class="mb-4">
                 <h4 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Objetivos</h4>
                 
@@ -142,7 +164,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>
@@ -193,6 +215,44 @@
         background-color: #f8f9fa;
         color: #212529;
     }
+
+    /* Estilos para tarjetas con enfoque en evaluaciones pendientes */
+    .employee-card {
+        border-radius: 10px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .employee-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .progress {
+        height: 25px;
+        border-radius: 20px;
+        background-color: #6ECBC9;
+    }
+
+    .progress-bar {
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 20px;
+    }
+
+    .bg-vanguard {
+        background-color: #43515a;
+    }
+
+    .btn-info {
+        background-color: #568ca5;
+        border-color: #568ca5;
+    }
+
+    .rounded-2xl {
+        border-radius: 1rem !important;
+    }
+
 </style>
 @stop
 
@@ -202,6 +262,122 @@
         // Puedes agregar funcionalidad adicional aquí
         // Por ejemplo, tooltips o popups
         $('[data-toggle="tooltip"]').tooltip();
+
+        // Cargar datos de evaluaciones pendientes
+        function cargarEvaluacionesPendientes() {
+            $.ajax({
+                url: "{{ route('evaluaciones.pendientes.data') }}",
+                type: "GET",
+                data: {
+                    tipo_evaluacion: 1, // Tipo de evaluación (1=competencias, 2=objetivos)
+                    // campania: "{{ date('Y') }}" // Campaña actual (año)
+                },
+                dataType: "json",
+                beforeSend: function() {
+                    // Mostrar indicador de carga
+                    $("#evaluados-container").html(`
+                        <div class="text-center w-100 py-4">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p class="mt-2">Cargando evaluaciones pendientes...</p>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    // Actualizar barra de progreso
+                    const stats = response.estadisticas;
+                    $("#progress-bar").css("width", stats.porcentaje + "%")
+                        .attr("aria-valuenow", stats.porcentaje)
+                        .text(stats.label + " completado");
+                    
+                    // Si hay clases específicas para el color
+                    if (stats.realizados === 0) {
+                        $("#progress-bar").removeClass("bg-secondary").addClass("bg-primary").addClass("w-100");
+                    } else if (stats.total === stats.realizados) {
+                        $("#progress-bar").removeClass("bg-primary").addClass("bg-secondary");
+                    } else {
+                        $("#progress-bar").removeClass("bg-secondary").addClass("bg-primary");
+                    }
+                    
+                    // Generar contenido de tarjetas
+                    let html = "";
+                    
+                    if (response.evaluaciones.length > 0) {
+                        response.evaluaciones.forEach(function(row) {
+                            // Solo mostrar las evaluaciones pendientes (no realizadas)
+                            // if (!row.realizado && row.evaluacion.activa) {
+                                html += generarTarjetaEvaluado(row);
+                            // }
+                        });
+                        
+                        if (html === "") {
+                            html = `
+                                <div class="col-12">
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-check-circle"></i> No tienes evaluaciones pendientes.
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        html = `
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    No tienes evaluaciones asignadas.
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    $("#evaluados-container").html(html);
+                },
+                error: function(xhr) {
+                    console.error("Error cargando evaluaciones:", xhr);
+                    $("#evaluados-container").html(`
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle"></i> 
+                                Error al cargar las evaluaciones. Intente nuevamente.
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+        }
+        
+        // Función para generar el HTML de cada tarjeta
+        function generarTarjetaEvaluado(row) {
+            console.log(row);
+            const nombreCompleto = `${row.evaluado.nombres} ${row.evaluado.apellido_paterno} ${row.evaluado.apellido_materno}`;
+            const cargoNombre = row.cargo_nombre;
+            const gradoNombre = row.grado ? row.grado.name : '';
+            
+            return `
+                <div class="col-md-3 mb-4">
+                    <div class="card employee-card h-100">
+                        <div class="card-body pt-3 text-center">
+                            <div class="employee-avatar mb-2">
+                                <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                            </div>
+                            <h5 class="employee-name mb-0">${nombreCompleto}</h5>
+                            <p class="text-muted small mb-1">${cargoNombre}</p>
+                            <div class="badge badge-light mb-2">Evaluación ${gradoNombre}</div>
+                            
+                            <a href="/evaluacion/${row.evaluacion.tipo_de_evaluacion_id}/${row.id}" 
+                            class="btn btn-info btn-block btn-sm rounded-xl">
+                                Pendiente de evaluar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Cargar datos al iniciar la página
+        cargarEvaluacionesPendientes();
+        
+        // Opcional: Actualizar datos cada 5 minutos
+        setInterval(cargarEvaluacionesPendientes, 5 * 60 * 1000);
+    
     });
 </script>
 @stop

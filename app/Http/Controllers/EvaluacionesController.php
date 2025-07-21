@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CampaniaHasEvaluado;
 use App\Models\Evaluacione;
+use App\Models\EvaluadorHasEvaluado;
 use App\Models\TipoDeEvaluacione;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -162,4 +164,58 @@ class EvaluacionesController extends Controller
             'message' => 'Evaluación eliminada correctamente'
         ]);
     }
+
+    public function pendientesData(Request $request)
+    {
+        $id_personal = auth()->user()->personal->id;
+        $tipo_de_evaluacion_id = $request->input('tipo_evaluacion', 1); // Por defecto tipo 1 (competencias)
+        $campania = $request->input('campania', '2'); // Por defecto el año actual
+        
+        // Obtener evaluaciones
+        $evaluadorHasEvaluados = EvaluadorHasEvaluado::latest('evaluador_has_evaluados.created_at')
+            ->select('evaluador_has_evaluados.*')
+            ->where('evaluador_has_evaluados.evaluador_id', '=', $id_personal)
+            ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
+            ->where('evaluaciones.campania_id', $campania)
+            ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
+            ->with(['evaluacion', 'evaluado', 'grado'])
+            ->get();
+        
+        // Cargar manualmente la relación con CampaniaHasEvaluado para cada registro
+        $evaluadorHasEvaluados->each(function($item) {
+            $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $item->campania_id)
+                ->where('personal_id', $item->evaluado_id)
+                ->with('puesto')
+                ->first();
+            
+            $item->cargo_nombre = $campaniaHasEvaluado && $campaniaHasEvaluado->puesto 
+                ? $campaniaHasEvaluado->puesto->name 
+                : 'Sin cargo asignado';
+        });
+        
+        // Calcular estadísticas
+        if ($tipo_de_evaluacion_id == 1) {
+            $realizados = $evaluadorHasEvaluados->where('realizado', 1)->count();
+            $total = $evaluadorHasEvaluados->count();
+        } else {
+            $pendientes = $evaluadorHasEvaluados->filter(function($evaluador) {
+                return $evaluador->estado_no_realizado;
+            })->count();
+            $total = $evaluadorHasEvaluados->count();
+            $realizados = $total - $pendientes;
+        }
+        
+        $porcentaje = $total == 0 ? 0 : round(($realizados / $total) * 100, 2);
+        
+        return response()->json([
+            'evaluaciones' => $evaluadorHasEvaluados->toArray(),
+            'estadisticas' => [
+                'realizados' => $realizados,
+                'total' => $total,
+                'porcentaje' => $porcentaje,
+                'label' => $porcentaje.'%'
+            ]
+        ]);
+    }
+
 }

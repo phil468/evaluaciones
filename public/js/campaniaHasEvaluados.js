@@ -107,8 +107,9 @@ class CampaniaHasEvaluados {
             gender: 'male',
             fields: [
                 'id', 'personal_id', 'campania_id', 'area_id', 'puesto_id',
-                'tipo_de_puesto_campania_id','superior_personal_id', 'habilitado_para_evaluacion_de_competencias',
-                 'habilitado_para_evaluacion_por_objetivos'
+                'tipo_de_puesto_campania_id','superior_personal_id',
+                // 'habilitado_para_evaluacion_de_competencias',
+                // 'habilitado_para_evaluacion_por_objetivos'
             ],
             columns: [
                 {
@@ -277,10 +278,10 @@ class CampaniaHasEvaluados {
                     // Estamos editando
                     $('#editEvaluadoModalLabel').text('Editar Evaluado');
                     // Asignar valores de checkboxes ya que BaseModel no los maneja directamente
-                    $('#editEvaluadoCompetenciasCheck').prop('checked', data.habilitado_para_evaluacion_de_competencias);
-                    $('#editEvaluadoObjetivosCheck').prop('checked', data.habilitado_para_evaluacion_por_objetivos);
                     $('#editEvaluadoEstadoCheck').prop('checked', data.estado);
                     $('#editEvaluadoCesadoCheck').prop('checked', data.cesado);
+                    $('#editEvaluadoHabilitadoParaEvaluacionDeCompetenciasCheck').prop('checked', data.habilitado_para_evaluacion_de_competencias);
+                    $('#editEvaluadoHabilitadoParaEvaluacionPorObjetivosCheck').prop('checked', data.habilitado_para_evaluacion_por_objetivos);
                     
                     // Añadir el personal seleccionado al select2
                     if (data.personal) {
@@ -298,8 +299,8 @@ class CampaniaHasEvaluados {
                     $('#editEvaluadoModalLabel').text('Agregar Evaluado');
                     $('#editEvaluadoEstadoCheck').prop('checked', true);
                     $('#editEvaluadoCesadoCheck').prop('checked', false);
-                    $('#editEvaluadoCompetenciasCheck').prop('checked', false);
-                    $('#editEvaluadoObjetivosCheck').prop('checked', false);
+                    $('#editEvaluadoHabilitadoParaEvaluacionDeCompetenciasCheck').prop('checked', false);
+                    $('#editEvaluadoHabilitadoParaEvaluacionPorObjetivosCheck').prop('checked', false);
                 }
             }
         };
@@ -319,10 +320,10 @@ class CampaniaHasEvaluados {
                 formData[field_snake_case] = $(`#editEvaluado${field.charAt(0).toUpperCase() + field.slice(1)}`).val();
             });            // Asegurarse de que los valores de los checkboxes están incluidos
             // Convertir explícitamente a valores booleanos numéricos 1/0 para Laravel
-            formData.habilitado_para_evaluacion_de_competencias = $('#editEvaluadoCompetenciasCheck').is(':checked') ? 1 : 0;
-            formData.habilitado_para_evaluacion_por_objetivos = $('#editEvaluadoObjetivosCheck').is(':checked') ? 1 : 0;
             formData.estado = $('#editEvaluadoEstadoCheck').is(':checked') ? 1 : 0;
             formData.cesado = $('#editEvaluadoCesadoCheck').is(':checked') ? 1 : 0;
+            formData.habilitado_para_evaluacion_de_competencias = $('#editEvaluadoHabilitadoParaEvaluacionDeCompetenciasCheck').is(':checked') ? 1 : 0;
+            formData.habilitado_para_evaluacion_por_objetivos =   $('#editEvaluadoHabilitadoParaEvaluacionPorObjetivosCheck').is(':checked') ? 1 : 0;
             formData.personal_id = $('#editEvaluadoPersonalId').val();
             formData.superior_personal_id = $('#editEvaluadoSuperiorPersonalId').val();
             formData.area_id = $('#editEvaluadoAreaId').val();
@@ -627,6 +628,8 @@ class CampaniaHasEvaluados {
                     // Establecer estado y cesado automáticamente
                     $('#editEvaluadoEstadoCheck').prop('checked', data.estado);
                     $('#editEvaluadoCesadoCheck').prop('checked', data.cesado);
+                    $('#editEvaluadoHabilitadoParaEvaluacionDeCompetenciasCheck').prop('checked', data.habilitado_para_evaluacion_de_competencias);
+                    $('#editEvaluadoHabilitadoParaEvaluacionPorObjetivosCheck').prop('checked', data.habilitado_para_evaluacion_por_objetivos);
                     
                     // Si tiene superior, cargarlo en el select2
                     if (data.superior) {
