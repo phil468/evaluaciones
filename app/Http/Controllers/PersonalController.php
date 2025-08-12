@@ -7,15 +7,20 @@ use App\Models\Cargo;
 use App\Models\Empresa;
 use App\Models\Personal;
 use App\Models\Planilla;
+use App\Models\Role;
 use App\Models\TipoDePersonal;
 use App\Models\TipoDeTrabajador;
 use App\Models\TipoDePuestoHasNivelJerarquico;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
 
 class PersonalController extends Controller
 {    
@@ -587,7 +592,7 @@ class PersonalController extends Controller
         $personal = Personal::findOrFail($id);
     
         // Detectar automáticamente si es una actualización parcial
-        $isPartialUpdate = count($request->all()) <= 3; // Permitir hasta 2 campos para actualizaciones parciales
+        $isPartialUpdate = count($request->all()) <= 3; // Permitir hasta 3 campos para actualizaciones parciales
         
         if ($isPartialUpdate) {
             // Validaciones específicas según el campo
@@ -660,24 +665,8 @@ class PersonalController extends Controller
                 foreach ($dataToUpdate as $field => $value) {
                     $personal->$field = $value;
                 }
-            
-                // // Si la actualización viene del email del usuario, registrar en log (opcional)
-                // if ($updateFromUser && isset($dataToUpdate['correo_empresa'])) {
-                //     Log::info("Correo empresarial actualizado desde email de usuario para personal ID: {$id}");
-                // }
 
                 $personal->save();
-            
-                // // Actualizar el cargo correspondiente si se indica
-                // if ($request->has('actualizar_cargo') && $request->actualizar_cargo && $personal->cargo_id) {
-                //     $cargo = Cargo::find($personal->cargo_id);
-                //     if ($cargo) {
-                //         $cargo->reporta_a = $personal->reporta_a;
-                //         $cargo->save();
-                        
-                //         Log::info("Campo 'reporta_a' actualizado en cargo ID: {$cargo->id} para sincronizar con personal ID: {$id}");
-                //     }
-                // }
 
                 // Actualizar el cargo correspondiente si se indica
                 if ($request->has('actualizar_cargo') && $request->actualizar_cargo && $personal->cargo_id) {
@@ -703,7 +692,57 @@ class PersonalController extends Controller
                         Log::info("Campo 'reporta_a' limpiado en cargo ID: {$cargo->id}");
                     }
                 }
-                
+                // dd($request->all(), $personal, $personal->user);
+        
+                // Si se actualizó el correo_empresa y se solicita actualizar el usuario
+                    dd(isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']);
+
+                if (isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']) {
+                    dd(isset($data['correo_empresa']), isset($data['actualizar_user']) , $data['actualizar_user']);
+                    // Si el personal tiene un usuario asociado, actualizarle el email
+                    if ($personal->user) {
+                dd($personal->user);
+
+                        $personal->user->email = $data['correo_empresa'];
+                        $personal->user->save();
+                    } 
+                    // Si no tiene usuario pero tiene correo, crear el usuario
+                    else if ($data['correo_empresa']) {                       
+                dd($request->all());
+            
+                        $name = "";
+                        if (strpos($personal->correo_empresa, '@vanguardfresh.pe') !== false) {
+                            $parteLocal = explode('@', $personal->correo_empresa)[0];
+                            
+                            // Verificar si la parte local tiene formato nombre.apellido
+                            if (strpos($parteLocal, '.') !== false) {
+                                $partes = explode('.', $parteLocal);
+
+                                $Nombre = ucfirst($partes[0]); // Primer parte es el nombre
+                                $Apellido = ucfirst(strtolower($personal->apellido_paterno)); // Apellido capitalizado
+                                $name = $Nombre . ' ' . $Apellido; // Concatenar nombre y apellido
+                            } else {
+                                $name = ucfirst($personal->name); // Nombre capitalizado
+                            }
+                        }  else {
+                            $name = ucfirst($personal->name); // Nombre capitalizado
+                        }
+                        
+                        $user = new User();
+                        $user->name = $name;
+                        $user->email = $data['correo_empresa'];
+                        $user->password = Hash::make(Str::random(10));
+                        $user->personal_id = $personal->id;
+                        $user->estado = true;
+                        $user->save();
+    
+                        // Asignar rol "Personal" al usuario
+                        $rolPersonal = Role::where('name', 'Personal')->first();
+                        if ($rolPersonal) {
+                            $user->roles()->attach($rolPersonal->id);
+                        }
+                    }
+                }
                 // Registrar la actualización (opcional)
                 // Log::info("Campo {$field} actualizado para personal ID: {$id}");
                 
@@ -712,7 +751,7 @@ class PersonalController extends Controller
                     'message' => 'Campo actualizado correctamente',
                     'updated_field' => array_keys($dataToUpdate)[0] ?? null,
                     'cargo_updated' => $request->has('actualizar_cargo') && $request->actualizar_cargo,
-                    'personal' => $personal
+                    'personal' => $personal->fresh(['user'])
                 ]);
             } else {
                 // Actualización completa normal
@@ -958,6 +997,117 @@ class PersonalController extends Controller
         $actualizaciones = $query->paginate(15);
         
         return view('personal.historial-actualizaciones', compact('actualizaciones'));
+    }
+
+    public function syncUserEmail($id, Request $request)
+    {
+        try {
+            $personal = Personal::findOrFail($id);
+            $email = $request->input('email');
+            
+            if (!$personal->user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No existe un usuario asociado a este personal'
+                ], 404);
+            }
+            
+            // Actualizar el email del usuario
+            $personal->user->email = $email;
+            $personal->user->save();
+        
+            // Verificar si tiene el rol "Personal", y si no, asignarlo
+            $rolPersonal = Role::where('name', 'Personal')->first();
+            if ($rolPersonal && !$personal->user->hasRole('Personal')) {
+                $personal->user->roles()->attach($rolPersonal->id);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Email del usuario actualizado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al sincronizar el email: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Crea un usuario para el personal
+     */
+    public function createUser($id)
+    {
+        try {
+            $personal = Personal::findOrFail($id);
+            
+            if ($personal->user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este personal ya tiene un usuario asociado'
+                ], 400);
+            }
+            
+            if (!$personal->correo_empresa) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El personal no tiene correo empresarial definido'
+                ], 400);
+            }
+            
+            $name = "";
+            if (strpos($personal->correo_empresa, '@vanguardfresh.pe') !== false) {
+                $parteLocal = explode('@', $personal->correo_empresa)[0];
+                
+                // Verificar si la parte local tiene formato nombre.apellido
+                if (strpos($parteLocal, '.') !== false) {
+                    $partes = explode('.', $parteLocal);
+
+                    $Nombre = ucfirst($partes[0]); // Primer parte es el nombre
+                    $Apellido = ucfirst(strtolower($personal->apellido_paterno)); // Apellido capitalizado
+                    $name = $Nombre . ' ' . $Apellido; // Concatenar nombre y apellido
+                } else {
+                    $name = ucfirst($personal->name); // Nombre capitalizado
+                }
+            }  else {
+                $name = ucfirst($personal->name); // Nombre capitalizado
+            }
+
+            //verificar que el email no exista en el modelo User y si existe no tenga un personal_id
+            $existingUser = User::where('email', $personal->correo_empresa)->first();
+            if ($existingUser && $existingUser->personal_id !== $personal->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El correo electrónico ya está asociado a otro usuario'
+                ], 400);
+            }
+
+            // Crear el usuario
+            $user = new User();
+            $user->name = $name;
+            $user->email = $personal->correo_empresa;
+            $user->estado = true;
+            $user->password = Hash::make(Str::random(10)); // Contraseña aleatoria
+            $user->personal_id = $personal->id;
+            $user->save();
+        
+            // Asignar rol "Personal" al usuario
+            $rolPersonal = Role::where('name', 'Personal')->first();
+            if ($rolPersonal) {
+                $user->roles()->attach($rolPersonal->id);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario creado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear el usuario: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

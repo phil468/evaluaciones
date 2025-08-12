@@ -516,7 +516,10 @@ Route::group(['middleware'  =>  ['auth']],function(){
     [App\Http\Controllers\PersonalController::class, 
     'historialActualizaciones']
     )->name('personal.historial-actualizaciones');
-    
+
+    Route::post('/personal/sync-user-email/{id}', [PersonalController::class, 'syncUserEmail'])->name('campania_has_evaluados.syncUserEmail');
+    Route::post('/personal/create-user/{id}', [PersonalController::class, 'createUser'])->name('campania_has_evaluados.createUser');
+
     Route::resource('personal', PersonalController::class)->middleware(['can:ver-personal']);
 
     // Rutas para Objetivos Precargados

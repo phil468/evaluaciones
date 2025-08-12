@@ -988,7 +988,6 @@ $(function() {
         });
     });
 
-    
     // Inicializar tooltips para elementos dinámicos
     $('body').tooltip({
         selector: '[data-bs-toggle="tooltip"]'

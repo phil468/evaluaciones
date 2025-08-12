@@ -315,6 +315,43 @@ class EvaluadorHasEvaluado extends Model
     // campo calculado dominio_nombre
     public function getDominioNombreAttribute()
     {
+        
+        // try {
+            // Obtener el registro de CampaniaHasEvaluado
+            // $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
+            //     ->where('personal_id', $this->evaluado_id)
+            //     ->with('tipoPuestoHasNivelJerarquico.nivelJerarquico')
+            //     ->first();
+            
+            // // Verificar si existe y tiene las relaciones necesarias
+            // if (!$campaniaHasEvaluado) {
+            //     return '';
+            // }
+            
+            // if (!$campaniaHasEvaluado->tipoPuestoHasNivelJerarquico) {
+            //     return '';
+            // }
+            
+            // if (!$campaniaHasEvaluado->tipoPuestoHasNivelJerarquico->nivelJerarquico) {
+            //     return '';
+            // }
+            
+            // $nivel_jerarquico_id = $campaniaHasEvaluado->tipoPuestoHasNivelJerarquico->nivelJerarquico->id;
+            
+            // // Buscar el dominio con los criterios adecuados
+            // $dominio = Dominio::where('grado_id', $this->grado_id)
+            //     ->where('campania_id', $this->campania_id)
+            //     ->where('nivel_jerarquico_id', $nivel_jerarquico_id)
+            //     ->where('estado', true)
+            //     ->first();
+            
+            // return $dominio ? $dominio->name : '';
+        // } catch (\Exception $e) {
+        //     // Loguear el error si es necesario
+        //     // \Log::error('Error al obtener dominio_nombre: ' . $e->getMessage());
+        //     return 'Error al obtener dominio';
+        // }
+
         $nivel_jerarquico = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
             ->where('personal_id', $this->evaluado_id)
             ->first()

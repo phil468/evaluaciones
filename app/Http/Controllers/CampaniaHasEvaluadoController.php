@@ -33,7 +33,8 @@ class CampaniaHasEvaluadoController extends Controller
     {
         $evaluados = CampaniaHasEvaluado::where('campania_id', $campaniaId)
             ->with([
-                'personal', 
+                // 'personal', 
+                'personal.user',
                 'area', 
                 'puesto', 
                 'tipoPuestoHasNivelJerarquico',
@@ -156,7 +157,8 @@ class CampaniaHasEvaluadoController extends Controller
         $evaluado = CampaniaHasEvaluado::with([
             // 'personal', 'campania', 'area', 'puesto', 'tipoPuestoHasNivelJerarquico', 'dominio', 'superior'
             
-                'personal', 
+                'personal.user', // Añadir relación user
+                // 'personal', 
                 'area', 
                 'puesto', 
                 'tipoPuestoHasNivelJerarquico',
@@ -647,10 +649,10 @@ class CampaniaHasEvaluadoController extends Controller
                 $personal = Personal::with(['cargo', 'cargo.tipoDePuesto'])->findOrFail($personalId);
 
                 // Verificar que tenga los datos necesarios
-                if (!$personal->area_id || !$personal->cargo_id || !$personal->cargo->tipo_de_puesto_id || !$personal->reporta_a) {
-                    $errores++;
-                    continue;
-                }
+                // if (!$personal->area_id || !$personal->cargo_id || !$personal->cargo->tipo_de_puesto_id || !$personal->reporta_a) {
+                //     $errores++;
+                //     continue;
+                // }
 
                 $tipoPuestoCampania = TipoDePuestoHasNivelJerarquico::where('campania_id', $campania->id)
                     ->where('tipo_de_puesto_id', $personal->cargo->tipo_de_puesto_id)
@@ -670,7 +672,7 @@ class CampaniaHasEvaluadoController extends Controller
                         $q->where('name', 'EVALUACION DE DESEMPEÑO POR COMPETENCIAS');
                     })->first();
                 if ($evaluacionCompetencias) {
-                    $habilitadoParaEvaluacionDeCompetencias = $personal->fecha_ingreso <= $evaluacionCompetencias->fecha_corte; 
+                    $habilitadoParaEvaluacionDeCompetencias = $personal->fecha_ingreso < $evaluacionCompetencias->fecha_corte; 
                 }
                 
                 $evaluacionObjetivos = Evaluacione::where('campania_id', $campania->id)
@@ -678,7 +680,7 @@ class CampaniaHasEvaluadoController extends Controller
                         $q->where('name', 'EVALUACION DE DESEMPEÑO POR OBJETIVOS');
                     })->first();
                 if ($evaluacionObjetivos) {
-                    $habilitadoParaEvaluacionPorObjetivos = $personal->fecha_ingreso <= $evaluacionObjetivos->fecha_corte; 
+                    $habilitadoParaEvaluacionPorObjetivos = $personal->fecha_ingreso < $evaluacionObjetivos->fecha_corte; 
                 }
 
                 // Si no cumple con ninguna fecha de corte, no agregarlo
@@ -745,6 +747,7 @@ class CampaniaHasEvaluadoController extends Controller
         
         $creados = 0;
         $actualizados = 0;
+        $notrabajados = 0; // Contador para personal que no cumple con las fechas de corte
         foreach ($idsSeleccionados as $personalId) {
             $personal = Personal::findOrFail($personalId);
 
@@ -753,9 +756,9 @@ class CampaniaHasEvaluadoController extends Controller
                 ->where('tipo_de_puesto_id', $personal->cargo->tipo_de_puesto_id)
                 ->first();
                 
-            if (!$personal->area_id || !$personal->cargo || !$tipoPuestoCampania || !$personal->reporta_a) {
-                continue;
-            }
+            // if (!$personal->area_id || !$personal->cargo || !$tipoPuestoCampania || !$personal->reporta_a) {
+            //     continue;
+            // }
 
             $habilitadoParaEvaluacionDeCompetencias = false;
             $habilitadoParaEvaluacionPorObjetivos = false;
@@ -765,7 +768,7 @@ class CampaniaHasEvaluadoController extends Controller
                     $q->where('name', 'EVALUACION DE DESEMPEÑO POR COMPETENCIAS');
                 })->first();
             if ($evaluacionCompetencias) {
-                $habilitadoParaEvaluacionDeCompetencias = $personal->fecha_ingreso >= $evaluacionCompetencias->fecha_corte; 
+                $habilitadoParaEvaluacionDeCompetencias = ($personal->fecha_ingreso < $evaluacionCompetencias->fecha_corte); 
             }
             
             $evaluacionObjetivos = Evaluacione::where('campania_id', $campania->id)
@@ -773,10 +776,14 @@ class CampaniaHasEvaluadoController extends Controller
                     $q->where('name', 'EVALUACION DE DESEMPEÑO POR OBJETIVOS');
                 })->first();
             if ($evaluacionObjetivos) {
-                $habilitadoParaEvaluacionPorObjetivos = $personal->fecha_ingreso >= $evaluacionObjetivos->fecha_corte; 
+                $habilitadoParaEvaluacionPorObjetivos = ($personal->fecha_ingreso < $evaluacionObjetivos->fecha_corte); 
             }
 
             if (!$habilitadoParaEvaluacionDeCompetencias && !$habilitadoParaEvaluacionPorObjetivos) {
+                // dd($personal,$tipoPuestoCampania,$evaluacionCompetencias,$evaluacionObjetivos,$personal->fecha_ingreso,
+                // ($personal->fecha_ingreso >= $evaluacionCompetencias->fecha_corte)
+                // ) ;
+                $notrabajados++;
                 continue;
             }
 
@@ -785,7 +792,7 @@ class CampaniaHasEvaluadoController extends Controller
                 'campania_id' => $campania->id,
                 'area_id' => $personal->area_id,
                 'puesto_id' => $personal->cargo_id,
-                'tipo_de_puesto_campania_id' => $tipoPuestoCampania->id,
+                'tipo_de_puesto_campania_id' => $tipoPuestoCampania->id ?? null,
                 'superior_personal_id' => $personal->reporta_a,
                 'habilitado_para_evaluacion_de_competencias' => $habilitadoParaEvaluacionDeCompetencias,
                 'habilitado_para_evaluacion_por_objetivos' => $habilitadoParaEvaluacionPorObjetivos,
@@ -807,7 +814,7 @@ class CampaniaHasEvaluadoController extends Controller
         }
 
         return response()->json([
-            'message' => "Exportación completada. $creados creados, $actualizados actualizados."
+            'message' => "Exportación completada. $creados creados, $actualizados actualizados, $notrabajados sin ser expxortados."
         ]);
     }
 

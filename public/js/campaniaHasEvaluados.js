@@ -162,6 +162,161 @@ class CampaniaHasEvaluados {
                     headerFilter: "input"
                 },
                 {
+                    title: "Ev. Competencias",
+                    field: "habilitado_para_evaluacion_de_competencias",
+                    formatter: "tickCross",
+                    headerSort: false,
+                    width: 150
+                },
+                {
+                    title: "Ev. Objetivos",
+                    field: "habilitado_para_evaluacion_por_objetivos",
+                    formatter: "tickCross",
+                    headerSort: false,
+                    width: 150
+                },
+
+                // Columna de advertencias
+                {
+                    title: "Advertencias",
+                    field: "advertencias",
+                    formatter: function(cell) {
+                        const data = cell.getRow().getData();
+                        let warnings = [];
+                        
+                        // Verificar área
+                        if (!data.area_id) {
+                            warnings.push('Falta área');
+                        }
+                        
+                        // Verificar tipo de puesto y nivel jerárquico
+                                        
+                
+                        if (!data.tipo_puesto_has_nivel_jerarquico.tipo_de_puesto) {
+                            warnings.push('Falta tipo de puesto');
+                        }
+
+                        if (!data.tipo_puesto_has_nivel_jerarquico.nivel_jerarquico) {
+                            warnings.push('Falta nivel jerárquico');
+                        }
+                        
+                        // Verificar habilitaciones
+                        if (!data.habilitado_para_evaluacion_de_competencias && !data.habilitado_para_evaluacion_por_objetivos) {
+                            warnings.push('No habilitado ni para eval. competencias ni para eval. por objetivos');
+                        }
+                        
+                        // Si no hay advertencias
+                        if (warnings.length === 0) {
+                            return '<span class="text-success"><i class="fas fa-check-circle"></i> Todo correcto</span>';
+                        }
+                        
+                        // Si hay advertencias, mostrarlas como lista
+                        let html = '<div class="text-danger">';
+                        warnings.forEach(warning => {
+                            html += `<div><i class="fas fa-exclamation-triangle"></i> ${warning}</div>`;
+                        });
+                        html += '</div>';
+                        
+                        return html;
+                    },
+                    headerSort: true,
+                    width: 220
+                },
+
+                // Columna correo empresarial
+                {
+                    title: "Correo Empresa",
+                    field: "personal.correo_empresa",
+                    formatter: function(cell) {
+                        const data = cell.getRow().getData();
+                        const personalId = data.personal_id;
+                        const correoEmpresa = data.personal?.correo_empresa || '';
+                        
+                        let html = `<div class="d-flex align-items-center">`;
+                        
+                        // Si tiene correo, mostrarlo con botón de edición
+                        if (correoEmpresa) {
+                            html += `
+                                <span class="me-2">${correoEmpresa}</span>
+                                <button class="btn btn-sm btn-link p-0 edit-correo-button" 
+                                        data-id="${personalId}" 
+                                        title="Editar correo empresarial">
+                                    <i class="fas fa-edit text-primary"></i>
+                                </button>
+                            `;
+                        } else {
+                            // Si no tiene correo, mostrar botón para agregarlo
+                            html += `
+                                <span class="text-muted me-2"></span>
+                                <button class="btn btn-sm btn-link p-0 edit-correo-button" 
+                                        data-id="${personalId}" 
+                                        title="Agregar correo empresarial">
+                                    <i class="fas fa-plus text-primary"></i>
+                                </button>
+                            `;
+                        }
+                        
+                        html += `</div>`;
+                        return html;
+                    },
+                    headerSort: true,
+                    width: 200
+                },
+
+                // Columna email de usuario
+                {
+                    title: "Email de Usuario",
+                    field: "personal.user.email",
+                    formatter: function(cell) {
+                        const data = cell.getRow().getData();
+                        const personalId = data.personal_id;
+                        const correoEmpresa = data.personal?.correo_empresa || '';
+                        const userEmail = data.personal?.user?.email || '';
+                        const hasUser = !!data.personal?.user;
+                        
+                        let html = `<div class="d-flex align-items-center">`;
+                        
+                        // Si tiene usuario, mostrar el email
+                        // if (hasUser) {
+                        if (userEmail) {
+                            html += `<span class="me-2">${userEmail}</span>`;
+                            
+                            // Si el correo empresa y el email de usuario son diferentes
+                            if (correoEmpresa && correoEmpresa !== userEmail) {
+                                html += `
+                                    <button class="btn btn-sm btn-warning sync-email-button" 
+                                            data-personal-id="${personalId}" 
+                                            data-correo="${correoEmpresa}"
+                                            title="Sincronizar email con correo empresarial">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                `;
+                            }
+                        } else {
+                            // No tiene usuario
+                            html += `<span class="text-muted me-2">Sin usuario</span>`;
+                            
+                            // Si tiene correo empresa pero no usuario, mostrar botón para crear usuario
+                            if (correoEmpresa) {
+                                html += `
+                                    <button class="btn btn-sm btn-success create-user-button" 
+                                            data-personal-id="${personalId}" 
+                                            data-correo="${correoEmpresa}"
+                                            title="Crear usuario con este correo">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                `;
+                            }
+                        }
+                        
+                        html += `</div>`;
+                        return html;
+                    },
+                    headerSort: false,
+                    width: 200
+                },
+
+                {
                     title: "Área",
                     field: "area.name",
                     headerFilter: "input"
@@ -175,6 +330,7 @@ class CampaniaHasEvaluados {
                     title: "Tipo de Puesto",
                     field: "tipo_puesto_has_nivel_jerarquico.tipo_de_puesto.name",
                 },
+
                 {
                     title: "Nivel Jerárquico",
                     field: "tipo_puesto_has_nivel_jerarquico.nivel_jerarquico.name",
@@ -186,20 +342,6 @@ class CampaniaHasEvaluados {
                 {
                     title: "Grado",
                     field: "tipo_puesto_has_nivel_jerarquico.dominio.grado.name",
-                },
-                {
-                    title: "Eval. Competencias",
-                    field: "habilitado_para_evaluacion_de_competencias",
-                    formatter: "tickCross",
-                    headerSort: false,
-                    width: 110
-                },
-                {
-                    title: "Eval. Objetivos",
-                    field: "habilitado_para_evaluacion_por_objetivos",
-                    formatter: "tickCross",
-                    headerSort: false,
-                    width: 100
                 },
                 {
                     title: "Estado",
@@ -384,6 +526,9 @@ class CampaniaHasEvaluados {
 
         // Agregar event listeners específicos para esta tabla
         this.initEvaluadosSpecificEvents();
+
+        // Inicializar botones de exportación
+        this.initExportButtons();
     }    /**
      * Inicializa eventos específicos para la tabla de evaluados
      */
@@ -491,7 +636,228 @@ class CampaniaHasEvaluados {
                 $('#editEvaluadoSuperiorPersonalId').select2('destroy');
             }
         });
+
+        // Evento para editar correo empresarial
+        $("#evaluados-table").on('click.evaluadosEvents', ".edit-correo-button", function(e) {
+            e.stopPropagation();
+            const personalId = $(this).data('id');
+            
+            Swal.fire({
+                title: 'Editar correo empresarial',
+                input: 'email',
+                inputValue: $(this).closest('div').find('span').text().trim() || '',
+                inputPlaceholder: 'correo@empresa.com',
+                showCancelButton: true,
+                confirmButtonText: 'Guardar',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                        return 'Email inválido';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Actualizando', 'Guardando correo empresarial...');
+                    
+                    $.ajax({
+                        url: PERSONAL_UPDATE_URL.replace(':id', personalId),
+                        method: 'PUT',
+                        data: { 
+                            correo_empresa: result.value,
+                            actualizar_user: true
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: response.message || 'Correo actualizado correctamente',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            // Actualizar la tabla
+                            window.campaniaHasEvaluadosInstance.table.replaceData();
+                        },
+                        error: function(xhr) {
+                            let errorMsg = 'Error al actualizar el correo.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Error', errorMsg, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Evento para sincronizar email con correo empresarial
+        $("#evaluados-table").on('click.evaluadosEvents', ".sync-email-button", function(e) {
+            e.stopPropagation();
+            const personalId = $(this).data('personal-id');
+            const correo = $(this).data('correo');
+            
+            Swal.fire({
+                title: '¿Sincronizar email?',
+                text: `El email del usuario será actualizado a: ${correo}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Actualizando', 'Sincronizando email del usuario...');
+                    
+                    $.ajax({
+                        url: EVALUADOS_SYNC_USER_EMAIL.replace(':id', personalId),
+                        method: 'POST',
+                        data: { email: correo },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: response.message || 'Email sincronizado correctamente',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            // Actualizar la tabla
+                            window.campaniaHasEvaluadosInstance.table.replaceData();
+                        },
+                        error: function(xhr) {
+                            let errorMsg = 'Error al sincronizar el email.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Error', errorMsg, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Evento para crear usuario
+        $("#evaluados-table").on('click.evaluadosEvents', ".create-user-button", function(e) {
+            e.stopPropagation();
+            const personalId = $(this).data('personal-id');
+            const correo = $(this).data('correo');
+            
+            Swal.fire({
+                title: '¿Crear usuario?',
+                text: `Se creará un usuario con el email: ${correo}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, crear',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Creando', 'Creando usuario...');
+                    
+                    $.ajax({
+                        url: EVALUADOS_CREATE_USER.replace(':id', personalId),
+                        method: 'POST',
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: response.message || 'Usuario creado correctamente',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            // Actualizar la tabla
+                            window.campaniaHasEvaluadosInstance.table.replaceData();
+                        },
+                        error: function(xhr) {
+                            let errorMsg = 'Error al crear el usuario.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Error', errorMsg, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
     }
+
+    /**
+     * Inicializa los botones de exportación para la tabla
+     */
+    initExportButtons() {
+        // Exportar a CSV
+        // $('#exportCSV').off('click').on('click', () => {
+        //     if (!this.table) return;
+            
+        //     const fileName = `evaluados_campania_${this.campaniaIdGlobal}_${new Date().toISOString().split('T')[0]}.csv`;
+        //     this.table.download("csv", fileName, {delimiter:","});
+            
+        //     // Mostrar mensaje de éxito
+        //     Swal.fire({
+        //         title: 'Exportación completada',
+        //         text: 'Los datos han sido exportados a CSV correctamente',
+        //         icon: 'success',
+        //         timer: 2000,
+        //         showConfirmButton: false
+        //     });
+        // });
+        
+        // Exportar a Excel
+        $('#exportExcel').off('click').on('click', () => {
+            if (!this.table) return;
+            
+            // Verificar si está disponible la exportación a Excel
+            // if (typeof this.table.download !== "function" || !this.table.downloadConfig.xlsx) {
+            //     Swal.fire({
+            //         title: 'Error',
+            //         text: 'La exportación a Excel requiere incluir la librería SheetJS (XLSX). Por favor, contacte al administrador.',
+            //         icon: 'error'
+            //     });
+            //     return;
+            // }
+            
+            const fileName = `evaluados_campania_${this.campaniaIdGlobal}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            this.table.download("xlsx", fileName, {sheetName:"Evaluados"});
+            
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: 'Exportación completada',
+                text: 'Los datos han sido exportados a Excel correctamente',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        });
+        
+        // Exportar a PDF
+        // $('#exportPDF').off('click').on('click', () => {
+        //     if (!this.table) return;
+            
+        //     // Verificar si está disponible la exportación a PDF
+        //     if (typeof this.table.download !== "function" || !this.table.downloadConfig.pdf) {
+        //         Swal.fire({
+        //             title: 'Error',
+        //             text: 'La exportación a PDF requiere incluir la librería jsPDF. Por favor, contacte al administrador.',
+        //             icon: 'error'
+        //         });
+        //         return;
+        //     }
+            
+        //     const fileName = `evaluados_campania_${this.campaniaIdGlobal}_${new Date().toISOString().split('T')[0]}.pdf`;
+        //     this.table.download("pdf", fileName, {
+        //         orientation: "landscape", // portrait o landscape
+        //         title: `Evaluados Campaña ${this.campaniaIdGlobal}`
+        //     });
+            
+        //     // Mostrar mensaje de éxito
+        //     Swal.fire({
+        //         title: 'Exportación completada',
+        //         text: 'Los datos han sido exportados a PDF correctamente',
+        //         icon: 'success',
+        //         timer: 2000,
+        //         showConfirmButton: false
+        //     });
+        // });
+    }
+
+
 
     /**
      * Aplica filtros a la tabla de evaluados

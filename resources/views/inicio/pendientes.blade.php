@@ -44,127 +44,7 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="mb-4">
-                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Competencias</h1>
-                
-                <div class="mb-4 progress rounded-2xl" style="height: 25px;">
-                    <div class="progress-bar bg-vanguard" role="progressbar" style="width: 65%;" 
-                        aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
-                        65% completado
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <!-- Tarjeta de empleado - Competencias -->
-                    <div class="col-md-3">
-                        <div class="card employee-card">
-                            <div class="pt-3 text-center card-body">
-                                <div class="mb-2 employee-avatar">
-                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
-                                </div>
-                                <h5 class="mb-0 employee-name">JOSE AGUILAR</h5>
-                                <p class="mb-1 text-muted small">ASISTENTE DE PRODUCCIÓN</p>
-                                <div class="mb-2 badge badge-light">Evaluación 270</div>
-                                
-                                <button class="btn btn-info btn-block btn-sm rounded-xl">Pendiente de evaluar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-            </div> --}}
-            
-            {{-- <!-- Evaluación de Desempeño por Objetivos -->
-            <div class="mb-4">
-                <h4 class="mb-3 h5 font-style-poppins font-weight-bold">Evaluación de Desempeño por Objetivos</h4>
-                
-                <div class="mb-4 progress rounded-2xl" style="height: 25px;">
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 30%;" 
-                        aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
-                        30% completado
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <!-- Tarjeta de empleado - Fase 1 -->
-                    <div class="col-md-3">
-                        <div class="card employee-card">
-                            <div class="pt-3 text-center card-body">
-                                <div class="mb-2 employee-avatar">
-                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
-                                </div>
-                                <h5 class="mb-0 employee-name">JOSE AGUILAR</h5>
-                                <p class="mb-1 text-muted small">ASISTENTE DE PRODUCCIÓN</p>
-                                <div class="mb-2 badge badge-light">Evaluación 270</div>
-                                <div class="mb-2 text-muted small">Fase 1</div>
-                                <button class="btn btn-info btn-block btn-sm rounded-xl">Ingresar Objetivos</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tarjeta de empleado - Fase 2 -->
-                    <div class="col-md-3">
-                        <div class="card employee-card">
-                            <div class="pt-3 text-center card-body">
-                                <div class="mb-2 employee-avatar">
-                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
-                                </div>
-                                <h5 class="mb-0 employee-name">JOSE AGUILAR</h5>
-                                <p class="mb-1 text-muted small">ASISTENTE DE PRODUCCIÓN</p>
-                                <div class="mb-2 badge badge-light">Evaluación 270</div>
-                                <div class="mb-2 text-muted small">Fase 2</div>
-                                <button class="btn btn-info btn-block btn-sm rounded-xl">Ingresar Resultados</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Feedback y Planes de Mejora Individual -->
-            <div class="mb-4">
-                <h4 class="mb-3 h5 font-style-poppins font-weight-bold">Feedback y Planes de Mejora Individual</h4>
-                
-                <div class="mb-4 progress rounded-2xl" style="height: 25px;">
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 30%;" 
-                        aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
-                        30% completado
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <!-- Tarjeta de empleado - Fase 1 -->
-                    <div class="col-md-3">
-                        <div class="card employee-card">
-                            <div class="pt-3 text-center card-body">
-                                <div class="mb-2 employee-avatar">
-                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
-                                </div>
-                                <h5 class="mb-0 employee-name">JOSE AGUILAR</h5>
-                                <p class="mb-1 text-muted small">ASISTENTE DE PRODUCCIÓN</p>
-                                <div class="mb-2 badge badge-light">Evaluación 270</div>
-                                <div class="mb-2 text-muted small">Fase 1</div>
-                                <button class="btn btn-info btn-block btn-sm rounded-xl">Dar feedback</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tarjeta de empleado - Fase 2 -->
-                    <div class="col-md-3">
-                        <div class="card employee-card">
-                            <div class="pt-3 text-center card-body">
-                                <div class="mb-2 employee-avatar">
-                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
-                                </div>
-                                <h5 class="mb-0 employee-name">JOSE AGUILAR</h5>
-                                <p class="mb-1 text-muted small">ASISTENTE DE PRODUCCIÓN</p>
-                                <div class="mb-2 badge badge-light">Evaluación 270</div>
-                                <div class="mb-2 text-muted small">Fase 2</div>
-                                <button class="btn btn-info btn-block btn-sm rounded-xl">Ingresar Seguimiento</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
         </div>
     </div>
 </div>
@@ -395,7 +275,7 @@
 
         
         // Cargar datos al iniciar la página
-        cargarEvaluacionesPendientes();
+        // cargarEvaluacionesPendientes();
         
         // Opcional: Actualizar datos cada 5 minutos
         setInterval(cargarEvaluacionesPendientes, 5 * 60 * 1000);

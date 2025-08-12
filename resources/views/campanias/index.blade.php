@@ -205,6 +205,9 @@
                                     <button class="btn btn-success" id="generarEvaluadorHasEvaluado">
                                         <i class="fas fa-cogs"></i> Generar Evaluadores
                                     </button>
+                                    <button id="exportExcel" class="btn btn-success">
+                                        <i class="fas fa-file-excel"></i> Exportar Excel
+                                    </button>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -1142,9 +1145,12 @@
         const EVALUADOS_SELECTS_URL = "{{ route('campania_has_evaluados.selects') }}";
         const EVALUADOS_IMPORT_URL = "{{ route('campania_has_evaluados.importar') }}";
         const EVALUADOS_VALIDATE_IMPORT_URL = "{{ route('campania_has_evaluados.validar-importar') }}";
+        const EVALUADOS_SYNC_USER_EMAIL = "{{ route('campania_has_evaluados.syncUserEmail', ':id') }}";
+        const EVALUADOS_CREATE_USER = "{{ route('campania_has_evaluados.createUser', ':id') }}";
 
         const PERSONAL_SEARCH_URL = "{{ route('personal.search-evaluado') }}";
         const PERSONAL_DETAILS_URL = "{{ route('personal.details') }}";
+        const PERSONAL_UPDATE_URL = "{{ route('personal.update', ':id') }}";   
         
         // URLs para Pesos
         const CAMPANIAS_PESOS_URL = "{{ route('campanias.pesos', ':id') }}";

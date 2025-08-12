@@ -79,8 +79,8 @@
 
                                 <tbody>
                                     @foreach ($preguntas as $index => $item)
-                                    {{-- {{ dd($preguntas) }}
-                                        @if ($item['seccion_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
+
+                                        {{-- @if ($item['seccion_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
                                                 <td class="row">
                                                     <div class="align-content-center col-12 col-sm-4 col-lg-3 col-xl-4">

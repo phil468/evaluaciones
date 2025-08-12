@@ -41,7 +41,7 @@
                                         {{-- <span class="text-muted">({{\Carbon\Carbon::parse($ev->fecha_inicio)->format('d/m/Y') }} - {{
                                                 \Carbon\Carbon::parse($ev->fecha_fin)->format('d/m/Y') }})</span> --}}
                                         {{-- <br> --}}
-                                        <span class="text-muted"> Fecha de corte {{ \Carbon\Carbon::parse($ev->fecha_corte)->format('d/m/Y') }}</span>
+                                        <span class="text-muted"> Fecha de corte (antes de:) {{ \Carbon\Carbon::parse($ev->fecha_corte)->format('d/m/Y') }}</span>
                                         {{-- Mostrar fecha de corte --}}
                                         {{-- Si no hay fecha de corte, no se muestra --}}
                                         {{-- (Fecha de corte: {{   $ev->fecha_corte }}) --}}
