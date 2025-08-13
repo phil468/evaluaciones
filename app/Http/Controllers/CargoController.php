@@ -117,6 +117,8 @@ class CargoController extends Controller
 
         try {
             $cargo = Cargo::findOrFail($id);
+
+            // dd($cargo, $request->all());
             $cargo->update($request->all());
             return response()->json($cargo, 200);
         } catch (\Exception $e) {

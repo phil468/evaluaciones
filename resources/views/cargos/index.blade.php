@@ -72,8 +72,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="editTipoDePuesto">Tipo de Puesto</label>
-                                    <select class="form-control" id="editTipoDePuesto">
+                                    <label for="editTipoDePuestoId">Tipo de Puesto</label>
+                                    <select class="form-control" id="editTipoDePuestoId">
                                         <option value="">-- Seleccione --</option>
                                     </select>
                                 </div>

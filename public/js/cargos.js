@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "id",
             "name",
             "estado", 
-            "tipoDePuesto",
+            "tipoDePuestoId",
             "idCargoNisira"
         ],
         columns: [
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 url: TIPO_PUESTO_LISTA_URL,//"/api/tipo_puesto/lista",
                 type: 'GET',
                 success: function(response) {
-                    var select = $('#editTipoDePuesto');
+                    var select = $('#editTipoDePuestoId');
                     select.empty();
                     select.append('<option value="">-- Seleccione --</option>');
                     $.each(response, function(key, value) {
