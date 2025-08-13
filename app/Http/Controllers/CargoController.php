@@ -22,9 +22,20 @@ class CargoController extends Controller
         }
 
         $cargos = Cargo::with('tipoDePuesto')
-        ->withCount('personals') // <-- Esto agrega personals_count
+            // ->withCount('personals') // <-- Esto agrega personals_count
+            ->withCount([
+            // Cuenta solo los no cesados
+            'personals as personals_count' => function ($q) {
+                $q->where(function ($q) {
+                    $q->where('cesado', false)
+                    ->orWhereNull('cesado'); // opcional si hay nulls
+                });
+            },
+        ])
         ->get();
-        
+
+        // dd($cargos->toArray());
+
         return response()->json($cargos);
     }
 
