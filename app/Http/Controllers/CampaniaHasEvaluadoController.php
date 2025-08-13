@@ -440,7 +440,7 @@ class CampaniaHasEvaluadoController extends Controller
         ]);
     }
 
-    public function generarEvaluadorHasEvaluado($campaniaId)
+    public function generarEvaluadorHasEvaluado($campaniaId, $tipo)
     {
         // 1. Obtener todos los evaluados de la campaña
         $evaluados = CampaniaHasEvaluado::with([
@@ -474,71 +474,79 @@ class CampaniaHasEvaluadoController extends Controller
 
         // 3. Procesar cada evaluado
         foreach ($evaluados as $evaluado) {
-            if ($evaluado->habilitado_para_evaluacion_de_competencias) {
-                $gradoId = $evaluado->tipoPuestoHasNivelJerarquico->dominio->grado->id ?? null;
-                if (!$gradoId) continue;
+            if ($tipo == 'competencias') {
+                // Si el evaluado no está habilitado para evaluación de competencias, continuar
+                if (!$evaluado->habilitado_para_evaluacion_de_competencias) continue;
+                
+                if ($evaluado->habilitado_para_evaluacion_de_competencias) {
+                    $gradoId = $evaluado->tipoPuestoHasNivelJerarquico->dominio->grado->id ?? null;
+                    if (!$gradoId) continue;
 
-                // Buscar el peso para este grado y campaña, puede ser más de uno encontrado
-                $pesos = Peso::where('campania_id', $campaniaId)
-                    ->where('grado_id', $gradoId)
-                    ->with(['tipoRelacionJerarquica'])
-                    ->get();
+                    // Buscar el peso para este grado y campaña, puede ser más de uno encontrado
+                    $pesos = Peso::where('campania_id', $campaniaId)
+                        ->where('grado_id', $gradoId)
+                        ->with(['tipoRelacionJerarquica'])
+                        ->get();
 
-                if (!$pesos) continue;
+                    if (!$pesos) continue;
 
-                foreach ($pesos as $peso) {
-                    // Verificar el tipo de relación jerárquica y manejar según corresponda
-                    // dd($peso);
-                    switch ($peso->tipoRelacionJerarquica->name) {
-                        case 'JEFE':
-                            $this->handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                            break;
-                        case 'PAR':
-                            $this->handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                            break;
-                        case 'SUBORDINADO':
-                            $this->handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                            break;
-                        case 'UNO MISMO':
-                            $this->handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                            break;                
+                    foreach ($pesos as $peso) {
+                        // Verificar el tipo de relación jerárquica y manejar según corresponda
+                        // dd($peso);
+                        switch ($peso->tipoRelacionJerarquica->name) {
+                            case 'JEFE':
+                                $this->handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                                break;
+                            case 'PAR':
+                                $this->handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                                break;
+                            case 'SUBORDINADO':
+                                $this->handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                                break;
+                            case 'UNO MISMO':
+                                $this->handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                                break;                
+                        }
                     }
                 }
-            }
+            } elseif ($tipo == 'objetivos') {
+                // Si el evaluado no está habilitado para evaluación por objetivos, continuar
+                if (!$evaluado->habilitado_para_evaluacion_por_objetivos) continue;                
 
-            if ($evaluado->habilitado_para_evaluacion_por_objetivos) {
-                // Aquí podrías manejar la lógica para evaluación por objetivos si es necesario
-                // Por ahora, solo se maneja la evaluación de competencias
-                // su evaluador_id será su superior, si no cuenta con superior no se insertarán los datos
+                if ($evaluado->habilitado_para_evaluacion_por_objetivos) {
+                    // Aquí podrías manejar la lógica para evaluación por objetivos si es necesario
+                    // Por ahora, solo se maneja la evaluación de competencias
+                    // su evaluador_id será su superior, si no cuenta con superior no se insertarán los datos
 
-                // si el nombre del nivel jerarquico es Nivel IV, entonces el valor del campo jerarquia será 5 y el tipo_jerarquia_id será 2
-                // en todos los otros casos el valor del campo jerarquia será 2 y el tipo_jerarquia_id será 1
+                    // si el nombre del nivel jerarquico es Nivel IV, entonces el valor del campo jerarquia será 5 y el tipo_jerarquia_id será 2
+                    // en todos los otros casos el valor del campo jerarquia será 2 y el tipo_jerarquia_id será 1
 
-                if (!$evaluacionObjetivos) continue;
-                // Verificar si el evaluado tiene un superior
+                    if (!$evaluacionObjetivos) continue;
+                    // Verificar si el evaluado tiene un superior
 
-                if (!$evaluado->superior_personal_id) {
-                } else {
-                    if ($evaluado->tipoPuestoHasNivelJerarquico->nivelJerarquico->name == 'Nivel IV') {
-                        EvaluadorHasEvaluado::updateOrCreate([
-                            'evaluador_id' => $evaluado->superior_personal_id, // Si no tiene superior, se evalúa a sí mismo
-                            'evaluado_id' => $evaluado->personal_id,
-                            'evaluacion_id' => $evaluacionObjetivos->id,
-                            'campania_id' => $campaniaId,
-                        ], [
-                            'jerarquia' => 5,
-                            'tipo_jerarquia_id' => 2,
-                        ]);
+                    if (!$evaluado->superior_personal_id) {
                     } else {
-                        EvaluadorHasEvaluado::updateOrCreate([
-                            'evaluador_id' => $evaluado->superior_personal_id, // Si no tiene superior, se evalúa a sí mismo
-                            'evaluado_id' => $evaluado->personal_id,
-                            'evaluacion_id' => $evaluacionObjetivos->id,
-                            'campania_id' => $campaniaId,
-                        ], [
-                            'jerarquia' => 2,
-                            'tipo_jerarquia_id' => 1,
-                        ]);
+                        if ($evaluado->tipoPuestoHasNivelJerarquico->nivelJerarquico->name == 'Nivel IV') {
+                            EvaluadorHasEvaluado::updateOrCreate([
+                                'evaluador_id' => $evaluado->superior_personal_id, // Si no tiene superior, se evalúa a sí mismo
+                                'evaluado_id' => $evaluado->personal_id,
+                                'evaluacion_id' => $evaluacionObjetivos->id,
+                                'campania_id' => $campaniaId,
+                            ], [
+                                'jerarquia' => 5,
+                                'tipo_jerarquia_id' => 2,
+                            ]);
+                        } else {
+                            EvaluadorHasEvaluado::updateOrCreate([
+                                'evaluador_id' => $evaluado->superior_personal_id, // Si no tiene superior, se evalúa a sí mismo
+                                'evaluado_id' => $evaluado->personal_id,
+                                'evaluacion_id' => $evaluacionObjetivos->id,
+                                'campania_id' => $campaniaId,
+                            ], [
+                                'jerarquia' => 2,
+                                'tipo_jerarquia_id' => 1,
+                            ]);
+                        }
                     }
                 }
             }

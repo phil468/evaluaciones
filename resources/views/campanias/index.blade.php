@@ -202,10 +202,13 @@
                                     <button class="btn btn-primary" id="importEvaluadosButton">
                                         <i class="fas fa-file-import"></i> Importar
                                     </button>
-                                    <button class="btn btn-success" id="generarEvaluadorHasEvaluado">
-                                        <i class="fas fa-cogs"></i> Generar Evaluadores
+                                    <button class="btn btn-success" id="generarEvaluadorHasEvaluadoCompetencias">
+                                        <i class="fas fa-cogs"></i> Generar Evaluadores Competencias
                                     </button>
-                                    <button id="exportExcel" class="btn btn-success">
+                                    <button id="generarEvaluadorHasEvaluadoObjetivos" class="btn btn-success">
+                                        <i class="fas fa-cogs"></i> Generar Evaluadores Objetivos
+                                    </button>
+                                    <button id="exportExcel" class="btn btn-primary">
                                         <i class="fas fa-file-excel"></i> Exportar Excel
                                     </button>
                                 </div>
@@ -1159,8 +1162,8 @@
         const PESOS_SHOW_URL = "{{ route('pesos.show', ':id') }}";
         const PESOS_UPDATE_URL = "{{ route('pesos.update', ':id') }}";
         const PESOS_DELETE_URL = "{{ route('pesos.destroy', ':id') }}";
-        
-        const GENERAR_EVALUADOR_HAS_EVALUADOS_URL = "{{ route('campanias.generarEvaluadorHasEvaluado', ':id') }}"; 
+
+        const GENERAR_EVALUADOR_HAS_EVALUADOS_URL = "{{ route('campanias.generarEvaluadorHasEvaluado', ['campania' => ':id', 'tipo' => ':tipo']) }}";
 
         document.addEventListener('DOMContentLoaded', function() {
             var table = new Tabulator("#campania-table", {

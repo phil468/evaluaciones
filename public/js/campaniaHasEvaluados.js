@@ -24,7 +24,8 @@ class CampaniaHasEvaluados {
             // this.initEvaluadosTable(campaniaId);
             // Inicializar eventos para importación
             this.initImportEvaluadosEvents(campaniaId);
-            this.initGenerarEvaluadorHasEvaluadosEvents(campaniaId);
+            this.initGenerarEvaluadorHasEvaluadosCompetenciasEvents(campaniaId);
+            this.initGenerarEvaluadorHasEvaluadosObjetivosEvents(campaniaId);
         };
 
         // this.init();
@@ -1459,8 +1460,8 @@ class CampaniaHasEvaluados {
         });
     }
 
-    initGenerarEvaluadorHasEvaluadosEvents(campaniaId) {
-        $('#generarEvaluadorHasEvaluado').off('click').on('click', () => {
+    initGenerarEvaluadorHasEvaluadosCompetenciasEvents(campaniaId) {
+        $('#generarEvaluadorHasEvaluadoCompetencias').off('click').on('click', () => {
             // const campaniaId = campaniaId;
             Swal.fire({
                 title: '¿Está seguro?',
@@ -1472,7 +1473,9 @@ class CampaniaHasEvaluados {
             }).then((result) => {
                 if (result.isConfirmed) {
                     showLoading('Procesando', 'Generando registros...');
-                    $.post(GENERAR_EVALUADOR_HAS_EVALUADOS_URL.replace(':id', campaniaId), {}, function(response) {
+                    $.post(GENERAR_EVALUADOR_HAS_EVALUADOS_URL
+                        .replace(':id', campaniaId)
+                        .replace(':tipo', 'competencias'), {}, function(response) {
                         Swal.fire('¡Listo!', response.message, 'success');
                         // Actualizar la tabla de evaluadores
                         if (window.evaluadorHasEvaluadoModel) {
@@ -1486,6 +1489,34 @@ class CampaniaHasEvaluados {
         });
     }
 
+    initGenerarEvaluadorHasEvaluadosObjetivosEvents(campaniaId) {
+        $('#generarEvaluadorHasEvaluadoObjetivos').off('click').on('click', () => {
+            // const campaniaId = campaniaId;
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: 'Esto generará los registros de evaluador-evaluado para la campaña.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, generar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Procesando', 'Generando registros...');
+                    $.post(GENERAR_EVALUADOR_HAS_EVALUADOS_URL
+                        .replace(':id', campaniaId)
+                        .replace(':tipo', 'objetivos'), {}, function(response) {
+                        Swal.fire('¡Listo!', response.message, 'success');
+                        // Actualizar la tabla de evaluadores
+                        if (window.evaluadorHasEvaluadoModel) {
+                            window.evaluadorHasEvaluadoModel.table.replaceData();
+                        }
+                    }).fail(function(xhr) {
+                        Swal.fire('Error', xhr.responseJSON?.message || 'Error al generar registros', 'error');
+                    });
+                }
+            });
+        });
+    }
     
 
 }

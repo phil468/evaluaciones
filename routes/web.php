@@ -458,7 +458,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/evaluados/{id}/subordinados', [CampaniaHasEvaluadoController::class, 'getSubordinados'])->name('campania_has_evaluados.subordinados');
     Route::get('/evaluados/{id}/pares', [CampaniaHasEvaluadoController::class, 'getPares'])->name('campania_has_evaluados.pares');
     Route::post('/campanias/{id}/importar-evaluados', [CampaniaHasEvaluadoController::class, 'importar'])->name('campanias.importar_evaluados');
-    Route::post('/campanias/{campania}/generar-evaluador-has-evaluado', [CampaniaHasEvaluadoController::class, 'generarEvaluadorHasEvaluado'])->name('campanias.generarEvaluadorHasEvaluado');
+    Route::post('/campanias/{campania}/generar-evaluador-has-evaluado/{tipo}', [CampaniaHasEvaluadoController::class, 'generarEvaluadorHasEvaluado'])->name('campanias.generarEvaluadorHasEvaluado');
     
 
     // Route::post('/campanias/exportar-personal-a-campania-actual', 
