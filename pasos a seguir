@@ -7,72 +7,72 @@ luego correr el comando:
 
 php artisan resumen:actualizar
 
-agregar
+agregar o correr el comando después de estos inserts
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-calibracion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-calibracion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-calibracion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-calibracion', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-escala-medicion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-escala-medicion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-escala-medicion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-escala-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-escala-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-escala-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-escala-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-escala-medicion', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-medicion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-medicion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-medicion', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-medicion', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-medicion', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-competencia', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-competencia', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-competencia', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-competencia', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-competencias', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-competencias', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-competencias', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-competencias', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-competencias', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-competencias', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-competencias', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-competencias', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-configuracion-campania-competencia', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-configuracion-campania-competencia', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-configuracion-campania-competencia', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-configuracion-campania-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-configuracion-campania-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-configuracion-campania-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-configuracion-campania-competencia', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-configuracion-campania-competencia', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-nivel-jerarquico', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-nivel-jerarquico', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-nivel-jerarquico', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-nivel-jerarquico', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-grado', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-grado', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-grado', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-grado', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-grado', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-grado', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-grado', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-grado', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-dominio', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-dominio', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-dominio', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-dominio', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-dominio', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-dominio', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-dominio', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-dominio', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-de-puesto', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-de-puesto', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-de-puesto', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-de-puesto', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-de-puesto', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-de-puesto', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-de-puesto', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-de-puesto', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-tipo-de-puesto-has-nivel-jerarquico', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-dominio-has-pregunta', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-dominio-has-pregunta', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-dominio-has-pregunta', 'web', NULL, NULL);
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-dominio-has-pregunta', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('ver-dominio-has-pregunta', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('crear-dominio-has-pregunta', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('editar-dominio-has-pregunta', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('borrar-dominio-has-pregunta', 'web', NULL, NULL);
 
-INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES 
-('ver-campania', 'web', NULL, NULL),
-('crear-campania', 'web', NULL, NULL),
-('editar-campania', 'web', NULL, NULL),
-('borrar-campania', 'web', NULL, NULL),
-('restaurar-campania', 'web', NULL, NULL);
+    INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES 
+    ('ver-campania', 'web', NULL, NULL),
+    ('crear-campania', 'web', NULL, NULL),
+    ('editar-campania', 'web', NULL, NULL),
+    ('borrar-campania', 'web', NULL, NULL),
+    ('restaurar-campania', 'web', NULL, NULL);
 
 php artisan migrate --path=/database/migrations/2025_07_16_090838_add_permissions_for_evaluaciones.php
 
@@ -98,9 +98,9 @@ php artisan migrate --path=/database/migrations/2025_06_06_093634_add_fecha_cort
 php artisan migrate --path=/database/migrations/2025_06_06_111640_create_campania_has_evaluados_table.php
 php artisan migrate --path=/database/migrations/2025_06_09_123137_add_tipo_de_puesto_to_cargo_table.php
 php artisan migrate --path=/database/migrations/2025_06_17_155412_create_tipo_relacion_jerarquicas_table.php
-php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions.php
-php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions_to_adm.php
-php artisan migrate --path=/database/migrations/2025_06_17_172012_create_pesos_table.php
+sudo php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions.php
+sudo php artisan migrate --path=/database/migrations/2025_06_17_163425_add_tipo_relacion_jerarquica_permissions_to_adm.php
+sudo php artisan migrate --path=/database/migrations/2025_06_17_172012_create_pesos_table.php
 php artisan migrate --path=/database/migrations/2025_06_17_172116_add_peso_permissions.php
 php artisan migrate --path=/database/migrations/2025_06_18_121315_add_campos_to_evaluador_has_evaluados.php
 php artisan migrate --path=/database/migrations/2025_06_19_155939_add_campos_to_campania_has_evaluados.php
@@ -109,6 +109,7 @@ php artisan migrate --path=/database/migrations/2025_06_26_091336_create_actuali
 
 php artisan migrate --path=/database/migrations/2025_07_03_093554_add_campo_estado_id_to_objetivo_precargado.php
 php artisan migrate --path=/database/migrations/2025_07_03_171843_create_objetivo_precargado_has_evidencias.php
+
 php artisan migrate --path=/database/migrations/2025_07_10_100746_add_acepto_escala_to_evaluador_has_evaluados_table.php
 php artisan migrate --path=/database/migrations/2025_07_16_143437_insert_evaluaciones_data.php
 

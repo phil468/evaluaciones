@@ -295,6 +295,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::resource('dominios', DominioController::class);
 
     Route::get('/tipo_de_puestos/data', [TipoDePuestoController::class, 'getData'])->name('tipo_de_puestos.data');
+    Route::get('/tipo_puesto/lista', [App\Http\Controllers\API\TipoDePuestoController::class, 'getLista'])->name('api.tipo_puesto.lista');
     Route::resource('tipo_de_puestos', TipoDePuestoController::class);
 
     Route::get('/tipo_puesto_niveles/data', [TipoDePuestoHasNivelJerarquicoController::class, 'getData'])->name('tipo_puesto_niveles.data');

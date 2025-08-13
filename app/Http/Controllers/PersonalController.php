@@ -695,20 +695,20 @@ class PersonalController extends Controller
                 // dd($request->all(), $personal, $personal->user);
         
                 // Si se actualizó el correo_empresa y se solicita actualizar el usuario
-                    dd(isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']);
+                    // dd(isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']);
 
                 if (isset($data['correo_empresa']) && isset($data['actualizar_user']) && $data['actualizar_user']) {
-                    dd(isset($data['correo_empresa']), isset($data['actualizar_user']) , $data['actualizar_user']);
+                    // dd(isset($data['correo_empresa']), isset($data['actualizar_user']) , $data['actualizar_user']);
                     // Si el personal tiene un usuario asociado, actualizarle el email
                     if ($personal->user) {
-                dd($personal->user);
+                // dd($personal->user);
 
                         $personal->user->email = $data['correo_empresa'];
                         $personal->user->save();
                     } 
                     // Si no tiene usuario pero tiene correo, crear el usuario
                     else if ($data['correo_empresa']) {                       
-                dd($request->all());
+                // dd($request->all());
             
                         $name = "";
                         if (strpos($personal->correo_empresa, '@vanguardfresh.pe') !== false) {

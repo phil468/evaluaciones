@@ -65,7 +65,7 @@ Route::post('/refresh-token', function (Request $request) {
 });
 
 // Rutas API no protegidas
-Route::get('/tipo_puesto/lista', [App\Http\Controllers\API\TipoDePuestoController::class, 'getLista'])->name('api.tipo_puesto.lista');
+// Route::get('/tipo_puesto/lista', [App\Http\Controllers\API\TipoDePuestoController::class, 'getLista'])->name('api.tipo_puesto.lista');
 
 Route::get('login', [App\Http\Controllers\Api\ws\CapacitacionesController::class, 'login'])->name('login');
 //FALTA MODIFICAR

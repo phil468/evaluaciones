@@ -151,4 +151,10 @@ class TipoDePuestoController extends Controller
         $tipoDePuesto->forceDelete();
         return response()->json(null, 204);
     }
+    
+    public function getLista()
+    {
+        $tiposDePuesto = TipoDePuesto::where('estado', true)->get();
+        return response()->json($tiposDePuesto);
+    }
 }
