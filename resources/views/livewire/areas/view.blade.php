@@ -69,12 +69,14 @@
 							<tr> 
 								<th>ID</th> 
 								<th>Nombre</th>
-								<th>Gerencia</th>
-								<th>Subgerencia</th>
+								<th>Tipo</th>
+								<th>Area Superior</th>
+								{{-- <th>Gerencia</th> --}}
+								{{-- <th>Subgerencia</th> --}}
 								<th>Estado</th>
-								<th>Idempresa Nisira</th>
-								<th>Idarea Nisira</th>
-								<th>Fechacreacion Nisira</th>
+								{{-- <th>Idempresa Nisira</th> --}}
+								{{-- <th>Idarea Nisira</th> --}}
+								{{-- <th>Fechacreacion Nisira</th> --}}
 																
 								@can('editar-area','borrar-area')
 								<th>ACCIONES</th>								
@@ -86,16 +88,18 @@
 							<tr>
 								<td>{{ $row->id }}</td> 
 								<td>{{ $row->name }}</td>
-								<td>{{ $row->gerencia->name ?? '' }}</td>
-								<td>{{ $row->subgerencia->name ?? '' }}</td>
+								<td>{{ $row->tipo->name ?? '' }}</td>
+								<td>{{ $row->superior->name ?? '' }}</td>
+								{{-- <td>{{ $row->gerencia->name ?? '' }}</td> --}}
+								{{-- <td>{{ $row->subgerencia->name ?? '' }}</td> --}}
 								<td>
 									<div>
 										<livewire:toggle-button :model="$row" :field="'estado'" key="{{ $row->id }}">
 									</div>
 								</td>
-								<td>{{ $row->idempresa_nisira }}</td>
-								<td>{{ $row->idarea_nisira }}</td>
-								<td>{{ $row->fechacreacion_nisira }}</td>
+								{{-- <td>{{ $row->idempresa_nisira }}</td> --}}
+								{{-- <td>{{ $row->idarea_nisira }}</td> --}}
+								{{-- <td>{{ $row->fechacreacion_nisira }}</td> --}}
 																
 								@can('editar-area','borrar-area')
 								<td width="90">

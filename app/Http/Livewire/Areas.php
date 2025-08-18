@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Area;
 use App\Models\Gerencia;
+use App\Models\TipoArea;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithFileUploads;
 
@@ -17,27 +18,50 @@ class Areas extends Component
     use WithFileUploads;
 
 	protected $paginationTheme = 'bootstrap';
+
+    public const TIPO_AREA = [
+        'AREA' => 1,
+        'SUBGERENCIA' => 2,
+        'GERENCIA' => 3,
+        'GERENCIA CORPORATIVA' => 4,
+    ];
+
     public $selected_id, $keyWord, $name, $estado, $idempresa_nisira, $idarea_nisira, $fechacreacion_nisira,$file, $gerencia_id;
+
+    // NUEVOS
+    public $tipo_id = 1;
+    public $area_superior_id = null;
+
     public $updateMode = false;
 
     public function render()
     {
+        // dd( Area::latest()
+        //                 ->with(['tipo', 'superior'])
+        //             ->get()->toArray()
+        //             );
 		$keyWord = '%'.$this->keyWord .'%';
         return view('livewire.areas.view', [
             'gerencias' 	=> Gerencia::orderBy('name')->where('estado',1)->pluck('name', 'id')->toArray(),
             'areas'         => Area::latest()
+                        ->orderBy('estado', 'desc')
 						->orWhere('name', 'LIKE', $keyWord)
 						->orWhere('estado', 'LIKE', $keyWord)
 						->orWhere('idempresa_nisira', 'LIKE', $keyWord)
 						->orWhere('idarea_nisira', 'LIKE', $keyWord)
 						->orWhere('fechacreacion_nisira', 'LIKE', $keyWord)
-						->paginate(10),
+                        ->with('tipo', 'superior', 'gerencia', 'subgerencia')
+						->paginate(20),
+            'areasPadre' => Area::orderBy('name')->where('estado', 1)->pluck('name', 'id')->toArray(),
+            'tipos' => TipoArea::orderBy('name')->pluck('name', 'id')->toArray()
         ]);
     }
 	
 	public function create() 
 	{
 		$this->estado=true;
+        $this->tipo_id = 1;
+		$this->area_superior_id = null;
 	}
     
     public function cancel()
@@ -55,17 +79,25 @@ class Areas extends Component
 		$this->idarea_nisira = null;
 		$this->fechacreacion_nisira = null;
 		$this->file = null;
+
+        // NUEVOS
+        $this->tipo_id = 1;
+        $this->area_superior_id = null;
     }
 
     public function store()
     {
         $this->validate([
-            'name' => 'required'
+            'name' => 'required|string|max:250',
+            'tipo_id' => 'required|integer',
+            'area_superior_id' => 'nullable|integer|exists:areas,id',
         ]);
 
         Area::create([ 
 			'name' => $this-> name,
 			'estado' => $this-> estado,
+            'tipo_id' => $this-> tipo_id,
+            'area_superior_id' => $this-> area_superior_id,
 			'gerencia_id' => $this-> gerencia_id,
 			'idempresa_nisira' => $this-> idempresa_nisira,
 			'idarea_nisira' => $this-> idarea_nisira,
@@ -88,6 +120,10 @@ class Areas extends Component
 		$this->idempresa_nisira = $record-> idempresa_nisira;
 		$this->idarea_nisira = $record-> idarea_nisira;
 		$this->fechacreacion_nisira = $record-> fechacreacion_nisira;
+
+        // NUEVOS
+        $this->tipo_id = $record->tipo_id;
+        $this->area_superior_id = $record->area_superior_id;
 		
         $this->updateMode = true;
     }
@@ -95,7 +131,17 @@ class Areas extends Component
     public function update()
     {
         $this->validate([
-            'name' => 'required'
+            'name' => 'required|string|max:250',
+            'tipo_id' => 'required|integer',
+            // Evita que se elija a sí mismo
+            'area_superior_id' => [
+                'nullable','integer','exists:areas,id',
+                function ($attr, $value, $fail) {
+                    if ($value && $value == $this->selected_id) {
+                        $fail('El área superior no puede ser la misma área.');
+                    }
+                }
+            ],
         ]);
 
         if ($this->selected_id) {
@@ -103,6 +149,8 @@ class Areas extends Component
             $record->update([ 
 			'name' => $this-> name,
 			'estado' => $this-> estado,
+            'tipo_id' => $this->tipo_id,
+            'area_superior_id' => $this->area_superior_id,
 			'gerencia_id' => $this-> gerencia_id,
 			'idempresa_nisira' => $this-> idempresa_nisira,
 			'idarea_nisira' => $this-> idarea_nisira,

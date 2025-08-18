@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Area extends Model
 {
@@ -17,6 +18,8 @@ class Area extends Model
 
     protected $fillable = [
         'name',
+        'tipo_id',               // NUEVO
+        'area_superior_id',   // NUEVO
         'estado',
         'idempresa_nisira',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         'idarea_nisira',
@@ -35,6 +38,26 @@ class Area extends Model
     // centro_costo
     // estado
 
+    protected $casts = [
+        'estado' => 'boolean',
+    ];
+
+    // Relaciones jerárquicas nuevas
+    public function superior()
+    {
+        return $this->belongsTo(Area::class, 'area_superior_id');
+    }
+
+    public function hijas()
+    {
+        return $this->hasMany(Area::class, 'area_superior_id');
+    }
+
+    public function tipo()
+    {
+        return $this->belongsTo(TipoArea::class, 'tipo_id');
+    }
+
     public function gerencia()
     {
         return $this->belongsTo(Gerencia::class, 'gerencia_id', 'id');
@@ -50,8 +73,12 @@ class Area extends Model
         return $this->hasMany('App\Models\Activo', 'area_id', 'id');
     }
     
+    // Nombre: trim, sin tildes, mayúsculas y espacios internos normalizados
     public function setNameAttribute($value)
     {
-        $this->attributes['name'] = mb_strtoupper(trim($value));
+        $v = trim((string)$value);
+        $v = preg_replace('/\s+/', ' ', $v ?? '');
+        $v = Str::of($v)->ascii();     // quita tildes
+        $this->attributes['name'] = mb_strtoupper($v);
     }
 }

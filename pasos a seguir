@@ -116,4 +116,9 @@ php artisan migrate --path=/database/migrations/2025_07_16_143437_insert_evaluac
 php artisan migrate --path=/database/migrations/2025_07_17_162935_add_reporta_a_to_cargos_table.php
 php artisan migrate --path=/database/migrations/2025_07_18_075521_copy_user_email_to_personal_correo_empresa.php
 
+faltan estos:
+
+php artisan migrate --path=/database/migrations/2025_08_18_130451_alter_areas_table.php
+php artisan migrate --path=/database/migrations/2025_08_18_132232_create_tipo_areas_table.php
+
 corregir la carpeta: adm a public
