@@ -14,21 +14,21 @@ class AlterAreasTable extends Migration
      */
     public function up(): void
     {
-        Schema::table('areas', function (Blueprint $table) {
-            // // string mejor que enum para no atarnos al motor
-            $table->integer('tipo_id')->default(1)->after('name');
-            $table->unsignedInteger('area_superior_id')->nullable()->after('tipo_id');
+        // Schema::table('areas', function (Blueprint $table) {
+        //     // // string mejor que enum para no atarnos al motor
+        //     // $table->integer('tipo_id')->default(1)->after('name');
+        //     // $table->unsignedInteger('area_superior_id')->nullable()->after('tipo_id');
 
-            $table->index('tipo_id');
-            $table->index('area_superior_id');
+        //     // $table->index('tipo_id');
+        //     // $table->index('area_superior_id');
 
-            // Evita duplicados por tipo+name
-            // $table->unique(['tipo_id', 'name', 'idccosto_nisira'], 'areas_unique_tipo_name');
+        //     // Evita duplicados por tipo+name
+        //     // $table->unique(['tipo_id', 'name', 'idccosto_nisira'], 'areas_unique_tipo_name');
 
-            $table->foreign('area_superior_id')
-                ->references('id')->on('areas')
-                ->onDelete('set null');
-        });
+        //     // $table->foreign('area_superior_id')
+        //     //     ->references('id')->on('areas')
+        //     //     ->onDelete('set null');
+        // });
 
         // Si ya existen registros, aseguremos un tipo por defecto
         DB::table('areas')->whereNull('tipo_id')->update(['tipo_id' => 1]);
