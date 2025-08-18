@@ -11,6 +11,7 @@ use App\Models\ComiteHasPersona;
 use App\Models\Dominio;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
+use App\Models\Grado;
 use App\Models\Objetivo;
 use App\Models\Personal;
 use App\Models\Peso;
@@ -478,37 +479,93 @@ class CampaniaHasEvaluadoController extends Controller
                 // Si el evaluado no está habilitado para evaluación de competencias, continuar
                 if (!$evaluado->habilitado_para_evaluacion_de_competencias) continue;
                 
-                if ($evaluado->habilitado_para_evaluacion_de_competencias) {
-                    $gradoId = $evaluado->tipoPuestoHasNivelJerarquico->dominio->grado->id ?? null;
-                    if (!$gradoId) continue;
+                // if ($evaluado->habilitado_para_evaluacion_de_competencias) {
+                    // $gradoId = $evaluado->tipoPuestoHasNivelJerarquico->dominio->grado->id ?? null;
+                    // if (!$gradoId) continue;
 
-                    // Buscar el peso para este grado y campaña, puede ser más de uno encontrado
-                    $pesos = Peso::where('campania_id', $campaniaId)
-                        ->where('grado_id', $gradoId)
-                        ->with(['tipoRelacionJerarquica'])
-                        ->get();
+                    $gradoOriginalId = $evaluado->tipoPuestoHasNivelJerarquico->dominio->grado->id ?? null;
+                    if (!$gradoOriginalId) continue;
 
-                    if (!$pesos) continue;
+                    
+                    // Presencia de relaciones
+                    $hasJefe = !empty($evaluado->superior_personal_id);
 
-                    foreach ($pesos as $peso) {
-                        // Verificar el tipo de relación jerárquica y manejar según corresponda
-                        // dd($peso);
-                        switch ($peso->tipoRelacionJerarquica->name) {
-                            case 'JEFE':
-                                $this->handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                                break;
-                            case 'PAR':
-                                $this->handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                                break;
-                            case 'SUBORDINADO':
-                                $this->handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                                break;
-                            case 'UNO MISMO':
-                                $this->handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                                break;                
-                        }
+                    // "Pares válidos": mismo superior y mismo tipo de puesto
+                    $paresValidos = $evaluado->paresMismoSuperior
+                        ->filter(function($par) use ($evaluado) {
+                            return $par->personal_id != $evaluado->personal_id &&
+                                $par->tipoPuestoHasNivelJerarquico &&
+                                $evaluado->tipoPuestoHasNivelJerarquico &&
+                                $par->tipoPuestoHasNivelJerarquico->tipoDePuesto &&
+                                $evaluado->tipoPuestoHasNivelJerarquico->tipoDePuesto &&
+                                $par->tipoPuestoHasNivelJerarquico->tipoDePuesto->id == $evaluado->tipoPuestoHasNivelJerarquico->tipoDePuesto->id;
+                        });
+
+                    $numPares = $paresValidos->count();
+                    $numSub = $evaluado->subordinados->count() ?? 0;
+
+                    // 3.1 Calcular pesos efectivos y el grado a registrar según reglas
+                    $calc = $this->calcularPesosEfectivosYGrado($campaniaId, (int)$gradoOriginalId, $hasJefe, $numPares, $numSub);
+                    $gradoAUsar = $calc['grado_id'];
+                    $pesos = $calc['pesos']; // ['JEFE'=>x, 'PAR'=>y, 'SUBORDINADO'=>z]
+
+                    // dd($evaluado->personal_id, $gradoOriginalId, $gradoAUsar, $hasJefe, $numPares, $numSub, $pesos);
+
+                    // 3.2 Limpiar relaciones previas de competencias para este evaluado (evita duplicados)
+                    EvaluadorHasEvaluado::where('evaluado_id', $evaluado->personal_id)
+                        ->where('campania_id', $campaniaId)
+                        ->where('evaluacion_id', $evaluacion->id)
+                        ->delete();
+
+                    // 3.3 Crear relaciones respetando prorrateo
+                    if (($pesos['JEFE'] ?? 0) > 0 && $hasJefe) {
+                        $this->handleSuperior($evaluado, (float)$pesos['JEFE'], $evaluacion, $campaniaId, $gradoAUsar);
                     }
-                }
+
+                    if (($pesos['PAR'] ?? 0) > 0 && $numPares > 0) {
+                        $this->handlePares($evaluado, (float)$pesos['PAR'], $evaluacion, $campaniaId, $gradoAUsar);
+                    }
+
+                    if (($pesos['SUBORDINADO'] ?? 0) > 0 && $numSub > 0) {
+                        $this->handleSubordinados($evaluado, (float)$pesos['SUBORDINADO'], $evaluacion, $campaniaId, $gradoAUsar);
+                    }
+
+                    if (($pesos['UNO MISMO'] ?? 0) >= 0) {
+                        // Si se usa "UNO MISMO", manejarlo aquí si es necesario
+                        // Por ahora, no se maneja, pero se deja como referencia
+                        $this->handleUnoMismo($evaluado, (float)$pesos['UNO MISMO'], $evaluacion, $campaniaId, $gradoAUsar);
+                    } else {
+                        // Manejar el caso donde no se usa "UNO MISMO"
+                        dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} no tiene UNO MISMO");
+                    }
+
+                    // // Buscar el peso para este grado y campaña, puede ser más de uno encontrado
+                    // $pesos = Peso::where('campania_id', $campaniaId)
+                    //     ->where('grado_id', $gradoId)
+                    //     ->with(['tipoRelacionJerarquica'])
+                    //     ->get();
+
+                    // if (!$pesos) continue;
+
+                    // foreach ($pesos as $peso) {
+                    //     // Verificar el tipo de relación jerárquica y manejar según corresponda
+                    //     // dd($peso);
+                    //     switch ($peso->tipoRelacionJerarquica->name) {
+                    //         case 'JEFE':
+                    //             $this->handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                    //             break;
+                    //         case 'PAR':
+                    //             $this->handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                    //             break;
+                    //         case 'SUBORDINADO':
+                    //             $this->handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                    //             break;
+                    //         case 'UNO MISMO':
+                    //             $this->handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
+                    //             break;                
+                    //     }
+                    // }
+                // }
             } elseif ($tipo == 'objetivos') {
                 // Si el evaluado no está habilitado para evaluación por objetivos, continuar
                 if (!$evaluado->habilitado_para_evaluacion_por_objetivos) continue;                
@@ -555,8 +612,77 @@ class CampaniaHasEvaluadoController extends Controller
         return response()->json(['message' => 'Registros generados correctamente']);
     }
 
+    private function calcularPesosEfectivosYGrado(int $campaniaId, int $gradoId, bool $hasJefe, int $numPares, int $numSub): array
+    {
+        // Pesos base del grado original
+        $base = $this->obtenerPesosBase($campaniaId, $gradoId);
+
+        $gradoID180 = Grado::where('name', '180')->where('estado',1)->first()->id;
+        $gradoID90 = Grado::where('name', '90')->where('estado',1)->first()->id;
+        $gradoID270 = Grado::where('name', '270')->where('estado',1)->first()->id;
+
+        // Regla: 180° sin pares => se convierte en 90°
+        if ($gradoId === $gradoID180 && $numPares === 0) {
+            $p90 = $this->obtenerPesosBase($campaniaId, $gradoID90);
+            return ['grado_id' => $gradoID90, 'pesos' => $p90];
+        }
+
+        // Reglas para 270°
+        if ($gradoId === $gradoID270) {
+            // Sin subordinados => se convierte en 180°
+            if ($numSub === 0) {
+                $p180 = $this->obtenerPesosBase($campaniaId, $gradoID180);
+                // Si además no hay pares, 180° se convierte en 90°
+                if ($numPares === 0) {
+                    $p90 = $this->obtenerPesosBase($campaniaId, $gradoID90);
+                    return ['grado_id' => $gradoID90, 'pesos' => $p90];
+                }
+                return ['grado_id' => $gradoID180, 'pesos' => $p180];
+            }
+
+            // Sin pares y con jefe => especial 80%/20%, se mantiene 270°
+            if ($numPares === 0 && $hasJefe) {
+                return ['grado_id' => $gradoID270, 'pesos' => ['JEFE' => 0.8, 'PAR' => 0.0, 'SUBORDINADO' => 0.2, 'UNO MISMO' => 0.0]];
+            }
+
+            // Caso “Manuel Yzaga”: sin pares ni jefe => 100% subordinados, se mantiene 270°
+            if ($numPares === 0 && !$hasJefe && $numSub > 0) {
+                return ['grado_id' => $gradoID270, 'pesos' => ['JEFE' => 0.0, 'PAR' => 0.0, 'SUBORDINADO' => 1.0, 'UNO MISMO' => 0.0]];
+            }
+        }
+        
+        // Caso general: usar pesos base y mantener el grado original
+        // $base = $base + ['UNO MISMO' => 0.0]; // asegura clave
+        // Caso general: usar pesos base y mantener el grado original
+        return ['grado_id' => $gradoId, 'pesos' => $base];
+    }
+    
+    /**
+     * Obtiene pesos base del grado configurado en la tabla pesos.
+     * Retorna claves garantizadas JEFE, PAR, SUBORDINADO con 0.0 si faltan.
+     */
+    private function obtenerPesosBase(int $campaniaId, int $gradoId): array
+    {
+        $map = Peso::where('campania_id', $campaniaId)
+            ->where('grado_id', $gradoId)
+            ->with('tipoRelacionJerarquica')
+            ->get()
+            ->mapWithKeys(function($p){
+                return [strtoupper($p->tipoRelacionJerarquica->name) => (float)$p->peso];
+            });
+
+        return [
+            'JEFE' => (float)($map['JEFE'] ?? 0.0),
+            'PAR' => (float)($map['PAR'] ?? 0.0),
+            'SUBORDINADO' => (float)($map['SUBORDINADO'] ?? 0.0),
+            'UNO MISMO' => (float)($map['UNO MISMO'] ?? 0.0), // Si se usa en el futuro
+        ];
+    }
+    
     private function handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
     {
+        $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
+
         // Si el evaluado tiene un superior, crear o actualizar el registro
         if ($evaluado->superior_personal_id) {
             EvaluadorHasEvaluado::updateOrCreate([
@@ -566,24 +692,30 @@ class CampaniaHasEvaluadoController extends Controller
                 'campania_id' => $campaniaId,
                 'grado_id' => $gradoId,
             ], [
-                'peso' => $peso->peso,
-                'peso_prorrateado' => $peso->peso,
+                'peso' => $pesoValue,
+                'peso_prorrateado' => $pesoValue,
             ]);
         }
     }
+
     private function handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
     {
-        // Obtener pares con el mismo superior y nivel jerárquico
+        $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
+
+        // Obtener pares con el mismo superior y mismo tipo de puesto
         $pares = $evaluado->paresMismoSuperior
             ->filter(function($par) use ($evaluado) {
                 return $par->personal_id != $evaluado->personal_id &&
                     $par->tipoPuestoHasNivelJerarquico &&
+                    $evaluado->tipoPuestoHasNivelJerarquico &&
+                    $par->tipoPuestoHasNivelJerarquico->tipoDePuesto &&
+                    $evaluado->tipoPuestoHasNivelJerarquico->tipoDePuesto &&
                     $par->tipoPuestoHasNivelJerarquico->tipoDePuesto->id == $evaluado->tipoPuestoHasNivelJerarquico->tipoDePuesto->id;
             });
 
         $numPares = $pares->count();
         if ($numPares > 0) {
-            $pesoPorPar = $peso->peso / $numPares;
+            $pesoPorPar = $pesoValue / $numPares;
             foreach ($pares as $par) {
                 EvaluadorHasEvaluado::updateOrCreate([
                     'evaluador_id' => $par->personal_id,
@@ -592,7 +724,7 @@ class CampaniaHasEvaluadoController extends Controller
                     'campania_id' => $campaniaId,
                     'grado_id' => $gradoId,
                 ], [
-                    'peso' => $peso->peso,
+                    'peso' => $pesoValue,
                     'peso_prorrateado' => $pesoPorPar,
                 ]);
             }
@@ -601,11 +733,13 @@ class CampaniaHasEvaluadoController extends Controller
 
     private function handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
     {
+        $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
+
         // Obtener subordinados del evaluado
-        $subordinados = $evaluado->subordinados;
+        $subordinados = $evaluado->subordinados ?? collect();
         $numSub = $subordinados->count();
         if ($numSub > 0) {
-            $pesoPorSub = $peso->peso / $numSub;
+            $pesoPorSub = $pesoValue / $numSub;
             foreach ($subordinados as $sub) {
                 EvaluadorHasEvaluado::updateOrCreate([
                     'evaluador_id' => $sub->personal_id,
@@ -614,15 +748,88 @@ class CampaniaHasEvaluadoController extends Controller
                     'campania_id' => $campaniaId,
                     'grado_id' => $gradoId,
                 ], [
-                    'peso' => $peso->peso,
+                    'peso' => $pesoValue,
                     'peso_prorrateado' => $pesoPorSub,
                 ]);
             }
         }
     }
+    
+    // private function handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+    // {
+    //     // Si el evaluado tiene un superior, crear o actualizar el registro
+    //     if ($evaluado->superior_personal_id) {
+    //         EvaluadorHasEvaluado::updateOrCreate([
+    //             'evaluador_id' => $evaluado->superior_personal_id,
+    //             'evaluado_id' => $evaluado->personal_id,
+    //             'evaluacion_id' => $evaluacion->id,
+    //             'campania_id' => $campaniaId,
+    //             'grado_id' => $gradoId,
+    //         ], [
+    //             'peso' => $peso->peso,
+    //             'peso_prorrateado' => $peso->peso,
+    //         ]);
+    //     }
+    // }
+    // private function handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+    // {
+    //     // Obtener pares con el mismo superior y nivel jerárquico
+    //     $pares = $evaluado->paresMismoSuperior
+    //         ->filter(function($par) use ($evaluado) {
+    //             return 
+    //                 $par->personal_id != $evaluado->personal_id &&
+    //                 $par->tipoPuestoHasNivelJerarquico &&
+    //                 $par->tipoPuestoHasNivelJerarquico->tipoDePuesto->id == $evaluado->tipoPuestoHasNivelJerarquico->tipoDePuesto->id;
+    //         });
+
+    //     $numPares = $pares->count();
+    //     if ($numPares > 0) {
+    //         $pesoPorPar = $peso->peso / $numPares;
+    //         foreach ($pares as $par) {
+    //             EvaluadorHasEvaluado::updateOrCreate([
+    //                 'evaluador_id' => $par->personal_id,
+    //                 'evaluado_id' => $evaluado->personal_id,
+    //                 'evaluacion_id' => $evaluacion->id,
+    //                 'campania_id' => $campaniaId,
+    //                 'grado_id' => $gradoId,
+    //             ], [
+    //                 'peso' => $peso->peso,
+    //                 'peso_prorrateado' => $pesoPorPar,
+    //             ]);
+    //         }
+    //     }
+    // }
+
+    // private function handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+    // {
+    //     // Obtener subordinados del evaluado
+    //     $subordinados = $evaluado->subordinados;
+    //     $numSub = $subordinados->count();
+    //     if ($numSub > 0) {
+    //         $pesoPorSub = $peso->peso / $numSub;
+    //         foreach ($subordinados as $sub) {
+    //             EvaluadorHasEvaluado::updateOrCreate([
+    //                 'evaluador_id' => $sub->personal_id,
+    //                 'evaluado_id' => $evaluado->personal_id,
+    //                 'evaluacion_id' => $evaluacion->id,
+    //                 'campania_id' => $campaniaId,
+    //                 'grado_id' => $gradoId,
+    //             ], [
+    //                 'peso' => $peso->peso,
+    //                 'peso_prorrateado' => $pesoPorSub,
+    //             ]);
+    //         }
+    //     }
+    // }
 
     private function handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
     {
+        $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
+
+        if ($pesoValue < 0) {
+            return;
+        }
+
         // Registrar el evaluado consigo mismo
         EvaluadorHasEvaluado::updateOrCreate([
             'evaluador_id' => $evaluado->personal_id,
@@ -631,8 +838,8 @@ class CampaniaHasEvaluadoController extends Controller
             'campania_id' => $campaniaId,
             'grado_id' => $gradoId,
         ], [
-            'peso' => $peso->peso,
-            'peso_prorrateado' => $peso->peso,
+            'peso' => $pesoValue,
+            'peso_prorrateado' => $pesoValue,
         ]);
     }
 
