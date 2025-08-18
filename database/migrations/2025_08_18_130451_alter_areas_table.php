@@ -23,7 +23,7 @@ class AlterAreasTable extends Migration
             $table->index('area_superior_id');
 
             // Evita duplicados por tipo+name
-            $table->unique(['tipo_id', 'name', 'idccosto_nisira'], 'areas_unique_tipo_name');
+            // $table->unique(['tipo_id', 'name', 'idccosto_nisira'], 'areas_unique_tipo_name');
 
             $table->foreign('area_superior_id')
                 ->references('id')->on('areas')
