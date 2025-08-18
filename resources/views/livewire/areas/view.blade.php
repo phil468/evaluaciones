@@ -68,6 +68,9 @@
 						<thead class="thead">
 							<tr> 
 								<th>ID</th> 
+								@can('editar-area','borrar-area')
+								<th>ACCIONES</th>								
+								@endcan
 								<th>Nombre</th>
 								<th>Tipo</th>
 								<th>Area Superior</th>
@@ -77,16 +80,29 @@
 								{{-- <th>Idempresa Nisira</th> --}}
 								{{-- <th>Idarea Nisira</th> --}}
 								{{-- <th>Fechacreacion Nisira</th> --}}
-																
-								@can('editar-area','borrar-area')
-								<th>ACCIONES</th>								
-								@endcan
 							</tr>
 						</thead>
 						<tbody>
 							@foreach($areas as $row)
 							<tr>
 								<td>{{ $row->id }}</td> 
+								@can('editar-area','borrar-area')
+								<td width="90">
+								<div class="btn-group">
+									@can('editar-area')
+									<a data-toggle="modal" data-target="#updateModal" class="btn btn-warning rounded-xl" wire:click="edit({{$row->id}})">
+										<i class="fa fa-edit"></i> 
+									</a>
+									@endcan
+									@can('borrar-area')							 
+									<a class="btn btn-danger rounded-xl" 
+									onclick="confirm('Confirma borrar Area : {{$row->name}}? \nAreas borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})">
+										<i class="fa fa-trash"></i> 
+									</a> 
+									@endcan  
+								</div>
+								</td>
+								@endcan
 								<td>{{ $row->name }}</td>
 								<td>{{ $row->tipo->name ?? '' }}</td>
 								<td>{{ $row->superior->name ?? '' }}</td>
@@ -100,20 +116,6 @@
 								{{-- <td>{{ $row->idempresa_nisira }}</td> --}}
 								{{-- <td>{{ $row->idarea_nisira }}</td> --}}
 								{{-- <td>{{ $row->fechacreacion_nisira }}</td> --}}
-																
-								@can('editar-area','borrar-area')
-								<td width="90">
-								<div class="btn-group">
-									@can('editar-area')
-									<a data-toggle="modal" data-target="#updateModal" class="btn btn-sm btn-vanguard rounded-xl" wire:click="edit({{$row->id}})">Editar </a>
-									@endcan
-									@can('borrar-area')							 
-									<a class="btn btn-sm btn-danger" 
-									onclick="confirm('Confirma borrar Area : {{$row->name}}? \nAreas borrados no pueden ser recuperados!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"> Borrar </a> 
-									@endcan  
-								</div>
-								</td>
-								@endcan
 							</tr>
 							@endforeach
 						</tbody>
