@@ -1276,6 +1276,16 @@ class CampaniaHasEvaluados {
             $('#importEvaluadosModal').modal('show');
         });
 
+        // Descarga de plantilla
+        $(document).off('click').on('click', '#downloadEvaluadosTemplate', function() {
+            if (!window.campaniaHasEvaluadosInstance?.campaniaIdGlobal) {
+                Swal.fire('Atención','Primero abra la configuración de una campaña.','info'); 
+                return;
+            }
+            const id = window.campaniaHasEvaluadosInstance.campaniaIdGlobal;
+            window.location.href = EVALUADOS_IMPORT_TEMPLATE_URL.replace(':id', id);
+        });
+
         // Validar el archivo de importación
         $('#validateEvaluadosButton').off('click').on('click', () => {
             const fileInput = document.getElementById('evaluadosExcelFile');
@@ -1332,7 +1342,7 @@ class CampaniaHasEvaluados {
                         previewHtml += '</tr></thead><tbody>';
 
                         // Registros de la tabla (máximo 10)
-                        const previewData = response.preview.slice(0, 10);
+                        const previewData = response.preview;//.slice(0, 10);
                         previewData.forEach(row => {
                             previewHtml += '<tr>';
                             headers.forEach(key => {
@@ -1344,9 +1354,9 @@ class CampaniaHasEvaluados {
                         previewHtml += '</tbody></table></div>';
 
                         // Si hay más de 10 registros, mostrar mensaje
-                        if (response.preview.length > 10) {
-                            previewHtml += `<p class="text-muted">Mostrando 10 de ${response.preview.length} registros</p>`;
-                        }
+                        // if (response.preview.length > 10) {
+                        previewHtml += `<p class="text-muted">Mostrando ${response.preview.length} registros</p>`;
+                        // }
 
                         $('#previewEvaluadosContent').html(previewHtml);
                         $('#previewEvaluadosContainer').show();
@@ -1360,6 +1370,13 @@ class CampaniaHasEvaluados {
                         $('#validateEvaluadosButton').show();
                         $('#importEvaluadosSubmitButton').hide();
                     }
+                    // if (response.valid) {
+                    //     $('#validateEvaluadosButton').hide();
+                    //     $('#importEvaluadosSubmitButton').show();
+                    // } else {
+                    //     $('#validateEvaluadosButton').show();
+                    //     $('#importEvaluadosSubmitButton').hide();
+                    // }
                 },
                 error: function (xhr) {
                     let errorMsg = 'Error al validar el archivo.';
@@ -1383,7 +1400,7 @@ class CampaniaHasEvaluados {
             showLoading('Procesando', 'Importando evaluados...');
 
             $.ajax({
-                url: EVALUADOS_IMPORT_URL,
+                url: EVALUADOS_IMPORT_URL.replace(':id', campaniaId),
                 method: 'POST',
                 data: formData,
                 contentType: false,

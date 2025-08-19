@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EvaluadosTemplateExport;
+use App\Imports\EvaluadosRowsImport;
 use App\Models\Area;
 use App\Models\Campania;
 use App\Models\CampaniaHasEvaluado;
@@ -12,15 +14,20 @@ use App\Models\Dominio;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Grado;
+use App\Models\NivelJerarquico;
 use App\Models\Objetivo;
 use App\Models\Personal;
 use App\Models\Peso;
 use App\Models\Respuesta;
 use App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia;
 use App\Models\TipoDePuestoHasNivelJerarquico;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class CampaniaHasEvaluadoController extends Controller
 {
@@ -54,7 +61,8 @@ class CampaniaHasEvaluadoController extends Controller
                  // Relación para obtener pares con el mismo superior y nivel jerárquico
             ])
             ->get();
-                
+        // dd(response()->json($evaluados));
+
         return response()->json($evaluados);
     }
 
@@ -350,12 +358,287 @@ class CampaniaHasEvaluadoController extends Controller
             'file' => 'required|file|mimes:csv,xlsx,xls'
         ]);
 
-        // Aquí implementarías la lógica para importar desde Excel/CSV
-        // Podrías usar Maatwebsite/Laravel-Excel
-        
+        $campaniaId = (int)$request->campania_id;
+
+        $import = new EvaluadosRowsImport();
+        Excel::import($import, $request->file('file'));
+        $rows = $import->rows ?? collect();
+
+        $summary = [];
+        $created = 0;
+        $updated = 0;
+        $skipped = 0;
+        $rowNumber = 2; // cabeceras en fila 1
+
+        foreach ($rows as $row) {
+            // Normalizar filas a array para usar array_key_exists sin errores
+            if ($row instanceof \Illuminate\Support\Collection) {
+                $row = $row->toArray();
+            }
+
+            $rowInfo = ['row' => $rowNumber, 'dni' => trim((string)($row['dni'] ?? '')), 'status' => '', 'changes' => [], 'errors' => []];
+
+            $dni = trim((string)($row['dni'] ?? ''));
+            if ($dni === '') {
+                $rowInfo['status'] = 'skipped';
+                $rowInfo['errors'][] = 'DNI es obligatorio.';
+                $summary[] = $rowInfo; $skipped++; $rowNumber++; continue;
+            }
+
+            $personal = Personal::with(['cargo', 'user'])->where('dni', $dni)->first();
+            if (!$personal) {
+                $rowInfo['status'] = 'skipped';
+                $rowInfo['errors'][] = "No existe personal con DNI {$dni}.";
+                $summary[] = $rowInfo; $skipped++; $rowNumber++; continue;
+            }
+
+            // Buscar registro actual en campaña
+            $existing = CampaniaHasEvaluado::where('personal_id', $personal->id)->where('campania_id', $campaniaId)->first();
+
+            // Preparar valores base (mantener actuales si no vienen en el archivo)
+            $data = [
+                'personal_id' => $personal->id,
+                'campania_id' => $campaniaId,
+                'area_id' => $existing->area_id ?? $personal->area_id,
+                'puesto_id' => $existing->puesto_id ?? $personal->cargo_id,
+                'tipo_de_puesto_campania_id' => $existing->tipo_de_puesto_campania_id??null,
+                'superior_personal_id' => $existing->superior_personal_id ?? $personal->reporta_a,
+                'habilitado_para_evaluacion_de_competencias' => $existing->habilitado_para_evaluacion_de_competencias ?? 0,
+                'habilitado_para_evaluacion_por_objetivos' => $existing->habilitado_para_evaluacion_por_objetivos ?? 0,
+                'cesado' => $existing->cesado ?? $personal->cesado,
+                'estado' => $existing->estado ?? 1,
+            ];
+
+            // AREA
+            $areaNameIn = $this->norm($row['area'] ?? '');
+            if ($areaNameIn !== '') {
+                $area = $this->findAreaByName($areaNameIn);
+                if (!$area) {
+                    $rowInfo['errors'][] = "Área '{$areaNameIn}' no encontrada.";
+                } else {
+                    $data['area_id'] = $area->id;
+                    if (!$existing || $existing->area_id !== $area->id) $rowInfo['changes'][] = 'area_id';
+                }
+            }
+
+            // PUESTO
+            $cargoNameIn = $this->norm($row['puesto'] ?? '');
+            $tipoDePuestoId = $personal->cargo->tipo_de_puesto_id ?? null;
+            // dd($tipoDePuestoId);
+            if ($cargoNameIn !== '') {
+                $cargo = $this->findCargoByName($cargoNameIn);
+                // dd($cargo);
+                if (!$cargo) {
+                    $rowInfo['errors'][] = "Puesto/Cargo '{$cargoNameIn}' no encontrado.";
+                } else {
+                    $data['puesto_id'] = $cargo->id;
+                    $tipoDePuestoId = $cargo->tipo_de_puesto_id;
+                    if (!$existing || $existing->puesto_id !== $cargo->id) $rowInfo['changes'][] = 'puesto_id';
+                    
+                    // Resolver tipo_de_puesto_campania_id por campania + tipo_de_puesto + nivel
+                    $tpnj = TipoDePuestoHasNivelJerarquico::where('campania_id', $campaniaId)
+                        ->when($tipoDePuestoId, fn($q) => $q->where('tipo_de_puesto_id', $tipoDePuestoId))
+                        // ->where('nivel_jerarquico_id', $nivel->id)
+                        ->first();
+                    // dd($tpnj);
+                    if (!$tpnj) {
+                        $rowInfo['errors'][] = "No existe mapeo TipoPuesto+Nivel para la campaña (revise configuración).";
+                    } else {
+                        $data['tipo_de_puesto_campania_id'] = $tpnj->id;
+                        if (!$existing || $existing->tipo_de_puesto_campania_id !== $tpnj->id) $rowInfo['changes'][] = 'tipo_de_puesto_campania_id';
+                    }
+                }
+            }
+
+            // NIVEL JERARQUICO -> mapear a tipo_de_puesto_campania_id
+            // $nivelNameIn = $this->norm($row['nivel_jerarquico'] ?? '');
+            // if ($nivelNameIn !== '') {
+            //     $nivel = $this->findNivelJerarquicoByName($nivelNameIn);
+            //     // dd($nivel);
+            //     if (!$nivel) {
+            //         $rowInfo['errors'][] = "Nivel jerárquico '{$nivelNameIn}' no encontrado.";
+            //     } else {
+            //         // Resolver tipo_de_puesto_campania_id por campania + tipo_de_puesto + nivel
+            //         $tpnj = TipoDePuestoHasNivelJerarquico::where('campania_id', $campaniaId)
+            //             ->when($tipoDePuestoId, fn($q) => $q->where('tipo_de_puesto_id', $tipoDePuestoId))
+            //             ->where('nivel_jerarquico_id', $nivel->id)
+            //             ->first();
+            //         // dd($tpnj);
+            //         if (!$tpnj) {
+            //             $rowInfo['errors'][] = "No existe mapeo TipoPuesto+Nivel para la campaña (revise configuración).";
+            //         } else {
+            //             $data['tipo_de_puesto_campania_id'] = $tpnj->id;
+            //             if (!$existing || $existing->tipo_de_puesto_campania_id !== $tpnj->id) $rowInfo['changes'][] = 'tipo_de_puesto_campania_id';
+            //         }
+            //     }
+            // }
+
+            // DNI SUPERIOR
+            $dniSup = trim((string)($row['dni_superior'] ?? ''));
+            if ($dniSup !== '') {
+                $sup = Personal::where('dni', $dniSup)->first();
+                if (!$sup) {
+                    $rowInfo['errors'][] = "Superior con DNI {$dniSup} no encontrado.";
+                } elseif ($sup->id === $personal->id) {
+                    $rowInfo['errors'][] = "El superior no puede ser la misma persona.";
+                } else {
+                    $data['superior_personal_id'] = $sup->id;
+                    if (!$existing || $existing->superior_personal_id !== $sup->id) $rowInfo['changes'][] = 'superior_personal_id';
+                }
+            }
+
+            // Booleans
+            if (array_key_exists('habilitado_para_evaluacion_de_competencias', $row)) {
+                $val = $this->parseBool($row['habilitado_para_evaluacion_de_competencias']);
+                if (!is_null($val)) {
+                    $data['habilitado_para_evaluacion_de_competencias'] = $val ? 1 : 0;
+                    if (!$existing || (int)$existing->habilitado_para_evaluacion_de_competencias !== (int)$data['habilitado_para_evaluacion_de_competencias']) {
+                        $rowInfo['changes'][] = 'habilitado_para_evaluacion_de_competencias';
+                    }
+                }
+            }
+            if (array_key_exists('habilitado_para_evaluacion_por_objetivos', $row)) {
+                $val = $this->parseBool($row['habilitado_para_evaluacion_por_objetivos']);
+                if (!is_null($val)) {
+                    $data['habilitado_para_evaluacion_por_objetivos'] = $val ? 1 : 0;
+                    if (!$existing || (int)$existing->habilitado_para_evaluacion_por_objetivos !== (int)$data['habilitado_para_evaluacion_por_objetivos']) {
+                        $rowInfo['changes'][] = 'habilitado_para_evaluacion_por_objetivos';
+                    }
+                }
+            }
+
+            // CORREO -> actualizar Personal.correo_empresa y User.email (único). Crear user si no existe.
+            $correo = trim((string)($row['correo'] ?? ''));
+            if ($correo !== '') {
+                if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+                    $rowInfo['errors'][] = "Correo '{$correo}' inválido.";
+                } else {
+                    $user = $personal->user;
+                    $existsOther = User::where('email', $correo)
+                        ->when($user, fn($q) => $q->where('id', '!=', $user->id))
+                        ->exists();
+                    
+                    // evaluamos si este otro usuario tiene email null o vacío
+                    $otherUser = User::where('email', $correo)
+                        ->when($user, fn($q) => $q->where('id', '!=', $user->id))
+                        ->first();
+
+                    if ($otherUser && !$otherUser->personal_id) {
+                        $otherUser->personal_id = $personal->id;
+                        $otherUser->save();
+                        // buscar si tiene rol, sino asignar el rol PERSONAL
+                        if ($otherUser->roles->isEmpty()) {
+                            $otherUser->assignRole('PERSONAL');
+                        }
+                        $user = $otherUser;
+                        $existsOther = false; // ya no existe otro usuario con este email
+                    }                    
+
+                    if ($existsOther) {
+                        $rowInfo['errors'][] = "El email '{$correo}' ya está en uso por otro usuario.";
+                    } else {
+                        // Actualizar correo empresa en Personal
+                        if ($personal->correo_empresa !== $correo) {
+                            $personal->correo_empresa = $correo;
+                            $personal->save();
+                            $rowInfo['changes'][] = 'personal.correo_empresa';
+                        }
+                        // Actualizar o crear User
+                        if ($user) {
+                            if ($user->email !== $correo) {
+                                $user->email = $correo;
+                                $user->save();
+                                $rowInfo['changes'][] = 'user.email';
+                            }
+                        } else {
+                            $new = new User();
+                            $new->name = $personal->name;
+                            $new->email = $correo;
+                            // si tu tabla users tiene columna personal_id:
+                            if (Schema::hasColumn('users', 'personal_id')) {
+                                $new->personal_id = $personal->id;
+                            }
+                            $new->password = bcrypt(Str::random(16));
+                            $new->save();
+
+                            // a este personal nuevo asignarle el rol PERSONAL
+                            $new->assignRole('PERSONAL');
+
+                            $rowInfo['changes'][] = 'user.created';
+                        }
+                    }
+                }
+            }
+
+            // Si hubo errores en la fila, no persisto cambios de CampaniaHasEvaluado
+            if (!empty($rowInfo['errors'])) {
+                $rowInfo['status'] = 'skipped';
+                $summary[] = $rowInfo;
+                $skipped++;
+                $rowNumber++;
+                continue;
+            }
+
+            // Guardar (create/update) usando la misma validación del controlador
+            try {
+                if ($existing) {
+                    $this->saveOrUpdateEvaluado($data, $existing->id);
+                    $rowInfo['status'] = 'updated';
+                    $updated++;
+                } else {
+                    $this->saveOrUpdateEvaluado($data);
+                    $rowInfo['status'] = 'created';
+                    $created++;
+                }
+            } catch (\Throwable $e) {
+                $rowInfo['status'] = 'skipped';
+                $rowInfo['errors'][] = $e->getMessage();
+                $skipped++;
+            }
+
+            $summary[] = $rowInfo;
+            $rowNumber++;
+        }
+
         return response()->json([
-            'message' => 'Importación completada correctamente'
+            'message' => 'Importación completada.',
+            'created' => $created,
+            'updated' => $updated,
+            'skipped' => $skipped,
+            'rows' => $summary,
         ]);
+    }
+
+    // Helpers de importación
+    private function norm(?string $v): string
+    {
+        $v = trim((string)$v);
+        $v = preg_replace('/\s+/', ' ', $v);
+        return mb_strtoupper(Str::of($v)->ascii());
+    }
+
+    private function parseBool($val): ?bool
+    {
+        if (is_null($val)) return null;
+        $s = mb_strtolower(trim((string)$val));
+        if ($s === '') return null;
+        return in_array($s, ['1','si','sí','true','t','y','yes','x']) ? true :
+               (in_array($s, ['0','no','false','f','n']) ? false : null);
+    }
+
+    private function findAreaByName(string $normalizedName): ?Area
+    {
+        return Area::whereRaw('UPPER(name)=?', [$normalizedName])->first();
+    }
+
+    private function findCargoByName(string $normalizedName): ?Cargo
+    {
+        return Cargo::whereRaw('UPPER(name)=?', [$normalizedName])->first();
+    }
+
+    private function findNivelJerarquicoByName(string $normalizedName): ?NivelJerarquico
+    {
+        return NivelJerarquico::whereRaw('UPPER(name)=?', [$normalizedName])->first();
     }
 
     /**
@@ -398,6 +681,15 @@ class CampaniaHasEvaluadoController extends Controller
     }
 
     /**
+     * Descarga de plantilla Excel con cabeceras e instrucciones
+     */
+    public function templateEvaluados($campaniaId)
+    {
+        // No se persiste nada, solo se entrega la plantilla
+        return Excel::download(new EvaluadosTemplateExport, "plantilla_evaluados_campania_{$campaniaId}.xlsx");
+    }
+
+    /**
      * Validar archivo de importación de evaluados.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -410,34 +702,82 @@ class CampaniaHasEvaluadoController extends Controller
             'file' => 'required|file|mimes:csv,xlsx,xls'
         ]);
 
-        // Aquí implementarías la lógica para validar el archivo Excel/CSV
-        // Esta es una simulación de respuesta
-        
+        $campaniaId = (int)$request->campania_id;
+
+        $import = new EvaluadosRowsImport();
+        Excel::import($import, $request->file('file'));
+        $rows = $import->rows ?? collect();
+
+        $errors = [];
+        $preview = [];
+        $rowNumber = 2; // considerando fila 1 como cabeceras
+
+        foreach ($rows as $row) {
+            $dni = trim((string)($row['dni'] ?? ''));
+            $correo = trim((string)($row['correo'] ?? ''));
+            $errRow = [];
+
+            if ($dni === '') {
+                $errRow[] = 'DNI es obligatorio.';
+            } else {
+                $personal = Personal::where('dni', $dni)->first();
+                if (!$personal) {
+                    $errRow[] = "No existe personal con DNI {$dni}.";
+                }
+            }
+
+            // Si se proporcionan nombres de área/puesto/nivel, solo validamos existencia
+            $areaName = $this->norm($row['area'] ?? '');
+            if ($areaName !== '' && !$this->findAreaByName($areaName)) {
+                $errRow[] = "Área '{$areaName}' no encontrada.";
+            }
+
+            $cargoName = $this->norm($row['puesto'] ?? '');
+            if ($cargoName !== '' && !$this->findCargoByName($cargoName)) {
+                $errRow[] = "Puesto/Cargo '{$cargoName}' no encontrado.";
+            }
+
+            $nivelName = $this->norm($row['nivel_jerarquico'] ?? '');
+            if ($nivelName !== '' && !$this->findNivelJerarquicoByName($nivelName)) {
+                $errRow[] = "Nivel jerárquico '{$nivelName}' no encontrado.";
+            }
+
+            $dniSup = trim((string)($row['dni_superior'] ?? ''));
+            if ($dniSup !== '' && !Personal::where('dni', $dniSup)->exists()) {
+                $errRow[] = "Superior con DNI {$dniSup} no encontrado.";
+            }
+
+            if ($correo !== '' && !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+                $errRow[] = "Correo '{$correo}' inválido.";
+            }
+
+            if (!empty($errRow)) {
+                $errors[] = "Fila {$rowNumber}: " . implode(' ', $errRow);
+            }
+
+            // if (count($preview) < 20) {
+                $preview[] = [
+                    'DNI' => $dni,
+                    'AREA' => (string)($row['area'] ?? ''),
+                    'PUESTO' => (string)($row['puesto'] ?? ''),
+                    'NIVEL JERARQUICO' => (string)($row['nivel_jerarquico'] ?? ''),
+                    'DNI SUPERIOR' => (string)($row['dni_superior'] ?? ''),
+                    'HAB. COMPETENCIAS' => (string)($row['habilitado_para_evaluacion_de_competencias'] ?? ''),
+                    'HAB. OBJETIVOS' => (string)($row['habilitado_para_evaluacion_por_objetivos'] ?? ''),
+                    'CORREO' => $correo,
+                ];
+            // }
+
+            $rowNumber++;
+        }
+
         return response()->json([
-            'valid' => true,
-            'total' => 50,
-            'valid_count' => 48,
-            'error_count' => 2,
-            'errors' => [
-                'Fila 5: El DNI 12345678 no corresponde a ningún empleado registrado.',
-                'Fila 12: El campo área es obligatorio.'
-            ],
-            'preview' => [
-                [
-                    'DNI' => '12345678',
-                    'Nombre' => 'Juan Pérez',
-                    'Área' => 'Recursos Humanos',
-                    'Puesto' => 'Analista',
-                    'Superior' => '87654321'
-                ],
-                [
-                    'DNI' => '87654321',
-                    'Nombre' => 'María García',
-                    'Área' => 'Finanzas',
-                    'Puesto' => 'Gerente',
-                    'Superior' => null
-                ]
-            ]
+            'valid' => count($errors) === 0,
+            'total' => $rows->count(),
+            'valid_count' => $rows->count() - count($errors),
+            'error_count' => count($errors),
+            'errors' => $errors,
+            'preview' => $preview,
         ]);
     }
 
@@ -536,7 +876,7 @@ class CampaniaHasEvaluadoController extends Controller
                         $this->handleUnoMismo($evaluado, (float)$pesos['UNO MISMO'], $evaluacion, $campaniaId, $gradoAUsar);
                     } else {
                         // Manejar el caso donde no se usa "UNO MISMO"
-                        dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} no tiene UNO MISMO");
+                        // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} no tiene UNO MISMO");
                     }
 
                     // // Buscar el peso para este grado y campaña, puede ser más de uno encontrado

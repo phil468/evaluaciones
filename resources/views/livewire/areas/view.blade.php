@@ -87,7 +87,7 @@
 							<tr>
 								<td>{{ $row->id }}</td> 
 								@can('editar-area','borrar-area')
-								<td width="90">
+								<td width="150">
 								<div class="btn-group">
 									@can('editar-area')
 									<a data-toggle="modal" data-target="#updateModal" class="btn btn-warning rounded-xl" wire:click="edit({{$row->id}})">

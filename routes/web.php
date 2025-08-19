@@ -283,6 +283,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::post('/campania_has_evaluados/{id}/toggle-objetivos', [CampaniaHasEvaluadoController::class, 'toggleObjetivos'])->name('campania_has_evaluados.toggle-objetivos');
     Route::post('/campania_has_evaluados/importar', [CampaniaHasEvaluadoController::class, 'importar'])->name('campania_has_evaluados.importar');
     Route::post('/campania_has_evaluados/validar-importar', [CampaniaHasEvaluadoController::class, 'validarImportar'])->name('campania_has_evaluados.validar-importar');
+    Route::post('/campanias/{id}/importar-evaluados', [CampaniaHasEvaluadoController::class, 'importar'])->name('campanias.importar_evaluados');
+    Route::post('/campanias/{id}/validar-evaluados', [CampaniaHasEvaluadoController::class, 'validarImportar'])->name('campanias.validar_evaluados');
+    Route::get('/campanias/{id}/evaluados/template', [CampaniaHasEvaluadoController::class, 'templateEvaluados'])->name('campanias.evaluados.template');
     Route::resource('campania_has_evaluados', CampaniaHasEvaluadoController::class);
 
     Route::get('/nivel_jerarquicos/data', [NivelJerarquicoController::class, 'getData'])->name('nivel_jerarquicos.data');

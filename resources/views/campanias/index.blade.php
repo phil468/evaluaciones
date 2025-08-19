@@ -959,7 +959,7 @@
                         <div class="form-group">
                             <label for="evaluadosExcelFile">Seleccionar archivo Excel</label>
                             <input type="file" class="form-control-file" id="evaluadosExcelFile" accept=".xlsx,.xls">
-                            <small class="form-text text-muted">El archivo debe contener las columnas: DNI, nombre, área, puesto, etc.</small>
+                            {{-- <small class="form-text text-muted">El archivo debe contener las columnas: DNI, nombre, área, puesto, etc.</small> --}}
                         </div>
 
                         <!-- Panel de Validación -->
@@ -988,8 +988,14 @@
                 <div class="modal-footer">
                     <button type="button" class="btn-sm" data-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" id="validateEvaluadosButton">Validar</button>
-                    <button type="button" class="btn btn-success" id="importEvaluadosButton"
-                        style="display: none;">Importar</button>
+                    {{-- <button type="button" class="btn btn-success" id="importEvaluadosButton"
+                        style="display: none;">Importar</button> --}}
+                    <button class="btn btn-primary" id="importEvaluadosSubmitButton" style="display: none;">
+                        <i class="fas fa-file-import"></i> Importar
+                    </button>
+                    <a id="downloadEvaluadosTemplate" class="btn btn-outline-primary">
+                        <i class="fas fa-download"></i> Descargar plantilla
+                    </a>
                 </div>
             </div>
         </div>
@@ -1146,8 +1152,9 @@
         const EVALUADOS_TOGGLE_COMPETENCIAS_URL = "{{ route('campania_has_evaluados.toggle-competencias', ':id') }}";
         const EVALUADOS_TOGGLE_OBJETIVOS_URL = "{{ route('campania_has_evaluados.toggle-objetivos', ':id') }}";
         const EVALUADOS_SELECTS_URL = "{{ route('campania_has_evaluados.selects') }}";
-        const EVALUADOS_IMPORT_URL = "{{ route('campania_has_evaluados.importar') }}";
-        const EVALUADOS_VALIDATE_IMPORT_URL = "{{ route('campania_has_evaluados.validar-importar') }}";
+        const EVALUADOS_IMPORT_URL = "{{ route('campanias.importar_evaluados', ':id') }}";
+        const EVALUADOS_VALIDATE_IMPORT_URL = "{{ route('campanias.validar_evaluados', ':id') }}";
+        const EVALUADOS_IMPORT_TEMPLATE_URL = "{{ route('campanias.evaluados.template', ':id') }}";
         const EVALUADOS_SYNC_USER_EMAIL = "{{ route('campania_has_evaluados.syncUserEmail', ':id') }}";
         const EVALUADOS_CREATE_USER = "{{ route('campania_has_evaluados.createUser', ':id') }}";
 
