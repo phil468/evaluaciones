@@ -77,7 +77,7 @@ class CampaniaHasEvaluadoController extends Controller
      */    
     public function getSelects(Request $request)
     {
-        $areas = Area::select('id', 'name as name')->orderBy('name')->get();
+        $areas = Area::select('id', 'name as name')->where('estado', 1)->orderBy('name')->get();
         $personal = Personal::select('id', 'name', 'dni')
         ->orderBy('name')
         ->where('deleted_at', null)
