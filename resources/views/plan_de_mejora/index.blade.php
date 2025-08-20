@@ -63,7 +63,7 @@
                             </td>
                             <td class="text-right">
                                 {{-- Botón de ver detalle --}}
-                                <button class="btn btn-vanguard rounded-xl btn-sm w-100" onclick="verDetallePlan(2024)">
+                                <button class="btn btn-vanguard rounded-xl btn-sm w-100 disabled" onclick="verDetallePlan(2024)" disabled >
                                     Ver detalle
                                 </button>
                             </td>

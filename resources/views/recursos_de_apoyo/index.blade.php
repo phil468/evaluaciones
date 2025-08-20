@@ -18,8 +18,10 @@
                 <div class="list-group">
                     {{-- Aquí se pueden cargar dinámicamente los videos desde el controlador --}}
                     @foreach($videosTutoriales ?? [] as $video)
-                        <a href="{{ $video['url'] ?? '#' }}" class="pl-0 border-0 list-group-item list-group-item-action">
-                            <i class="mr-2 fas fa-play-circle text-vanguard"></i> {{ $video['titulo'] ?? 'Tutorial' }}
+                    {{-- enlaces deshabilitados para evitar errores de carga --}}
+                        <a href="{{ $video['url'] ?? '#' }}" class="pl-0 border-0 list-group-item list-group-item-action disabled">
+                            <i class="mr-2 fas fa-play-circle text-vanguard"></i>
+                             {{ $video['titulo'] ?? 'Tutorial' }}
                         </a>
                     @endforeach
                     
@@ -39,7 +41,7 @@
                 <div class="list-group">
                     {{-- Aquí se pueden cargar dinámicamente las guías desde el controlador --}}
                     @foreach($guiasInformativas ?? [] as $guia)
-                        <a href="{{ $guia['url'] ?? '#' }}" class="pl-0 border-0 list-group-item list-group-item-action">
+                        <a href="{{ $guia['url'] ?? '#' }}" class="pl-0 border-0 list-group-item list-group-item-action disabled">
                             <i class="mr-2 fas fa-file-alt text-vanguard"></i> {{ $guia['titulo'] ?? 'Guía' }}
                         </a>
                     @endforeach
@@ -60,7 +62,7 @@
                 <div class="list-group">
                     {{-- Aquí se pueden cargar dinámicamente los formatos desde el controlador --}}
                     @foreach($formatos ?? [] as $formato)
-                        <a href="{{ $formato['url'] ?? '#' }}" class="pl-0 border-0 list-group-item list-group-item-action">
+                        <a href="{{ $formato['url'] ?? '#' }}" class="pl-0 border-0 list-group-item list-group-item-action disabled">
                             <i class="mr-2 fas fa-file-download text-vanguard"></i> {{ $formato['titulo'] ?? 'Formato' }}
                         </a>
                     @endforeach

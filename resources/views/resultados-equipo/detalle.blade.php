@@ -74,8 +74,8 @@
                             </span>
                         </td>
                         <td class="text-right">
-                            <button class="btn rounded-xl btn-vanguard btn-sm w-100" 
-                                    onclick="verDetalle('competencias', 2024)">
+                            <button class="btn rounded-xl btn-vanguard btn-sm w-100 disabled" 
+                                    onclick="verDetalle('competencias', 2024)" disabled>
                                 Ver detalle
                             </button>
                         </td>
@@ -107,9 +107,9 @@
                             </span>
                         </td>
                         <td style="width: 20%;" class="text-right">
-                            <button class="btn rounded-xl btn-vanguard btn-sm w-100" 
+                            <button class="btn rounded-xl btn-vanguard btn-sm w-100 disabled" 
                                     {{ !isset($objetivos['2025']['tieneResultados']) || !$objetivos['2025']['tieneResultados'] ? 'disabled' : '' }}
-                                    onclick="verDetalle('objetivos', 2025)">
+                                    onclick="verDetalle('objetivos', 2025)" disabled>
                                 Ver detalle
                             </button>
                         </td>
@@ -131,8 +131,8 @@
                             </span>
                         </td>
                         <td class="text-right">
-                            <button class="btn rounded-xl btn-vanguard btn-sm w-100" 
-                                    onclick="verDetalle('objetivos', 2024)">
+                            <button class="btn rounded-xl btn-vanguard btn-sm w-100 disabled" 
+                                    onclick="verDetalle('objetivos', 2024)" disabled>
                                 Ver detalle
                             </button>
                         </td>
@@ -164,9 +164,9 @@
                             </span>
                         </td>
                         <td style="width: 20%;" class="text-right">
-                            <button class="btn rounded-xl btn-vanguard btn-sm w-100" 
+                            <button class="btn rounded-xl btn-vanguard btn-sm w-100 disabled" 
                                     {{ !isset($pdi['2025']['tieneResultados']) || !$pdi['2025']['tieneResultados'] ? 'disabled' : '' }}
-                                    onclick="verDetalle('pdi', 2025)">
+                                    onclick="verDetalle('pdi', 2025)" disabled>
                                 Ver detalle
                             </button>
                         </td>
@@ -188,8 +188,10 @@
                             </span>
                         </td>
                         <td class="text-right">
-                            <button class="btn rounded-xl btn-vanguard btn-sm w-100" 
-                                    onclick="verDetalle('pdi', 2024)">
+                            <button class="btn rounded-xl btn-vanguard btn-sm w-100 disabled" 
+                                    onclick="verDetalle('pdi', 2024)"
+                                    disabled
+                                    >
                                 Ver detalle
                             </button>
                         </td>
