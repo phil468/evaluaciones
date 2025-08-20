@@ -81,4 +81,12 @@ class Area extends Model
         $v = Str::of($v)->ascii();     // quita tildes
         $this->attributes['name'] = mb_strtoupper($v);
     }
+
+    public function getNameAttribute($value)
+    {
+        $v = trim((string)$value);
+        $v = preg_replace('/\s+/', ' ', $v ?? '');
+        $v = Str::of($v)->ascii();     // quita tildes
+        return mb_strtoupper($v);        
+    }
 }

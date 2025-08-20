@@ -3,18 +3,18 @@
     <div class="modal-dialog" role="document">
         <div class="rounded-2xl modal-content">
             <div class="text-white modal-header bg-vanguard rounded-t-2xl">                <h5 class="modal-title" id="createDataModalLabel">Nuevo Area</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                      <span aria-hidden="true close-btn">×</span>
                 </button>
             </div>
            <div class="modal-body">
 				<form>
             <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name">Nombre</label>
                 <input wire:model="name" type="text" class="form-control" id="name" placeholder="Name">@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
             
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="gerencia_id">Gerencia</label>
                 <select name="gerencia_id"
                     class="form-control" wire:model.lazy="gerencia_id" class="form-control"
@@ -27,7 +27,7 @@
                 @error('gerencia_id')
                     <span class="error text-danger">{{ $message }}</span>
                 @enderror
-            </div>
+            </div> --}}
 
             <div class="form-group">
                 <label>Estado</label>
@@ -39,7 +39,32 @@
                     @error('estado') <span class="error text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
+            
             <div class="form-group">
+                <label for="tipo">Tipo</label>
+                <select wire:model="tipo_id" id="tipo_id" class="form-control">
+                    <option value="">-- Seleccione --</option>
+                    @foreach ($tipos as $id => $nombre)
+                        <option value="{{ $id }}">{{ $nombre }}</option>
+                    @endforeach
+                </select>
+                @error('tipo_id') <span class="error text-danger">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="area_superior_id">Área superior</label>
+                <select wire:model="area_superior_id" id="area_superior_id" class="form-control">
+                    <option value="">-- Ninguna --</option>
+                    @foreach ($areasPadre as $id => $nombre)
+                        @if ($selected_id != $id)
+                            <option value="{{ $id }}">{{ $nombre }}</option>
+                        @endif
+                    @endforeach
+                </select>
+                @error('area_superior_id') <span class="error text-danger">{{ $message }}</span> @enderror
+            </div>
+            
+            {{-- <div class="form-group">
                 <label for="idempresa_nisira">Id empresa Nisira</label>
                 <input wire:model="idempresa_nisira" type="text" class="form-control" id="idempresa_nisira" placeholder="Idempresa Nisira">@error('idempresa_nisira') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
@@ -50,7 +75,7 @@
             <div class="form-group">
                 <label for="fechacreacion_nisira">Fecha creacion Nisira</label>
                 <input wire:model="fechacreacion_nisira" type="date" class="form-control" id="fechacreacion_nisira" placeholder="Fechacreacion Nisira">@error('fechacreacion_nisira') <span class="error text-danger">{{ $message }}</span> @enderror
-            </div>
+            </div> --}}
 
                 </form>
             </div>

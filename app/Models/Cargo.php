@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Cargo extends Model
 {
@@ -26,12 +27,18 @@ class Cargo extends Model
 	
     public function setNameAttribute($value)
     {
-        $this->attributes['name'] = mb_strtoupper(trim($value));
+        $v = trim((string)$value);
+        $v = preg_replace('/\s+/', ' ', $v ?? '');
+        $v = Str::of($v)->ascii();     // quita tildes
+        $this->attributes['name'] = mb_strtoupper($v);
     }
 
     public function getNameAttribute($value)
     {
-        return mb_strtoupper(trim($value));
+        $v = trim((string)$value);
+        $v = preg_replace('/\s+/', ' ', $v ?? '');
+        $v = Str::of($v)->ascii();     // quita tildes
+        return mb_strtoupper($v);        
     }
 
     public function tipoDePuesto()
