@@ -159,12 +159,16 @@
     </div>
 
     <!-- Botón para descargar informe -->
-    <div class="mt-3 row justify-content-center">
+    <div class="mt-3 row justify-content-center"
+    style="display: none;"
+    >
         <div class="col-md-4">
             <a href=
             "#"
             {{-- "{{ route('evaluaciones.descargar-informe') }}"  --}}
-            class="shadow rounded-xl btn btn-vanguard btn-block disabled">
+            class="shadow rounded-xl btn btn-vanguard btn-block disabled"
+            
+            >
                 <i class="mr-2 fas fa-download"></i> Descargar informe
             </a>
         </div>
