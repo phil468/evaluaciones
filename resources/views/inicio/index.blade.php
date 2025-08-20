@@ -95,7 +95,7 @@
                 </div>
                 <div class="card-footer rounded-b-xl">
                     <a href="{{ url('evaluaciones-de-desempeno/2') }}"
-                    class="shadow rounded-xl btn btn-vanguard btn-block">
+                    class="shadow rounded-xl btn btn-vanguard btn-block disabled" disabled>
                         Ver Resultados
                     </a>
                 </div>
@@ -150,7 +150,7 @@
                     {{ route('plan.mejora') }}
                     {{-- "#" --}}
                     {{-- "{{ route('evaluaciones.desarrollo') }}"  --}}
-                    class="shadow rounded-xl btn btn-vanguard btn-block">
+                    class="shadow rounded-xl btn btn-vanguard btn-block disabled" disabled>
                         Ver Resultados
                     </a>
                 </div>
