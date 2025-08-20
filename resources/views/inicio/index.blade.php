@@ -38,7 +38,7 @@
     </div>
     @endif
 
-    <div class="mt-2 mb-0 h4 font-style-poppins font-weight-bold">Resultados de Evaluaciones</div>
+    <div class="mt-2 mb-0 h4 font-style-poppins font-weight-bold">Resultados de Evaluaciones 2024</div>
     <!-- Secciones principales en tarjetas -->
     <div class="row">
         <!-- Evaluación por Competencias -->
