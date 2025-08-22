@@ -104,6 +104,10 @@
             $('#graciasModal').modal('show');
         });
 
+        window.livewire.on('confirmacionModal', () => {
+            $('#confirmacionModal').modal('show');
+        });
+
         window.livewire.on('openHistorialModal', function() {
             $('#auditoriaModal').modal('show');
         });

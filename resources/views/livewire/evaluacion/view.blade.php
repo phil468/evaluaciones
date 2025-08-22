@@ -80,31 +80,6 @@
                                 <tbody>
                                     @foreach ($preguntas as $index => $item)
 
-                                        {{-- @if ($item['seccion_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
-                                            <tr>
-                                                <td class="row">
-                                                    <div class="align-content-center col-12 col-sm-4 col-lg-3 col-xl-4">
-                                                        {{ $item['numero_orden'] . '. ' . $item['pregunta'] }}</div>
-                                                    <div class="align-content-center col-12 col-sm-8 col-lg-9 col-xl-8 rating-buttons">
-                                                        @for ($i = 1; $i <= 10; $i++)
-                                                            <button class="btn btn-md 
-                                                                @if ($item['valor'] == $i) btn-primary 
-                                                                @else btn-outline-{{ isset($escalasArray[$i]) ? $escalasArray[$i]['color'] : 'secondary' }} @endif
-                                                                {{ $i <= 10 ? 'm-1' : '' }}"
-                                                                wire:click="marcarValor({{ $index }}, {{ $i }})"
-                                                                data-toggle="tooltip"
-                                                                title="{{ isset($escalasArray[$i]) ? $escalasArray[$i]['name'] : '' }}">
-                                                                {{ $i }}
-                                                            </button>
-                                                        @endfor
-                                                        @error('preguntas.' . $index . '.valor')
-                                                            <br><span class="text-danger">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endif --}}
-
                                         @if ($item['campania_has_competencia_id'] == $secciones[$seccion_indexs[$seccion_index_select]]['id'])
                                             <tr>
                                                 <td class="row">
@@ -142,6 +117,24 @@
 
                                 </tbody>
                             </table>
+                            {{-- Comentario obligatorio por sección --}}
+                            @php($seccionActualId = $secciones[$seccion_indexs[$seccion_index_select]]['id'])
+                            <div class="mt-3 form-group">
+                                <label for="comentario_seccion_{{ $seccionActualId }}" class="font-weight-bold">
+                                    Justifique la razón de la puntuación otorgada
+                                    @if($comentarioObligatorio)<span class="text-danger">*</span>@endif
+                                </label>
+                                <textarea
+                                    id="comentario_seccion_{{ $seccionActualId }}"
+                                    class="form-control"
+                                    rows="3"
+                                    wire:model.defer="comentarios.{{ $seccionActualId }}"
+                                    placeholder="Describa brevemente el motivo de su calificación en esta competencia..."
+                                ></textarea>
+                                @error('comentarios.' . $seccionActualId)
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
                         <br>
                         {{-- boton de anterior y siguiente --}}
@@ -156,7 +149,8 @@
                                         wire:click="siguiente">Siguiente</button>
                                 @else
                                     <button type="button" class="mx-1 rounded-xl btn btn-vanguard btn-lg"
-                                        id="confirmarGuardado" data-toggle="modal" data-target="#confirmacionModal"
+                                        id="confirmarGuardado" data-toggle="modal"
+                                        {{-- data-target="#confirmacionModal" --}}
                                         wire:click="confirmarGuardado">Guardar</button>
                                 @endif
                             </div>
@@ -303,12 +297,6 @@
                 /* font-weight: bold; */
             }
 
-            /* .question {
-                border: 1px solid #ccc;
-                border-radius: 10px;
-                padding: 10px;
-                margin-bottom: 10px;
-            } */
         </style>
     @endpush
 </div>

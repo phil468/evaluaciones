@@ -121,4 +121,8 @@ faltan estos:
 php artisan migrate --path=/database/migrations/2025_08_18_130451_alter_areas_table.php
 php artisan migrate --path=/database/migrations/2025_08_18_132232_create_tipo_areas_table.php
 
+php artisan migrate --path=/database/migrations/2025_08_22_074752_create_evaluador_as_evaluado_comentarios_table.php
+php artisan migrate --path=/database/migrations/2025_08_22_113145_alter_evaluador_has_evaluado_comentarios_table.php
+php artisan migrate --path=/database/migrations/2025_08_22_130137_add_relacion_jerarquica_id_evaluador_has_evaluado_table.php
+
 corregir la carpeta: adm a public

@@ -15,6 +15,7 @@ use App\Models\Pregunta;
 use App\Models\Respuesta;
 use App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia;
 use App\Models\TiposDeObjetivo;
+use App\Models\EvaluadorHasEvaluadoComentario;
 
 class Evaluacion extends Component
 {
@@ -41,6 +42,9 @@ class Evaluacion extends Component
     public $acepto_escala = false;
     public $escalaMediciones = [];
     public $escalasArray = []; // Para acceder fácilmente por valor
+    
+    public $comentarios = [];              // [campania_has_competencia_id => 'texto']
+    public $comentarioObligatorio = true;  // configurable si lo deseas
     
     protected $listeners = ['guardar' => 'guardar'];
 
@@ -147,18 +151,42 @@ class Evaluacion extends Component
                                 'color' => $chc->color,
                             ];
                         })->unique('id')->values()->toArray();
-
-                        // dd($this->secciones);
-
                     }
                     $this->secciones = (array) $this->secciones;
-                    $this->seccion_indexs = array_keys($this->secciones);
-                    // dd($this->seccion_indexs);
-                    //seccion_index_select, debe ser el tamaño de $this->seccion_indexs menos 1
-                    // $this->seccion_index_select = count($this->seccion_indexs)-1;
+                    $this->seccion_indexs = array_keys($this->secciones ?? []);
                     $this->seccion_index_select = 0;
             }
-            
+        //borrar los comentarios
+        $this->comentarios = [];
+
+        // Cargar comentarios con NUEVAS llaves (por sección)
+        if ($this->evaluadorHasEvaluado) {
+            $this->comentarios = EvaluadorHasEvaluadoComentario::where('evaluado_id', $this->evaluadorHasEvaluado->evaluado_id)
+                ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
+                ->where('tipo_relacion_jerarquica_id', $this->evaluadorHasEvaluado->relacion_jerarquica_id)
+                ->pluck('comentario', 'campania_has_competencia_id')
+                ->toArray();
+        } else {
+            $this->comentarios = [];
+        }
+    }
+
+    private function currentSeccionId(): ?int
+    {
+        $key = $this->seccion_indexs[$this->seccion_index_select] ?? null;
+        return $key !== null ? ($this->secciones[$key]['id'] ?? null) : null;
+    }
+
+    private function validarComentarioSeccionActual(): void
+    {
+        if (!$this->comentarioObligatorio) return;
+
+        $seccionId = $this->currentSeccionId();
+        $texto = trim((string)($this->comentarios[$seccionId] ?? ''));
+        if ($seccionId && $texto === '') {
+            $this->addError("comentarios.$seccionId", 'Este comentario es obligatorio.');
+            throw new \RuntimeException('Comentario de sección requerido.');
+        }
     }
 
     public function render()
@@ -201,7 +229,6 @@ class Evaluacion extends Component
                 'label' => $label
             ]);
         }
-
         
         if ($this->redirectTo) {
             return redirect($this->redirectTo);
@@ -268,6 +295,12 @@ class Evaluacion extends Component
         [
             'preguntas.*.valor.required' => 'Debe responder todas las preguntas.',
         ]);
+        
+        try {
+            $this->validarComentarioSeccionActual();
+        } catch (\RuntimeException $e) {
+            return; // corta el flujo si falta comentario
+        }
 
         if ($this->seccion_index_select < count($this->seccion_indexs)-1) {
             $this->seccion_index_select = $this->seccion_index_select + 1;
@@ -281,7 +314,34 @@ class Evaluacion extends Component
 
     public function confirmarGuardado()
     {
-        // $this->emit('confirmarGuardado');
+        // Validar que todas las preguntas hayan sido respondidas
+        $this->validate([
+            'preguntas.*.valor' => 'required|between:1,10|Integer',
+        ],
+        [
+            'preguntas.*.valor.required' => 'Debe responder todas las preguntas.',
+        ]);
+
+        // Validación de COMENTARIOS por sección (obligatorios)
+        if ($this->comentarioObligatorio) {
+            $rulesComentarios = [];
+            foreach ($this->secciones as $sec) {
+                $sid = $sec['id'];
+                $rulesComentarios["comentarios.$sid"] = 'required|string|min:3';
+            }
+            $this->validate($rulesComentarios, [
+                'comentarios.*.required' => 'Debe justificar la puntuación en cada competencia.',
+            ]);
+        }
+
+        // Verificar que todas las preguntas hayan sido respondidas
+        foreach ($this->preguntas as $key => $value) {
+            if ($value['valor'] == null) {
+                session()->flash('message-danger', 'Debe responder todas las preguntas.');
+                return;
+            }
+        }
+        $this->emit('confirmacionModal');
     }
     
     public function volver_a_preguntas()
@@ -293,12 +353,23 @@ class Evaluacion extends Component
     {
         // Validar que todas las preguntas hayan sido respondidas
         $this->validate([
-            //valor tiene que ser entre 1 y 10
             'preguntas.*.valor' => 'required|between:1,10|Integer',
         ],
         [
             'preguntas.*.valor.required' => 'Debe responder todas las preguntas.',
         ]);
+
+        // Validación de COMENTARIOS por sección (obligatorios)
+        if ($this->comentarioObligatorio) {
+            $rulesComentarios = [];
+            foreach ($this->secciones as $sec) {
+                $sid = $sec['id'];
+                $rulesComentarios["comentarios.$sid"] = 'required|string|min:3';
+            }
+            $this->validate($rulesComentarios, [
+                'comentarios.*.required' => 'Debe justificar la puntuación en cada competencia.',
+            ]);
+        }
 
         // Verificar que todas las preguntas hayan sido respondidas
         foreach ($this->preguntas as $key => $value) {
@@ -321,8 +392,29 @@ class Evaluacion extends Component
                     'pregunta_id' => $value['id'],
                     'valor_numerico' => $value['valor'],
                     'peso' => $this->evaluadorHasEvaluado->peso_prorrateado,
-                    'campania_id' => $this->evaluadorHasEvaluado->campania_id,                
+                    'campania_id' => $this->evaluadorHasEvaluado->campania_id,
+                    // 'tipo_relacion_jerarquica_id' => $this->evaluadorHasEvaluado->relacion_jerarquica_id,
                 ]);
+            }
+            // Guardar COMENTARIOS (al final)
+            $campaniaId = $this->evaluadorHasEvaluado->campania_id;
+            $evaluadoId = $this->evaluadorHasEvaluado->evaluado_id;
+            $tipoRelacionId = $this->evaluadorHasEvaluado->relacion_jerarquica_id; // JEFE, PAR, etc.
+
+            foreach ($this->secciones as $sec) {
+                $sid = $sec['id'];
+                $texto = trim((string)($this->comentarios[$sid] ?? ''));
+                EvaluadorHasEvaluadoComentario::updateOrCreate(
+                    [
+                        'evaluado_id' => $evaluadoId,
+                        'campania_id' => $campaniaId,
+                        'campania_has_competencia_id' => $sid,
+                        'tipo_relacion_jerarquica_id' => $tipoRelacionId,
+                    ],
+                    [
+                        'comentario' => $texto,
+                    ]
+                );
             }
     
             // Cambiar el estado de la evaluacion a realizado = 1

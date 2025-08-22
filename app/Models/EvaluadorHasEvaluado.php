@@ -39,6 +39,7 @@ class EvaluadorHasEvaluado extends Model
         'grado_id',
         'peso',
         'peso_prorrateado',
+        'relacion_jerarquica_id'
     ];
 
     protected $appends = ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente', 

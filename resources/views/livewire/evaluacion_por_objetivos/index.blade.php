@@ -24,14 +24,14 @@
         // });
     </script>
     <script>
-        Livewire.on('confirmarGuardado', () => {
-            if (confirm(
-                    'Recuerde que solo tiene una oportunidad para realizar la evaluación.\n ¿Está seguro de enviar sus respuestas?'
-                    )) {
+        Livewire.on('confirmacionModal', () => {
+            // if (confirm(
+                    // 'Recuerde que solo tiene una oportunidad para realizar la evaluación.\n ¿Está seguro de enviar sus respuestas?'
+                    // )) {
                 //Bloquear boton con id = confirmarGuardado
                 document.getElementById('confirmarGuardado').disabled = true;
-                Livewire.emit('guardar');
-            }
+                Livewire.emit('confirmacionModal');
+            // }
         });
     </script>
 @stop

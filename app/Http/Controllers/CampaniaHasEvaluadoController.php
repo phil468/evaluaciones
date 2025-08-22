@@ -21,6 +21,7 @@ use App\Models\Peso;
 use App\Models\Respuesta;
 use App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia;
 use App\Models\TipoDePuestoHasNivelJerarquico;
+use App\Models\TipoRelacionJerarquica;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -783,6 +784,10 @@ class CampaniaHasEvaluadoController extends Controller
 
     public function generarEvaluadorHasEvaluado($campaniaId, $tipo)
     {
+        // obtener tipo_relacion_jerarquicas
+        $tipoRelacionJerarquicas = TipoRelacionJerarquica::all()->keyBy('name');
+        // dd($tipoRelacionJerarquicas);
+
         // 1. Obtener todos los evaluados de la campaña
         $evaluados = CampaniaHasEvaluado::with([
             'personal',
@@ -859,21 +864,32 @@ class CampaniaHasEvaluadoController extends Controller
 
                     // 3.3 Crear relaciones respetando prorrateo
                     if (($pesos['JEFE'] ?? 0) > 0 && $hasJefe) {
-                        $this->handleSuperior($evaluado, (float)$pesos['JEFE'], $evaluacion, $campaniaId, $gradoAUsar);
+                        // obtener id de nombre
+                        $idRelacionJerarquica = $tipoRelacionJerarquicas['JEFE']->id ?? null;
+                        // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} tiene Jefe con id {$idRelacionJerarquica}");
+                        $this->handleSuperior($evaluado, (float)$pesos['JEFE'], $evaluacion, $campaniaId, $gradoAUsar, $idRelacionJerarquica);
                     }
 
                     if (($pesos['PAR'] ?? 0) > 0 && $numPares > 0) {
-                        $this->handlePares($evaluado, (float)$pesos['PAR'], $evaluacion, $campaniaId, $gradoAUsar);
+                        // obtener id de nombre
+                        $idRelacionJerarquica = $tipoRelacionJerarquicas['PAR']->id ?? null;
+                        // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} tiene Par con id {$idRelacionJerarquica}");
+                        $this->handlePares($evaluado, (float)$pesos['PAR'], $evaluacion, $campaniaId, $gradoAUsar, $idRelacionJerarquica);
                     }
 
                     if (($pesos['SUBORDINADO'] ?? 0) > 0 && $numSub > 0) {
-                        $this->handleSubordinados($evaluado, (float)$pesos['SUBORDINADO'], $evaluacion, $campaniaId, $gradoAUsar);
+                        // obtener id de nombre
+                        $idRelacionJerarquica = $tipoRelacionJerarquicas['SUBORDINADO']->id ?? null;
+                        // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} tiene Subordinado con id {$idRelacionJerarquica}");
+                        $this->handleSubordinados($evaluado, (float)$pesos['SUBORDINADO'], $evaluacion, $campaniaId, $gradoAUsar, $idRelacionJerarquica);
                     }
 
                     if (($pesos['UNO MISMO'] ?? 0) >= 0) {
                         // Si se usa "UNO MISMO", manejarlo aquí si es necesario
                         // Por ahora, no se maneja, pero se deja como referencia
-                        $this->handleUnoMismo($evaluado, (float)$pesos['UNO MISMO'], $evaluacion, $campaniaId, $gradoAUsar);
+                        $idRelacionJerarquica = $tipoRelacionJerarquicas['UNO MISMO']->id ?? null;
+                        // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} tiene Uno Mismo con id {$idRelacionJerarquica}");
+                        $this->handleUnoMismo($evaluado, (float)$pesos['UNO MISMO'], $evaluacion, $campaniaId, $gradoAUsar, $idRelacionJerarquica);
                     } else {
                         // Manejar el caso donde no se usa "UNO MISMO"
                         // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} no tiene UNO MISMO");
@@ -1008,7 +1024,10 @@ class CampaniaHasEvaluadoController extends Controller
             ->with('tipoRelacionJerarquica')
             ->get()
             ->mapWithKeys(function($p){
-                return [strtoupper($p->tipoRelacionJerarquica->name) => (float)$p->peso];
+                return [
+                    // 'idRelacionJerarquica' => $p->tipoRelacionJerarquica->id,
+                    strtoupper($p->tipoRelacionJerarquica->name) => (float)$p->peso
+                ];
             });
 
         return [
@@ -1018,8 +1037,8 @@ class CampaniaHasEvaluadoController extends Controller
             'UNO MISMO' => (float)($map['UNO MISMO'] ?? 0.0), // Si se usa en el futuro
         ];
     }
-    
-    private function handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+
+    private function handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId, $idRelacionJerarquica)
     {
         $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
 
@@ -1034,11 +1053,12 @@ class CampaniaHasEvaluadoController extends Controller
             ], [
                 'peso' => $pesoValue,
                 'peso_prorrateado' => $pesoValue,
+                'relacion_jerarquica_id' => $idRelacionJerarquica,
             ]);
         }
     }
 
-    private function handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+    private function handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId, $idRelacionJerarquica)
     {
         $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
 
@@ -1066,12 +1086,13 @@ class CampaniaHasEvaluadoController extends Controller
                 ], [
                     'peso' => $pesoValue,
                     'peso_prorrateado' => $pesoPorPar,
+                    'relacion_jerarquica_id' => $idRelacionJerarquica,
                 ]);
             }
         }
     }
 
-    private function handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+    private function handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId, $idRelacionJerarquica)
     {
         $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
 
@@ -1090,6 +1111,7 @@ class CampaniaHasEvaluadoController extends Controller
                 ], [
                     'peso' => $pesoValue,
                     'peso_prorrateado' => $pesoPorSub,
+                    'relacion_jerarquica_id' => $idRelacionJerarquica,
                 ]);
             }
         }
@@ -1162,7 +1184,7 @@ class CampaniaHasEvaluadoController extends Controller
     //     }
     // }
 
-    private function handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId)
+    private function handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId, $idRelacionJerarquica)
     {
         $pesoValue = is_object($peso) ? (float)$peso->peso : (float)$peso;
 
@@ -1180,6 +1202,7 @@ class CampaniaHasEvaluadoController extends Controller
         ], [
             'peso' => $pesoValue,
             'peso_prorrateado' => $pesoValue,
+            'relacion_jerarquica_id' => $idRelacionJerarquica,
         ]);
     }
 
