@@ -44,13 +44,14 @@ class Evaluacion extends Component
     public $escalasArray = []; // Para acceder fácilmente por valor
     
     public $comentarios = [];              // [campania_has_competencia_id => 'texto']
-    public $comentarioObligatorio = true;  // configurable si lo deseas
+    public $comentarioObligatorio = false;  // configurable si lo deseas
     
     protected $listeners = ['guardar' => 'guardar'];
 
     public function mount($evaluacion_id)
     {
             $this->evaluacion_id = $evaluacion_id;
+            $this->comentarioObligatorio = (bool) config('evaluacion.comentario_obligatorio');
         
             // Obtener el evaluadorHasEvaluado correspondiente a la evaluacion_id
             $this->evaluadorHasEvaluado = EvaluadorHasEvaluado::find($evaluacion_id);
@@ -159,16 +160,16 @@ class Evaluacion extends Component
         //borrar los comentarios
         $this->comentarios = [];
 
-        // Cargar comentarios con NUEVAS llaves (por sección)
-        if ($this->evaluadorHasEvaluado) {
-            $this->comentarios = EvaluadorHasEvaluadoComentario::where('evaluado_id', $this->evaluadorHasEvaluado->evaluado_id)
-                ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
-                ->where('tipo_relacion_jerarquica_id', $this->evaluadorHasEvaluado->relacion_jerarquica_id)
-                ->pluck('comentario', 'campania_has_competencia_id')
-                ->toArray();
-        } else {
-            $this->comentarios = [];
-        }
+        // // Cargar comentarios con NUEVAS llaves (por sección)
+        // if ($this->evaluadorHasEvaluado) {
+        //     $this->comentarios = EvaluadorHasEvaluadoComentario::where('evaluado_id', $this->evaluadorHasEvaluado->evaluado_id)
+        //         ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
+        //         ->where('tipo_relacion_jerarquica_id', $this->evaluadorHasEvaluado->relacion_jerarquica_id)
+        //         ->pluck('comentario', 'campania_has_competencia_id')
+        //         ->toArray();
+        // } else {
+        //     $this->comentarios = [];
+        // }
     }
 
     private function currentSeccionId(): ?int
