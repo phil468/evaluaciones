@@ -358,13 +358,13 @@ return [
             'classes' => 'rounded-xl'
         ],
 
-        // [ 
-        //     'text' => 'Recursos de apoyo',
-        //     'url'  => 'recursos-de-apoyo',
-        //     'icon' => 'fas fa-book',
-        //     'can'  => 'ver-evaluaciones-de-desempeno',
-        //     'classes' => 'rounded-xl',
-        // ],
+        [ 
+            'text' => 'Recursos de apoyo',
+            'url'  => 'recursos-de-apoyo',
+            'icon' => 'fas fa-book',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+        ],
 
         [
             'text' => 'Resultados de Equipo',
