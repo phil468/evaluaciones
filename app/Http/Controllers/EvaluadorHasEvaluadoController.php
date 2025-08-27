@@ -14,7 +14,6 @@ class EvaluadorHasEvaluadoController extends Controller
         $query = 
         EvaluadorHasEvaluado::with(['evaluador', 'evaluado', 'evaluacion' , 'grado'])
             ->where('campania_id', $campania_id);
-        // dd($query->get());
 
         return response()->json($query->get());
     }

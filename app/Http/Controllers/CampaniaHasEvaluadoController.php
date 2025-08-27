@@ -427,7 +427,7 @@ class CampaniaHasEvaluadoController extends Controller
             $tipoDePuestoId = $personal->cargo->tipo_de_puesto_id ?? null;
             // dd($tipoDePuestoId);
             if ($cargoNameIn !== '') {
-                $cargo = $this->findCargoByName($cargoNameIn);
+                $cargo = $this->findCargoByNameActivo($cargoNameIn);
                 // dd($cargo);
                 if (!$cargo) {
                     $rowInfo['errors'][] = "Puesto/Cargo '{$cargoNameIn}' no encontrado.";
@@ -450,29 +450,6 @@ class CampaniaHasEvaluadoController extends Controller
                     }
                 }
             }
-
-            // NIVEL JERARQUICO -> mapear a tipo_de_puesto_campania_id
-            // $nivelNameIn = $this->norm($row['nivel_jerarquico'] ?? '');
-            // if ($nivelNameIn !== '') {
-            //     $nivel = $this->findNivelJerarquicoByName($nivelNameIn);
-            //     // dd($nivel);
-            //     if (!$nivel) {
-            //         $rowInfo['errors'][] = "Nivel jerárquico '{$nivelNameIn}' no encontrado.";
-            //     } else {
-            //         // Resolver tipo_de_puesto_campania_id por campania + tipo_de_puesto + nivel
-            //         $tpnj = TipoDePuestoHasNivelJerarquico::where('campania_id', $campaniaId)
-            //             ->when($tipoDePuestoId, fn($q) => $q->where('tipo_de_puesto_id', $tipoDePuestoId))
-            //             ->where('nivel_jerarquico_id', $nivel->id)
-            //             ->first();
-            //         // dd($tpnj);
-            //         if (!$tpnj) {
-            //             $rowInfo['errors'][] = "No existe mapeo TipoPuesto+Nivel para la campaña (revise configuración).";
-            //         } else {
-            //             $data['tipo_de_puesto_campania_id'] = $tpnj->id;
-            //             if (!$existing || $existing->tipo_de_puesto_campania_id !== $tpnj->id) $rowInfo['changes'][] = 'tipo_de_puesto_campania_id';
-            //         }
-            //     }
-            // }
 
             // DNI SUPERIOR
             $dniSup = trim((string)($row['dni_superior'] ?? ''));
@@ -637,6 +614,11 @@ class CampaniaHasEvaluadoController extends Controller
         return Cargo::whereRaw('UPPER(name)=?', [$normalizedName])->first();
     }
 
+    private function findCargoByNameActivo(string $normalizedName): ?Cargo
+    {
+        return Cargo::whereRaw('UPPER(name)=? AND estado=?', [$normalizedName, true])->first();
+    }
+
     private function findNivelJerarquicoByName(string $normalizedName): ?NivelJerarquico
     {
         return NivelJerarquico::whereRaw('UPPER(name)=?', [$normalizedName])->first();
@@ -734,7 +716,7 @@ class CampaniaHasEvaluadoController extends Controller
             }
 
             $cargoName = $this->norm($row['puesto'] ?? '');
-            if ($cargoName !== '' && !$this->findCargoByName($cargoName)) {
+            if ($cargoName !== '' && !$this->findCargoByNameActivo($cargoName)) {
                 $errRow[] = "Puesto/Cargo '{$cargoName}' no encontrado.";
             }
 
@@ -892,36 +874,8 @@ class CampaniaHasEvaluadoController extends Controller
                         $this->handleUnoMismo($evaluado, (float)$pesos['UNO MISMO'], $evaluacion, $campaniaId, $gradoAUsar, $idRelacionJerarquica);
                     } else {
                         // Manejar el caso donde no se usa "UNO MISMO"
-                        // dd("Evaluado {$evaluado->personal_id} con grado {$gradoAUsar} no tiene UNO MISMO");
                     }
 
-                    // // Buscar el peso para este grado y campaña, puede ser más de uno encontrado
-                    // $pesos = Peso::where('campania_id', $campaniaId)
-                    //     ->where('grado_id', $gradoId)
-                    //     ->with(['tipoRelacionJerarquica'])
-                    //     ->get();
-
-                    // if (!$pesos) continue;
-
-                    // foreach ($pesos as $peso) {
-                    //     // Verificar el tipo de relación jerárquica y manejar según corresponda
-                    //     // dd($peso);
-                    //     switch ($peso->tipoRelacionJerarquica->name) {
-                    //         case 'JEFE':
-                    //             $this->handleSuperior($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                    //             break;
-                    //         case 'PAR':
-                    //             $this->handlePares($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                    //             break;
-                    //         case 'SUBORDINADO':
-                    //             $this->handleSubordinados($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                    //             break;
-                    //         case 'UNO MISMO':
-                    //             $this->handleUnoMismo($evaluado, $peso, $evaluacion, $campaniaId, $gradoId);
-                    //             break;                
-                    //     }
-                    // }
-                // }
             } elseif ($tipo == 'objetivos') {
                 // Si el evaluado no está habilitado para evaluación por objetivos, continuar
                 if (!$evaluado->habilitado_para_evaluacion_por_objetivos) continue;                
