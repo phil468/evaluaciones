@@ -24,12 +24,12 @@ class TipoDePuestoHasNivelJerarquico extends Model
 
     public function tipoDePuesto()
     {
-        return $this->belongsTo(TipoDePuesto::class);
+        return $this->belongsTo(TipoDePuesto::class, 'tipo_de_puesto_id', 'id');
     }
 
     public function nivelJerarquico()
     {
-        return $this->belongsTo(NivelJerarquico::class);
+        return $this->belongsTo(NivelJerarquico::class, 'nivel_jerarquico_id', 'id');
     }
 
     public function dominio()
