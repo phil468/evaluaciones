@@ -3,7 +3,7 @@
 @section('title', 'Competencias')
 
 @section('content_header')
-    <h3 class="h4 font-style-poppins font-weight-bold mb-0">
+    <h3 class="mb-0 h4 font-style-poppins font-weight-bold">
         Evaluación de Desempeño por <span class="text-vanguard" style="color: #568ba5;">Competencias</span>
     </h3>
 @stop
@@ -23,14 +23,42 @@
                 <div class="table-responsive">
                     <table class="table table-borderless">
                         <tbody>
-                            @foreach($evaluaciones as $año => $evaluacion)
-                                <tr>
-                                    <td>Evaluación {{ $año }}</td>
+                            @forelse($evaluaciones as $anio => $evaluacion)
+                                <tr>                                    
+                                    <td>Evaluación {{ $anio }}</td>
                                     <td style="width: 50%;">
                                         <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar {{ $año == '2024' ? '' : 'bg-secondary' }}" 
+                                            <div class="progress-bar {{ $evaluacion['tieneResultados'] ? '' : 'bg-secondary' }}" 
                                                 role="progressbar" 
-                                                style="width: {{ $evaluacion['progreso'] }}%; {{ $año == '2024' ? 'background-color: #FFD966;' : '' }}">
+                                                style="width: {{ $evaluacion['progreso'] }}%; {{ $evaluacion['tieneResultados'] ? 'background-color: #FFD966;' : '' }}">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @if($evaluacion['tieneResultados'])
+                                            <span class="h5">{{ number_format($evaluacion['puntaje'], 2) }}</span>
+                                        @else
+                                            <span class="h5">No registrados</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-right">
+                                        @if (!$evaluacion['tieneResultados'])
+                                            <button class="btn btn-vanguard rounded-xl btn-sm w-100" disabled>
+                                                Ver detalle
+                                            </button>
+                                        @else
+                                            <button class="btn btn-vanguard rounded-xl btn-sm w-100" 
+                                                    onclick="submitForm({{ $evaluacion['campania_id'] }})">
+                                                Ver detalle
+                                            </button>                                          
+                                        @endif
+                                    </td>
+                                    {{-- <td>Evaluación {{ $anio }}</td>
+                                    <td style="width: 50%;">
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar {{ $anio == '2024' ? '' : 'bg-secondary' }}" 
+                                                role="progressbar" 
+                                                style="width: {{ $evaluacion['progreso'] }}%; {{ $anio == '2024' ? 'background-color: #FFD966;' : '' }}">
                                             </div>
                                         </div>
                                     </td>
@@ -52,14 +80,17 @@
                                         @else
                                             <button class="btn btn-vanguard rounded-xl btn-sm w-100" 
                                             onclick="submitForm(1)">
-                                            {{-- onclick="window.location.href='{{ route('evaluacion_de_competencias.resultados', ['campania_id' => 1]) }}'"> --}}
 
                                                 Ver detalle
                                             </button>                                          
                                         @endif
-                                    </td>
+                                    </td> --}}
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-muted">No existe campaña anterior.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

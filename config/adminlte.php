@@ -350,14 +350,14 @@ return [
         //     'classes' => 'rounded-xl',
         // ],
 
-        [
-            'text' => 'Plan De Mejora Individual',
-            'url'  => 'plan-de-mejora',
-            'icon' => 'fas fa-pencil-alt',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl'
-        ],
-
+        // [
+        //     'text' => 'Plan De Mejora Individual',
+        //     'url'  => 'plan-de-mejora',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl'
+        // ],
+        // PLAN DE MEJORA INDIVIDUAL POR EL MOMENTO NO VISIBLE
         [ 
             'text' => 'Recursos de apoyo',
             'url'  => 'recursos-de-apoyo',
@@ -366,14 +366,16 @@ return [
             'classes' => 'rounded-xl',
         ],
 
-        [
-            'text' => 'Resultados de Equipo',
-            'url'  => 'resultados-de-equipo',
-            'icon' => 'fas fa-chart-bar',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl',
-            'active' => ['resultados-de-equipo', 'resultados-de-equipo/*']
-        ],
+        // [
+        //     'text' => 'Resultados de Equipo',
+        //     'url'  => 'resultados-de-equipo',
+        //     'icon' => 'fas fa-chart-bar',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        //     'active' => ['resultados-de-equipo', 'resultados-de-equipo/*']
+        // ],
+
+        // RESULTADOS DE EQUIPO POR EL MOMENTO NO VISIBLE
 
         ['text' => 'Seguimiento de Evaluaciones',
         'can'  => ['ver-capacitacion'],

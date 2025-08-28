@@ -15,7 +15,8 @@ class Campania extends Model
 
     protected $table = 'campanias';
 
-    protected $fillable = ['name','estado','relacionado_anterior_id', 'es_campania_actual'];	
+    protected $fillable = ['name','estado','relacionado_anterior_id', 'es_campania_actual'];
+    protected $appends = ['anio_mostrar'];
     
     public function setNameAttribute($value)
     {
@@ -52,5 +53,14 @@ class Campania extends Model
     public function relacionadoAnterior()
     {
         return $this->belongsTo(Campania::class, 'relacionado_anterior_id');
+    }
+    
+    // Campo calculado: primer año antes del guion en el nombre (ej. "2024-2025" -> "2024")
+    public function getAnioMostrarAttribute()
+    {
+        $name = (string)($this->name ?? '');
+        $parts = explode('-', $name);
+        $anio = trim($parts[0] ?? '');
+        return $anio !== '' ? $anio : $name;
     }
 }
