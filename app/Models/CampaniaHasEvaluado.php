@@ -210,6 +210,7 @@ class CampaniaHasEvaluado extends Model
         $this->habilitado_para_evaluacion_de_competencias = false;
         $this->fecha_baja_de_evaluacion_de_competencias = now();
         $this->motivo_baja_de_evaluacion_de_competencias = $motivo;
+        // dd($this);
         $this->save();
     }
 

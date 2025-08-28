@@ -28,7 +28,7 @@ class CampaniaHasEvaluados {
             this.initGenerarEvaluadorHasEvaluadosObjetivosEvents(campaniaId);
         };
 
-        // this.init();
+        this.init();
     }
 
     /**
@@ -52,7 +52,7 @@ class CampaniaHasEvaluados {
         });
 
         // Evento para confirmar la baja de un evaluado
-        $(document).off('click').on('click', '#confirmarBajaEvaluado', () => {
+        $('#confirmarBajaEvaluado').off('click').on('click', () => {
             const id = $('#bajaEvaluadoId').val();
             const tipo = $('#bajaEvaluadoTipo').val();
             const motivo = $('#bajaEvaluadoMotivo').val();
@@ -184,15 +184,15 @@ class CampaniaHasEvaluados {
                     formatter: function(cell) {
                         const data = cell.getRow().getData();
                         let warnings = [];
+
+                        console.log("Evaluado data:", data);
                         
                         // Verificar área
                         if (!data.area_id) {
                             warnings.push('Falta área');
                         }
                         
-                        // Verificar tipo de puesto y nivel jerárquico
-                                        
-                
+                        // Verificar tipo de puesto y nivel jerárquico                                       
                         if (!data.tipo_puesto_has_nivel_jerarquico.tipo_de_puesto) {
                             warnings.push('Falta tipo de puesto');
                         }
@@ -205,7 +205,17 @@ class CampaniaHasEvaluados {
                         if (!data.habilitado_para_evaluacion_de_competencias && !data.habilitado_para_evaluacion_por_objetivos) {
                             warnings.push('No habilitado ni para eval. competencias ni para eval. por objetivos');
                         }
-                        
+
+                        //verificar correo personal
+                        if (!data.personal.correo_empresa) {
+                            warnings.push('Falta correo personal');
+                        }
+
+                        //verificar correo de usuario
+                        if (!data.personal.user.email) {
+                            warnings.push('Falta correo de usuario');
+                        }
+
                         // Si no hay advertencias
                         if (warnings.length === 0) {
                             return '<span class="text-success"><i class="fas fa-check-circle"></i> Todo correcto</span>';
@@ -401,7 +411,7 @@ class CampaniaHasEvaluados {
                     title: "Subordinados",
                     field: "subordinados",
                     formatter: (cell) => {
-                        console.log ("Subordinados cell:", cell);
+                        // console.log ("Subordinados cell:", cell);
                         const subordinados = cell.getValue();
                         if (!subordinados || subordinados.length === 0) return '';
                         return subordinados.map(s => 
@@ -783,22 +793,6 @@ class CampaniaHasEvaluados {
      * Inicializa los botones de exportación para la tabla
      */
     initExportButtons() {
-        // Exportar a CSV
-        // $('#exportCSV').off('click').on('click', () => {
-        //     if (!this.table) return;
-            
-        //     const fileName = `evaluados_campania_${this.campaniaIdGlobal}_${new Date().toISOString().split('T')[0]}.csv`;
-        //     this.table.download("csv", fileName, {delimiter:","});
-            
-        //     // Mostrar mensaje de éxito
-        //     Swal.fire({
-        //         title: 'Exportación completada',
-        //         text: 'Los datos han sido exportados a CSV correctamente',
-        //         icon: 'success',
-        //         timer: 2000,
-        //         showConfirmButton: false
-        //     });
-        // });
         
         // Exportar a Excel
         $('#exportExcel').off('click').on('click', () => {
@@ -827,38 +821,7 @@ class CampaniaHasEvaluados {
             });
         });
         
-        // Exportar a PDF
-        // $('#exportPDF').off('click').on('click', () => {
-        //     if (!this.table) return;
-            
-        //     // Verificar si está disponible la exportación a PDF
-        //     if (typeof this.table.download !== "function" || !this.table.downloadConfig.pdf) {
-        //         Swal.fire({
-        //             title: 'Error',
-        //             text: 'La exportación a PDF requiere incluir la librería jsPDF. Por favor, contacte al administrador.',
-        //             icon: 'error'
-        //         });
-        //         return;
-        //     }
-            
-        //     const fileName = `evaluados_campania_${this.campaniaIdGlobal}_${new Date().toISOString().split('T')[0]}.pdf`;
-        //     this.table.download("pdf", fileName, {
-        //         orientation: "landscape", // portrait o landscape
-        //         title: `Evaluados Campaña ${this.campaniaIdGlobal}`
-        //     });
-            
-        //     // Mostrar mensaje de éxito
-        //     Swal.fire({
-        //         title: 'Exportación completada',
-        //         text: 'Los datos han sido exportados a PDF correctamente',
-        //         icon: 'success',
-        //         timer: 2000,
-        //         showConfirmButton: false
-        //     });
-        // });
     }
-
-
 
     /**
      * Aplica filtros a la tabla de evaluados
@@ -1198,7 +1161,10 @@ class CampaniaHasEvaluados {
             method: 'POST',
             data: data,
             success: (response) => {
-                this.table.replaceData(EVALUADOS_BY_CAMPANIA_URL.replace(':id', this.campaniaIdGlobal));
+                
+                // Actualizar la tabla
+                // this.table.replaceData(EVALUADOS_BY_CAMPANIA_URL.replace(':id', this.campaniaIdGlobal));
+                window.campaniaHasEvaluadosInstance.table.replaceData();
                 Swal.fire({
                     title: 'Éxito',
                     text: habilitar ? 'Evaluado habilitado para evaluación de competencias.' : 'Evaluado deshabilitado para evaluación de competencias.',
@@ -1206,6 +1172,7 @@ class CampaniaHasEvaluados {
                     timer: 2000,
                     showConfirmButton: false
                 });
+                // window.campaniaHasEvaluadosInstance.table.replaceData();
             },
             error: function (xhr) {
                 let errorMsg = 'Error al actualizar el evaluado.';
@@ -1277,7 +1244,7 @@ class CampaniaHasEvaluados {
         });
 
         // Descarga de plantilla
-        $(document).off('click').on('click', '#downloadEvaluadosTemplate', function() {
+        $('#downloadEvaluadosTemplate').off('click').on('click', () => {
             if (!window.campaniaHasEvaluadosInstance?.campaniaIdGlobal) {
                 Swal.fire('Atención','Primero abra la configuración de una campaña.','info'); 
                 return;

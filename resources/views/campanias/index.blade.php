@@ -212,7 +212,7 @@
                                         <i class="fas fa-file-excel"></i> Exportar Excel
                                     </button>
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <input type="text" id="filtroEvaluado" class="form-control" placeholder="Filtrar por nombre o DNI">
@@ -234,7 +234,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div id="evaluados-table"></div>
                         </div>

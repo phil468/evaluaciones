@@ -456,7 +456,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::get('/evaluados/{id}', [CampaniaHasEvaluadoController::class, 'show'])->name('campania_has_evaluados.show');
     Route::put('/evaluados/{id}', [CampaniaHasEvaluadoController::class, 'update'])->name('campania_has_evaluados.update');
     Route::delete('/evaluados/{id}', [CampaniaHasEvaluadoController::class, 'destroy'])->name('campania_has_evaluados.destroy');
-    Route::post('/evaluados/{id}/toggle-competencias', [CampaniaHasEvaluadoController::class, 'toggleCompetencias'])->name('campania_has_evaluados.toggle_competencias');
+    // Route::post('/evaluados/{id}/toggle-competencias', [CampaniaHasEvaluadoController::class, 'toggleCompetencias'])->name('campania_has_evaluados.toggle_competencias');
     Route::post('/evaluados/{id}/toggle-objetivos', [CampaniaHasEvaluadoController::class, 'toggleObjetivos'])->name('campania_has_evaluados.toggle_objetivos');
     Route::get('/evaluados/{id}/subordinados', [CampaniaHasEvaluadoController::class, 'getSubordinados'])->name('campania_has_evaluados.subordinados');
     Route::get('/evaluados/{id}/pares', [CampaniaHasEvaluadoController::class, 'getPares'])->name('campania_has_evaluados.pares');

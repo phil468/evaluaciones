@@ -304,7 +304,10 @@ class CampaniaHasEvaluadoController extends Controller
         $evaluado = CampaniaHasEvaluado::findOrFail($id);
         $habilitar = $request->input('habilitar', !$evaluado->habilitado_para_evaluacion_de_competencias);
         $motivo = $request->input('motivo');
-        
+
+        //formatear habilitar como boolean
+        $habilitar = filter_var($habilitar, FILTER_VALIDATE_BOOLEAN);
+
         if ($habilitar) {
             $evaluado->habilitarCompetencias();
             $mensaje = 'Habilitado para evaluación de competencias';
