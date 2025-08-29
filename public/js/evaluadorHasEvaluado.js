@@ -20,23 +20,39 @@ function initEvaluadorHasEvaluadoTable(campaniaId) {
         updateURL: window.evaluadorHasEvaluadoUrls.updateURL,
         deleteURL: window.evaluadorHasEvaluadoUrls.deleteURL,
         columns: [
-            { title: "ID", field: "id", width: 60 },
-            { title: "Evaluador", field: "evaluador.name" },
-            { title: "Evaluado", field: "evaluado.name" },
-            { title: "Evaluación", field: "evaluacion.nombre_para_mostrar" },
-            { title: "Campaña", field: "campania.name" },
-            { title: "Grado", field: "grado.name" },
-            { title: "Realizado", field: "realizado", formatter: "tickCross" },
-            { title: "Peso", field: "peso", hozAlign: "center", width: 80 },
-            { title: "Peso Prorrateado", field: "peso_prorrateado", hozAlign: "center", width: 120 },
-            { title: "Jerarquía", field: "jerarquia", hozAlign: "center", width: 100 },
+            { title: "ID", field: "id", width: 60, headerFilter: "input" },
+            { title: "Evaluador", field: "evaluador.name", headerFilter: "input" },
+            { title: "Evaluado", field: "evaluado.name", headerFilter: "input" },
+            { title: "Evaluación", field: "evaluacion.nombre_para_mostrar", headerFilter: "input" },
+            { title: "Campaña", field: "campania.name", headerFilter: "input" },
+            { title: "Grado", field: "grado.name", headerFilter: "input" },
+            { title: "Realizado", field: "realizado", formatter: "tickCross", 
+                headerFilter: true,
+                headerFilterEmptyCheck: (value) => value === false || value === '' || value == null,
+                
+                // headerFilter: "select",
+                // headerFilterParams: {
+                //     values: { "": "Todos", "1": "Sí", "0": "No" },
+                // },
+                // headerFilterFunc: (headerValue, rowValue) => {
+                //     if (headerValue === "" || headerValue == null) return true; // sin filtro
+                //     const hv = headerValue === "1" || headerValue === 1 || headerValue === true;
+                //     const rv = rowValue === true || rowValue === 1 || rowValue === "1";
+                //     return rv === hv;
+                // },
+
+            },
+            { title: "Peso", field: "peso", hozAlign: "center", width: 80, headerFilter: true },
+            { title: "Peso Prorrateado", field: "peso_prorrateado", hozAlign: "center", width: 120, headerFilter: true },
+            { title: "Jerarquía", field: "jerarquia", hozAlign: "center", width: 100, headerFilter: true },
             { title: "Tipo de Jerarquía",
                 formatter: function (cell) {
                     var id = cell.getRow().getData().tipo_jerarquia_id;
                     if (id === 1) return '2 OBJETIVOS';
                     if (id === 2) return '5 OBJETIVOS';
                     return '';
-                }
+                },
+                // headerFilter: true
             },
             {
                 title: "Acciones",
@@ -49,7 +65,8 @@ function initEvaluadorHasEvaluadoTable(campaniaId) {
                         </div>
                     `;
                 },
-                width: 120
+                width: 120,
+                // headerFilter: true
             }
         ],
         beforeOpenModal: function(data) {
