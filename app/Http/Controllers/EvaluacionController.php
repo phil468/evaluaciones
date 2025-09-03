@@ -34,12 +34,12 @@ class EvaluacionController extends Controller
             ->first();            
             if ($evaluadorHasEvaluado) {
                 if ($evaluadorHasEvaluado->realizado == 1 && $evaluadorHasEvaluado->tipo_de_evaluacion_id == 1) {
-                    return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'Ya evaluó a este empleado');
+                    return redirect()->route('pendientes')->with('error', 'Ya evaluó a este empleado');
                 } else if ($evaluadorHasEvaluado->evaluador_id != auth()->user()->personal_id) {
-                    return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'No tiene permisos para evaluar este personal');
+                    return redirect()->route('pendientes')->with('error', 'No tiene permisos para evaluar este personal');
                 }
             } else {
-                return redirect()->route('evaluacion_de_desempeno', $tipo_de_evaluacion_id)->with('error', 'No se encuentra registrada esta evaluación');
+                return redirect()->route('pendientes')->with('error', 'No se encuentra registrada esta evaluación');
             }
         }
     }

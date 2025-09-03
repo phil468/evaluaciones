@@ -125,4 +125,7 @@ sudo php artisan migrate --path=/database/migrations/2025_08_22_074752_create_ev
 sudo php artisan migrate --path=/database/migrations/2025_08_22_113145_alter_evaluador_has_evaluado_comentarios_table.php
 sudo php artisan migrate --path=/database/migrations/2025_08_22_130137_add_relacion_jerarquica_id_evaluador_has_evaluado_table.php
 
+sudo php artisan migrate --path=/database/migrations/2025_09_03_114313_add_evaluador_has_evaluado.php
+sudo php artisan migrate --path=/database/migrations/2025_09_03_114558_create_table_evaluador_has_evaluado_respuestas_tmp.php
+
 corregir la carpeta: adm a public

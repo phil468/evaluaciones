@@ -128,6 +128,7 @@
                                     id="comentario_seccion_{{ $seccionActualId }}"
                                     class="form-control"
                                     rows="3"
+                                    {{-- wire:key="comentarios-{{ $seccionActualId }}" --}}
                                     wire:model.defer="comentarios.{{ $seccionActualId }}"
                                     placeholder="Describa brevemente el motivo de su calificación en esta competencia..."
                                 ></textarea>

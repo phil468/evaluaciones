@@ -37,9 +37,9 @@ class RecordatorioEvaluacion extends Mailable
         $url = url('/');
         
         if ($this->tipo_evaluacion_id == 1) {
-            $url = url('/evaluaciones-de-desempeno/1');
+            $url = url('/inicio/pendientes');
         } elseif ($this->tipo_evaluacion_id == 2) {
-            $url = url('/evaluaciones-de-desempeno/2');
+            $url = url('/inicio');
         } else {
             $url = url('/');
         }

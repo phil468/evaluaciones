@@ -16,6 +16,7 @@ use App\Models\Respuesta;
 use App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia;
 use App\Models\TiposDeObjetivo;
 use App\Models\EvaluadorHasEvaluadoComentario;
+use App\Models\EvaluadorHasEvaluadoRespuestaTemporal;
 
 class Evaluacion extends Component
 {
@@ -160,16 +161,39 @@ class Evaluacion extends Component
         //borrar los comentarios
         $this->comentarios = [];
 
-        // // Cargar comentarios con NUEVAS llaves (por sección)
-        // if ($this->evaluadorHasEvaluado) {
-        //     $this->comentarios = EvaluadorHasEvaluadoComentario::where('evaluado_id', $this->evaluadorHasEvaluado->evaluado_id)
-        //         ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
-        //         ->where('tipo_relacion_jerarquica_id', $this->evaluadorHasEvaluado->relacion_jerarquica_id)
-        //         ->pluck('comentario', 'campania_has_competencia_id')
-        //         ->toArray();
-        // } else {
-        //     $this->comentarios = [];
-        // }
+        // Cargar comentarios con NUEVAS llaves (por sección)
+        if ($this->evaluadorHasEvaluado) {
+            $comentariosPorEval = 
+            EvaluadorHasEvaluadoComentario::
+                where('evaluador_has_evaluado_id', $this->evaluadorHasEvaluado->id)
+                ->pluck('comentario', 'campania_has_competencia_id')
+                ->toArray();
+            
+            // dd($comentariosPorEval);
+
+            if (!empty($comentariosPorEval)) {
+                $this->comentarios = $comentariosPorEval;
+            } else {
+                // Fallback para compatibilidad (por si hay registros viejos sin evaluador_has_evaluado_id)
+                $this->comentarios = [];
+            }
+        } else {
+            $this->comentarios = [];
+        }
+
+        // dd($this->comentarios);
+        // Precargar respuestas temporales si la evaluación no está realizada
+        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado && !empty($this->preguntas)) {
+            $tmp = EvaluadorHasEvaluadoRespuestaTemporal::where('evaluador_has_evaluado_id', $this->evaluadorHasEvaluado->id)
+                ->pluck('valor_numerico', 'pregunta_id')
+                ->toArray();
+
+            foreach ($this->preguntas as $k => $p) {
+                if (isset($tmp[$p['id']])) {
+                    $this->preguntas[$k]['valor'] = (int) $tmp[$p['id']];
+                }
+            }
+        }
     }
 
     private function currentSeccionId(): ?int
@@ -303,6 +327,36 @@ class Evaluacion extends Component
             return; // corta el flujo si falta comentario
         }
 
+        // PRE-GUARDAR COMENTARIO DE LA SECCIÓN ACTUAL
+        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado) {
+            $seccionId = $this->currentSeccionId();
+            $texto = trim((string)($this->comentarios[$seccionId] ?? ''));
+            $campaniaId = $this->evaluadorHasEvaluado->campania_id;
+            $evaluadoId = $this->evaluadorHasEvaluado->evaluado_id;
+            $tipoRelacionId = $this->evaluadorHasEvaluado->relacion_jerarquica_id;
+
+            if ($texto === '' && !$this->comentarioObligatorio) {
+                // si no es obligatorio y quedó vacío, elimina el registro previo (si existe)
+                EvaluadorHasEvaluadoComentario::where('evaluador_has_evaluado_id', $this->evaluadorHasEvaluado->id)
+                    ->where('campania_has_competencia_id', $seccionId)
+                    ->delete();
+            } else {
+                // guarda/actualiza el comentario
+                EvaluadorHasEvaluadoComentario::updateOrCreate(
+                    [
+                        'evaluador_has_evaluado_id' => $this->evaluadorHasEvaluado->id,
+                        'campania_has_competencia_id' => $seccionId,
+                    ],
+                    [
+                        'evaluado_id' => $evaluadoId,
+                        'campania_id' => $campaniaId,
+                        'tipo_relacion_jerarquica_id' => $tipoRelacionId,
+                        'comentario' => $texto,
+                    ]
+                );
+            }
+        }
+
         if ($this->seccion_index_select < count($this->seccion_indexs)-1) {
             $this->seccion_index_select = $this->seccion_index_select + 1;
         }
@@ -311,6 +365,22 @@ class Evaluacion extends Component
     public function marcarValor($index,$valor)
     {
         $this->preguntas[$index]['valor'] = $valor;
+        
+        // Guardado temporal inmediato
+        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado) {
+            $preguntaId = $this->preguntas[$index]['id'] ?? null;
+            if ($preguntaId) {
+                EvaluadorHasEvaluadoRespuestaTemporal::updateOrCreate(
+                    [
+                        'evaluador_has_evaluado_id' => $this->evaluadorHasEvaluado->id,
+                        'pregunta_id' => $preguntaId,
+                    ],
+                    [
+                        'valor_numerico' => (int) $valor,
+                    ]
+                );
+            }
+        }
     }
 
     public function confirmarGuardado()
@@ -383,7 +453,7 @@ class Evaluacion extends Component
         $evaluacionRealizada = EvaluadorHasEvaluado::where('id', $this->evaluadorHasEvaluado->id)->first();
         if ($evaluacionRealizada->realizado == 1) {
             session()->flash('message-danger', 'Esta evaluación ya fue realizada y guardada anteriormente.');
-            return redirect()->to('/evaluaciones-de-desempeno/1');
+            return redirect()->to('/inicio/pendientes');
         } else {
             // Guardar las respuestas en el modelo Respuesta
             foreach ($this->preguntas as $key => $value) {
@@ -407,12 +477,13 @@ class Evaluacion extends Component
                 $texto = trim((string)($this->comentarios[$sid] ?? ''));
                 EvaluadorHasEvaluadoComentario::updateOrCreate(
                     [
-                        'evaluado_id' => $evaluadoId,
-                        'campania_id' => $campaniaId,
+                        'evaluador_has_evaluado_id' => $this->evaluadorHasEvaluado->id,
                         'campania_has_competencia_id' => $sid,
-                        'tipo_relacion_jerarquica_id' => $tipoRelacionId,
                     ],
                     [
+                        'evaluado_id' => $evaluadoId,
+                        'campania_id' => $campaniaId,
+                        'tipo_relacion_jerarquica_id' => $tipoRelacionId,
                         'comentario' => $texto,
                     ]
                 );
@@ -421,30 +492,49 @@ class Evaluacion extends Component
             // Cambiar el estado de la evaluacion a realizado = 1
             $this->evaluadorHasEvaluado->realizado = 1;
             $this->evaluadorHasEvaluado->save();
+
+            // Borrar respuestas temporales para esta evaluación
+            EvaluadorHasEvaluadoRespuestaTemporal::where('evaluador_has_evaluado_id', $this->evaluadorHasEvaluado->id)->delete();
             
             // voy a revisar si en EvaluadorHasEvaluado , el evaluado_id de este $this->evaluadorHasEvaluado tiene tdos sus evaluaciones realizadas(en esta campaña)
             // luego voy a correr la función de resumen de respuestas
-            $evaluadoId = $this->evaluadorHasEvaluado->evaluado_id;
-            $campaniaId = $this->evaluadorHasEvaluado->campania_id;
-            $evaluacionesRealizadas = EvaluadorHasEvaluado::where('evaluado_id', $evaluadoId)
-                ->where('campania_id', $campaniaId)
-                ->where('realizado', 1)
-                ->count();
-            $totalEvaluaciones = EvaluadorHasEvaluado::where('evaluado_id', $evaluadoId)
-                ->where('campania_id', $campaniaId)
-                ->count();
+            // $evaluadoId = $this->evaluadorHasEvaluado->evaluado_id;
+            // $campaniaId = $this->evaluadorHasEvaluado->campania_id;
+            // $evaluacionesRealizadas = EvaluadorHasEvaluado::where('evaluado_id', $evaluadoId)
+            //     ->where('campania_id', $campaniaId)
+            //     ->where('realizado', 1)
+            //     ->count();
+            // $totalEvaluaciones = EvaluadorHasEvaluado::where('evaluado_id', $evaluadoId)
+            //     ->where('campania_id', $campaniaId)
+            //     ->count();
             // si las evaluaciones realizadas son iguales al total de evaluaciones, entonces se puede correr la función de resumen de respuestas
-            if ($evaluacionesRealizadas == $totalEvaluaciones) {
+            if (!$this->evaluadoTieneEvaluacionesPendientes()) {
                 // correr la función de resumen de respuestas
                 // ResumenRespuestasEvaluacionDesempenoCompetencia::actualizarResumen($campaniaId, $evaluadoId);
                 // Actualizar el resumen de respuestas
-                $this->actualizarResumenRespuestas($campaniaId, $evaluadoId);
+                // $this->actualizarResumenRespuestas($campaniaId, $evaluadoId);
+                $this->actualizarResumenRespuestas($this->evaluadorHasEvaluado->campania_id, $this->evaluadorHasEvaluado->evaluado_id);
+            
+                // Desasociar comentarios (se borra el vínculo temporal)
+                EvaluadorHasEvaluadoComentario::
+                    where('campania_id', $campaniaId)
+                    ->where('evaluado_id', $evaluadoId)
+                    ->update(['evaluador_has_evaluado_id' => null]);
+                    
             }
             // Emitir el evento para abrir el modal de gracias
-
     
             $this->emit('openGraciasModal');
         }
+    }
+
+    public function evaluadoTieneEvaluacionesPendientes()
+    {
+        $pendientes = EvaluadorHasEvaluado::where('evaluado_id', $this->evaluado->id)
+            ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
+            ->where('realizado', 0)
+            ->count();
+        return $pendientes > 0;
     }
 
     public function actualizarResumenRespuestas($campaniaId, $evaluadoId)
@@ -503,7 +593,7 @@ class Evaluacion extends Component
     public function cancelar()
     {
         // Volver a /evaluaciones_de_desempeno
-        return redirect()->to('/evaluaciones-de-desempeno/1');
+        return redirect()->to('/inicio/pendientes');
     }
         
     // Modificar el método aceptar para guardar el estado del checkbox
@@ -525,7 +615,7 @@ class Evaluacion extends Component
     public function volver()
     {
         // Volver a /evaluaciones_de_desempeno
-        return redirect()->to('/evaluaciones-de-desempeno/1');
+        return redirect()->to('/inicio/pendientes');
     }
     
     public function cancel()

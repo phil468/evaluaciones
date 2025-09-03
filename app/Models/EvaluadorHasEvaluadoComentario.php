@@ -9,6 +9,7 @@ class EvaluadorHasEvaluadoComentario extends Model
     protected $table = 'evaluador_has_evaluado_comentarios';
 
     protected $fillable = [
+        'evaluador_has_evaluado_id',
         'evaluado_id',
         'campania_id',
         'campania_has_competencia_id',

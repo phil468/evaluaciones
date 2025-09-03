@@ -248,22 +248,22 @@ class CampaniaHasEvaluados {
                         // Si tiene correo, mostrarlo con botón de edición
                         if (correoEmpresa) {
                             html += `
-                                <span class="me-2">${correoEmpresa}</span>
                                 <button class="btn btn-sm btn-link p-0 edit-correo-button" 
                                         data-id="${personalId}" 
                                         title="Editar correo empresarial">
                                     <i class="fas fa-edit text-primary"></i>
                                 </button>
+                                <span class="me-2">${correoEmpresa}</span>
                             `;
                         } else {
                             // Si no tiene correo, mostrar botón para agregarlo
                             html += `
-                                <span class="text-muted me-2"></span>
                                 <button class="btn btn-sm btn-link p-0 edit-correo-button" 
                                         data-id="${personalId}" 
                                         title="Agregar correo empresarial">
                                     <i class="fas fa-plus text-primary"></i>
                                 </button>
+                                <span class="text-muted me-2"></span>
                             `;
                         }
                         
@@ -290,7 +290,6 @@ class CampaniaHasEvaluados {
                         // Si tiene usuario, mostrar el email
                         // if (hasUser) {
                         if (userEmail) {
-                            html += `<span class="me-2">${userEmail}</span>`;
                             
                             // Si el correo empresa y el email de usuario son diferentes
                             if (correoEmpresa && correoEmpresa !== userEmail) {
@@ -303,10 +302,8 @@ class CampaniaHasEvaluados {
                                     </button>
                                 `;
                             }
+                            html += `<span class="me-2">${userEmail}</span>`;
                         } else {
-                            // No tiene usuario
-                            html += `<span class="text-muted me-2">Sin usuario</span>`;
-                            
                             // Si tiene correo empresa pero no usuario, mostrar botón para crear usuario
                             if (correoEmpresa) {
                                 html += `
@@ -318,6 +315,9 @@ class CampaniaHasEvaluados {
                                     </button>
                                 `;
                             }
+
+                            // No tiene usuario
+                            html += `<span class="text-muted me-2">Sin usuario</span>`;                            
                         }
                         
                         html += `</div>`;
