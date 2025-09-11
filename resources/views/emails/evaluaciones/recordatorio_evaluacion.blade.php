@@ -22,7 +22,7 @@ Para ello, te solicitamos que <b>actualices la información de tus colaboradores
 Ir a la plataforma
 @endcomponent
 @endif
-Si tienes alguna consulta, puedes contactar a <a href="mailto:jimena.cordero@vanguardfresh.pe">Jimena Cordero</a> o <a href="mailto:victor.galvez@vanguardfresh.pe">Víctor Galvez</a>
+Si tienes alguna consulta, puedes contactar a <a href="mailto:jimena.cordero@vanguardfresh.pe">Jimena Cordero</a> o <a href="mailto:paulo.segura@vanguardfresh.pe">Paulo Segura</a>
 <br>
 <br>
 Gracias,<br>
