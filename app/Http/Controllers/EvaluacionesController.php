@@ -202,23 +202,23 @@ class EvaluacionesController extends Controller
         
         // Calcular estadísticas
         if ($tipo_de_evaluacion_id == 1) {
-            $realizados = $evaluadorHasEvaluados->where('realizado', 1)->count();
-            $total = $evaluadorHasEvaluados->count();
+            $realizados = $evaluadorHasEvaluados->where('realizado', 1)->where('cesado', 0)->count();
+            $totalSincesados = $evaluadorHasEvaluados->where('cesado', 0)->count();
         } else {
             $pendientes = $evaluadorHasEvaluados->filter(function($evaluador) {
                 return $evaluador->estado_no_realizado;
             })->count();
-            $total = $evaluadorHasEvaluados->count();
-            $realizados = $total - $pendientes;
+            $totalSincesados = $evaluadorHasEvaluados->where('cesado', 0)->count();
+            $realizados = $totalSincesados - $pendientes;
         }
         
-        $porcentaje = $total == 0 ? 0 : round(($realizados / $total) * 100, 2);
+        $porcentaje = $totalSincesados == 0 ? 0 : round(($realizados / $totalSincesados) * 100, 2);
         
         return response()->json([
             'evaluaciones' => $evaluadorHasEvaluados->toArray(),
             'estadisticas' => [
                 'realizados' => $realizados,
-                'total' => $total,
+                'total' => $totalSincesados,
                 'porcentaje' => $porcentaje,
                 'label' => $porcentaje.'%'
             ]

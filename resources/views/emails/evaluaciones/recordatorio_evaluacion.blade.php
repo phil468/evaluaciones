@@ -14,7 +14,7 @@ Ir a la plataforma
 @endif
 
 @if ($segunda_fase_activa)
-Te recordamos que nos encontramos en las fechas establecidas para la revisión del cumplimiento de los objetivos pactados en la <b>Evaluación de Desempeño por Resultados.</b> Este seguimiento es clave para evaluar los avances alcanzados en la campaña 2024-2025.<br>
+Te recordamos que nos encontramos en las fechas establecidas para la revisión del cumplimiento de los objetivos pactados en la <b>Evaluación de Desempeño.</b> Este seguimiento es clave para evaluar los avances alcanzados en la campaña 2024-2025.<br>
 <br>
 Para ello, te solicitamos que <b>actualices la información de tus colaboradores</b> a cargo en la plataforma de Evaluación de Desempeño hasta el {{ \Carbon\Carbon::parse($fecha_fin_segunda_fase)->format('d/m/Y') }}. Haz clic en el siguiente botón para ingresar:
 <br>

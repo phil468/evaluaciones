@@ -697,7 +697,9 @@
                             document.getElementById('barra-competencias').textContent = data
                                 .competencias.porcentaje + '%';
                             document.getElementById('texto-competencias').textContent =
-                                `${data.competencias.realizadas} de ${data.competencias.total} realizadas`;
+                                `${data.competencias.realizadas} de ${data.competencias.total} realizadas`+'. '+
+                                
+                                `Cesadas: ${data.competencias.cesadas}`;
 
                             // Actualizar Objetivos
                             document.getElementById('barra-objetivos-1').style.width = data.objetivos

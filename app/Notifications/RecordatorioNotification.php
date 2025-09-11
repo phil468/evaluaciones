@@ -41,8 +41,8 @@ class RecordatorioNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('Este es un recordatorio que evaluaciones pendientes')
-                    ->action('Puedes completarlas en le Siguiente Link', url('/'))
+                    ->line('Este es un recordatorio que tiene evaluaciones pendientes')
+                    ->action('Puedes completarlas en el siguiente link', url('/'))
                     ->line('Recuerda que tienes hasta el 18 de mayo para completarlas.')
                     ->line('¡Gracias por tu participación!');
     }

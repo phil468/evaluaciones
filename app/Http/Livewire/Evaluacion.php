@@ -183,7 +183,7 @@ class Evaluacion extends Component
 
         // dd($this->comentarios);
         // Precargar respuestas temporales si la evaluación no está realizada
-        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado && !empty($this->preguntas)) {
+        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado && !$this->evaluadorHasEvaluado->cesado && !empty($this->preguntas)) {
             $tmp = EvaluadorHasEvaluadoRespuestaTemporal::where('evaluador_has_evaluado_id', $this->evaluadorHasEvaluado->id)
                 ->pluck('valor_numerico', 'pregunta_id')
                 ->toArray();
@@ -328,7 +328,7 @@ class Evaluacion extends Component
         }
 
         // PRE-GUARDAR COMENTARIO DE LA SECCIÓN ACTUAL
-        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado) {
+        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado  && !$this->evaluadorHasEvaluado->cesado) {
             $seccionId = $this->currentSeccionId();
             $texto = trim((string)($this->comentarios[$seccionId] ?? ''));
             $campaniaId = $this->evaluadorHasEvaluado->campania_id;
@@ -367,7 +367,7 @@ class Evaluacion extends Component
         $this->preguntas[$index]['valor'] = $valor;
         
         // Guardado temporal inmediato
-        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado) {
+        if ($this->evaluadorHasEvaluado && !$this->evaluadorHasEvaluado->realizado  && !$this->evaluadorHasEvaluado->cesado) {
             $preguntaId = $this->preguntas[$index]['id'] ?? null;
             if ($preguntaId) {
                 EvaluadorHasEvaluadoRespuestaTemporal::updateOrCreate(
@@ -449,10 +449,13 @@ class Evaluacion extends Component
                 return;
             }
         }
-        // validamos si EvaluadorHasEvaluado no está realizado
+        // validamos si EvaluadorHasEvaluado no está realizado ni cesado
         $evaluacionRealizada = EvaluadorHasEvaluado::where('id', $this->evaluadorHasEvaluado->id)->first();
         if ($evaluacionRealizada->realizado == 1) {
             session()->flash('message-danger', 'Esta evaluación ya fue realizada y guardada anteriormente.');
+            return redirect()->to('/inicio/pendientes');
+        } else if ($evaluacionRealizada->cesado == 1) {
+            session()->flash('message-danger', 'Esta evaluación ya fue cesada anteriormente.');
             return redirect()->to('/inicio/pendientes');
         } else {
             // Guardar las respuestas en el modelo Respuesta
@@ -513,7 +516,7 @@ class Evaluacion extends Component
                 // ResumenRespuestasEvaluacionDesempenoCompetencia::actualizarResumen($campaniaId, $evaluadoId);
                 // Actualizar el resumen de respuestas
                 // $this->actualizarResumenRespuestas($campaniaId, $evaluadoId);
-                $this->actualizarResumenRespuestas($this->evaluadorHasEvaluado->campania_id, $this->evaluadorHasEvaluado->evaluado_id);
+                $this->actualizarResumenRespuestas($campaniaId, $evaluadoId);
             
                 // Desasociar comentarios (se borra el vínculo temporal)
                 EvaluadorHasEvaluadoComentario::
@@ -533,6 +536,7 @@ class Evaluacion extends Component
         $pendientes = EvaluadorHasEvaluado::where('evaluado_id', $this->evaluado->id)
             ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
             ->where('realizado', 0)
+            ->where('cesado',0)
             ->count();
         return $pendientes > 0;
     }

@@ -132,8 +132,7 @@ class Evaluacione extends Model
     //lista de correos de evaluadores que tienen evaluaciones realizadas en 0 (evaluador_has_evaluados.realizado = 0 )
     public function evaluadoresSinRealizar() {
         //solo correos
-        return $this->evaluadores()->where('realizado',0)->get()->pluck('evaluador.correo_empresa');
-        //return $this->evaluadores()->where('realizado',0)->get();
+        return $this->evaluadores()->where('realizado',0)->where('cesado',0)->get()->pluck('evaluador.correo_empresa');
     }
 
     public function tipoDeEvaluacion() {

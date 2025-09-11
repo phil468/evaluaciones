@@ -56,15 +56,27 @@ function BaseModel(config) {
 
     this.openModal = function(data = {}) {
         // Ejecuta el hook antes de abrir el modal, si existe
-        if (typeof config.beforeOpenModal === 'function') {
-            config.beforeOpenModal(data);
+        // if (typeof config.beforeOpenModal === 'function') {
+        //     config.beforeOpenModal(data);
+        // }
+        // 1) Reset ANTES
+        if (config.formSelector && $(config.formSelector).length) {
+            $(config.formSelector)[0].reset();
         }
         
         // Limpia y llena el formulario
         $(config.formSelector)[0].reset();
     
         // Limpiar explícitamente el campo ID
-        $(`#${config.formPrefix}Id`).val('');
+        // $(`#${config.formPrefix}Id`).val('');
+        // 2) Setear hidden ID si existe
+        const idFieldSelector = `#${config.formPrefix}Id`;
+        if ($(idFieldSelector).length) {
+            $(idFieldSelector).val(data && data.id ? data.id : '');
+        } else {
+            console.warn(`El campo ID no existe en el formulario: ${idFieldSelector}`);
+            // Aquí puedes manejar el caso en que el campo ID no exista
+        }
 
         // Lista de campos de fecha según tu modelo Laravel
         const dateFields = [
@@ -99,44 +111,63 @@ function BaseModel(config) {
                 pad(d.getDate());
         }
 
-        for (const key in data) {
-            var fieldCamelCase = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
-            var selector = `#${config.formPrefix}${fieldCamelCase.charAt(0).toUpperCase() + fieldCamelCase.slice(1)}`;
+        if (data) {
+            for (const key in data) {
+                var fieldCamelCase = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+                var selector = `#${config.formPrefix}${fieldCamelCase.charAt(0).toUpperCase() + fieldCamelCase.slice(1)}`;
 
-            // Si es campo de fecha
-            if (dateFields.includes(key)) {
-                // Si el input es tipo date
-                if ($(selector).attr('type') === 'date') {
-                    $(selector).val(formatDate(data[key]));
-                } else if ($(selector).attr('type') === 'datetime-local') {
-                    $(selector).val(formatDateTimeLocal(data[key]));
+                // Si es campo de fecha
+                if (dateFields.includes(key)) {
+                    // Si el input es tipo date
+                    if ($(selector).attr('type') === 'date') {
+                        $(selector).val(formatDate(data[key]));
+                    } else if ($(selector).attr('type') === 'datetime-local') {
+                        $(selector).val(formatDateTimeLocal(data[key]));
+                    } else {
+                        $(selector).val(data[key]);
+                    }
                 } else {
                     $(selector).val(data[key]);
                 }
-            } else {
-                $(selector).val(data[key]);
             }
+        } else {
+            // Aquí puedes manejar el caso en que no hay datos
+            // Por ejemplo, limpiar los campos del formulario
+            console.warn('No se proporcionaron datos para llenar el formulario.');
         }
+
+        // 4) Ejecutar hooks DESPUÉS del reset (para que no borre lo seteado por el hook)
+        if (typeof config.beforeOpenModal === 'function') {
+            config.beforeOpenModal(data || {});
+        }
+        // if (typeof config.afterOpenModal === 'function') {
+        //     config.afterOpenModal(data || {});
+        // }
+
         $(config.modalSelector).modal('show');
     };
 
     this.save = function() {
         const id = $(`#${config.formPrefix}Id`).val();
-        let formData = {};
-        config.fields.forEach(field => {
-            // Convierte el campo a camelCase y obtiene su valor
-            var field_snake_case = field.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase(); // Convierte a snake_case
-            // field = field.replace(/_/g, ''); // Elimina guiones bajos
-            // Asigna el valor del campo al objeto formData
-            // Asegúrate de que el campo exista en el formulario
 
-            formData[field_snake_case] = $(`#${config.formPrefix}${field.charAt(0).toUpperCase() + field.slice(1)}`).val();
-        });
-
-        // Si la config indica que debe agregar campania_id automáticamente
-        if (config.autoCampaniaId) {
-            formData['campania_id'] = $('#configId').text();
+        // Permitir payload custom
+        let formData = null;
+        if (typeof config.beforeSave === 'function') {
+            const payload = config.beforeSave();
+            if (payload === false) return; // validación abortó
+            formData = payload;
+        } else if (config.fields && Array.isArray(config.fields)) {
+            formData = {};
+            config.fields.forEach(field => {
+                const sn = field.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+                const sel = `#${config.formPrefix}${field.charAt(0).toUpperCase() + field.slice(1)}`;
+                formData[sn] = $(sel).val();
+            });
+        } else {
+            formData = {};
         }
+
+        if (config.autoCampaniaId) formData['campania_id'] = $('#configId').text();
         
         const url = id ? config.updateURL.replace(':id', id) : config.storeURL;
         const method = id ? 'PUT' : 'POST';

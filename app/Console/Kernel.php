@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
                 ->join('evaluador_has_evaluados', 'evaluaciones.id', '=', 'evaluador_has_evaluados.evaluacion_id')
                 ->join('personal', 'evaluador_has_evaluados.evaluador_id', '=', 'personal.id')
                 ->whereNull('evaluador_has_evaluados.realizado')
+                ->where('evaluador_has_evaluados.cesado', 0)
                 ->whereNull('evaluador_has_evaluados.deleted_at')
                 ->whereNull('evaluaciones.deleted_at')
                 ->whereNull('personal.deleted_at')

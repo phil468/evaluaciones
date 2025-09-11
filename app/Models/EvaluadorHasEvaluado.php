@@ -39,10 +39,12 @@ class EvaluadorHasEvaluado extends Model
         'grado_id',
         'peso',
         'peso_prorrateado',
-        'relacion_jerarquica_id'
+        'relacion_jerarquica_id',
+        'cesado'
     ];
 
-    protected $appends = ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente', 
+    protected $appends = 
+    ['cantidad_de_objetivos_registrados','cantidad_de_objetivos_no_registrados','estado_pendiente', 
     // 'cantidad_de_objetivos_completados', 'cantidad_de_objetivos_no_completados', 'estado_no_realizado', 'total_realizados', 
     'dominio_nombre', 'cargo_nombre_evaluado', 'cargo_nombre_evaluador'];
 	
@@ -143,7 +145,7 @@ class EvaluadorHasEvaluado extends Model
                     }
                 }
                 elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
-                    if($this->realizado == 1) {
+                    if($this->realizado == 1 || $this->cesado == 1) {
                         return false;
                     }
                     else {
@@ -210,7 +212,7 @@ class EvaluadorHasEvaluado extends Model
                     }
                 }
                 elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
-                    if($this->realizado == 1) {
+                    if($this->realizado == 1 || $this->cesado == 1) {
                         return false;
                     }
                     else {
@@ -252,7 +254,7 @@ class EvaluadorHasEvaluado extends Model
                 }
             }
             elseif($this->evaluacion->tipo_de_evaluacion_id == 1) {
-                if($this->realizado == 1) {
+                if($this->realizado == 1 || $this->cesado == 1) {
                     return false;
                 }
                 else {
@@ -272,7 +274,7 @@ class EvaluadorHasEvaluado extends Model
     // campo total_realizados 
     public function getTotalRealizadosAttribute()
     {
-        return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->count();
+        return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->where('cesado',0)->count();
     }
 
     public function getCantidadDeObjetivosAttribute()
@@ -316,57 +318,6 @@ class EvaluadorHasEvaluado extends Model
     // campo calculado dominio_nombre
     public function getDominioNombreAttribute()
     {
-        
-        // try {
-            // Obtener el registro de CampaniaHasEvaluado
-            // $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
-            //     ->where('personal_id', $this->evaluado_id)
-            //     ->with('tipoPuestoHasNivelJerarquico.nivelJerarquico')
-            //     ->first();
-            
-            // // Verificar si existe y tiene las relaciones necesarias
-            // if (!$campaniaHasEvaluado) {
-            //     return '';
-            // }
-            
-            // if (!$campaniaHasEvaluado->tipoPuestoHasNivelJerarquico) {
-            //     return '';
-            // }
-            
-            // if (!$campaniaHasEvaluado->tipoPuestoHasNivelJerarquico->nivelJerarquico) {
-            //     return '';
-            // }
-            
-            // $nivel_jerarquico_id = $campaniaHasEvaluado->tipoPuestoHasNivelJerarquico->nivelJerarquico->id;
-            
-            // // Buscar el dominio con los criterios adecuados
-            // $dominio = Dominio::where('grado_id', $this->grado_id)
-            //     ->where('campania_id', $this->campania_id)
-            //     ->where('nivel_jerarquico_id', $nivel_jerarquico_id)
-            //     ->where('estado', true)
-            //     ->first();
-            
-            // return $dominio ? $dominio->name : '';
-        // } catch (\Exception $e) {
-        //     // Loguear el error si es necesario
-        //     // \Log::error('Error al obtener dominio_nombre: ' . $e->getMessage());
-        //     return 'Error al obtener dominio';
-        // }
-
-        // $nivel_jerarquico = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
-        //     ->where('personal_id', $this->evaluado_id)
-        //     ->first()
-        //     ->tipoPuestoHasNivelJerarquico
-        //     ->nivelJerarquico
-        //     ->id;
-        // $dominio = Dominio::where('grado_id', $this->grado_id)
-        //     ->where('campania_id', $this->campania_id)
-        //     ->where('nivel_jerarquico_id', $nivel_jerarquico)
-        //     ->where('estado', true)
-        //     ->first();
-        // return $dominio ? $dominio->name : '';
-
-        
         $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $this->campania_id)
             ->where('personal_id', $this->evaluado_id)
             ->with('tipoPuestoHasNivelJerarquico.nivelJerarquico')

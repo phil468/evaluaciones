@@ -262,6 +262,7 @@
                                 </button>
                             </div>
                             <div id="evaluadores-has-evaluados-table"></div>
+                            <div id="evaluadores-has-evaluados-warnings" class="mt-2"></div>
                         </div>
                     </div>
                 </div>
@@ -878,7 +879,7 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content rounded-2xl">
                 <div class="text-white modal-header bg-vanguard rounded-t-2xl">
-                    <h5 class="modal-title" id="editEvaluadorHasEvaluadoModalLabel">Evaluador-Has-Evaluado</h5>
+                <h5 class="modal-title" id="editEvaluadorHasEvaluadoModalLabel">Editar Evaluación (Competencias)</h5>
                     <button type="button" class="text-white close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -888,18 +889,41 @@
                         <input type="hidden" id="editEvaluadorHasEvaluadoId">
                         <div class="row">
                             <div class="form-group col-md-4">
-                                <label for="editEvaluadorId">Evaluador*</label>
-                                <select class="form-control" id="editEvaluadorId" required></select>
+                                <label for="editEvaluadorHasEvaluadoEvaluadorId">Evaluador*</label>
+                                <select class="form-control" id="editEvaluadorHasEvaluadoEvaluadorId" required></select>
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="editEvaluadoId">Evaluado*</label>
-                                <select class="form-control" id="editEvaluadoId" required></select>
+                                <label for="editEvaluadorHasEvaluadoEvaluadoId">Evaluado*</label>
+                                <select class="form-control" id="editEvaluadorHasEvaluadoEvaluadoId" required></select>
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <label for="editEvaluadorHasEvaluadoGradoId">Grado</label>
+                                <select class="form-control" id="editEvaluadorHasEvaluadoGradoId"></select>
                             </div>
                             <div class="form-group col-md-4">
+                                <label for="editEvaluadorHasEvaluadoPeso">Peso</label>
+                                <input type="number" step="0.0001" min="0" class="form-control" id="editEvaluadorHasEvaluadoPeso">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="editEvaluadorHasEvaluadoPesoProrrateado">Peso prorrateado</label>
+                                <input type="number" step="0.0001" min="0" class="form-control" id="editEvaluadorHasEvaluadoPesoProrrateado">
+                            </div>
+                            <div class="form-group col-md-4 d-flex align-items-center">
+                                <div class="mt-4 form-check">
+                                    <input class="form-check-input" type="checkbox" id="editEvaluadorHasEvaluadoCesado">
+                                    <label class="form-check-label" for="editEvaluadorHasEvaluadoCesado">Cesado</label>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info d-none" id="ehe-locked-info">
+                                Este registro no puede editarse (realizado, cesado o no es evaluación por competencias).
+                            </div>
+                            {{-- <div class="form-group col-md-4">
                                 <label for="editEvaluacionId">Evaluación*</label>
                                 <select class="form-control" id="editEvaluacionId" required></select>
-                            </div>
-                            <div class="form-group col-md-4">
+                            </div> --}}
+                            {{-- <div class="form-group col-md-4">
                                 <label for="editCargoEvaluador">Cargo de Evaluador*</label>
                                 <input type="text" class="form-control" id="editCargoEvaluador" required>
                             </div>
@@ -922,15 +946,15 @@
                             <div class="form-group col-md-4">
                                 <label for="editGerenciaEvaluado">Gerencia/Subgerencia de Evaluado*</label>
                                 <input type="text" class="form-control" id="editGerenciaEvaluado" required>
-                            </div>
-                            <div class="form-group col-md-4" id="jerarquiaGroup" style="display:none;">
-                                <label for="editJerarquia">Jerarquía*</label>
-                                <select class="form-control" id="editJerarquia">
+                            </div> --}}
+                            {{-- <div class="form-group col-md-4" id="jerarquiaGroup" style="display:none;">
+                                <label for="editEvaluadorHasEvaluadoJerarquia">Jerarquía*</label>
+                                <select class="form-control" id="editEvaluadorHasEvaluadoJerarquia">
                                     <option value="">Seleccione</option>
                                     <option value="1">TIPO 1 (INDIVIDUAL)</option>
                                     <option value="2">TIPO 2 (GRUPAL)</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                     </form>
                 </div>
@@ -1104,6 +1128,7 @@
             showURL: "{{ url('evaluador-has-evaluados') }}/:id",
             storeURL: "{{ url('evaluador-has-evaluados') }}",
             updateURL: "{{ url('evaluador-has-evaluados') }}/:id",
+            updateEvaluacionDeCompetenciasURL: "{{ url('evaluador-has-evaluados') }}/:id/evaluacion-de-competencias",
             deleteURL: "{{ url('evaluador-has-evaluados') }}/:id",
             selectsURL: "{{ url('campanias') }}/:campania_id/evaluador-has-evaluados/selects",
             personalSearchURL: "{{ url('personal/search') }}", // endpoint para búsqueda remota

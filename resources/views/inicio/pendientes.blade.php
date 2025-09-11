@@ -257,12 +257,12 @@
                             <div class="mb-2 badge badge-light">Dominio ${row.dominio_nombre}</div>
 
                             <a href='${nueva_ruta}'
-                               class="btn btn-vanguard btn-block btn-sm rounded-xl ${row.realizado ? 'disabled' : ''}"
-                               
+                               class="btn ${row.cesado ? 'btn-default' : 'btn-vanguard' }  btn-block btn-sm rounded-xl ${row.cesado ? 'disabled' : (row.realizado ? 'disabled' : '')}"
                                data-toggle="tooltip" 
                                data-placement="top" 
-                               title="${row.realizado ? 'Evaluación completada' : 'Pendiente de evaluar'}">
-                                ${row.realizado ? 'Completado' : 'Pendiente de evaluar'}
+                               
+                               title="${row.cesado ? 'Evaluado cesado' : (row.realizado ? 'Evaluación completada' : 'Pendiente de evaluar' )}">
+                                ${row.cesado ? 'Cesado' : (row.realizado ? 'Completado' : 'Pendiente de evaluar')}
                             </a>
                         </div>
                     </div>

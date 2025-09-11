@@ -56,6 +56,7 @@ class Dashboard extends Component
             ->where('evaluaciones.tipo_de_evaluacion_id', TipoDeEvaluacione::COMPETENCIAS)
             ->where('evaluaciones.campania_id', $campania_id)
             ->where('evaluador_has_evaluados.realizado',null)
+            ->where('evaluador_has_evaluados.cesado',0)
             ->get();
 
             $this->personal_id = [$personal_id];

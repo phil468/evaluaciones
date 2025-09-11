@@ -47,9 +47,7 @@ class EvaluadorHasEvaluadoObjetivo extends Model
     // campo total_realizados 
     public function getTotalRealizadosAttribute()
     {
-        return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->count();
-    }
-
-    
+        return $this->where('evaluador_id',$this->evaluador_id)->where('realizado',1)->where('cesado',0)->count();
+    }    
     
 }

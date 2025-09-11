@@ -44,11 +44,13 @@ class EvaluadosTable extends LivewireDatatable
                     ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                     ->where('evaluaciones.tipo_de_evaluacion_id',$i)
                     ->where('evaluador_has_evaluados.realizado',1)
+                    ->where('evaluador_has_evaluados.cesado',0)
                     ->count();
                     
                     $total = EvaluadorHasEvaluado::where('evaluado_id',$value)
                     ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                     ->where('evaluaciones.tipo_de_evaluacion_id',$i)
+                    ->where('evaluador_has_evaluados.cesado',0)
                     ->count();
 
                     if ($total > 0) {
@@ -79,8 +81,8 @@ class EvaluadosTable extends LivewireDatatable
                 
                 return $barra;
             })->label('Avance')->exportCallback(function ($value) {
-                $realizados = EvaluadorHasEvaluado::where('evaluado_id',$value)->where('realizado',1)->count();
-                $total = EvaluadorHasEvaluado::where('evaluado_id',$value)->count();
+                $realizados = EvaluadorHasEvaluado::where('evaluado_id',$value)->where('realizado',1)->where('cesado',0)->count();
+                $total = EvaluadorHasEvaluado::where('evaluado_id',$value)->where('cesado',0)->count();
                 return $realizados.' de '.$total;
             })          
         ];

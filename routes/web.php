@@ -481,6 +481,8 @@ Route::group(['middleware'  =>  ['auth']],function(){
         Route::get('/selects', [EvaluadorHasEvaluadoController::class, 'selects']);
     });
 
+    Route::post('update-evaluador-has-evaluados-competencias/{campania}', [EvaluadorHasEvaluadoController::class, 'updateEvaluacionDeCompetencias']);
+
     Route::resource('evaluador-has-evaluados', EvaluadorHasEvaluadoController::class)
         ->only(['show', 'store', 'update', 'destroy']);
 

@@ -38,6 +38,7 @@ class EvaluadorHasEvaluados extends Component
                 ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
                 ->where('evaluaciones.campania',$this->campania)
                 ->where('realizado',1)
+                ->where('cesado',0)
                 ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
                 ->count();
             
@@ -46,6 +47,7 @@ class EvaluadorHasEvaluados extends Component
                 ->where('evaluaciones.tipo_de_evaluacion_id',$this->tipo_de_evaluacion_id)
                 ->where('evaluaciones.campania',$this->campania)
                 ->join('evaluaciones','evaluador_has_evaluados.evaluacion_id','=','evaluaciones.id')
+                ->where('cesado',0)
                 ->count();
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campania;
+use App\Models\CampaniaHasEvaluado;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Personal;
@@ -25,6 +26,8 @@ class SeguimientoEvaluadoresController extends Controller
         if (!$request->has('campania_id') || $request->campania_id == '') {
             return response()->json([]);
         }
+
+        $campania_id = $request->campania_id;
 
         // Obtener evaluadores únicos con sus evaluaciones y planes
         $evaluadores = 
@@ -55,11 +58,10 @@ class SeguimientoEvaluadoresController extends Controller
             'planesComoEncargado.planesDeMejora'
         ])
         ->get()
-        ->map(function($evaluador) {
+        ->map(function($evaluador) use ($request) {
             // Agrupar estadísticas de competencias
             $competencias = $evaluador->evaluacionesComoEvaluador
                 ->where('evaluacion.tipo_de_evaluacion_id', 1);
-            
             // Agrupar estadísticas de objetivos
             $objetivos = $evaluador->evaluacionesComoEvaluador
                 ->where('evaluacion.tipo_de_evaluacion_id', 2);
@@ -67,13 +69,20 @@ class SeguimientoEvaluadoresController extends Controller
             // Agrupar estadísticas de planes
             $planes = $evaluador->planesComoEncargado;
 
+            //hallando el área
+            $area = $request->campania_id == 1 ? $evaluador->area->name : (
+                CampaniaHasEvaluado::where('personal_id', $evaluador->id)
+                    ->where('campania_id', $request->campania_id)
+                    ->first()
+                    ->area->name ?? 'Sin área');
+
             return [
                 'id' => $evaluador->id,
                 'evaluador' => $evaluador->name,
-                'area' => $evaluador->area->name ?? 'Sin área',
+                'area' => $area,
                 'competencias' => [
-                    $competencias->where('realizado', 1)->count(),
-                    $competencias->count()
+                    $competencias->where('realizado', 1)->where('cesado', 0)->count(),
+                    $competencias->where('cesado', 0)->count()
                 ],
                 'objetivos_fase1' => [
                     'registrados' => $objetivos->sum(function($eval) {
@@ -120,107 +129,6 @@ class SeguimientoEvaluadoresController extends Controller
 
         return response()->json($evaluadores);
     }
-
-    // public function getData(Request $request)
-    // {
-    //     $evaluadores = [];
-
-    //     // Filtrar por campaña si se proporciona
-    //     if (!$request->has('campania_id') || $request->campania_id == '') {
-    //         return response()->json($evaluadores);
-    //     }
-
-    //     $query = EvaluadorHasEvaluado::query()
-    //         ->select('evaluador_has_evaluados.*')
-    //         ->groupBy('evaluador_has_evaluados.evaluador_id')
-    //         ->whereNull('evaluador_has_evaluados.deleted_at')
-    //         ->leftJoin('personal', 'personal.id', '=', 'evaluador_has_evaluados.evaluador_id')
-    //         ->leftJoin('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
-    //         ->with(['evaluador.area', 'objetivosRegistrados', 'objetivosRealizados', 'planesDeMejora']); // Cargar las relaciones
-            
-    //     // Filtrar por campaña si se proporciona
-    //     if ($request->has('campania_id') && $request->campania_id != '') {
-    //         $query->where('evaluaciones.campania_id', $request->campania_id);
-    //     }
-    //         // ->get()
-            
-    //     $evaluadores = $query->get()
-    //     ->map(function($evaluador) {
-    //         // Obtener conteos de forma segura
-    //         $objetivosRegistrados = $evaluador->objetivosRegistrados ? $evaluador->objetivosRegistrados->count() : 0;
-    //         $objetivosRealizados = $evaluador->objetivosRealizados ? $evaluador->objetivosRealizados->where('grupal', 0)->count() : 0;
-    //         $totalObjetivosRegistrados = $evaluador->objetivosRegistrados ? $evaluador->objetivosRegistrados->where('grupal', 0)->count() : 0;
-    //         $planesMejora = $evaluador->planesDeMejora ? $evaluador->planesDeMejora->count() : 0;
-    //         $planesRealizados = $evaluador->planesDeMejora ? $evaluador->planesDeMejora->where('estado_id', 2)->count() : 0;
-            
-    //         return [
-    //             'id' => $evaluador->id,
-    //             'evaluador' => $evaluador->evaluador->name ?? 'No asignado',
-    //             'area' => $evaluador->evaluador->area->nombre ?? 'Sin área',
-    //             'competencias' => $this->getEstadisticasCompetencias($evaluador->evaluador_id),
-    //             'objetivos_fase1' => [
-    //                 'registrados' => $objetivosRegistrados,
-    //                 'requeridos' => $evaluador->cantidad_requerida ?? 0,
-    //                 'completo' => $objetivosRegistrados >= ($evaluador->cantidad_requerida ?? 0)
-    //             ],
-    //             'objetivos_fase2' => [
-    //                 'realizados' => $objetivosRealizados,
-    //                 'total' => $totalObjetivosRegistrados,
-    //                 'completo' => $objetivosRealizados >= $totalObjetivosRegistrados
-    //             ],
-    //             'planes_fase1' => [
-    //                 'registrados' => $planesMejora,
-    //                 'requeridos' => $evaluador->cantidad_requerida_planes ?? 0,
-    //                 'completo' => $planesMejora >= ($evaluador->cantidad_requerida_planes ?? 0)
-    //             ],
-    //             'planes_fase2' => [
-    //                 'realizados' => $planesRealizados,
-    //                 'total' => $planesMejora,
-    //                 'completo' => $planesRealizados >= ($evaluador->cantidad_requerida_planes ?? 0)
-    //             ]
-    //         ];
-    //     });
-
-    //     // $evaluadores = $query->get()
-    //     //     ->map(function($evaluador) {
-                
-    //     //     return [
-    //     //         'id' => $evaluador->id,
-    //     //         'evaluador' => $evaluador->evaluador->name ?? 'No asignado',
-    //     //         'area' => $evaluador->evaluador->area->nombre ?? 'Sin área',
-    //     //         'competencias' => $this->getEstadisticasCompetencias($evaluador->evaluador_id),
-    //     //         'objetivos_fase1' => [
-    //     //             'registrados' => $evaluador->objetivosRegistrados->count(),
-    //     //             'requeridos' => $evaluador->cantidad_requerida,
-    //     //             'completo' => $evaluador->objetivosRegistrados->count() >= $evaluador->cantidad_requerida
-    //     //         ],
-    //     //         'objetivos_fase2' => [
-    //     //             'realizados' => $evaluador->objetivosRealizados->where('grupal', 0)->count(),
-    //     //             'total' => $evaluador->objetivosRegistrados->where('grupal', 0)->count(),
-    //     //             'completo' => $evaluador->objetivosRealizados->where('grupal', 0)->count() >= $evaluador->objetivosRegistrados->where('grupal', 0)->count()
-    //     //         ],
-    //     //         'planes_fase1' => [
-    //     //             'registrados' => $evaluador->planesDeMejora->count(),
-    //     //             'requeridos' => $evaluador->cantidad_requerida_planes,
-    //     //             'completo' => $evaluador->planesDeMejora->count() >= $evaluador->cantidad_requerida_planes
-    //     //         ],
-    //     //         'planes_fase2' => [
-    //     //             'realizados' => $evaluador->planesDeMejora->where('estado_id', 2)->count(),
-    //     //             'total' => $evaluador->planesDeMejora->count(),
-    //     //             'completo' => $evaluador->planesDeMejora->where('estado_id', 2)->count() >= $evaluador->cantidad_requerida_planes
-    //     //         ]
-    //     //     ];
-    //     //         // return [
-    //     //         //     'id' => $evaluador->id,
-    //     //         //     'evaluador' => $evaluador->evaluador->name ?? 'No asignado',                    
-    //     //         //     'avance' => $this->generarBarrasProgreso($evaluador->evaluador_id),
-    //     //         //     'competencias' => $this->getEstadisticasCompetencias($evaluador->evaluador_id),
-    //     //         //     'resultados' => $this->getEstadisticasResultados($evaluador->evaluador_id)
-    //     //         // ];
-    //     //     });
-
-    //     return response()->json($evaluadores);
-    // }
 
     private function generarBarrasProgreso($evaluadorId)
     {
@@ -314,10 +222,12 @@ class SeguimientoEvaluadoresController extends Controller
             
         $totalCompetencias = 0;
         $realizadasCompetencias = 0;
-        
+        $totalCompetenciasCesadas = 0;
+
         foreach($competencias as $evaluacion) {
-            $totalCompetencias += $evaluacion->evaluadores->count();
-            $realizadasCompetencias += $evaluacion->evaluadores->where('realizado', 1)->count();
+            $totalCompetencias += $evaluacion->evaluadores->where('cesado', 0)->count();
+            $realizadasCompetencias += $evaluacion->evaluadores->where('realizado', 1)->where('cesado', 0)->count();
+            $totalCompetenciasCesadas += $evaluacion->evaluadores->where('cesado', 1)->count();
         }
 
         // Evaluaciones por objetivos
@@ -379,7 +289,8 @@ class SeguimientoEvaluadoresController extends Controller
             'competencias' => [
                 'total' => $totalCompetencias,
                 'realizadas' => $realizadasCompetencias,
-                'porcentaje' => $totalCompetencias > 0 ? round(($realizadasCompetencias/$totalCompetencias)*100, 2) : 0
+                'porcentaje' => $totalCompetencias > 0 ? round(($realizadasCompetencias/$totalCompetencias)*100, 2) : 0,
+                'cesadas' => $totalCompetenciasCesadas
             ],
             'objetivos' => [
                 'total' => $totalObjetivos,
@@ -467,16 +378,27 @@ class SeguimientoEvaluadoresController extends Controller
             $evaluadores = EvaluadorHasEvaluado::whereHas('evaluacion', function($q) use ($request) {
                     $q->where('campania_id', $request->campania_id);
                 })
+                // ->groupBy(['evaluador_id','evaluacion_id'])
+                ->with(['evaluador', 'evaluacion', 'evaluacion.tipoDeEvaluacion'])
                 ->get()
                 ->filter(function ($evaluador) {
                     return $evaluador->estado_pendiente;
                 });
 
-                // dd($evaluadores);
-                
-            $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
+            // quiero agrupoar por evaluador y tipo de evaluacion para no enviar correos duplicados
+            $evaluadoresAgrupados = $evaluadores->groupBy(function ($item) {
+                return $item->evaluador_id . '-' . $item->evaluacion_id;
+            });
 
-            foreach ($evaluadores as $evaluador) {
+            // dd(count($evaluadoresAgrupados));
+            // dd($evaluador_8917);
+
+            // $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
+
+            foreach ($evaluadoresAgrupados as $grupo) {
+                $evaluador = $grupo->first();
+                
+                $evaluacion = $evaluador->evaluacion;
                 $personal = $evaluador->evaluador;
                 $user = $personal->user;
                 $email = $user->email;
@@ -487,7 +409,8 @@ class SeguimientoEvaluadoresController extends Controller
                 $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
                 $fecha_fin_segunda_fase = $evaluacion->fecha_fin_segunda_fase ?? '';
 
-                // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+                // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion
+                // ($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
 
                 Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
                     $name, 
@@ -498,9 +421,14 @@ class SeguimientoEvaluadoresController extends Controller
                 ));
 
                 \Log::info('Correo enviado', ['email' => $email]);
-                //interrumpir foreach 
+                // interrumpir foreach 
                 // break;
             }
+
+            //enviar por correo el reporte detallado de los correos enviados
+            // Mail::to($correo_de_prueba)->send(new \App\Mail\ReporteCorreosEnviados(
+            //     $evaluadoresAgrupados
+            // ));
 
             return response()->json([
                 'success' => true,
