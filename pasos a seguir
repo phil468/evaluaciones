@@ -127,5 +127,6 @@ sudo php artisan migrate --path=/database/migrations/2025_08_22_130137_add_relac
 
 sudo php artisan migrate --path=/database/migrations/2025_09_03_114313_add_evaluador_has_evaluado.php
 sudo php artisan migrate --path=/database/migrations/2025_09_03_114558_create_table_evaluador_has_evaluado_respuestas_tmp.php
+sudo php artisan migrate --path=/database/migrations/2025_09_09_154403_add_cesado_evaluador_has_evaluados.php
 
 corregir la carpeta: adm a public
