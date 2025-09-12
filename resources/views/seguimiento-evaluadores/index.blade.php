@@ -812,7 +812,7 @@
 
                 Swal.fire({
                     title: '¿Está seguro?',
-                    text: "Se enviarán correos a todos los evaluadores (de objetivos) pendientes",
+                    text: "Se enviarán correos a todos los evaluadores pendientes",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3c4651',

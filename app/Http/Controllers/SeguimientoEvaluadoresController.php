@@ -388,12 +388,11 @@ class SeguimientoEvaluadoresController extends Controller
             // quiero agrupoar por evaluador y tipo de evaluacion para no enviar correos duplicados
             $evaluadoresAgrupados = $evaluadores->groupBy(function ($item) {
                 return $item->evaluador_id . '-' . $item->evaluacion_id;
-            });
+            });            
 
-            // dd(count($evaluadoresAgrupados));
-            // dd($evaluador_8917);
+            $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
 
-            // $correo_de_prueba = 'john.delacruz@vanguardfresh.pe';
+            $evaluadores_enviados = [];
 
             foreach ($evaluadoresAgrupados as $grupo) {
                 $evaluador = $grupo->first();
@@ -401,34 +400,71 @@ class SeguimientoEvaluadoresController extends Controller
                 $evaluacion = $evaluador->evaluacion;
                 $personal = $evaluador->evaluador;
                 $user = $personal->user;
-                $email = $user->email;
-                $name = $user->name;
+                $email = $user->email??null;
+                $name = $user->name??null;
 
                 $evaluacion = $evaluador->evaluacion;
                 $primera_fase_activa = $evaluacion->tipo_de_evaluacion_id == 1 ? true : $evaluacion->primera_fase_activa;
                 $segunda_fase_activa = $evaluacion->segunda_fase_activa ?? false;
                 $fecha_fin_segunda_fase = $evaluacion->fecha_fin_segunda_fase ?? '';
 
-                // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion
-                // ($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+                try {
 
-                Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
-                    $name, 
-                    $primera_fase_activa, 
-                    $segunda_fase_activa, 
-                    $evaluacion->tipo_de_evaluacion_id, 
-                    $fecha_fin_segunda_fase
-                ));
+                    if (!$email) {
+                        \Log::warning('El evaluador ' . $personal->name . ' no tiene un correo electrónico asociado.');
+                        $evaluadores_enviados[] = [
+                            'evaluador' => $personal->name,
+                            'email' => $email??'No tiene correo',
+                            'tipo_de_evaluacion' => $evaluacion->tipoDeEvaluacion->name,
+                            'estado' => 'No tiene correo electrónico'
+                        ];
+                        continue; // Saltar al siguiente evaluador
+                    } else {
 
-                \Log::info('Correo enviado', ['email' => $email]);
+                        // Mail::to($correo_de_prueba)->send(new \App\Mail\RecordatorioEvaluacion
+                        // ($name, $primera_fase_activa, $segunda_fase_activa, $evaluacion->tipo_de_evaluacion_id, $fecha_fin_segunda_fase));
+
+                        Mail::to($email)->send(new \App\Mail\RecordatorioEvaluacion(
+                            $name, 
+                            $primera_fase_activa, 
+                            $segunda_fase_activa, 
+                            $evaluacion->tipo_de_evaluacion_id, 
+                            $fecha_fin_segunda_fase
+                        ));
+
+                        \Log::info('Correo enviado', ['email' => $email]);                        
+
+                        //IR COLECCIONANDO LA INFORMACION DE CADA CORREO ENVIADO PARA LUEGO ENVIARLO POR CORREO
+                        $evaluadores_enviados[] = [
+                            'evaluador' => $personal->name,
+                            'email' => $email??'No tiene correo',
+                            'tipo_de_evaluacion' => $evaluacion->tipoDeEvaluacion->name,
+                            'estado' => 'Enviado',
+                        ];
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error al enviar correo a ' . $email . ': ' . $e->getMessage());                    
+
+                    //IR COLECCIONANDO LA INFORMACION DE CADA CORREO ENVIADO PARA LUEGO ENVIARLO POR CORREO
+                    $evaluadores_enviados[] = [
+                        'evaluador' => $personal->name,
+                        'email' => $email??'No tiene correo',
+                        'tipo_de_evaluacion' => $evaluacion->tipoDeEvaluacion->name,
+                        'estado' => 'Error: ' . $e->getMessage(),
+                    ];
+                    continue; // Saltar al siguiente evaluador en caso de error
+                }
+
                 // interrumpir foreach 
                 // break;
             }
 
             //enviar por correo el reporte detallado de los correos enviados
-            // Mail::to($correo_de_prueba)->send(new \App\Mail\ReporteCorreosEnviados(
-            //     $evaluadoresAgrupados
-            // ));
+            $correos_notificacion = env('CORREOS', 'jimena.cordero@vanguardfresh.pe');
+            $correos_notificacion_array = explode(',', $correos_notificacion);
+            Mail::to($correos_notificacion_array)->send(new \App\Mail\ReporteCorreosEnviados(
+                $evaluadores_enviados
+            ));
 
             return response()->json([
                 'success' => true,
