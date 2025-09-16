@@ -136,13 +136,119 @@
 
 @endsection
 
+@section('css')
+<style>
+  /* Solo envolver texto en las columnas marcadas con wrap-text */
+  #resumen-table .tabulator-cell.wrap-text,
+  #resumen-table .tabulator-cell.wrap-text .comentarios-text {
+    white-space: normal;          /* permitir saltos */
+    word-break: break-word;       /* cortar palabras largas */
+    overflow-wrap: anywhere;      /* forzar corte si es necesario */
+    /* display: block;  */
+  }
+</style>
+@endsection
+
 @section('js')
 <script type="text/javascript">
     var table;
+
+    // Helpers
+    function escapeHtml(str){ return String(str || '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function truncate(str, max){ str = String(str || ''); return str.length > max ? str.slice(0, max) + '…' : str; }
+
+    function buildComentariosFormat(value, options = { maxItems: 3, maxCharsPerItem: 120 }) {
+        if (!value) return '';
+        const partes = value.split(' | ').filter(Boolean);
+
+        // Full HTML (todo el texto)
+        const fullHtml = partes.map(c => '• ' + escapeHtml(c)).join('<br>');
+
+        // Versión corta (N items y N chars por item)
+        const shortHtml = partes.slice(0, options.maxItems)
+            .map(c => '• ' + escapeHtml(truncate(c, options.maxCharsPerItem))).join('<br>');
+
+        // ¿Necesita toggle?
+        const needsToggle = partes.length > options.maxItems ||
+            partes.slice(0, options.maxItems).some(c => c.length > options.maxCharsPerItem);
+
+        if (!needsToggle) return `<div class="comentarios-text">${shortHtml}</div>`;
+
+        const encodedShort = encodeURIComponent(shortHtml);
+        const encodedFull = encodeURIComponent(fullHtml);
+
+        return `
+            <div class="comentarios-text">${shortHtml}</div>
+            <div class="mt-1">
+                <a href="#" class="ver-toggle" data-expanded="0"
+                   data-short="${encodedShort}" data-full="${encodedFull}">
+                   Ver más
+                </a>
+            </div>
+        `;
+    }
+
+    // Delegación global: manejar “Ver más / Ver menos”
+    document.addEventListener('click', function(e){
+        const link = e.target.closest('.ver-toggle');
+        if (!link) return;
+        e.preventDefault();
+        const cellEl = link.closest('.tabulator-cell');
+        const textDiv = cellEl && cellEl.querySelector('.comentarios-text');
+        if (!textDiv) return;
+
+        const expanded = link.getAttribute('data-expanded') === '1';
+        if (expanded) {
+            textDiv.innerHTML = decodeURIComponent(link.getAttribute('data-short') || '');
+            link.textContent = 'Ver más';
+            link.setAttribute('data-expanded','0');
+        } else {
+            textDiv.innerHTML = decodeURIComponent(link.getAttribute('data-full') || '');
+            link.textContent = 'Ver menos';
+            link.setAttribute('data-expanded','1');
+        }
+    });
+
+    
+    // document.addEventListener('click', function(e){
+    //     const link = e.target.closest('.ver-toggle');
+    //     if (!link) return;
+    //     e.preventDefault();
+
+    //     const cellEl = link.closest('.tabulator-cell');
+    //     const textDiv = cellEl && cellEl.querySelector('.comentarios-text');
+    //     if (!textDiv) return;
+
+    //     const expanded = link.getAttribute('data-expanded') === '1';
+    //     if (expanded) {
+    //         textDiv.innerHTML = decodeURIComponent(link.getAttribute('data-short') || '');
+    //         link.textContent = 'Ver más';
+    //         link.setAttribute('data-expanded','0');
+    //     } else {
+    //         textDiv.innerHTML = decodeURIComponent(link.getAttribute('data-full') || '');
+    //         link.textContent = 'Ver menos';
+    //         link.setAttribute('data-expanded','1');
+    //     }
+
+    //     // Recalcular altura de la fila
+    //     if (window.table) {
+    //         // Redibuja y recalcula alturas (seguro)
+    //         table.redraw(true);
+    //         // Opcional: si quieres solo esa fila
+    //         // const rowEl = link.closest('.tabulator-row');
+    //         // if (rowEl && rowEl._row && typeof rowEl._row.normalizeHeight === 'function') {
+    //         //     rowEl._row.normalizeHeight();
+    //         // }
+    //     }
+    // });
+    
     document.addEventListener('DOMContentLoaded', function() {
         table = new Tabulator("#resumen-table", {
             ajaxURL: "{{ route('resumen.evaluacion.data') }}",
             layout: "fitDataFill",
+            variableHeight: true, // <- permite crecer filas según contenido
             pagination: "local",
             paginationSize: 25,
             paginationSizeSelector: [10, 25, 50, 100],
@@ -150,8 +256,9 @@
                 {title: "Persona", field: "persona", headerFilter: true},
                 {title: "Competencia", field: "competencia", headerFilter: true},
                 {title: "Puntaje", field: "puntaje", headerFilter: true,},
+                {title: "Autoevaluación", field: "puntaje_autoevaluacion", headerFilter: true,},
+                {title: "Total Peso", field: "total_peso", headerFilter: true,},
                 {title: "Calibrado", field: "puntaje_calibrado", headerFilter: true,
-                
                     formatter: function(cell) {
                         var value = cell.getValue();
                         if (value !== '' && value !== null && value !== 0) {
@@ -163,9 +270,51 @@
                         }
                         return value;
                     }
-
                 },
                 {title: "Área", field: "area", headerFilter: true},
+                // //comentarios
+                // {title: "Comentarios", field: "comentarios", headerFilter: true, formatter: function(cell) {
+                //     // los comentarios vienen así 'comentarios' => $comentarios->implode(" | "), pero se muestran de una manera optima
+                //         var value = cell.getValue();
+                //         if (value) {
+                //             var comentariosArray = value.split(" | ");
+                //             var formattedComentarios = comentariosArray.map(function(comentario) {
+                //                 return `<div style="margin-bottom: 5px;">• ${comentario}</div>`;
+                //             }).join("");
+                //             return `<div style="max-height: 100px; overflow-y: auto;">${formattedComentarios}</div>`;
+                //         }
+                //         return "";
+                //     }
+                // },
+                // //autoevaluacion
+                // {title: "Comentarios Autoevaluación", field: "comentarios_autoevaluacion", headerFilter: true, formatter: function(cell) {
+                //     // los comentarios vienen así 'comentarios' => $comentarios->implode(" | "), pero se muestran de una manera optima
+                //         var value = cell.getValue();
+                //         if (value) {
+                //             var comentariosArray = value.split(" | ");
+                //             var formattedComentarios = comentariosArray.map(function(comentario) {
+                //                 return `<div style="margin-bottom: 5px;">• ${comentario}</div>`;
+                //             }).join("");
+                //             return `<div style="max-height: 100px; overflow-y: auto;">${formattedComentarios}</div>`;
+                //         }
+                //         return "";
+                //     }
+                // },
+
+                                // Comentarios (con Ver más / Ver menos)
+                {title: "Comentarios", field: "comentarios", headerFilter: true, width: 380, cssClass: "wrap-text",
+                    formatter: function(cell) {
+                        return buildComentariosFormat(cell.getValue(), { maxItems: 3, maxCharsPerItem: 120 });
+                    }
+                },
+
+                // Comentarios Autoevaluación (con Ver más / Ver menos)
+                {title: "Comentarios Autoevaluación", field: "comentarios_autoevaluacion", headerFilter: true, width: 380, cssClass: "wrap-text",
+                    formatter: function(cell) {
+                        return buildComentariosFormat(cell.getValue(), { maxItems: 3, maxCharsPerItem: 120 });
+                    }
+                },
+                
                 {title: "Comité", formatter:"tickCross", field: "comite",
                     formatterParams :{ 
                         allowEmpty : true , 
@@ -175,7 +324,7 @@
                 
                 {title: "Campaña", field: "campania", headerFilter: true},
                 {title: "Fecha", field: "fecha", headerFilter: true},
-                {title: "Comentario", field: "comentario", headerFilter: true},
+                {title: "Comentario Calibración", field: "comentario", headerFilter: true},
                 {
                     title: "Detalle",
                     field: "detalle_url",

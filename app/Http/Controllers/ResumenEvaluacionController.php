@@ -11,6 +11,7 @@ use App\Models\ComiteCalibracion; // Debes crear este modelo y tabla
 use App\Models\ComiteHasPersona;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Models\EvaluadorHasEvaluadoComentario;
 
 class ResumenEvaluacionController extends Controller
 {
@@ -27,6 +28,7 @@ class ResumenEvaluacionController extends Controller
             ->when($request->input('campania_id'), function($query) use ($request) {
                 return $query->where('campania_id', $request->input('campania_id'));
             })
+            ->where('campania_id',2) // Asegura que campania_id no sea nulo
             ->get()
             ->groupBy(function($item) {
                 return $item->personal_id . '-' . $item->competencia_id. '-' . $item->campania_id;
@@ -34,6 +36,7 @@ class ResumenEvaluacionController extends Controller
             ->map(function($items) {
 
                 $first = $items->first();
+                // dd($first);
                 
                 // Obtener las personas del comité si existe
                 $comite = ComiteCalibracion::where([
@@ -55,6 +58,45 @@ class ResumenEvaluacionController extends Controller
                         });
                 }
 
+                $comentarios = EvaluadorHasEvaluadoComentario::where('campania_id', $first->campania_id)
+                    ->where('evaluado_id', $first->personal_id)
+                    ->where('campania_has_competencia_id', $first->competencia_id)
+                    ->where('evaluador_has_evaluado_id', null) // excluye autoevaluación
+                    ->where(function ($q) {
+                        $q->whereNull('tipo_relacion_jerarquica_id')
+                        ->orWhere('tipo_relacion_jerarquica_id', '!=', 4);
+                    })
+                    ->pluck('comentario')
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+
+                // Comentarios de autoevaluación
+                $comentariosAuto = EvaluadorHasEvaluadoComentario::where('campania_id', $first->campania_id)
+                    ->where('evaluado_id', $first->personal_id)
+                    ->where('campania_has_competencia_id', $first->competencia_id)
+                    ->where('evaluador_has_evaluado_id', null) // excluye autoevaluación
+                    ->where(function ($q) {
+                        $q->where('tipo_relacion_jerarquica_id', 4);
+                        // ->orWhereHas('competencia', function($qq){ /* si tu relación jerárquica se accede por otro lado, ignora este whereHas */ });
+                    })
+                    ->pluck('comentario')
+                    ->filter()
+                    ->unique()
+                    ->values();
+                
+                // dd($first->campania_id, $first->personal_id, $first->competencia_id, $comentariosAuto);
+
+                $area_id = $first->area_id;
+                if (!$area_id) {
+                    // area_id desde campania_has_evaluados (personal_id = evaluado_id)
+                    $area_id = DB::table('campania_has_evaluados')
+                        ->where('campania_id', $first->campania_id)
+                        ->where('personal_id', $first->personal_id)
+                        ->value('area_id');
+                }
+
                 return [
 
                     'personal_id' => $first->personal_id,
@@ -64,6 +106,8 @@ class ResumenEvaluacionController extends Controller
                     'competencia' => optional($first->competencia)->name ?? '',
                     'comite_personas' => $comite_personas,
                     'puntaje' => round($items->avg('puntaje'), 2),
+                    'puntaje_autoevaluacion' => round($items->avg('puntaje_autoevaluacion'), 2) ?: '',
+                    'total_peso' => round($items->avg('total_peso'), 2) ?: '',
                     'puntaje_calibrado' => round($items->avg('puntaje_calibrado'), 2) ?: '',
                     'area' => optional($first->area)->name ?? '',
                     'nivel_jerarquico' => $first->nivel_jerarquico ?? '',
@@ -71,6 +115,8 @@ class ResumenEvaluacionController extends Controller
                     'comite' => $first->comite_calibracion_id,
                     'comentario' => optional($first->comite)->comentario ?? '',
                     'fecha' => $first->comite ? $first->comite->created_at->format('d/m/Y h:i A') : '',
+                    'comentarios' => $comentarios->implode(" | "),
+                    'comentarios_autoevaluacion' => $comentariosAuto->implode(" | "),
                     
                     'detalle_url' => $this->getDetalleUrl($first->personal_id, $first->competencia_id, $first->campania_id),
                     'calibracion_url' => $this->getCalibracionUrl($first->personal_id, $first->competencia_id, $first->campania_id),
@@ -78,6 +124,8 @@ class ResumenEvaluacionController extends Controller
                 ];
             })
             ->values();
+
+            // dd(($resumen));
 
         return response()->json($resumen);
     }

@@ -41,20 +41,34 @@ class Respuesta extends Model
 
     public function getAreaDeEvaluadoAttribute()
     {
-        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
-        ->where('evaluacion_id',$this->pregunta->evaluacion_id)
-        ->first()->area_de_evaluado;
+        // evitando error si no existe la relación
+        $relacion = EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first();
+        return $relacion ? $relacion->area_de_evaluado : null;
+        // return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        // ->where('evaluacion_id',$this->pregunta->evaluacion_id)
+        // ->first()->area_de_evaluado;
     }
 
     public function getCargoDeEvaluadoAttribute()
     {
-        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
-        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->cargo_de_evaluado;
+        // evitando error si no existe la relación
+        $relacion = EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first();
+        return $relacion ? $relacion->cargo_de_evaluado : null;
+        // return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        // ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->cargo_de_evaluado;
     }
 
     public function getGerenciaDeEvaluadoAttribute()
     {
-        return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
-        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->gerencia_sub_gerencia_de_evaluado;
+        // evitando error si no existe la relación
+        $relacion = EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first();
+        return $relacion ? $relacion->gerencia_de_evaluado : null;
+        // return EvaluadorHasEvaluado::where('evaluado_id',$this->evalu
+
+        // return EvaluadorHasEvaluado::where('evaluado_id',$this->evaluado_id)
+        // ->where('evaluacion_id',$this->pregunta->evaluacion_id)->first()->gerencia_sub_gerencia_de_evaluado;
     }
 }

@@ -170,6 +170,10 @@ class CampaniaHasEvaluados {
                     width: 150
                 },
                 {
+                    title: "Puntaje",
+                    field: "puntaje_de_evaluacion_de_competencias",
+                },
+                {
                     title: "Ev. Objetivos",
                     field: "habilitado_para_evaluacion_por_objetivos",
                     formatter: "tickCross",

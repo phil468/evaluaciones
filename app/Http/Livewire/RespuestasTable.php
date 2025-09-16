@@ -61,6 +61,8 @@ class RespuestasTable extends LivewireDatatable
                 return Respuesta::find($id)->valor_numerico;
             },[],'puntuacion')->label('Puntuación')->searchable()->filterable()->defaultSort('asc'),
 
+            Column::name('peso')->label('Peso')->searchable()->filterable()->defaultSort('asc'),
+
             Column::callback(['id'], function ($id) {
                 $respuesta = Respuesta::find($id);
                 return $respuesta->cargo_de_evaluado ?? '';

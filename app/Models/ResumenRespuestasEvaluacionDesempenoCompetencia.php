@@ -20,6 +20,8 @@ class ResumenRespuestasEvaluacionDesempenoCompetencia extends Model
         'area_id',
         'campania_id',
         'comite_calibracion_id',
+        'total_peso',
+        'puntaje_autoevaluacion',
     ];
 
     public function personal()
