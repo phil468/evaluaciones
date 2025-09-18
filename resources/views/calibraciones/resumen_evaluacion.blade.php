@@ -109,7 +109,7 @@
                                 <h5 class="h5">Resumen de Evaluación por Competencias</h5>
                             </div>
                             <div>
-                                <button id="btnDescargarXLS" class="btn btn-success btn-sm">
+                                <button id="btnDescargarXLS" class="btn btn-default">
                                     <i class="fas fa-file-excel"></i> Descargar XLS
                                 </button>
                             </div>
