@@ -108,6 +108,11 @@
                             <div class="float-left">
                                 <h5 class="h5">Resumen de Evaluación por Competencias</h5>
                             </div>
+                            <div>
+                                <button id="btnDescargarXLS" class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Descargar XLS
+                                </button>
+                            </div>
 
                         </div>
                     </div>
@@ -144,7 +149,6 @@
     white-space: normal;          /* permitir saltos */
     word-break: break-word;       /* cortar palabras largas */
     overflow-wrap: anywhere;      /* forzar corte si es necesario */
-    /* display: block;  */
   }
 </style>
 @endsection
@@ -378,6 +382,11 @@
                     }
                 }
             }
+        });
+        
+        // Botón para descargar XLS
+        document.getElementById('btnDescargarXLS').addEventListener('click', function() {
+            table.download("xlsx", "resumen_evaluacion.xlsx", { sheetName: "Resumen" });
         });
 
         table.on("dataLoadError", function(error){
