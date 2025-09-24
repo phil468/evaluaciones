@@ -1419,6 +1419,11 @@ class CampaniaHasEvaluadoController extends Controller
         foreach ($filtradas as $respuesta) {
             $respuesta->delete();
         }
+        
+        //eliminar resumen ResumenRespuestasEvaluacionDesempenoCompetencia
+        ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $evaluado->campania_id)
+            ->where('personal_id', $evaluado->personal_id)
+            ->delete();
 
         // Marcar evaluaciones como no realizadas (ajusta según tu modelo)
         EvaluadorHasEvaluado::where('campania_id', $evaluado->campania_id)
@@ -1427,6 +1432,11 @@ class CampaniaHasEvaluadoController extends Controller
             ->where('peso', '>', 0)
             ->where('evaluador_id', '!=', $evaluado->personal_id) // Excluir autoevaluación
             ->update(['realizado' => 0]);
+
+        $evaluado->update([
+            'puntaje_de_evaluacion_de_competencias' => null,
+            'evaluacion_de_competencias_completada' => false,
+        ]);
 
         return response()->json(['message' => 'Respuestas reiniciadas correctamente.']);
     }

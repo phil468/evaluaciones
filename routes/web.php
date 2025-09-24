@@ -125,6 +125,13 @@ Auth::routes();
 
 Route::group(['middleware'  =>  ['auth']],function(){
 
+
+    // Route::get('/test-actualizar-resumen', function() {
+    //     $comp = new \App\Http\Livewire\Evaluacion(1); // id de evaluación
+    //     $comp->actualizarResumenRespuestas(2, 2094); // campania_id, evaluado_id
+    //     return 'Resumen actualizado';
+    // });
+
     Route::get('/inicio', [App\Http\Controllers\HomeController::class,'inicio'])->name('inicio');
     Route::get('/pendientes2', 
     [App\Http\Controllers\HomeController::class,'pendientes2'])

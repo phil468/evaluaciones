@@ -533,10 +533,15 @@ class Evaluacion extends Component
 
     public function evaluadoTieneEvaluacionesPendientes()
     {
+        // evaluar si tiene evaluaciones de tipo evaluacion por competencias pendientes
+
         $pendientes = EvaluadorHasEvaluado::where('evaluado_id', $this->evaluado->id)
             ->where('campania_id', $this->evaluadorHasEvaluado->campania_id)
             ->where('realizado', 0)
             ->where('cesado',0)
+            ->whereHas('evaluacion', function ($query) {
+                $query->where('tipo_de_evaluacion_id', 1); // tipo_de_evaluacion_id = 1 para evaluacion por competencias
+            })
             ->count();
         return $pendientes > 0;
     }
@@ -548,50 +553,94 @@ class Evaluacion extends Component
             ->where('personal_id', $evaluadoId)
             ->delete();
 
-        // Agrupa por campania, competencia y pregunta
-        $respuestas = Respuesta::with('pregunta')
+        // Cargar respuestas filtradas por campaña y evaluado
+        $respuestas = Respuesta::with(['pregunta:id,seccion_id,campania_has_competencia_id'])
             ->where('campania_id', $campaniaId)
-            ->where('evaluado_id', $evaluadoId)
-            ->get()
-            ->groupBy(function($item) {
-                return $item->campania_id . '-' . $item->evaluado_id . '-' . $item->pregunta->seccion_id . '-' . $item->pregunta_id;
+            // ->where('evaluado_id', $evaluadoId)
+            ->get();
+
+        $respuestas = $respuestas->filter(function ($r) use ($evaluadoId) {
+            return (string)$r->evaluado_id === (string)$evaluadoId;
+        });
+
+        // Agrupar por competencia y pregunta
+        $grupos = $respuestas->groupBy(function ($item) {
+            // Usar campania_has_competencia_id si existe, si no seccion_id
+            $competenciaId = $item->pregunta->campania_has_competencia_id ?: $item->pregunta->seccion_id;
+            return implode('-', [
+                $item->campania_id,
+                $item->evaluado_id,
+                $competenciaId,
+                $item->pregunta_id,
+            ]);
+        });
+
+        foreach ($grupos as $grupo) {
+            $primera = $grupo->first();
+            $competencia_id = $primera->pregunta->campania_has_competencia_id ?: $primera->pregunta->seccion_id;
+            if (!$competencia_id) continue;
+
+            $campania_id = $primera->campania_id;
+            $personal_id = $primera->evaluado_id;
+
+            // Sumatoria de pesos (incluye autoevaluación)
+            $total_peso = $grupo->sum(function ($r) {
+                return (float) ($r->peso ?? 0);
             });
 
-        foreach ($respuestas as $key => $grupo) {
-            $primera = $grupo->first();
-            $competencia_id = $primera->pregunta->seccion_id ?? null;
-            $area_id = $primera->area_de_evaluado ?? null;
+            // Promedio ponderado (solo pesos > 0)
+            $sumaPonderada = $grupo->sum(function ($r) {
+                $peso = (float) ($r->peso ?? 0);
+                $valor = (float) ($r->valor_numerico ?? 0);
+                return $peso > 0 ? ($valor * $peso) : 0;
+            });
+            $sumaPesosPositivos = $grupo->sum(function ($r) {
+                $peso = (float) ($r->peso ?? 0);
+                return $peso > 0 ? $peso : 0;
+            });
+            $puntaje = $sumaPesosPositivos > 0 ? $sumaPonderada / $sumaPesosPositivos : null;
 
-            $total_peso = $grupo->sum('peso');
-            $puntaje = $total_peso > 0 ? $grupo->sum(function($r) { return $r->valor_numerico * $r->peso; }) / $total_peso : null;
+            // Autoevaluación: promedio simple de valores con peso = 0
+            $auto = $grupo->filter(function ($r) {
+                return (float) ($r->peso ?? 0) == 0.0;
+            });
+            $puntaje_autoevaluacion = $auto->count() > 0
+                ? $auto->avg(function ($r) { return (float) ($r->valor_numerico ?? 0); })
+                : null;
 
             ResumenRespuestasEvaluacionDesempenoCompetencia::updateOrCreate(
                 [
-                    'personal_id' => $primera->evaluado_id,
+                    'personal_id' => $personal_id,
                     'competencia_id' => $competencia_id,
                     'pregunta_id' => $primera->pregunta_id,
-                    'area_id' => $area_id,
-                    'campania_id' => $primera->campania_id,
+                    'campania_id' => $campania_id,
                 ],
                 [
                     'puntaje' => $puntaje,
+                    'total_peso' => $total_peso,
+                    'puntaje_autoevaluacion' => $puntaje_autoevaluacion,
                 ]
             );
         }
 
-        // actualizar el campaniaHasEvaluado con el puntaje promedio
-        $puntajePromedio = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campaniaId)
-            ->where('personal_id', $evaluadoId)
-            ->avg('puntaje');
-        $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $campaniaId)
-            ->where('personal_id', $evaluadoId)
-            ->first();
-        if ($campaniaHasEvaluado) {
-            $campaniaHasEvaluado->puntaje_de_evaluacion_de_competencias = $puntajePromedio;
-            $campaniaHasEvaluado->evaluacion_de_competencias_completada = true;
-            $campaniaHasEvaluado->save();
+        // Actualizar el promedio por evaluado en campania_has_evaluados
+        $porCompetencia = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campaniaId)
+            ->where('personal_id', (string)$evaluadoId)
+            ->selectRaw('competencia_id, AVG(puntaje) AS avg_puntaje')
+            ->groupBy('competencia_id')
+            ->get();
+        
+        if ($porCompetencia->isNotEmpty()) {
+            $puntajeFinal = $porCompetencia->avg('avg_puntaje');
+            $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $campaniaId)
+                ->where('personal_id', $evaluadoId)
+                ->first();
+            if ($campaniaHasEvaluado) {
+                $campaniaHasEvaluado->puntaje_de_evaluacion_de_competencias = $puntajeFinal;
+                $campaniaHasEvaluado->evaluacion_de_competencias_completada = true;
+                $campaniaHasEvaluado->save();
+            }
         }
-
     }
 
     public function cancelar()

@@ -35,9 +35,6 @@ class ActualizarResumenRespuestas extends Command
             }
         }
 
-        // Limpia la tabla resumen
-        // ResumenRespuestasEvaluacionDesempenoCompetencia::truncate();
-
         // Limpiar solo lo necesario
         if ($campaniaId) {
             ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campaniaId)->delete();
@@ -46,48 +43,8 @@ class ActualizarResumenRespuestas extends Command
             $this->error('Debes especificar una campaña (nombre o ID) para actualizar el resumen.');
             return self::FAILURE;
         }
-        // Agrupa por campania, competencia y pregunta
-        // $respuestas = Respuesta::with('pregunta')
-        //     ->get()
-        //     ->groupBy(function($item) {
-        //         return $item->campania_id . '-' . $item->evaluado_id . '-' . $item->pregunta->seccion_id . '-' . $item->pregunta_id;
-        //     });
 
-        // foreach ($respuestas as $key => $grupo) {
-        //     $primera = $grupo->first();
-        //     $competencia_id = $primera->pregunta->seccion_id ?? null;
-        //     $area_id = $primera->area_de_evaluado ?? null;
-
-        //     $total_peso = $grupo->sum('peso');
-        //     $puntaje = $total_peso > 0 ? $grupo->sum(function($r) { return $r->valor_numerico * $r->peso; }) / $total_peso : null;
-
-        //     ResumenRespuestasEvaluacionDesempenoCompetencia::updateOrCreate(
-        //         [
-        //             'personal_id' => $primera->evaluado_id,
-        //             'competencia_id' => $competencia_id,
-        //             'pregunta_id' => $primera->pregunta_id,
-        //             'area_id' => $area_id,
-        //             'campania_id' => $primera->campania_id,
-        //         ],
-        //         [
-        //             'puntaje' => $puntaje,
-        //             // 'puntaje_calibrado' => null, // Por ahora igual, luego puedes calibrar
-        //         ]
-        //     );
-        //     // create([
-        //     //     'personal_id' => $primera->evaluado_id,
-        //     //     'competencia_id' => $competencia_id,
-        //     //     'pregunta_id' => $primera->pregunta_id,
-        //     //     'puntaje' => $puntaje,
-        //     //     // 'puntaje_calibrado' => null, // Por ahora igual, luego puedes calibrar
-        //     //     'area_id' => $area_id,
-        //     //     'campania_id' => $primera->campania_id,
-        //     // ]);
-        // }
-
-        // $this->info('Resumen actualizado correctamente.');
-
-         // Cargar respuestas (filtradas por campaña si se indicó)
+        // Cargar respuestas (filtradas por campaña si se indicó)
         $respuestasQuery = Respuesta::with(['pregunta:id,seccion_id,campania_has_competencia_id']);
         if ($campaniaId) {
             $respuestasQuery->where('campania_id', $campaniaId);
@@ -117,11 +74,6 @@ class ActualizarResumenRespuestas extends Command
 
             $campania_id = $primera->campania_id;
             $personal_id = $primera->evaluado_id;
-
-            // // area_id desde campania_has_evaluados (personal_id = evaluado_id)
-            // $area_id = CampaniaHasEvaluado::where('campania_id', $campania_id)
-            //     ->where('personal_id', $personal_id)
-            //     ->value('area_id');
 
             // Sumatoria de pesos (incluye autoeval con peso=0)
             $total_peso = $grupo->sum(function ($r) {
