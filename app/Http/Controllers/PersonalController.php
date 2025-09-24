@@ -116,15 +116,15 @@ class PersonalController extends Controller
                         );
                     }
 
-                    //Recuperando o Insertando CARGO
-                    if(!empty(trim($row['IDCARGO']))){
-                        $cargo = Cargo::updateOrCreate(
-                            ['idcargo_nisira' => trim($row['IDCARGO']), 'empresa_id' => $empresa->id],
-                            ['name' => trim($row['cargo']) , 'estado' => 1]
-                        );
-                    } else {
-                        $cargo =  null;
-                    }
+                    // //Recuperando o Insertando CARGO
+                    // if(!empty(trim($row['IDCARGO']))){
+                    //     $cargo = Cargo::updateOrCreate(
+                    //         ['idcargo_nisira' => trim($row['IDCARGO']), 'empresa_id' => $empresa->id],
+                    //         ['name' => trim($row['cargo']) , 'estado' => 1]
+                    //     );
+                    // } else {
+                    //     $cargo =  null;
+                    // }
 
                     //Recuperando o Insertando PLANILLA
                     if(!empty(trim($row['IDPLANILLA']))){
@@ -157,14 +157,14 @@ class PersonalController extends Controller
                     }
 
                     //Recuperando o Insertando IDCCOSTO
-                    if(!empty(trim($row['IDCCOSTO']))){
-                        $area = Area::firstOrCreate(
-                            ['idccosto_nisira' => trim($row['IDCCOSTO']), 'empresa_id' => $empresa->id],
-                            ['name' => trim($row['CENTRO_COSTO']),'centro_costo' => trim($row['CENTRO_COSTO']) , 'estado' => 1]
-                        );
-                    } else {
-                        $area =  null;
-                    }
+                    // if(!empty(trim($row['IDCCOSTO']))){
+                    //     $area = Area::firstOrCreate(
+                    //         ['idccosto_nisira' => trim($row['IDCCOSTO']), 'empresa_id' => $empresa->id],
+                    //         ['name' => trim($row['CENTRO_COSTO']),'centro_costo' => trim($row['CENTRO_COSTO']) , 'estado' => 1]
+                    //     );
+                    // } else {
+                    //     $area =  null;
+                    // }
 
                     $personal = Personal::firstOrNew(['dni' => trim($row['NRODOCUMENTO'])]);
 
@@ -175,9 +175,9 @@ class PersonalController extends Controller
                     if($empresa != null) {
                         $personal->empresa_id = $empresa->id;
                     }
-                    if($cargo != null) {
-                        $personal->cargo_id = $cargo->id;
-                    }
+                    // if($cargo != null) {
+                    //     $personal->cargo_id = $cargo->id;
+                    // }
                     if($planilla != null) {
                         $personal->planilla_id = $planilla->id;
                     }
@@ -187,9 +187,9 @@ class PersonalController extends Controller
                     if($tipopersonal != null) {
                         $personal->tipo_de_personal_id = $tipopersonal->id;
                     }
-                    if($area != null && $personal->area_id == null) {
-                        $personal->area_id = $area->id;
-                    }
+                    // if($area != null && $personal->area_id == null) {
+                    //     $personal->area_id = $area->id;
+                    // }
                     $personal->sexo = isset($row['sexo'])?trim($row['sexo']):NULL;
                     $personal->estado = 1;
                     $personal->cesado = 0;
@@ -203,9 +203,6 @@ class PersonalController extends Controller
                     } else {
                         // $personal->correo_empresa = null]
                     }
-
-
-
                     
                     if ($personal->isDirty()) {
                         // si el personal es selccionado no se actualiza ni se guarda

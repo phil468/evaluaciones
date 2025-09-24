@@ -96,9 +96,17 @@ function initEvaluadorHasEvaluadoTable(campaniaId) {
             }
         ],
         beforeOpenModal: function(data) {
-            const bloqueado = data.realizado === true || data.realizado === 1
+            // Si es nuevo (sin id), nunca bloquear
+            const esNuevo = !data || !data.id;
+
+            const bloqueado = !esNuevo && (
+                data.realizado === true || data.realizado === 1
                 || data.cesado === true || data.cesado === 1
-                || !esCompetencias(data);
+                || !esCompetencias(data)
+            );
+            // const bloqueado = data.realizado === true || data.realizado === 1
+            //     || data.cesado === true || data.cesado === 1
+            //     || !esCompetencias(data);
 
             // select2: inicializa solo una vez
             if (!$('#editEvaluadorHasEvaluadoEvaluadorId').hasClass('select2-hidden-accessible')) {
