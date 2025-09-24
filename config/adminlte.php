@@ -342,21 +342,6 @@ return [
         // ],
 
         // quitado de producción
-        // [
-        //     'text' => 'Planes de Acción/ Desarrollo',
-        //     'url'  => 'planes-de-mejora/ingreso',
-        //     'icon' => 'fas fa-pencil-alt',
-        //     'can'  => 'ver-evaluaciones-de-desempeno',
-        //     'classes' => 'rounded-xl',
-        // ],
-
-        // [
-        //     'text' => 'Plan De Mejora Individual',
-        //     'url'  => 'plan-de-mejora',
-        //     'icon' => 'fas fa-pencil-alt',
-        //     'can'  => 'ver-evaluaciones-de-desempeno',
-        //     'classes' => 'rounded-xl'
-        // ],
         // PLAN DE MEJORA INDIVIDUAL POR EL MOMENTO NO VISIBLE
         [ 
             'text' => 'Recursos de apoyo',
@@ -485,6 +470,33 @@ return [
                     'classes' => 'rounded-xl',
                     'active' => ['regex:@^roles/[0-9]+/edit$@','roles/create']
                 ],
+                [
+                    'text' => 'Organigrama',
+                    'url'  => 'organigrama',
+                    'icon' => 'fas fa-sitemap fa-xs',
+                    'can'  => 'ver-personal',
+                    'classes' => 'rounded-xl',
+                    'active' => ['organigrama']
+                ],
+
+                
+                [
+                    'text' => 'Planes de Acción/ Desarrollo',
+                    'url'  => 'planes-de-mejora/ingreso',
+                    'icon' => 'fas fa-pencil-alt',
+                    'can'  => 'ver-evaluaciones-de-desempeno',
+                    'classes' => 'rounded-xl',
+                ],
+
+                [
+                    'text' => 'Plan De Mejora Individual',
+                    'url'  => 'plan-de-mejora',
+                    'icon' => 'fas fa-pencil-alt',
+                    'can'  => 'ver-evaluaciones-de-desempeno',
+                    'classes' => 'rounded-xl'
+                ],
+
+                
             ]
         ],
 
