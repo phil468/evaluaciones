@@ -480,23 +480,23 @@ return [
                 ],
 
                 
-                [
-                    'text' => 'Planes de Acción/ Desarrollo',
-                    'url'  => 'planes-de-mejora/ingreso',
-                    'icon' => 'fas fa-pencil-alt',
-                    'can'  => 'ver-evaluaciones-de-desempeno',
-                    'classes' => 'rounded-xl',
-                ],
+                // [
+                //     'text' => 'Planes de Acción/ Desarrollo',
+                //     'url'  => 'planes-de-mejora/ingreso',
+                //     'icon' => 'fas fa-pencil-alt',
+                //     'can'  => 'ver-evaluaciones-de-desempeno',
+                //     'classes' => 'rounded-xl',
+                // ],
 
-                [
-                    'text' => 'Plan De Mejora Individual',
-                    'url'  => 'plan-de-mejora',
-                    'icon' => 'fas fa-pencil-alt',
-                    'can'  => 'ver-evaluaciones-de-desempeno',
-                    'classes' => 'rounded-xl'
-                ],
+                // [
+                //     'text' => 'Plan De Mejora Individual',
+                //     'url'  => 'plan-de-mejora',
+                //     'icon' => 'fas fa-pencil-alt',
+                //     'can'  => 'ver-evaluaciones-de-desempeno',
+                //     'classes' => 'rounded-xl'
+                // ],
 
-                
+
             ]
         ],
 

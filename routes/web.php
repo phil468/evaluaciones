@@ -32,6 +32,7 @@ use App\Http\Controllers\TipoRelacionJerarquicoController;
 // use App\Http\Livewire\ImportarPreguntas;
 use App\Models\Asignacione;
 use App\Models\Campania;
+use App\Models\CampaniaHasEvaluado;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\Personal;
 use App\Models\User;
@@ -130,6 +131,57 @@ Route::group(['middleware'  =>  ['auth']],function(){
     //     $comp = new \App\Http\Livewire\Evaluacion(1); // id de evaluación
     //     $comp->actualizarResumenRespuestas(2, 2094); // campania_id, evaluado_id
     //     return 'Resumen actualizado';
+    // });
+
+    // Route::get('/actualiza_desde_campania', function() {
+        
+    //     $evaluados = CampaniaHasEvaluado::where('campania_id', 2)->get();
+
+    //     foreach ($evaluados as $e) {
+    //         $personal = Personal::find($e->personal_id);
+    //         if ($personal) {
+    //             $personal->area_id = $e->area_id;
+    //             $personal->cargo_id = $e->puesto_id; // puesto_id en CampaniaHasEvaluado es cargo_id en Personal
+    //             $personal->reporta_a = $e->superior_personal_id;
+    //             $personal->save();
+    //         }
+    //     }
+
+    //     return 'Datos Actualizados';
+    // });
+
+    // Route::get('cambios_de_respuestas', function(){
+    //     // $evaluaciones = Evaluacion::where('campania_id', 2)->get(); // Cambia 1 por el ID de la campaña que deseas procesar
+
+    //     $msg = '';
+
+    //     //MOSTRAR LAS RESPUESTAS DE RESPUESTAS DE LOS EVALUADOS 706 Y 709, CUANDO EL PESO ES 0.5
+    //     $respuestas = \App\Models\Respuesta::
+    //     //whereIn('evaluado_id', [706, 709])
+    //         where('campania_id', 2)
+    //         ->where('peso', 0.5)
+    //         ->get();
+
+    //     $respuestas = $respuestas->whereIn('evaluado_id', [(int)706, (int)709]);
+
+    //     foreach ($respuestas as $r) {
+    //         $msg .= "Respuesta ID: {$r->id}, Evaluado ID: {$r->evaluado_id}, Pregunta ID: {$r->pregunta_id}, Respuesta: {$r->valor_numerico}, Peso: {$r->peso}<br>";
+    //     }
+
+    //     // ahora lo que necesito intercambiar , de estos resultados, el evaluador_ID 706, con el evaluado_ID 709 Y VICEVERSA
+
+    //     $msg .= "<br>--- Después del intercambio ---<br>";
+    //     foreach ($respuestas as $r) {
+    //         if ($r->evaluado_id == (int)706) {
+    //             $r->evaluado_id = 709;
+    //         } elseif ($r->evaluado_id == (int)709) {
+    //             $r->evaluado_id = 706;
+    //         }
+    //         $r->save();
+    //         $msg .= "Respuesta ID: {$r->id}, Evaluado ID: {$r->evaluado_id}, Pregunta ID: {$r->pregunta_id}, Respuesta: {$r->valor_numerico}, Peso: {$r->peso}<br>";
+    //     }
+
+    //     return $msg;
     // });
 
     Route::get('/inicio', [App\Http\Controllers\HomeController::class,'inicio'])->name('inicio');

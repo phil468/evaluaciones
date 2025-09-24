@@ -1431,7 +1431,7 @@ class CampaniaHasEvaluadoController extends Controller
             ->where('realizado', 1)
             ->where('peso', '>', 0)
             ->where('evaluador_id', '!=', $evaluado->personal_id) // Excluir autoevaluación
-            ->update(['realizado' => 0]);
+            ->update(['realizado' => null]);
 
         $evaluado->update([
             'puntaje_de_evaluacion_de_competencias' => null,

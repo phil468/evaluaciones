@@ -19,6 +19,8 @@ class ActualizarPersonalGeneral extends Command
         
         if (isset($resultado['success']) && $resultado['success']) {
             $this->info('Actualización general completada exitosamente.');
+            //agregar la fecha y hora de la última actualización
+            $this->info('Última actualización: ' . now()->toDateTimeString());
             $this->line('Detalles: ' . json_encode($resultado['detalles']));
             return 0;
         } else {

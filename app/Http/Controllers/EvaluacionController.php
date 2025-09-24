@@ -9,6 +9,7 @@ class EvaluacionController extends Controller
 {
     public function show($tipo_de_evaluacion_id, $evaluacion_id)
     {
+        // dd($tipo_de_evaluacion_id, $evaluacion_id);
         $evaluadorHasEvaluado = EvaluadorHasEvaluado::where('evaluador_has_evaluados.id', $evaluacion_id)
             ->where('evaluador_id', auth()->user()->personal_id)
             ->when($tipo_de_evaluacion_id == 1, function ($query) {
@@ -16,10 +17,13 @@ class EvaluacionController extends Controller
             })
             ->leftJoin('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
             ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
-            ->first();        
+            ->first();
+        
+        // dd($evaluadorHasEvaluado);
         
         if ($evaluadorHasEvaluado) {
             if ($tipo_de_evaluacion_id == 1) {
+                // dd($evaluadorHasEvaluado);
                 return view('livewire.evaluacion.index', ['evaluacion_id' => $evaluacion_id]);
             } elseif ($tipo_de_evaluacion_id == 2) {
                 return view('livewire.objetivos.index', ['evaluacion_id' => $evaluacion_id]);

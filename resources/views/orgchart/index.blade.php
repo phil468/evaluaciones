@@ -3,7 +3,8 @@
 @section('title', 'Organigrama')
 
 @section('content_header')
-<h1></h1>
+{{-- <h1></h1> --}}
+<h5 class="h3">Organigrama de la Empresa</h5>
 @stop
 
 @section('content')
@@ -11,10 +12,10 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card rounded-xl">
-                <div class="text-white card-header bg-vanguard rounded-t-xl">
-                    <h5 class="h5">Organigrama de la Empresa</h5>
-                </div>
-                <div class="card-body">
+                {{-- <div class="text-white card-header bg-vanguard rounded-t-xl"> --}}
+                    {{-- <h5 class="h3">Organigrama de la Empresa</h5> --}}
+                {{-- </div> --}}
+                {{-- <div class="card-body"> --}}
                     {{-- <div class="row">
                         <div class="mb-3 col-md-12">
                             <div class="btn-group">
@@ -36,8 +37,10 @@
                             </div>
                         </div>
                     </div> --}}
-                    <div id="chart-container" style="height: 700px; width: 100%; overflow: hidden; background-color: #fff;"></div>
-                </div>
+                    <div id="chart-container" style="
+                    width: 100%; overflow: hidden; 
+                    "></div>
+                {{-- </div> --}}
             </div>
         </div>
     </div>
