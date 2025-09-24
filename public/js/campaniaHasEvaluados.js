@@ -144,13 +144,17 @@ class CampaniaHasEvaluados {
                         }
 
                         // Botón eliminar
-                        buttons += '<button class="btn btn-danger btn-sm delete-button" data-id="' + id + '"><i class="fas fa-trash"></i></button>';
+                        buttons += '<button class="btn btn-danger btn-sm delete-button mr-1" data-id="' + id + '"><i class="fas fa-trash"></i></button>';
+
+                        buttons += `<button class="btn btn-default btn-sm reset-respuestas-button" data-id="${id}" title="Reiniciar respuestas de evaluación">
+                                        <i class="fas fa-undo"></i>
+                                    </button>`;
 
                         buttons += '</div>';
                         return buttons;
                     },
                     headerSort: false,
-                    width: 150
+                    width: 200
                 },
                 {
                     title: "DNI",
@@ -574,6 +578,48 @@ class CampaniaHasEvaluados {
             } else {
                 this.toggleObjetivos(id, true);
             }
+        });
+
+        $("#evaluados-table").on('click.evaluadosEvents', ".reset-respuestas-button", (e) => {
+            e.preventDefault();
+            const id = $(e.currentTarget).data("id");
+            Swal.fire({
+                title: '¿Reiniciar respuestas?',
+                html: `<div class="text-left">
+                    <p>Esto eliminará todas las respuestas de evaluación de este evaluado <b>excepto las de autoevaluación</b> y dejará las evaluaciones como no realizadas.</p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                </div>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, reiniciar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Procesando', 'Reiniciando respuestas...');
+                    $.ajax({
+                        url: EVALUADOS_RESET_RESPUESTAS_URL.replace(':id', id),
+                        type: 'POST',
+                        success: (response) => {
+                            Swal.fire({
+                                title: 'Respuestas reiniciadas',
+                                text: response.message || 'Las respuestas han sido reiniciadas correctamente.',
+                                icon: 'success'
+                            });
+                            // Actualizar la tabla
+                            window.campaniaHasEvaluadosInstance.table.replaceData();
+                        },
+                        error: (xhr) => {
+                            Swal.fire({
+                                title: 'Error',
+                                text: xhr.responseJSON?.message || 'Ha ocurrido un error al reiniciar las respuestas.',
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+            });
         });
 
         // Evento para confirmación de eliminación con advertencia detallada

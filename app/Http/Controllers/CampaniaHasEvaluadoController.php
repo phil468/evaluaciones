@@ -29,6 +29,7 @@ use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Crypt;
 
 class CampaniaHasEvaluadoController extends Controller
 {
@@ -1401,6 +1402,33 @@ class CampaniaHasEvaluadoController extends Controller
         }
 
         return $evaluado;
+    }
+    
+    public function resetRespuestas($id)
+    {
+        $evaluado = CampaniaHasEvaluado::findOrFail($id);
+
+        $respuestas = Respuesta::with('evaluado')
+            ->where('campania_id', $evaluado->campania_id)
+            ->where('peso', '>', 0)
+            ->get();
+
+        $filtradas = $respuestas->where('evaluado_id', (string)$evaluado->personal_id);
+
+        //eliminar filtradas
+        foreach ($filtradas as $respuesta) {
+            $respuesta->delete();
+        }
+
+        // Marcar evaluaciones como no realizadas (ajusta según tu modelo)
+        EvaluadorHasEvaluado::where('campania_id', $evaluado->campania_id)
+            ->where('evaluado_id', $evaluado->personal_id)
+            ->where('realizado', 1)
+            ->where('peso', '>', 0)
+            ->where('evaluador_id', '!=', $evaluado->personal_id) // Excluir autoevaluación
+            ->update(['realizado' => 0]);
+
+        return response()->json(['message' => 'Respuestas reiniciadas correctamente.']);
     }
 
 }

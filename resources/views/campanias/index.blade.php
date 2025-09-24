@@ -1182,6 +1182,7 @@
         const EVALUADOS_IMPORT_TEMPLATE_URL = "{{ route('campanias.evaluados.template', ':id') }}";
         const EVALUADOS_SYNC_USER_EMAIL = "{{ route('campania_has_evaluados.syncUserEmail', ':id') }}";
         const EVALUADOS_CREATE_USER = "{{ route('campania_has_evaluados.createUser', ':id') }}";
+        const EVALUADOS_RESET_RESPUESTAS_URL = "{{ route('campania_has_evaluados.resetRespuestas', ':id') }}";
 
         const PERSONAL_SEARCH_URL = "{{ route('personal.search-evaluado') }}";
         const PERSONAL_DETAILS_URL = "{{ route('personal.details') }}";

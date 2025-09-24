@@ -279,6 +279,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     // Rutas para evaluados por campaña
     Route::get('/campania_has_evaluados/selects', [CampaniaHasEvaluadoController::class, 'getSelects'])->name('campania_has_evaluados.selects');
+    Route::post('/campania_has_evaluados/{id}/reset-respuestas', [CampaniaHasEvaluadoController::class, 'resetRespuestas'])->name('campania_has_evaluados.resetRespuestas');
     Route::post('/campania_has_evaluados/{id}/toggle-competencias', [CampaniaHasEvaluadoController::class, 'toggleCompetencias'])->name('campania_has_evaluados.toggle-competencias');
     Route::post('/campania_has_evaluados/{id}/toggle-objetivos', [CampaniaHasEvaluadoController::class, 'toggleObjetivos'])->name('campania_has_evaluados.toggle-objetivos');
     Route::post('/campania_has_evaluados/importar', [CampaniaHasEvaluadoController::class, 'importar'])->name('campania_has_evaluados.importar');
