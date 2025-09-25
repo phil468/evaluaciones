@@ -58,8 +58,9 @@ class Kernel extends ConsoleKernel
 
         // Actualización diaria de personal a las 9:00 AM
         $schedule->command('personal:actualizar-general')
-                 ->dailyAt('09:02')
-                 ->appendOutputTo(storage_path('logs/personal-actualizacion.log'));
+        // la hora diaria de actualizacion se obtiene de un campo en el .env sino será por defecto a las 09:00
+        ->dailyAt(config('app.hora_actualizacion_personal', '09:00'))
+        ->appendOutputTo(storage_path('logs/personal-actualizacion.log'));
 
         // $schedule->command('inspire')->hourly();
     }

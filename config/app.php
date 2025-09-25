@@ -35,6 +35,7 @@ return [
     */
 
     'env' => env('APP_ENV', 'production'),
+    'hora_actualizacion_personal' => env('HORA_ACTUALIZACION_PERSONAL', '09:00'),
 
     'url_api' => $url_api,
     
