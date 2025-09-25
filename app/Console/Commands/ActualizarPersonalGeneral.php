@@ -12,7 +12,7 @@ class ActualizarPersonalGeneral extends Command
 
     public function handle()
     {
-        $this->info('Iniciando actualización general de personal...');
+        $this->info(now()->toDateTimeString() . ' Iniciando actualización general de personal...');
         
         $controller = new PersonalController();
         $resultado = $controller->actualizacionGeneralCompleta();
