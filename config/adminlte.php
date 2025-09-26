@@ -441,10 +441,24 @@ return [
                     'classes' => 'rounded-xl',
                 ],
                 [
+                    'text' => 'Áreas',
+                    'url'  => 'areas',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-area',
+                    'classes' => 'rounded-xl',
+                ],
+                [
                     'text' => 'Cargos',
                     'url'  => 'cargos',
                     'icon' => 'fas fa-briefcase fa-xs',
                     'can'  => 'ver-cargo',
+                    'classes' => 'rounded-xl',
+                ],
+                [
+                    'text' => 'Empresas',
+                    'url'  => 'empresas',
+                    'icon' => 'fas fa-cog fa-xs',
+                    'can'  => 'ver-empresa',
                     'classes' => 'rounded-xl',
                 ],
                 [

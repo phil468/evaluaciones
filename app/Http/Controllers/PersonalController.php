@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\DB;
 
 class PersonalController extends Controller
 {    
@@ -469,6 +469,92 @@ class PersonalController extends Controller
         return response()->json($personals);
     }
 
+    public function areaPath($id)
+    {
+        // if (Gate::denies('ver-personal')) {
+        //     return response()->json(['message' => 'No autorizado'], 403);
+        // }
+
+        // $area = Area::findOrFail($id);
+
+        // $segments = [];
+        // $current = $area;
+        // $limit = 0;
+
+        // // Construir cadena usando la jerarquía recursiva area_superior_id
+        // while ($current && $limit < 20) {
+        //     $segments[] = $current->name;
+        //     $current = $current->superior; // relación superior()
+        //     $limit++;
+        // }
+        // // dd($segments);
+
+        // $segments = array_reverse($segments);
+
+        // // // Si existen relaciones directas (gerencia / subgerencia) y no están en la cadena, las anteponemos
+        // // if ($area->subgerencia && !in_array($area->subgerencia->name, $segments)) {
+        // //     array_unshift($segments, $area->subgerencia->name);
+        // // }
+        // // if ($area->gerencia && !in_array($area->gerencia->name, $segments)) {
+        // //     array_unshift($segments, $area->gerencia->name);
+        // // }
+
+        // return response()->json([
+        //     'path' => implode(' -> ', $segments),
+        //     'segments' => $segments,
+        // ]);
+
+            try {
+                $rows = DB::select("
+                    WITH RECURSIVE area_tree AS (
+                        SELECT id, name, area_superior_id, 0 AS depth
+                        FROM areas
+                        WHERE id = ?
+                        UNION ALL
+                        SELECT a.id, a.name, a.area_superior_id, at.depth + 1
+                        FROM areas a
+                        INNER JOIN area_tree at ON a.id = at.area_superior_id
+                    )
+                    SELECT id, name, depth
+                    FROM area_tree
+                    ORDER BY depth DESC
+                ", [$id]);
+
+                if (empty($rows)) {
+                    return response()->json(['path' => '', 'segments' => []], 404);
+                }
+
+                $segments = array_map(fn($r) => $r->name, $rows);
+                $path = implode(' -> ', $segments);
+
+                return response()->json([
+                    'path' => $path,
+                    'segments' => $segments,
+                ]);
+            } catch (\Throwable $e) {
+                // Fallback iterativo si el motor no soporta CTE
+                $area = Area::findOrFail($id);
+                // dd($area);
+                $segments = [];
+                $current = $area;
+                $limit = 0;
+                while ($current && $limit < 50) {
+                    $segments[] = $current->name;
+                    $current = $current->superior; // hará más queries (N+1) pero funciona
+                    // dd($current);
+                    $limit++;
+                }
+                // dd($segments);
+                $segments = array_reverse($segments);
+
+                return response()->json([
+                    'path' => implode(' -> ', $segments),
+                    'segments' => $segments,
+                    'fallback' => true
+                ]);
+            }
+    }
+
     // public function store(Request $request) {
     //     $data = $request->all();
     //     $personal = Personal::create($data);
@@ -501,7 +587,7 @@ class PersonalController extends Controller
         try {
             $personal = Personal::with([
                 'empresa', 'gerencia', 'subgerencia', 'sede', 
-                'area', 'cargo', 'planilla', 'tipo_trabajador', 'tipo_personal'
+                'area', 'cargo', 'planilla', 'tipo_trabajador', 'tipo_personal', 'superior', 'user'
             ])->findOrFail($id);
 
             return response()->json($personal);

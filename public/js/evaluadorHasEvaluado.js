@@ -111,6 +111,7 @@ function initEvaluadorHasEvaluadoTable(campaniaId) {
             // select2: inicializa solo una vez
             if (!$('#editEvaluadorHasEvaluadoEvaluadorId').hasClass('select2-hidden-accessible')) {
                 $('#editEvaluadorHasEvaluadoEvaluadorId').select2({
+                    theme: 'bootstrap-5',
                     dropdownParent: $('#editEvaluadorHasEvaluadoModal'),
                     width: '100%',
                     ajax: {
@@ -120,12 +121,14 @@ function initEvaluadorHasEvaluadoTable(campaniaId) {
                         processResults: d => ({ results: d.map(i => ({ id: i.id, text: i.name })) }),
                         cache: true
                     },
-                    minimumInputLength: 2, placeholder: 'Buscar evaluador...'
+                    minimumInputLength: 2, placeholder: 'Buscar evaluador...',
+                    allowClear: true
                 });
             }
 
             if (!$('#editEvaluadorHasEvaluadoEvaluadoId').hasClass('select2-hidden-accessible')) {
                 $('#editEvaluadorHasEvaluadoEvaluadoId').select2({
+                    theme: 'bootstrap-5',
                     dropdownParent: $('#editEvaluadorHasEvaluadoModal'),
                     width: '100%',
                     ajax: {
@@ -135,7 +138,8 @@ function initEvaluadorHasEvaluadoTable(campaniaId) {
                         processResults: d => ({ results: d.map(i => ({ id: i.id, text: i.name })) }),
                         cache: true
                     },
-                    minimumInputLength: 2, placeholder: 'Buscar evaluado...'
+                    minimumInputLength: 2, placeholder: 'Buscar evaluado...',
+                    allowClear: true
                 });
             }
 

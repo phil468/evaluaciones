@@ -1,31 +1,39 @@
 $(function() {
     // Inicializar Select2 con AJAX
-    function initSelect2(selector, url, extraData = {}) {
+    function initSelect2(selector, url, extraData = {}, opts = {}) {
         $(selector).select2({
             theme: 'bootstrap-5',
             width: "100%",
-            ajax: {
-                url: url,
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return { q: params.term, ...extraData };
-                },
-                processResults: function(data) {
-                    return { results: data.results };
-                }
-            },
+            dropdownParent: $('#personalModal'),           // clave para modal
             placeholder: 'Seleccione...',
             allowClear: true,
-            minimumInputLength: 2
+            minimumInputLength: opts.minimumInputLength ?? 0,
+            ajax: {
+                url,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term || '', ...extraData };
+                },
+                processResults: function (data) {
+                    return { results: data.results };
+                },
+                cache: true
+            },
+            language: {
+                inputTooShort: () => "Escriba para buscar...",
+                noResults: () => "Sin resultados",
+                searching: () => "Buscando..."
+            },
+            ...opts
         });
     }
 
     initSelect2('#personalEmpresaId', SELECT2_EMPRESA_URL);
-    initSelect2('#personalGerenciaId', SELECT2_GERENCIA_URL);
+    // initSelect2('#personalGerenciaId', SELECT2_GERENCIA_URL);
     initSelect2('#personalAreaId', SELECT2_AREA_URL);
     initSelect2('#personalCargoId', SELECT2_CARGO_URL);
-    initSelect2('#personalReportaA', SELECT2_REPORTA_URL);    
+    initSelect2('#personalReportaA', SELECT2_REPORTA_URL, { solo_activos: true });
 
     // Reporta a: excluir a sí mismo si es edición
     function initReportaA(excludeId = null) {
@@ -165,7 +173,7 @@ $(function() {
             { title: "Nombre", field: "name", headerFilter: "input" },
             { title: "Empresa", field: "empresa.name", headerFilter: "input" },
             { title: "Tipo personal", field: "tipo_personal.name", headerFilter: "input" },
-            { title: "Gerencia", field: "gerencia.name", headerFilter: "input" },
+            // { title: "Gerencia", field: "gerencia.name", headerFilter: "input" },
             { title: "Área", field: "area.name", headerFilter: "input" },
             { 
                 title: "Cargo", 
@@ -406,38 +414,94 @@ $(function() {
             { title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input" },
             { title:  "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input" },
         ],
+
         beforeOpenModal: function(data) {
-            // Si hay datos (modo edición)
+            
+            // if (!$('#personalReportaA').hasClass('select2-hidden-accessible')) {
+            //     $('#personalReportaA').select2({
+            //         theme: 'bootstrap-5',
+            //         dropdownParent: $('#editEvaluadorHasEvaluadoModal'),
+            //         width: '100%',
+            //         ajax: {
+            //             url: SELECT2_REPORTA_URL,
+            //             dataType: 'json', delay: 250,
+            //             data: params => ({ q: params.term }),
+            //             processResults: d => ({ results: d.map(i => ({ id: i.id, text: i.name })) }),
+            //             cache: true
+            //         },
+            //         minimumInputLength: 2, placeholder: 'Buscar evaluador...',
+            //         allowClear: true
+            //     });
+            // }
+            
+            // Limpiar selects
+            $('#personalEmpresaId, #personalAreaId, #personalCargoId, #personalReportaA')
+                .val(null).trigger('change');
+
             if (data && data.id) {
-                // Primero inicializar los select2 básicos
-                $('#personalEmpresaId').val(null).trigger('change');
-                $('#personalGerenciaId').val(null).trigger('change');
-                $('#personalAreaId').val(null).trigger('change');
-                $('#personalCargoId').val(null).trigger('change');
-                $('#personalReportaA').val(null).trigger('change');
-                
-                // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
-                initReportaA(data.id);
-                
-                // Esperar un momento para asegurarse de que select2 esté inicializado
-                setTimeout(() => {
-                    // Ahora llenar el formulario con los datos
-                    fillPersonalForm(data);
-                }, 300);
-                // Usar la función existente para llenar todos los campos                
-                // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
-                // initReportaA(data.id);
-                // fillPersonalForm(data);
+                setTimeout(()=> fillPersonalForm(data), 150);
             } else {
-                // Modo creación - limpiar selects
-                $('#personalEmpresaId').val(null).trigger('change');
-                $('#personalGerenciaId').val(null).trigger('change');
-                $('#personalAreaId').val(null).trigger('change');
-                $('#personalCargoId').val(null).trigger('change');
-                $('#personalReportaA').val(null).trigger('change');
-                initReportaA();
+                $('#personalForm')[0].reset();
             }
+
+            // if (data.reporta_a) {
+            //     $('#personalReportaA').empty()
+            //         .append(new Option(data.reporta_a_name, data.reporta_a, true, true))
+            //         .trigger('change');
+            // }
+
+
+            // // Si hay datos (modo edición)
+            // if (data && data.id) {
+            //     // Primero inicializar los select2 básicos
+            //     $('#personalEmpresaId').val(null).trigger('change');
+            //     // $('#personalGerenciaId').val(null).trigger('change');
+            //     $('#personalAreaId').val(null).trigger('change');
+            //     $('#personalCargoId').val(null).trigger('change');
+            //     $('#personalReportaA').val(null).trigger('change');
+                
+            //     // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
+            //     // initReportaA(data.id);
+                
+            //     // Esperar un momento para asegurarse de que select2 esté inicializado
+            //     setTimeout(() => {
+            //         // Ahora llenar el formulario con los datos
+            //         fillPersonalForm(data);
+            //     }, 300);
+            //     // Usar la función existente para llenar todos los campos                
+            //     // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
+            //     // initReportaA(data.id);
+            //     // fillPersonalForm(data);
+            // } else {
+            //     // Modo creación - limpiar selects
+            //     $('#personalEmpresaId').val(null).trigger('change');
+            //     // $('#personalGerenciaId').val(null).trigger('change');
+            //     $('#personalAreaId').val(null).trigger('change');
+            //     $('#personalCargoId').val(null).trigger('change');
+            //     $('#personalReportaA').val(null).trigger('change');
+            //     // initReportaA();
+            // }
         }
+    });
+
+    function loadAreaPath(areaId) {
+        $('#personalAreaPath').text('');
+        if (!areaId) return;
+        $.get(AREA_PATH_URL.replace(':id', areaId))
+            .done(res => {
+                $('#personalAreaPath').text(res.path);
+            })
+            .fail(() => {
+                $('#personalAreaPath').text('No se pudo obtener la ruta');
+            });
+    }
+
+    // Evento al seleccionar / limpiar área
+    $('#personalAreaId').on('select2:select', function(e){
+        loadAreaPath(e.params.data.id);
+    });
+    $('#personalAreaId').on('select2:clear', function(){
+        $('#personalAreaPath').text('');
     });
 
     personalModel.init();
@@ -772,23 +836,18 @@ $(function() {
     // Evento para buscar personal por DNI al perder el foco
     $('#personalDni').on('blur', function() {
         const dni = $(this).val().trim();
-        
         if (dni.length === 8 && /^\d+$/.test(dni)) {
             showLoading('Buscando personal...');
-            
             $.ajax({
                 url: BUSCAR_POR_DNI_URL,
                 type: 'POST',
-                data: { dni: dni },
+                data: { dni },
                 success: function(data) {
                     hideLoading();
-                    
                     if (data.success) {
-                        // Llenar el formulario con los datos del personal
                         fillPersonalForm(data.personal);
-                        
                         if (data.encontrado_en === 'api') {
-                            showAlert('success', 'Personal encontrado en el sistema externo y cargado correctamente');
+                            showAlert('success', 'Personal encontrado y cargado');
                         }
                     } else {
                         showAlert('warning', data.message);
@@ -796,7 +855,7 @@ $(function() {
                 },
                 error: function(xhr) {
                     hideLoading();
-                    showAlert('error', 'Error al buscar el personal: ' + xhr.responseText);
+                    showAlert('error', 'Error al buscar: ' + xhr.responseText);
                 }
             });
         }
@@ -804,52 +863,46 @@ $(function() {
     
     // Función para llenar el formulario con los datos del personal
     function fillPersonalForm(personal) {
-        document.getElementById('personalId').value = personal.id;
-        document.getElementById('personalName').value = personal.name;
-        document.getElementById('personalNombres').value = personal.nombres || '';
-        document.getElementById('personalApellidoPaterno').value = personal.apellido_paterno || '';
-        document.getElementById('personalApellidoMaterno').value = personal.apellido_materno || '';
-        document.getElementById('personalEstado').value = personal.estado ? '1' : '0';
-        document.getElementById('personalGenero').value = personal.sexo || '';
-        document.getElementById('personalCesado').value = personal.cesado ? '1' : '0';
-        document.getElementById('personalSeleccionado').value = personal.seleccionado ? '1' : '0';
-        
-        // Fechas
+        $('#personalId').val(personal.id || '');
+        $('#personalName').val(personal.name || '');
+        $('#personalNombres').val(personal.nombres || '');
+        $('#personalApellidoPaterno').val(personal.apellido_paterno || '');
+        $('#personalApellidoMaterno').val(personal.apellido_materno || '');
+        $('#personalEstado').val(personal.estado ? '1' : '0');
+        $('#personalGenero').val(personal.sexo || '');
+        $('#personalCesado').val(personal.cesado ? '1' : '0');
+        $('#personalSeleccionado').val(personal.seleccionado ? '1' : '0');
+
         if (personal.fecha_ingreso) {
-            document.getElementById('personalFechaIngreso').value = personal.fecha_ingreso.split(' ')[0];
+            $('#personalFechaIngreso').val(personal.fecha_ingreso.substring(0,10));
+        } else {
+            $('#personalFechaIngreso').val('');
         }
         if (personal.fecha_cese) {
-            document.getElementById('personalFechaCese').value = personal.fecha_cese.split(' ')[0];
-        }
-        
-        // Datos de contacto
-        document.getElementById('personalCorreoEmpresa').value = personal.correo_empresa || '';
-        document.getElementById('personalCelularEmpresa').value = personal.celular_empresa || '';
-        document.getElementById('personalCorreoPersonal').value = personal.correo_personal || '';
-        document.getElementById('personalTelefonoPersonal').value = personal.telefono_personal || '';
-        document.getElementById('personalCelularPersonal').value = personal.celular_personal || '';
-        
-        // Select2 para relaciones
-        if (personal.empresa_id) {
-            setSelect2Value('personalEmpresaId', personal.empresa_id, personal.empresa ? personal.empresa.name : '');
-        }
-        if (personal.gerencia_id) {
-            setSelect2Value('personalGerenciaId', personal.gerencia_id, personal.gerencia ? personal.gerencia.name : '');
-        }
-        if (personal.area_id) {
-            setSelect2Value('personalAreaId', personal.area_id, personal.area ? personal.area.name : '');
-        }
-        if (personal.cargo_id) {
-            setSelect2Value('personalCargoId', personal.cargo_id, personal.cargo ? personal.cargo.name : '');
-        }
-        if (personal.reporta_a) {
-            setSelect2Value('personalReportaA', personal.reporta_a, personal.superior ? personal.superior.name : '');
+            $('#personalFechaCese').val(personal.fecha_cese.substring(0,10));
+        } else {
+            $('#personalFechaCese').val('');
         }
 
-        // Agregar al final de fillPersonalForm
-        console.log('Datos de personal cargados:', personal);
-        if (personal.reporta_a) {
-            console.log('Intentando establecer reporta_a:', personal.reporta_a, personal.superior?.name);
+        $('#personalCorreoEmpresa').val(personal.correo_empresa || '');
+
+        if (personal.empresa_id) setSelect2Value('personalEmpresaId', personal.empresa_id, personal.empresa?.name || '');
+        if (personal.area_id)    setSelect2Value('personalAreaId', personal.area_id, personal.area?.name || '');
+
+        if (personal.area_id) {
+            setSelect2Value('personalAreaId', personal.area_id, personal.area?.name || '');
+            loadAreaPath(personal.area_id);
+        } else {
+            setSelect2Value('personalAreaId', null, null);
+            $('#personalAreaPath').text('');
+        }
+        
+        if (personal.cargo_id)   setSelect2Value('personalCargoId', personal.cargo_id, personal.cargo?.name || '');
+
+        if (personal.reporta_a && personal.superior) {
+            setSelect2Value('personalReportaA', personal.reporta_a, personal.superior.name);
+        } else {
+            setSelect2Value('personalReportaA', null, null);
         }
     }
     
@@ -857,22 +910,39 @@ $(function() {
     function setSelect2Value(elementId, id, text) {
         const select = $(`#${elementId}`);
         
+        select.empty();
         // Limpiar selecciones anteriores
-        select.val(null).trigger('change');
+        // select.val(null).trigger('change');
         
         // Esperar un momento para asegurar que Select2 esté completamente inicializado
         setTimeout(() => {
-            // Verificar si la opción ya existe
-            if (select.find(`option[value="${id}"]`).length === 0) {
-                // Crear una nueva opción y agregarla
-                if (id && text) {
-                    const newOption = new Option(text, id, true, true);
-                    select.append(newOption);
-                }
-            }
             
-            // Establecer el valor
-            select.val(id).trigger('change');
+            if (id && text) {
+                // Agrega la opción seleccionada manualmente
+                const newOption = new Option(text, id, true, true);
+                select.append(newOption);
+                select.val(id).trigger('change');
+            } else {
+                // Si no hay valor, deja vacío
+                select.val(null).trigger('change');
+            }
+
+            // if (id && text && select.find(`option[value="${id}"]`).length === 0) {
+            //     const newOption = new Option(text, id, true, true);
+            //     select.append(newOption);
+            // }
+            // select.val(id).trigger('change');
+            // // Verificar si la opción ya existe
+            // if (select.find(`option[value="${id}"]`).length === 0) {
+            //     // Crear una nueva opción y agregarla
+            //     if (id && text) {
+            //         const newOption = new Option(text, id, true, true);
+            //         select.append(newOption);
+            //     }
+            // }
+            
+            // // Establecer el valor
+            // select.val(id).trigger('change');
             
             console.log(`Valor establecido para ${elementId}: ${id} - ${text}`);
         }, 200);

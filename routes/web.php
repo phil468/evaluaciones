@@ -586,6 +586,9 @@ Route::group(['middleware'  =>  ['auth']],function(){
     Route::post('/personal/sync-user-email/{id}', [PersonalController::class, 'syncUserEmail'])->name('campania_has_evaluados.syncUserEmail');
     Route::post('/personal/create-user/{id}', [PersonalController::class, 'createUser'])->name('campania_has_evaluados.createUser');
 
+    Route::get('personal/area/{id}/path', [\App\Http\Controllers\PersonalController::class,'areaPath'])
+        ->name('personal.area.path');
+
     Route::resource('personal', PersonalController::class)->middleware(['can:ver-personal']);
 
     // Rutas para Objetivos Precargados

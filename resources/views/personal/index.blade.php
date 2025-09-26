@@ -62,40 +62,6 @@
                                 <button class="btn btn-sm btn-light" id="createButton">
                                     <i class="fas fa-plus"></i> Nuevo
                                 </button>
-                                {{-- <button class="btn btn-sm btn-primary" id="actualizacionGeneralBtn">
-                                    <i class="fas fa-sync"></i> Actualización General
-                                </button>
-                                <a class="btn btn-sm btn-light" href="{{ route('personal.historial-actualizaciones') }}">
-                                    <i class="fas fa-history"></i> Historial de Actualizaciones
-                                </a>
-                                <button class="btn btn-sm btn-light" id="marcarSeleccionadosBtn">
-                                    <i class="fas fa-check-double"></i> Marcar Seleccionados
-                                </button>
-                                <button class="btn btn-sm btn-light" id="exportarTodosSeleccionadosCampania">
-                                    <i class="fas fa-users"></i> 
-                                    Exportar TODOS los seleccionados a Campaña
-                                </button> --}}
-                                {{-- <button class="btn btn-sm btn-light" id="exportarSeleccionadosCampania">
-                                    <i class="fas fa-paper-plane"></i> 
-                                    Enviar seleccionados a Campaña Actual
-                                </button> --}}
-                                {{-- <div class="ml-2 btn-group">
-                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-download"></i> Exportar
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#" id="exportExcel">
-                                            <i class="fas fa-file-excel text-success"></i> Excel
-                                        </a>
-                                        <a class="dropdown-item" href="#" id="exportPDF">
-                                            <i class="fas fa-file-pdf text-danger"></i> PDF
-                                        </a>
-                                        <a class="dropdown-item" href="#" id="exportCSV">
-                                            <i class="fas fa-file-csv text-primary"></i> CSV
-                                        </a>
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -152,15 +118,6 @@
                                     <input type="text" class="form-control" id="personalDni" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="personalSeleccionado">Seleccionado</label>
-                                    <select class="form-control" id="personalSeleccionado" name="seleccionado">
-                                        <option value="0">No</option>
-                                        <option value="1">Sí</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col-md-8">
                                 <div class="form-group">
                                     <label for="personalName">Nombre Completo <span class="text-danger">*</span></label>
@@ -185,23 +142,33 @@
                                     <input type="text" class="form-control" id="personalApellidoMaterno">
                                 </div>
                             </div>
-                            <!-- Información de la empresa -->
+                            <!-- Información de la empresa -->                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="personalSeleccionado">Seleccionado</label>
+                                    <select class="form-control" id="personalSeleccionado" name="seleccionado">
+                                        <option value="0">No</option>
+                                        <option value="1">Sí</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalEmpresaId">Empresa <span class="text-danger">*</span></label>
                                     <select class="form-control select2" id="personalEmpresaId" style="width:100%"></select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            {{-- <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalGerenciaId">Gerencia</label>
                                     <select class="form-control select2" id="personalGerenciaId" style="width:100%"></select>
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalAreaId">Área</label>
                                     <select class="form-control select2" id="personalAreaId" style="width:100%"></select>
+                                    <div id="personalAreaPath" class="mt-1 text-primary small fw-bold"></div>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -217,38 +184,14 @@
                                 </div>
                             </div>
                             <!-- Contacto -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalCorreoEmpresa">Correo Empresa</label>
                                     <input type="email" class="form-control" id="personalCorreoEmpresa">
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="personalCelularEmpresa">Celular Empresa</label>
-                                    <input type="text" class="form-control" id="personalCelularEmpresa">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="personalCorreoPersonal">Correo Personal</label>
-                                    <input type="email" class="form-control" id="personalCorreoPersonal">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="personalTelefonoPersonal">Teléfono Personal</label>
-                                    <input type="text" class="form-control" id="personalTelefonoPersonal">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="personalCelularPersonal">Celular Personal</label>
-                                    <input type="text" class="form-control" id="personalCelularPersonal">
-                                </div>
-                            </div>
                             <!-- Información adicional -->
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalEstado">Estado</label>
                                     <select class="form-control" id="personalEstado">
@@ -257,7 +200,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalGenero">Género</label>
                                     <select class="form-control" id="personalGenero">
@@ -267,13 +210,13 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalFechaIngreso">Fecha Ingreso</label>
                                     <input type="date" class="form-control" id="personalFechaIngreso">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalCesado">Cesado</label>
                                     <select class="form-control" id="personalCesado">
@@ -282,7 +225,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="personalFechaCese">Fecha de Cese</label>
                                     <input type="date" class="form-control" id="personalFechaCese">
@@ -382,13 +325,7 @@
         }
         
     </style> 
-    {{-- <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        .bg-vanguard { background-color: #3490dc; }
-        .rounded-xl { border-radius: 0.5rem; }
-        .rounded-t-xl { border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; }
-    </style> --}}
+
 @stop
 
 @section('js')
@@ -414,6 +351,8 @@
         const ACTUALIZACION_GENERAL_URL = "{{ route('personal.actualizacion-general') }}";
         const BUSCAR_POR_DNI_URL = "{{ route('personal.buscar-por-dni') }}";
         const HISTORIAL_ACTUALIZACIONES_URL = "{{ route('personal.historial-actualizaciones') }}";
+
+        const AREA_PATH_URL = "{{ route('personal.area.path', ':id') }}";
 
     </script>
 @stop
