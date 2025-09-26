@@ -125,7 +125,7 @@
 
 </head>
 
-<body class="@yield('classes_body')" @yield('body_data')>
+<body class="@yield('classes_body') font-style-poppins" @yield('body_data')>
 
     @if (env('APP_ENV') != 'production')
 
