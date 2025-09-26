@@ -461,6 +461,9 @@ class PersonalController extends Controller
     // CRUD REST (index, store, update, destroy, show)
     public function index(Request $request) {
         // Devuelve la vista principal
+        if (Gate::denies('ver-personal')) {
+            abort(403, 'No autorizado');
+        }
         return view('personal.index');
     }
     public function data(Request $request) {
