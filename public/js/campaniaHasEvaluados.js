@@ -377,12 +377,25 @@ class CampaniaHasEvaluados {
                     width: 80
                 },
                 {
+                    // title: "Superior",
+                    // field: "superior",
+                    // headerFilter: "input",
+                    // formatter: (cell) => {
+                    //     const superior = cell.getValue();
+                    //     return superior ? `${superior.name} (${superior.dni})` : '';
+                    // },
+                    // headerSort: false,
+                    // width: 150
                     title: "Superior",
                     field: "superior",
                     headerFilter: "input",
                     formatter: (cell) => {
-                        const superior = cell.getValue();
-                        return superior ? `${superior.name} (${superior.dni})` : '';
+                        const s = cell.getValue();
+                        return s ? `${s.name} (${s.dni})` : '';
+                    },
+                    accessorDownload: (value, rowData) => {
+                        const s = rowData.superior;
+                        return s ? `${s.name} - ${s.dni}` : '';
                     },
                     headerSort: false,
                     width: 150
@@ -411,6 +424,22 @@ class CampaniaHasEvaluados {
                             `${p.personal?.name || 'N/A'} (${p.personal?.dni || 'N/A'})`
                         ).join('<br>');
                     },
+                    accessorDownload: (value, rowData) => {
+                        const pares = rowData.pares_mismo_superior;
+                        const nivelActual = rowData.tipo_puesto_has_nivel_jerarquico?.tipo_de_puesto?.id;
+                        const idActual = rowData.personal_id;
+                        if (!Array.isArray(pares) || pares.length === 0) return '';
+                        const filtrados = pares.filter(p =>
+                            p.personal_id !== idActual &&
+                            p.tipo_puesto_has_nivel_jerarquico &&
+                            p.tipo_puesto_has_nivel_jerarquico.tipo_de_puesto &&
+                            p.tipo_puesto_has_nivel_jerarquico.tipo_de_puesto.id === nivelActual
+                        );
+                        // Saltos de línea para que Excel lo muestre (activar "Wrap Text" si quieres verlo ajustado)
+                        return filtrados
+                            .map(p => `${p.personal?.name || 'N/A'}-${p.personal?.dni || 'N/A'}`)
+                            .join(',');
+                    },
                     headerSort: false,
                     width: 220,
                     headerFilter: "input"
@@ -426,6 +455,13 @@ class CampaniaHasEvaluados {
                             `${s.personal?.name || 'N/A'} (${s.personal?.dni || 'N/A'})`
                         ).join('<br>');
                     },
+                    accessorDownload: (value, rowData) => {
+                        const subs = rowData.subordinados;
+                        if (!Array.isArray(subs) || subs.length === 0) return '';
+                        return subs
+                            .map(s => `${s.personal?.name || 'N/A'}-${s.personal?.dni || 'N/A'}`)
+                            .join(',');
+                    }
                 },
             ],            // Hook que se ejecuta antes de abrir el modal            
             beforeOpenModal: (data) => {
@@ -847,16 +883,6 @@ class CampaniaHasEvaluados {
         // Exportar a Excel
         $('#exportExcel').off('click').on('click', () => {
             if (!this.table) return;
-            
-            // Verificar si está disponible la exportación a Excel
-            // if (typeof this.table.download !== "function" || !this.table.downloadConfig.xlsx) {
-            //     Swal.fire({
-            //         title: 'Error',
-            //         text: 'La exportación a Excel requiere incluir la librería SheetJS (XLSX). Por favor, contacte al administrador.',
-            //         icon: 'error'
-            //     });
-            //     return;
-            // }
             
             const fileName = `evaluados_campania_${this.campaniaIdGlobal}_${new Date().toISOString().split('T')[0]}.xlsx`;
             this.table.download("xlsx", fileName, {sheetName:"Evaluados"});
