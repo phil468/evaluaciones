@@ -34,17 +34,11 @@
                             <ul>
                                 @foreach($evaluaciones as $ev)
                                     <li>
-                                        {{-- en mayusculas --}}
-                                        {{-- >strtoupper($ev->tipo_evaluacion) }}: --}}
+
                                         <strong>{{ strtoupper($ev->nombre_para_mostrar) }}: </strong>
-                                        {{-- FORMATEAR FECHA --}}
-                                        {{-- <span class="text-muted">({{\Carbon\Carbon::parse($ev->fecha_inicio)->format('d/m/Y') }} - {{
-                                                \Carbon\Carbon::parse($ev->fecha_fin)->format('d/m/Y') }})</span> --}}
-                                        {{-- <br> --}}
+
                                         <span class="text-muted"> Fecha de corte (antes de:) {{ \Carbon\Carbon::parse($ev->fecha_corte)->format('d/m/Y') }}</span>
-                                        {{-- Mostrar fecha de corte --}}
-                                        {{-- Si no hay fecha de corte, no se muestra --}}
-                                        {{-- (Fecha de corte: {{   $ev->fecha_corte }}) --}}
+
                                     </li>
                                 @endforeach
                             </ul>
@@ -59,9 +53,25 @@
                                 <h5 class="h5">Personal (se muestra solo personal no cesado)</h5>
                             </div>
                             <div class="float-right">
-                                <button class="btn btn-sm btn-light" id="createButton">
+                                
+                                <div class="btn-group">
+                                    <button class="btn btn-light btn-sm" id="createButton"><i class="fas fa-plus"></i> Nuevo</button>
+                                    <button class="btn btn-light btn-sm" id="exportExcelBtn"><i class="fas fa-file-excel"></i> XLSX</button>
+                                    {{-- <button class="btn btn-light btn-sm" id="exportCSVBtn"><i class="fas fa-file-csv"></i> CSV</button> --}}
+                                    <button class="btn btn-light btn-sm" id="exportSelectedExcelBtn" disabled>
+                                        <i class="fas fa-check-square"></i> Selección XLSX (<span id="selectedCount">0</span>)
+                                    </button>
+                                    <button class="btn btn-light btn-sm" data-toggle="modal" data-target="#importPersonalModal">
+                                        <i class="fas fa-file-upload"></i> Importar
+                                    </button>
+                                </div>
+    
+                                {{-- <button class="btn btn-sm btn-light" id="createButton">
                                     <i class="fas fa-plus"></i> Nuevo
-                                </button>
+                                </button> --}}
+                                {{-- <button class="btn btn-light btn-sm" id="exportExcelBtn">
+                                    <i class="fas fa-file-excel"></i> XLSX
+                                </button> --}}
                             </div>
                         </div>
                     </div>
@@ -241,6 +251,45 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Importación -->
+    <div class="modal fade" id="importPersonalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="text-white modal-header bg-vanguard">
+                <h5 class="modal-title">Importar Personal</h5>
+                <button type="button" class="text-white close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2 small">
+                    Puede colocar las columnas en cualquier orden siempre que los encabezados estén exactamente:
+                    <strong>DNI, AREA, PUESTO, TIPO DE PUESTO, DNI SUPERIOR, CORREO</strong>.
+                    Las celdas vacías NO modifican el dato existente. Valide antes de importar.
+                </p>
+                <a class="mb-3 btn btn-outline-secondary btn-sm" id="downloadTemplateBtn">
+                    <i class="fas fa-download"></i> Descargar Plantilla
+                </a>
+                <form id="importPersonalForm">
+                    <div class="form-group">
+                        <label>Archivo (.xlsx)</label>
+                        <input type="file" name="archivo" class="form-control" accept=".xlsx,.xls" required>
+                    </div>
+                    <div id="importPersonalResultado" class="mt-2 small"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
+                <button class="btn btn-info btn-sm" id="validateImportPersonalBtn">
+                    <i class="fas fa-search"></i> Validar
+                </button>
+                <button class="btn btn-primary btn-sm" id="submitImportPersonalBtn" disabled>
+                    <i class="fas fa-upload"></i> Importar
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+
 @stop
 
 @section('css')
@@ -353,6 +402,10 @@
         const HISTORIAL_ACTUALIZACIONES_URL = "{{ route('personal.historial-actualizaciones') }}";
 
         const AREA_PATH_URL = "{{ route('personal.area.path', ':id') }}";
+        
+        const ROUTE_PERSONAL_IMPORT = "{{ route('personal.import') }}";
+        const ROUTE_PERSONAL_TEMPLATE = "{{ route('personal.import.template') }}";
+        const ROUTE_PERSONAL_IMPORT_VALIDATE = "{{ route('personal.import.validate') }}";
 
     </script>
 @stop

@@ -86,14 +86,14 @@ class EncargadosPlanesTable extends LivewireDatatable
             Column::name('plan_de_mejora.title')->label('Plan de Mejora')->searchable()->filterable(),
 
             Column::name('encargados.name')->label('Evaluador')->searchable()->filterable(),
-            Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
-            Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
-            Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
+            // Column::name('cargo_de_evaluador')->label('Cargo de evaluador')->searchable()->filterable(),
+            // Column::name('area_de_evaluador')->label('Área de evaluador')->searchable()->filterable(),
+            // Column::name('gerencia_sub_gerencia_de_evaluador')->label('Gerencia Sub Gerencia de evaluador')->searchable()->filterable(),
 
             Column::name('empleados.name')->label('Evaluado')->searchable()->filterable(),
-            Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
-            Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
-            Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
+            // Column::name('cargo_de_evaluado')->label('Cargo de evaluado')->searchable()->filterable(),
+            // Column::name('area_de_evaluado')->label('Área de evaluado')->searchable()->filterable(),
+            // Column::name('gerencia_sub_gerencia_de_evaluado')->label('Gerencia Sub Gerencia de evaluado')->searchable()->filterable(),
 
             Column::name('cantidad_requerida')->label('Cantidad requerida')->searchable()->filterable(),
             Column::name('valor_esperado')->label('Valor Esperado')->searchable()->filterable(),

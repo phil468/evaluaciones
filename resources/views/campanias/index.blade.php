@@ -291,7 +291,11 @@
                         </div>
                     </div>
                 </div>
+                
+                @livewire('planes-configuracion')
 
+                @livewire('encargados-planes')
+                
                 <!-- Panel de Pesos -->
                 <div class="mt-4 card">
                     <div class="text-white card-header bg-primary" style="cursor:pointer;" data-toggle="collapse"

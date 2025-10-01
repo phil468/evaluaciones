@@ -184,6 +184,34 @@ Route::group(['middleware'  =>  ['auth']],function(){
     //     return $msg;
     // });
 
+    // un api para obtener el dni del personal y el dni del que reporta a, esto con el fin de usarlo en otro sistema
+    // Route::get('/api/dni', function () {
+    //     $data = Personal::whereNotNull('dni')
+    //         ->where('estado', 1)
+    //         ->where('cesado', 0)
+    //         ->get(['id', 'name', 'dni', 'reporta_a']);
+
+    //     $result = $data->map(function ($item) {
+    //         $superiorDni = null;
+    //         if ($item->reporta_a) {
+    //             $superior = Personal::find($item->reporta_a);
+    //             if ($superior) {
+    //                 $superiorDni = $superior->dni;
+    //             }
+    //         }
+    //         return [
+    //             'id' => $item->id,
+    //             'name' => $item->name,
+    //             'dni' => $item->dni,
+    //             'reporta_a' => $item->reporta_a,
+    //             'superior_dni' => $superiorDni,
+    //         ];
+    //     });
+
+    //     return response()->json($result);
+    // });
+
+
     Route::get('/inicio', [App\Http\Controllers\HomeController::class,'inicio'])->name('inicio');
     Route::get('/pendientes2', 
     [App\Http\Controllers\HomeController::class,'pendientes2'])
@@ -588,6 +616,13 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     Route::get('personal/area/{id}/path', [\App\Http\Controllers\PersonalController::class,'areaPath'])
         ->name('personal.area.path');
+    
+    Route::prefix('personal')->group(function () {
+        // ...existing personal routes...
+        Route::post('import/validate',[PersonalController::class,'validateImport'])->name('personal.import.validate');
+        Route::get('import/template', [PersonalController::class,'downloadTemplate'])->name('personal.import.template');
+        Route::post('import', [PersonalController::class,'importExcel'])->name('personal.import');
+    });
 
     Route::resource('personal', PersonalController::class)->middleware(['can:ver-personal']);
 

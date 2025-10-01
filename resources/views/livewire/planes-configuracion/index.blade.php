@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluaciones')
+@section('title', 'Configuracion Planes de Accion')
 
 @section('content_header')
     <h1></h1>

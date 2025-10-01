@@ -30,8 +30,8 @@ class Planilla extends Model
     {
         return $this->belongsTo(Sede::class,'sede_id','id');
     }
-    public function planilla_personal()
-    {
-        return $this->hasMany(PlanillaPersonal::class,'planilla_id','id');
-    }
+    // public function planilla_personal()
+    // {
+    //     return $this->hasMany(PlanillaPersonal::class,'planilla_id','id');
+    // }
 }

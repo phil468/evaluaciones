@@ -295,6 +295,7 @@
                                 @isset($ingreso)
                                     @if ($ingreso)
                                         @isset($planesDeAccions)
+                                            {{-- {{ dd($planesDeAccions) }} --}}
                                             <div class="h5">Planes De Mejora
                                             </div>
                                             @if ($planesDeAccions->count() == 0)

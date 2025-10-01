@@ -227,16 +227,16 @@ class EncargadosPlanes extends Component
             'empleado_id' => 'required',
             'planes_de_accion_configuracion_id' => 'required',
 
-            'cargo_de_evaluador' => 'required',
-            'area_de_evaluador' => 'required',
-            'gerencia_sub_gerencia_de_evaluador' => 'required',
-            'cargo_de_evaluado' => 'required',
-            'area_de_evaluado' => 'required',
-            'gerencia_sub_gerencia_de_evaluado' => 'required',
+            // 'cargo_de_evaluador' => 'required',
+            // 'area_de_evaluador' => 'required',
+            // 'gerencia_sub_gerencia_de_evaluador' => 'required',
+            // 'cargo_de_evaluado' => 'required',
+            // 'area_de_evaluado' => 'required',
+            // 'gerencia_sub_gerencia_de_evaluado' => 'required',
 
             'cantidad_requerida' => 'required|integer',
             'valor_esperado' => 'required|numeric',
-            'jerarquia' => 'required',
+            // 'jerarquia' => 'required',
         ]);
 
         EncargadosPlanesDeAccion::create([ 

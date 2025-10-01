@@ -18,9 +18,14 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
+use App\Exports\PersonalExport;
+use App\Exports\PersonalTemplateExport;
+use App\Imports\PersonalFlexibleImport;
+use App\Imports\PersonalImport;
 
 class PersonalController extends Controller
 {    
@@ -54,7 +59,8 @@ class PersonalController extends Controller
         }
     }
 
-    public function obtenerResponse(string $numero) {
+    public function obtenerResponse(string $numero) 
+    {
         // si numero == 0 entonces trae toda la información actual del personal 
 		$tokenController = new ApiController();
 
@@ -238,7 +244,8 @@ class PersonalController extends Controller
         }
     }
 
-    public function evaluarResultado($res) {
+    public function evaluarResultado($res)
+    {
 		if($res['statusCode'] == 200) {
 			$this->token = $res['token'];
 		} else {
@@ -251,7 +258,8 @@ class PersonalController extends Controller
         }
 	}
 
-    public function actualizarEstadoParaTodos() {
+    public function actualizarEstadoParaTodos()
+    {
         $message = '';
         // $message = 'Se actualizaron los estados de los trabajadores.<br>';
         // Recorre todos los registros de tu modelo
@@ -324,7 +332,8 @@ class PersonalController extends Controller
 //        return $message;
     }
 
-    public function ingresarDNI($dni) {
+    public function ingresarDNI($dni) 
+    {
         $dni = trim($dni);
         $personal = Personal::create([
 			'dni' => $dni,
@@ -429,27 +438,36 @@ class PersonalController extends Controller
     }
         
     // Métodos para Select2 AJAX
-    public function select2Empresa(Request $request) {
+    public function select2Empresa(Request $request)
+    {
         $q = $request->q;
         $results = Empresa::where('name', 'like', "%$q%")->select('id', 'name as text')->limit(20)->get();
         return response()->json(['results' => $results]);
     }
-    public function select2Gerencia(Request $request) {
+    
+    public function select2Gerencia(Request $request)
+    {
         $q = $request->q;
         $results = Area::where('name', 'like', "%$q%")->where('name', 'like', "%gerencia%")->select('id', 'name as text')->limit(20)->get();
         return response()->json(['results' => $results]);
     }
-    public function select2Area(Request $request) {
+
+    public function select2Area(Request $request)
+    {
         $q = $request->q;
         $results = Area::where('name', 'like', "%$q%")->select('id', 'name as text')->limit(20)->get();
         return response()->json(['results' => $results]);
     }
-    public function select2Cargo(Request $request) {
+    
+    public function select2Cargo(Request $request)
+    {
         $q = $request->q;
         $results = Cargo::where('name', 'like', "%$q%")->select('id', 'name as text')->limit(20)->get();
         return response()->json(['results' => $results]);
     }
-    public function select2Reporta(Request $request) {
+    
+    public function select2Reporta(Request $request)
+    {
         $q = $request->q;
         $exclude = $request->exclude;
         $query = Personal::where('name', 'like', "%$q%");
@@ -459,14 +477,17 @@ class PersonalController extends Controller
     }
 
     // CRUD REST (index, store, update, destroy, show)
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         // Devuelve la vista principal
         if (Gate::denies('ver-personal')) {
             abort(403, 'No autorizado');
         }
         return view('personal.index');
     }
-    public function data(Request $request) {
+    
+    public function data(Request $request)
+    {
         // Devuelve los datos para Tabulator (puedes agregar paginación, filtros, etc.)
         $personals = Personal::with(['empresa', 'gerencia', 'area', 'cargo', 'superior'])->get();
         return response()->json($personals);
@@ -525,29 +546,12 @@ class PersonalController extends Controller
         }
     }
 
-    // public function store(Request $request) {
-    //     $data = $request->all();
-    //     $personal = Personal::create($data);
-    //     return response()->json(['success' => true, 'data' => $personal]);
-    // }
-
-    // public function show($id) {
-    //     $personal = Personal::with(['empresa', 'gerencia', 'area', 'cargo', 'superior'])->findOrFail($id);
-    //     return response()->json($personal);
-    // }
-    // public function update(Request $request, $id) {
-    //     $personal = Personal::findOrFail($id);
-    //     $personal->update($request->all());
-    //     return response()->json(['success' => true, 'data' => $personal]);
-    // }
-
-    // public function destroy($id) {
-    //     $personal = Personal::findOrFail($id);
-    //     $personal->delete();
-    //     return response()->json(['success' => true]);
-    // }
-
-    
+    /**
+     * Muestra los detalles de un personal específico
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */   
     public function show($id)
     {
         if (Gate::denies('ver-personal')) {
@@ -1152,6 +1156,68 @@ class PersonalController extends Controller
                 'message' => 'Error al crear el usuario: ' . $e->getMessage()
             ], 500);
         }
+    }
+    
+    public function downloadTemplate()
+    {
+        return Excel::download(new PersonalTemplateExport(), 'plantilla_import_personal.xlsx');
+    }
+
+    public function validateImport(Request $request)
+    {
+        $request->validate([
+            'archivo'=>'required|file|mimes:xlsx,xls'
+        ]);
+
+        $import = new PersonalFlexibleImport(true); // dryRun
+        try{
+            Excel::import($import, $request->file('archivo'));
+        }catch(\Throwable $e){
+            \Log::error('Error validando import personal: '.$e->getMessage());
+            return response()->json(['success'=>false,'message'=>'Archivo inválido'],500);
+        }
+
+        return response()->json([
+            'success'=> empty($import->getErrores()),
+            'errores'=> $import->getErrores(),
+            'sim_insertados'=>$import->getSimInsertados(),
+            'sim_actualizados'=>$import->getSimActualizados(),
+            'areas_por_crear'=>$import->getAreasPorCrear(),
+            'cargos_por_crear'=>$import->getCargosPorCrear(),
+            'message'=> empty($import->getErrores()) ? 'Validación OK' : 'Validación con incidencias'
+        ], empty($import->getErrores()) ? 200 : 422);
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'archivo'=>'required|file|mimes:xlsx,xls'
+        ]);
+
+        $import = new PersonalFlexibleImport(false); // ejecución real
+        try{
+            Excel::import($import, $request->file('archivo'));
+        }catch(\Throwable $e){
+            \Log::error('Error import personal flexible: '.$e->getMessage());
+            return response()->json(['success'=>false,'message'=>'Error procesando archivo'],500);
+        }
+
+        if($import->tieneErrores()){
+            return response()->json([
+                'success'=>false,
+                'message'=>'Importación con incidencias',
+                'errores'=>$import->getErrores(),
+                'insertados'=>$import->getInsertados(),
+                'actualizados'=>$import->getActualizados(),
+            ],422);
+        }
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Importación exitosa',
+            'insertados'=>$import->getInsertados(),
+            'actualizados'=>$import->getActualizados(),
+        ]);
     }
 
 }

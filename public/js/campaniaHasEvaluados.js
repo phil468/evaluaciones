@@ -377,15 +377,6 @@ class CampaniaHasEvaluados {
                     width: 80
                 },
                 {
-                    // title: "Superior",
-                    // field: "superior",
-                    // headerFilter: "input",
-                    // formatter: (cell) => {
-                    //     const superior = cell.getValue();
-                    //     return superior ? `${superior.name} (${superior.dni})` : '';
-                    // },
-                    // headerSort: false,
-                    // width: 150
                     title: "Superior",
                     field: "superior",
                     headerFilter: "input",

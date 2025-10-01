@@ -117,6 +117,26 @@ $(function() {
         updateURL: PERSONAL_UPDATE_URL,
         showURL: PERSONAL_SHOW_URL,
         deleteURL: PERSONAL_DELETE_URL,
+
+        // >>> AÑADIR: opciones Tabulator (dependiendo cómo BaseModel las mezcle; si usa p.e. 'tableOptions' cámbialo)
+        tabulatorOptions: {
+            layout:"fitColumns",
+            selectable:true,
+            selectableRangeMode:"click",
+            // rowSelectionChanged:function(data){
+            //     $('#exportSelectedExcelBtn').prop('disabled', data.length === 0);
+            // },
+            // (si necesitas height, persistence, etc.)
+            height:"650px",
+            // rowSelectionChanged: function(data){
+            //     console.log("Filas seleccionadas:", data);
+            //     $('#exportSelectedExcelBtn').prop('disabled', data.length === 0);
+            //     console.log(data.length);
+            //     $('#selectedCount').text(data.length);          // contador opcional
+            //     console.log($('#selectedCount').text());
+            // },
+        },
+
         fields: [
             "id", "dni", "name", "nombres", "apellidoPaterno", "apellidoMaterno",
             "empresaId", "gerenciaId", "areaId", "cargoId", "reportaA",
@@ -125,6 +145,24 @@ $(function() {
             "seleccionado"
         ],
         columns: [
+            {
+                title: "",
+                field: "_select",
+                width: 38,
+                hozAlign: "center",
+                headerHozAlign: "center",
+                headerSort: false,
+                formatter: "rowSelection",
+                titleFormatter: "rowSelection",                 // checkbox en el header (seleccionar/deseleccionar visibles)
+                titleFormatterParams: { rowRange: "active" },   // solo filas filtradas actuales
+                cellClick: function(e, cell) {                  // togglear solo al click en la celda
+                    cell.getRow().toggleSelect();
+                    e.stopPropagation();
+                }
+                // no debe exportar esta columna
+                ,download: false
+
+            },
             { title: "ID", field: "id", width: 80 },
             {
                 title: "Acciones",
@@ -168,154 +206,40 @@ $(function() {
                 formatter: "tickCross",
                 editor: true, // Permite edición directa
                 headerFilter: "select",
-                headerFilterParams: { values: {"": "Todos", "1": "Sí", "0": "No"} }
+                headerFilterParams: { values: {"": "Todos", "1": "Sí", "0": "No"} },
+                accessorDownload:(v)=> v ? 'Sí':'No'
             },
             { title: "Nombre", field: "name", headerFilter: "input" },
-            { title: "Empresa", field: "empresa.name", headerFilter: "input" },
-            { title: "Tipo personal", field: "tipo_personal.name", headerFilter: "input" },
+            { title: "Empresa", field: "empresa.name", headerFilter: "input" ,
+              accessorDownload:(v,row)=> row.empresa?.name || '' 
+            },
+            { title: "Tipo personal", field: "tipo_personal.name", headerFilter: "input" ,
+              accessorDownload:(v,row)=> row.tipo_personal?.name || '' },
             // { title: "Gerencia", field: "gerencia.name", headerFilter: "input" },
-            { title: "Área", field: "area.name", headerFilter: "input" },
+            { title: "Área", field: "area.name", headerFilter: "input" ,
+              accessorDownload:(v,row)=> row.area?.name || '' },
             { 
                 title: "Cargo", 
                 field: "cargo.name", 
                 headerFilter: "input",
-                editor: "list", // Usar editor tipo select
-                editorParams: {
-                    // Cargar opciones de cargos dinámicamente
-                    values: function(cell) {
-                        // Retornar promesa que resuelve a un objeto con valores para el select
-                        return new Promise((resolve, reject) => {
-                            $.ajax({
-                                url: SELECT2_CARGO_URL, // Reutilizar la misma URL que usas para el select2
-                                dataType: 'json',
-                                data: { q: "" }, // Busqueda vacía para traer todos o los primeros N
-                                success: function(data) {
-                                    // Convertir el resultado a formato {value1: "label1", value2: "label2"}
-                                    let values = {};
-                                    data.results.forEach(item => {
-                                        values[item.id] = item.text;
-                                    });
-                                    resolve(values);
-                                },
-                                error: function(error) {
-                                    console.error("Error cargando cargos:", error);
-                                    reject(error);
-                                }
-                            });
-                        });
-                    }
-                }
-            },
-            // { title: "Reporta a", field: "superior.name", headerFilter: "input" },
-
-            { 
-                title: "Reporta a", 
-                field: "superior.name", 
-                headerFilter: "input",
-                editor: "list",
-                editable: function(cell) {
-                    // Solo permitir edición si la celda tiene un ID válido
-                    return cell.getRow().getData() && cell.getRow().getData().id;
-                },
-                editorParams: {
-                    elementAttributes: {
-                        autocomplete: "off" // Evitar problemas con el autocompletado del navegador
-                    },
-                    listItemFormatter: function(value, title) {
-                        // Formato mejorado para los elementos de la lista
-                        return "<div style='padding: 5px;'>" + title + "</div>";
-                    },
-                    values: function(cell) {
-                        const currentPersonalId = cell.getRow().getData().id;
-                        
-                        // Mostrar indicador de carga
-                        cell.getElement().innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
-                        
-                        return new Promise((resolve, reject) => {
-                            $.ajax({
-                                url: SELECT2_REPORTA_URL,
-                                dataType: 'json',
-                                data: { 
-                                    q: "", 
-                                    exclude: currentPersonalId, 
-                                    solo_activos: true,
-                                    limit: 100 // Aumentar límite para mostrar más opciones
-                                },
-                                success: function(data) {
-                                    if (!data.results || data.results.length === 0) {
-                                        console.warn("No se recibieron resultados del servidor para el campo 'Reporta a'");
-                                        // Proporcionar al menos una opción vacía
-                                        resolve({"": "Ninguno"});
-                                        return;
-                                    }
-                                    
-                                    console.log("Opciones cargadas para 'Reporta a':", data.results);
-                                    
-                                    // Siempre incluir una opción para "Ninguno"
-                                    let values = {"": "Ninguno"};
-                                    
-                                    // Añadir las opciones del servidor
-                                    data.results.forEach(item => {
-                                        values[item.id] = item.text;
-                                    });
-                                    
-                                    resolve(values);
-                                },
-                                error: function(error) {
-                                    console.error("Error cargando personal:", error);
-                                    // En caso de error, mostrar al menos la opción vacía
-                                    resolve({"": "Ninguno"});
-                                }
-                            });
-                        });
-                    }
-                },
-                formatter: function(cell) {
-                    // Si no hay valor, mostrar "Ninguno" en gris
-                    const value = cell.getValue();
-                    if (!value) {
-                        return '<span class="text-muted">Ninguno</span>';
-                    }
-                    return value;
-                }
+                editor: "list", // Usar editor tipo select,
+                accessorDownload:(v,row)=> row.cargo?.name || '' 
             },
 
-            // { 
-            //     title: "Reporta a", 
-            //     field: "superior.name", 
-            //     headerFilter: "input",
-            //     editor: "list",
-            //     editorParams: {
-            //         // Cargar opciones de personal dinámicamente
-            //         values: function(cell) {
-            //             const currentPersonalId = cell.getRow().getData().id;
-                        
-            //             return new Promise((resolve, reject) => {
-            //                 $.ajax({
-            //                     url: SELECT2_REPORTA_URL,
-            //                     dataType: 'json',
-            //                     data: { 
-            //                         q: "", 
-            //                         exclude: currentPersonalId, // Excluir el personal actual
-            //                         solo_activos: true // Solo personal activo
-            //                     },
-            //                     success: function(data) {
-            //                         // Convertir el resultado a formato {value1: "label1", value2: "label2"}
-            //                         let values = {};
-            //                         data.results.forEach(item => {
-            //                             values[item.id] = item.text;
-            //                         });
-            //                         resolve(values);
-            //                     },
-            //                     error: function(error) {
-            //                         console.error("Error cargando personal:", error);
-            //                         reject(error);
-            //                     }
-            //                 });
-            //             });
-            //         }
-            //     }
-            // },
+            {
+                title:"Reporta a",
+                field:"superior", // usa el objeto
+                formatter:(cell)=>{
+                    const s = cell.getValue();
+                    return s ? `${s.name} (${s.dni||''})` : '';
+                },
+                accessorDownload:(v,row)=>{
+                    const s = row.superior;
+                    return s ? `${s.name} - ${s.dni||''}` : '';
+                },
+                headerFilter:"input"
+            },
+
             { title: "Ingreso", field: "fecha_ingreso",
                 formatter: function(cell) {
                     return cell.getValue() 
@@ -325,6 +249,11 @@ $(function() {
                         day: '2-digit'
                     })
                     : '';
+                },
+                accessorDownload:(v,row)=>{
+                    if(!row.fecha_ingreso) return '';
+                    const p = row.fecha_ingreso.substring(0,10).split('-');
+                    return `${p[2]}/${p[1]}/${p[0]}`;
                 },
                 // filtro por rangos de fechas
                 headerFilter: "date",
@@ -341,9 +270,18 @@ $(function() {
                 title: "Cese", 
                 field: "cesado", 
                 formatter: "tickCross",
+                accessorDownload:(v)=> v ? 'Sí':'No' 
             },
-            { title: "Estado", field: "estado", formatter: "tickCross", headerFilter: "select", headerFilterParams: { values: {"": "Todos", "true": "Activo", "false": "Inactivo"} } },
-            { title: "Fecha Cese", field: "fecha_cese",
+            { 
+                title: "Estado", 
+                field: "estado", 
+                formatter: "tickCross", 
+                headerFilter: "select", 
+                headerFilterParams: { values: {"": "Todos", "true": "Activo", "false": "Inactivo"} },
+                accessorDownload:(v)=> v ? 'Activo':'Inactivo' 
+            },
+            { 
+                title: "Fecha Cese", field: "fecha_cese",
                 formatter: function(cell) {
                     return cell.getValue() 
                     ? new Date(cell.getValue()).toLocaleDateString('es-PE', {
@@ -352,6 +290,11 @@ $(function() {
                         day: '2-digit'
                     })
                     : '';
+                },
+                accessorDownload:(v,row)=>{
+                    if(!row.fecha_cese) return '';
+                    const p = row.fecha_cese.substring(0,10).split('-');
+                    return `${p[2]}/${p[1]}/${p[0]}`;
                 }
             },
             { title: "Sexo", field: "sexo", 
@@ -360,12 +303,18 @@ $(function() {
                     if (value === 'M') return '<span class="badge bg-info">Masculino</span>';
                     if (value === 'F') return '<span class="badge bg-danger">Femenino</span>';
                     return '<span class="badge bg-secondary">No especificado</span>';
-                } 
+                } ,
+              accessorDownload:(v)=>{
+                if(v==='M') return 'Masculino';
+                if(v==='F') return 'Femenino';
+                return 'No especificado';
+              }
             },
             { 
                 title: "Correo Empresa", 
                 field: "correo_empresa", 
                 headerFilter: "input",
+                accessorDownload:(v)=> v || '' ,
                 formatter: function(cell) {
                     const value = cell.getValue() || '';
                     const row = cell.getRow();
@@ -410,30 +359,16 @@ $(function() {
                             </div>`;
                 }
             },
-            { title: "Planilla", field: "planilla.name", headerFilter: "input" },
-            { title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input" },
-            { title:  "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input" },
+            { title: "Planilla", field: "planilla.name", headerFilter: "input",
+              accessorDownload:(v,row)=> row.planilla?.name || ''  },
+            { title: "Id Planilla Nisira", field: "planilla.idplanilla_nisira", headerFilter: "input" ,
+              accessorDownload:(v,row)=> row.planilla?.idplanilla_nisira || '' },
+            { title:  "Tipo trabajador", field: "tipo_trabajador.name", headerFilter: "input" ,
+              accessorDownload:(v,row)=> row.tipo_trabajador?.name || '' },
         ],
 
         beforeOpenModal: function(data) {
-            
-            // if (!$('#personalReportaA').hasClass('select2-hidden-accessible')) {
-            //     $('#personalReportaA').select2({
-            //         theme: 'bootstrap-5',
-            //         dropdownParent: $('#editEvaluadorHasEvaluadoModal'),
-            //         width: '100%',
-            //         ajax: {
-            //             url: SELECT2_REPORTA_URL,
-            //             dataType: 'json', delay: 250,
-            //             data: params => ({ q: params.term }),
-            //             processResults: d => ({ results: d.map(i => ({ id: i.id, text: i.name })) }),
-            //             cache: true
-            //         },
-            //         minimumInputLength: 2, placeholder: 'Buscar evaluador...',
-            //         allowClear: true
-            //     });
-            // }
-            
+
             // Limpiar selects
             $('#personalEmpresaId, #personalAreaId, #personalCargoId, #personalReportaA')
                 .val(null).trigger('change');
@@ -444,43 +379,6 @@ $(function() {
                 $('#personalForm')[0].reset();
             }
 
-            // if (data.reporta_a) {
-            //     $('#personalReportaA').empty()
-            //         .append(new Option(data.reporta_a_name, data.reporta_a, true, true))
-            //         .trigger('change');
-            // }
-
-
-            // // Si hay datos (modo edición)
-            // if (data && data.id) {
-            //     // Primero inicializar los select2 básicos
-            //     $('#personalEmpresaId').val(null).trigger('change');
-            //     // $('#personalGerenciaId').val(null).trigger('change');
-            //     $('#personalAreaId').val(null).trigger('change');
-            //     $('#personalCargoId').val(null).trigger('change');
-            //     $('#personalReportaA').val(null).trigger('change');
-                
-            //     // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
-            //     // initReportaA(data.id);
-                
-            //     // Esperar un momento para asegurarse de que select2 esté inicializado
-            //     setTimeout(() => {
-            //         // Ahora llenar el formulario con los datos
-            //         fillPersonalForm(data);
-            //     }, 300);
-            //     // Usar la función existente para llenar todos los campos                
-            //     // Inicializar reporta_a excluyendo el ID actual (para evitar ciclos)
-            //     // initReportaA(data.id);
-            //     // fillPersonalForm(data);
-            // } else {
-            //     // Modo creación - limpiar selects
-            //     $('#personalEmpresaId').val(null).trigger('change');
-            //     // $('#personalGerenciaId').val(null).trigger('change');
-            //     $('#personalAreaId').val(null).trigger('change');
-            //     $('#personalCargoId').val(null).trigger('change');
-            //     $('#personalReportaA').val(null).trigger('change');
-            //     // initReportaA();
-            // }
         }
     });
 
@@ -500,12 +398,226 @@ $(function() {
     $('#personalAreaId').on('select2:select', function(e){
         loadAreaPath(e.params.data.id);
     });
+
     $('#personalAreaId').on('select2:clear', function(){
         $('#personalAreaPath').text('');
     });
 
-    personalModel.init();
+    personalModel.init();    
+
     
+    // Quitar (o dejar) la definición previa en tabulatorOptions; esta es la que funcionará:
+    const tablaPersonal = personalModel.table || Tabulator.findTable('#personal-table')?.[0];
+
+    if(tablaPersonal){
+        // Remueve posible listener previo para evitar duplicados
+        tablaPersonal.off('rowSelectionChanged');
+
+        tablaPersonal.on('rowSelectionChanged', function(data, rows){
+            // data = array de objetos seleccionados
+            $('#exportSelectedExcelBtn').prop('disabled', data.length === 0);
+            $('#selectedCount').text(data.length);
+            // Debug
+            console.log('rowSelectionChanged disparado. Seleccionadas:', data.length);
+        });
+    } else {
+        console.warn('No se encontró instancia Tabulator para #personal-table');
+    }
+
+    // Export visible (filtros + orden actuales)
+    function exportVisibleToXLSX(){
+        const t = Tabulator.findTable('#personal-table')?.[0];
+        if(!t){ Swal.fire('Error','Tabla no lista','error'); return; }
+        const filename = `personal_${luxon.DateTime.now().toFormat('yyyyLLdd_HHmmss')}.xlsx`;
+        t.download('xlsx', filename, {sheetName:'Personal'});
+    }
+
+    // Export solo filas seleccionadas
+    // function exportSelectedToXLSX(){
+    //     const t = Tabulator.findTable('#personal-table')?.[0];
+    //     if(!t){ Swal.fire('Error','Tabla no lista','error'); return; }
+    //     const sel = t.getSelectedData();
+    //     if(!sel.length){
+    //         Swal.fire({icon:'warning', title:'Sin selección', text:'Seleccione filas.'});
+    //         return;
+    //     }
+    //     const temp = new Tabulator(document.createElement('div'), {
+    //         data: sel,
+    //         columns: t.getColumns().filter(c=>c.isVisible()).map(c=>{
+    //             const def = c.getDefinition();
+    //             return {
+    //                 title:def.title,
+    //                 field:def.field,
+    //                 accessorDownload:def.accessorDownload,
+    //                 mutator:def.mutator
+    //             };
+    //         })
+    //     });
+    //     const filename = `personal_seleccion_${luxon.DateTime.now().toFormat('yyyyLLdd_HHmmss')}.xlsx`;
+    //     temp.download('xlsx', filename, {sheetName:'Seleccion'});
+    // }
+
+    function exportSelectedToXLSX(){
+        const t = Tabulator.findTable('#personal-table')?.[0];
+        if(!t){
+            Swal.fire({icon:'error',title:'Error',text:'Tabla no lista'});
+            return;
+        }
+        const selCount = t.getSelectedData().length;
+        if(!selCount){
+            Swal.fire({icon:'warning',title:'Sin selección',text:'Seleccione filas.'});
+            return;
+        }
+        const filename = `personal_seleccion_${luxon.DateTime.now().toFormat('yyyyLLdd_HHmmss')}.xlsx`;
+        t.download('xlsx', filename, {
+            sheetName:'Seleccion',
+            rowRange:'selected' // <<< SOLO filas seleccionadas
+        });
+    }
+
+
+    // Eventos export
+    $('#exportExcelBtn').off('click').on('click', exportVisibleToXLSX);
+    $('#exportSelectedExcelBtn').off('click').on('click', exportSelectedToXLSX);
+
+    let importValidOK = false;
+
+    function resetImportState(){
+        importValidOK = false;
+        $('#submitImportPersonalBtn').prop('disabled', true);
+        $('#validateImportPersonalBtn').prop('disabled', false);
+        $('#importPersonalResultado').html('');
+    }
+
+    // Al abrir modal limpiar estado
+    $(document).on('show.bs.modal', '#importPersonalModal', function(){
+        resetImportState();
+        const form = document.getElementById('importPersonalForm');
+        if(form){
+            form.reset();
+        }
+    });
+
+    // Cambiar archivo -> reset
+    $(document).on('change', '#importPersonalForm input[name="archivo"]', function(){
+        resetImportState();
+    });
+
+    // Modal Import: descargar plantilla
+    $('#downloadTemplateBtn').on('click', ()=> {
+        window.location = ROUTE_PERSONAL_TEMPLATE;
+    });
+
+    /* ---- VALIDAR (dry run) ---- */
+    $('#validateImportPersonalBtn').on('click', function(){
+        const form = document.getElementById('importPersonalForm');
+        if(!form) return;
+
+        const fileInput = form.querySelector('input[name="archivo"]');
+        if(!fileInput || !fileInput.files.length){
+            $('#importPersonalResultado').html('<span class="text-danger">Seleccione un archivo.</span>');
+            return;
+        }
+
+        const fd = new FormData(form);
+        $('#validateImportPersonalBtn').prop('disabled', true);
+        $('#submitImportPersonalBtn').prop('disabled', true);
+        $('#importPersonalResultado').html('<span class="text-info">Validando...</span>');
+
+        $.ajax({
+            url: ROUTE_PERSONAL_IMPORT_VALIDATE,
+            type: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            success: function(resp){
+                importValidOK = resp.success;
+                $('#validateImportPersonalBtn').prop('disabled', false);
+                $('#submitImportPersonalBtn').prop('disabled', !importValidOK);
+
+                let html = `<div class="text-success mb-1">
+                    Validación OK. Se crearían ${resp.sim_insertados} y actualizarían ${resp.sim_actualizados} registros.
+                </div>`;
+
+                if(resp.areas_por_crear?.length){
+                    html += `<div><strong>Áreas nuevas:</strong> ${resp.areas_por_crear.join(', ')}</div>`;
+                }
+                if(resp.cargos_por_crear?.length){
+                    html += `<div><strong>Cargos nuevos:</strong> ${resp.cargos_por_crear.join(', ')}</div>`;
+                }
+                $('#importPersonalResultado').html(html);
+            },
+            error: function(xhr){
+                $('#validateImportPersonalBtn').prop('disabled', false);
+                let html = '';
+                if(xhr.status === 422){
+                    const j = xhr.responseJSON || {};
+                    const errs = (j.errores||[]).map(e=>`<li>${e}</li>`).join('');
+                    html = `<div class="text-warning">Validación con incidencias:
+                            <ul class="mb-1">${errs}</ul>
+                            <div>Se crearían ${j.sim_insertados||0} y actualizarían ${j.sim_actualizados||0} (no se importó).</div>
+                            </div>`;
+                } else {
+                    html = '<span class="text-danger">Error en la validación.</span>';
+                }
+                $('#importPersonalResultado').html(html);
+            }
+        });
+    });
+
+    // Importar archivo
+    $('#submitImportPersonalBtn').on('click', function(){
+        if(!importValidOK){
+            $('#importPersonalResultado').append('<div class="text-danger">Primero valide el archivo.</div>');
+            return;
+        }
+
+        const form = document.getElementById('importPersonalForm');
+        if(!form) return;
+        const fd = new FormData(form);
+
+        $('#submitImportPersonalBtn').prop('disabled', true);
+        $('#importPersonalResultado').append('<div class="mt-1">Importando...</div>');
+
+        $.ajax({
+            url: ROUTE_PERSONAL_IMPORT,
+            type: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            success: function(resp){
+                $('#submitImportPersonalBtn').prop('disabled', false);
+                if(resp.success){
+                    $('#importPersonalResultado').append(
+                        `<div class="text-success mt-1">Importación exitosa. Insertados: ${resp.insertados}, Actualizados: ${resp.actualizados}</div>`
+                    );
+                    // refrescar tabla
+                    const t = personalModel.table || Tabulator.findTable('#personal-table')?.[0];
+                    t && t.replaceData && t.replaceData(); // Tabulator 6.x
+                } else {
+                    $('#importPersonalResultado').append(
+                        `<div class="text-danger mt-1">${resp.message || 'Error en importación'}</div>`
+                    );
+                }
+            },
+            error: function(xhr){
+                $('#submitImportPersonalBtn').prop('disabled', false);
+                if(xhr.status === 422){
+                    const j = xhr.responseJSON || {};
+                    const errs = (j.errores||[]).map(e=>`<li>${e}</li>`).join('');
+                    $('#importPersonalResultado').append(
+                        `<div class="text-warning mt-1">Importación con incidencias:
+                            <ul class="mb-1">${errs}</ul>
+                            <div>Insertados: ${j.insertados||0}, Actualizados: ${j.actualizados||0}</div>
+                        </div>`
+                    );
+                } else {
+                    $('#importPersonalResultado').append('<div class="text-danger mt-1">Error inesperado al importar.</div>');
+                }
+            }
+        });
+    });
+
     // Detectar cuando un celda ha sido editada directamente en la tabla
     personalModel.table.on("cellEdited", function(cell) {
         // Implementar debounce para evitar múltiples solicitudes
@@ -896,7 +1008,7 @@ $(function() {
             setSelect2Value('personalAreaId', null, null);
             $('#personalAreaPath').text('');
         }
-        
+
         if (personal.cargo_id)   setSelect2Value('personalCargoId', personal.cargo_id, personal.cargo?.name || '');
 
         if (personal.reporta_a && personal.superior) {

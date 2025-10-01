@@ -47,8 +47,8 @@ class PlanesConfiguracionTable extends LivewireDatatable
             Column::name('planes_de_accion_configuracion.nombre_para_mostrar')
             ->label('Nombre para mostrar')->searchable()->filterable(),
 
-            Column::name('planes_de_accion_configuracion.campania')
-            ->label('Campaña (ANTIGUA)')->searchable()->filterable(),
+            // Column::name('planes_de_accion_configuracion.campania')
+            // ->label('Campaña (ANTIGUA)')->searchable()->filterable(),
             
             Column::name('campanias.name')->label('Campaña')->searchable()->filterable(),
 

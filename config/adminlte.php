@@ -332,6 +332,22 @@ return [
             'classes' => 'rounded-xl',
         ],
 
+        // [
+        //     'text' => 'Planes de Acción/ Desarrollo',
+        //     'url'  => 'planes-de-mejora/ingreso',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        // ],
+
+        // [
+        //     'text' => 'Plan De Mejora Individual',
+        //     'url'  => 'plan-de-mejora',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl'
+        // ],
+
         // quitado de producción
         // [
         //     'text' => 'Feedback y Retroalimentación',
@@ -428,7 +444,7 @@ return [
             ]
         ],
 
-        ['text' => 'Ajustes de usuarios', 'can'  => ['ver-user','ver-rol'],
+        ['text' => 'Ajustes de usuarios', 'can'  => ['ver-user','ver-rol','ver-personal','ver-area','ver-cargo','ver-empresa','ver-tipo-relacion-jerarquica'],
         'icon' => 'fas fa-users-cog',
         'classes' => 'rounded-xl',
         'submenu' => [
@@ -492,23 +508,6 @@ return [
                     'classes' => 'rounded-xl',
                     'active' => ['organigrama']
                 ],
-
-                
-                // [
-                //     'text' => 'Planes de Acción/ Desarrollo',
-                //     'url'  => 'planes-de-mejora/ingreso',
-                //     'icon' => 'fas fa-pencil-alt',
-                //     'can'  => 'ver-evaluaciones-de-desempeno',
-                //     'classes' => 'rounded-xl',
-                // ],
-
-                // [
-                //     'text' => 'Plan De Mejora Individual',
-                //     'url'  => 'plan-de-mejora',
-                //     'icon' => 'fas fa-pencil-alt',
-                //     'can'  => 'ver-evaluaciones-de-desempeno',
-                //     'classes' => 'rounded-xl'
-                // ],
 
 
             ]

@@ -37,7 +37,7 @@ class PlanesConfiguracion extends Component
         'title' => 'required',
         'status' => 'required',
         'nombre_para_mostrar' => 'required',
-        'campania' => 'required',
+        // 'campania' => 'required',
         'campania_id' => 'required',
         'fecha_inicio' => 'required|before_or_equal:fecha_fin',
         'fecha_fin' => 'required|after_or_equal:fecha_inicio',
