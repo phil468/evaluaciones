@@ -14,7 +14,6 @@
 
     <style nonce="{{ $nonce }}">
         body {
-            /* background-image: url('{{ asset('img/evaluacion/login-10s.mp4') }}'); */
             background-size: cover;
             background-repeat: no-repeat;
         }
@@ -37,15 +36,14 @@
 
 @section('body')
 
-    {{-- TEMPORALMENTE SIN VIDEO SOLO COLOR --}}
-    {{-- <div class="video-background">
+    <div class="video-background">
         <video class="video-background-content" 
         src="{{ url('img/evaluacion/Login - Plataforma de Desarrollo.mp4') }}"
         autoplay="true" 
         muted="true"
         loop="true">
         </video>
-    </div> --}}
+    </div>
 
     <div class="body-bg d-flex h-100 w-100 justify-content-center " style="background-color: #568ca5;">
         <div class="{{ $auth_type ?? 'login' }}-box ">
