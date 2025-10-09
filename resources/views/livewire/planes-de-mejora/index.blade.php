@@ -9,12 +9,19 @@
 @section('content')
 
     @php
-        $campania = App\Models\PlanesConfiguracion::select('planes_de_accion_configuracion.campania')
+        $campania = 
+        App\Models\PlanesConfiguracion::select('planes_de_accion_configuracion.campania_id')
+            // ->where()
             ->vigente()
             // ->where('planes_de_accion_configuracion.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
             ->groupBy('planes_de_accion_configuracion.campania')
             ->orderBy('planes_de_accion_configuracion.campania', 'desc')
             ->get();
+        // dd($campania);
+
+        // buscamos campaña cuyo campo es_campania_actual es true
+        $campania_actual = App\Models\Campania::where('es_campania_actual', true)->first();
+
     @endphp
 
     @if ($campania->isEmpty())
@@ -39,12 +46,14 @@
 @endisset --}}
 
     @isset($dashboard)
+        {{-- enviar la campaña activa de ahora --}}
         @livewire('dashboard', [
             'personal_id' => $empleado_id,
             'vista_personal' => true,
             'title' => 'Dashboard del personal',
             'ingresar_plan' => true,
             'showHeader' => false,
+            'campania_id' => $campania_actual->id ?? 0,
         ])
     @endisset
 

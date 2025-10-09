@@ -141,7 +141,108 @@ class User extends Authenticatable implements JWTSubject
                 return $evaluacion->estado_pendiente;
             })
             ->count() > 0;
+    
         
+
+    // Pendientes como encargado de planes de acción (relación con plan_de_mejora)
+    $pendientesComoEncargadoPlanes = $this->personal->planesComoEncargado()
+        ->habilitado()
+        ->whereHas('plan_de_mejora', function($query) {
+            $today = now();
+            $query->where('status', 1)
+                ->where(function($q) use ($today) {
+                    $q->where(function($sub) use ($today) {
+                        $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+                            ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+                    })
+                    ->orWhere(function($sub) use ($today) {
+                        $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+                            ->where('fecha_fin_segunda_fase', '>=', $today);
+                    });
+                });
+        })
+        ->get()
+        ->contains(fn($p) => $p->estado_pendiente);
+
+        // dd(
+        //     $this->personal->planesComoEncargado()
+        //         ->habilitado()
+        //         ->whereHas('plan_de_mejora', function($query) {
+        //         $today = now();
+        //         $query->where('status', 1)
+        //             ->where(function($q) use ($today) {
+        //                 $q->where(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+        //                 })
+        //                 ->orWhere(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
+        //                 });
+        //             });
+        //         })
+        //         ->get() ,
+
+        //         $this->personal->planesComoEncargado()
+        //         ->habilitado()
+        //         ->whereHas('plan_de_mejora', function($query) {
+        //         $today = now();
+        //         $query->where('status', 1)
+        //             ->where(function($q) use ($today) {
+        //                 $q->where(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+        //                 })
+        //                 ->orWhere(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
+        //                 });
+        //             });
+        //         })
+        //         ->first()->cantidad_requerida ,
+
+        //         $this->personal->planesComoEncargado()
+        //         ->habilitado()
+        //         ->whereHas('plan_de_mejora', function($query) {
+        //         $today = now();
+        //         $query->where('status', 1)
+        //             ->where(function($q) use ($today) {
+        //                 $q->where(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+        //                 })
+        //                 ->orWhere(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
+        //                 });
+        //             });
+        //         })
+                
+        //         ->first()->estado_pendiente ,
+
+        //         $this->personal->planesComoEncargado()
+        //         ->habilitado()
+        //         ->whereHas('plan_de_mejora', function($query) {
+        //         $today = now();
+        //         $query->where('status', 1)
+        //             ->where(function($q) use ($today) {
+        //                 $q->where(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+        //                 })
+        //                 ->orWhere(function($sub) use ($today) {
+        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
+        //                 });
+        //             });
+        //         })
+                
+        //         ->first()->planes_de_accion_empleado ,
+
+        //         )
+        //     ;
+
+
         // Verificar evaluaciones pendientes como evaluado
         // $pendientesComoEvaluado = $this->personal->evaluadoHasEvaluadors()
         //     ->whereHas('evaluacion', function($query) {
@@ -154,7 +255,7 @@ class User extends Authenticatable implements JWTSubject
         //     ->count() > 0;
         
         // return $pendientesComoEvaluador || $pendientesComoEvaluado;
-        return $pendientesComoEvaluador;
+        return $pendientesComoEvaluador || $pendientesComoEncargadoPlanes;
     }
 
 }

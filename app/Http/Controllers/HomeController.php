@@ -64,7 +64,6 @@ class HomeController extends Controller
 
         $evaluacionesPendientes = $user->hasPendingEvaluations();
 
-
         $campaniaActual = Campania::where('es_campania_actual', true)->first();
         // campaniaActual puede ser null
         if ($campaniaActual) {

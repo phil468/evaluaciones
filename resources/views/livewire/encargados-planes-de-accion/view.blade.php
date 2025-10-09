@@ -8,6 +8,7 @@
                         <div class="float-left">
                             <h4 class="h5">Planes De Mejora de personal a cargo</h4>
                         </div>
+
                         @if (session()->has('message'))
                             <div wire:poll.4s class="btn btn-sm btn-success rounded-xl"
                                 style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }}
@@ -33,8 +34,19 @@
                                 </div>
                             @endif
                         @endisset
+                        
+                        {{-- Selector de campaña --}}
+                        {{-- <div class="mb-2">
+                            <label class="small font-weight-bold">Campaña:</label>
+                            <select wire:model="campaniaFiltro" class="form-control form-control-sm" style="max-width:240px;">
+                                @foreach($campaniasDisponibles as $cid => $cname)
+                                    <option value="{{ $cid }}">{{ $cname }}</option>
+                                @endforeach
+                            </select>
+                        </div> --}}
                     </div>
                 </div>
+
 
                 <div class="card-body">
                     @include('livewire.encargados-planes-de-accion.create_plan')
@@ -52,6 +64,7 @@
                                         <table class="table table-striped table-hover table-sm">
                                             <thead class="thead">
                                                 <tr>
+                                                    <th>Campaña</th>
                                                     @if ($ingreso)
                                                     @else
                                                         <th>Encargado</th>
@@ -64,6 +77,7 @@
                                             <tbody>
                                                 @foreach ($encargadosPlanesDeAccions as $row)
                                                     <tr>
+                                                        <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td>
                                                         @if ($ingreso)
                                                         @else
                                                             <td>{{ $row->encargado->name }}</td>
@@ -97,6 +111,41 @@
                                         {{ $encargadosPlanesDeAccions->links() }}
                                     @endif
                                 @endisset
+                            @endif
+                        @endisset
+
+                        @isset($vistaAprobacionDePlanes)
+                            @if ($vistaAprobacionDePlanes)
+
+                                {{-- @foreach($planesDeAccions->groupBy('empleado_id') as $empleadoId => $planesPersona)
+                                    <h6 class="mt-3">{{ $planesPersona->first()->empleado->name }} (Campaña:
+                                        {{ $planesPersona->first()->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }})</h6>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Descripción</th>
+                                                <th>Competencia</th>
+                                                <th>Estado Aprobación</th>
+                                                <th>%</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($planesPersona as $plan)
+                                            <tr>
+                                                <td>{{ $plan->name }}</td>
+                                                <td>{{ $plan->competencia->name ?? '' }}</td>
+                                                <td>{{ strtoupper(str_replace('_',' ',$plan->estado_aprobacion)) }}</td>
+                                                <td>{{ $plan->porcentaje_cumplimiento ?? '-' }}</td>
+                                                <td>
+                                                    <button class="btn btn-xs btn-vanguard" wire:click="edit_plan({{ $plan->id }})" data-toggle="modal" data-target="#updatePlanDataModal">Ver</button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                @endforeach --}}
+
                             @endif
                         @endisset
                     </div>
@@ -179,6 +228,7 @@
                                     <table class="table table-striped table-hover table-sm">
                                         <thead class="thead">
                                             <tr>
+                                                <th>Campaña</th>
                                                 <th>ACCIONES</th>
                                                 <th>#</th>
                                                 <th>Descripción</th>
@@ -201,6 +251,7 @@
                                             @foreach ($planesDeAccions as $row)
                                                 {{-- {{dd($row)}} --}}
                                                 <tr>
+                                                    <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td>
                                                     <td width="90">
                                                         <div class="btn-group">
                                                             <a data-toggle="modal" data-target="#updatePlanDataModal"
@@ -252,6 +303,23 @@
 
                             </div>
                         @endif
+
+                        {{--media pantalla cuando es grande y completa de mediana para abajo--}}
+                        {{-- <div class="col-md-12 col-lg-6 col-xl-6"> --}}
+                            <canvas id="myChart"></canvas>
+                            {{-- <div class="card card-body border-0 shadow mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h2 class="h5 mb-0">Promedio General de Desempeño</h2>
+                                    <span class="badge rounded-pill bg-soft-vanguard text-vanguard">{{ round($this->secciones->avg(function($item) {
+                                        return $item['promedio'];  // Acceso como array
+                                    }), 2) }}%</span>
+                                </div>
+                                <p class="text-sm text-gray-700 mb-0">
+                                    El promedio general de desempeño se calcula como el promedio de los promedios de cada sección evaluada. Este valor proporciona una visión general del rendimiento global en todas las áreas evaluadas.
+                                </p>
+                            </div> --}}
+                        {{-- </div> --}}
+
                     @endisset
                 </div>
             </div>

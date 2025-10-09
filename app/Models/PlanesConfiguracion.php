@@ -37,15 +37,29 @@ class PlanesConfiguracion extends Model
         'fecha_fin_segunda_fase',
     ];
 
-    protected $dates = [
-        'date',
-        'fecha_inicio',
-        'fecha_fin',
-        'fecha_inicio_segunda_fase',
-        'fecha_fin_segunda_fase',
-        'fecha_inicio_primera_fase_matricula',
-        'fecha_fin_primera_fase_matricula',
+    // protected $dates = [
+    //     'date',
+    //     'fecha_inicio',
+    //     'fecha_fin',
+    //     'fecha_inicio_segunda_fase',
+    //     'fecha_fin_segunda_fase',
+    //     'fecha_inicio_primera_fase_matricula',
+    //     'fecha_fin_primera_fase_matricula',
+    // ];
+
+    // fechas casteasdas a date
+    protected $casts = [
+        'date' => 'datetime',
+        'fecha_inicio' => 'datetime',
+        'fecha_fin' => 'datetime',
+        'fecha_inicio_segunda_fase' => 'datetime',
+        'fecha_fin_segunda_fase' => 'datetime',
+        'fecha_inicio_primera_fase_matricula' => 'datetime',
+        'fecha_fin_primera_fase_matricula' => 'datetime',
+        // 'status' => 'integer',
     ];
+    protected $appends = ['activa','primera_fase_activa','segunda_fase_activa'];
+    // appends
 
     /// quiero deveolver un valor verdadero si hoy se encuentra entre $evaluador_has_evaluado->evaluacion->fecha_inicio y $evaluador_has_evaluado->evaluacion->fecha_fin
     public function getActivaAttribute()
@@ -55,6 +69,26 @@ class PlanesConfiguracion extends Model
 
     public function getPrimeraFaseActivaAttribute()
     {
+
+    // if (!$this->fecha_inicio_primera_fase_matricula || !$this->fecha_fin_primera_fase_matricula) {
+    //     return false;
+    // }
+    
+    // $inicio = $this->fecha_inicio_primera_fase_matricula;
+    // $fin = $this->fecha_fin_primera_fase_matricula;
+    // $ahora = now();
+    
+    // // Debug temporal - quítalo después
+    // \Log::info('Debug primera fase:', [
+    //     'inicio' => $inicio->toISOString(),
+    //     'fin' => $fin->toISOString(), 
+    //     'ahora' => $ahora->toISOString(),
+    //     'inicio_menor_igual_ahora' => $inicio <= $ahora,
+    //     'ahora_menor_igual_fin' => $ahora <= $fin,
+    //     'resultado' => $inicio <= $ahora && $ahora <= $fin
+    // ]);
+    
+    // return $inicio <= $ahora && $ahora <= $fin;
         return $this->fecha_inicio_primera_fase_matricula <= now() && $this->fecha_fin_primera_fase_matricula >= now();
     }
 

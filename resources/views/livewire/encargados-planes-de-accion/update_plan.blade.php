@@ -165,6 +165,55 @@
                             </div>
                         @endif
 
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label class="mb-0">Tipo de Objetivo <small class="text-muted">(Por default)</small></label>
+                            <select disabled wire:model="tipo_objetivo" class="form-control">
+                                <option value="numerico">Numérico</option>
+                                <option value="porcentual">Porcentual</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label class="mb-0">Objetivo <small class="text-danger">Habilitado 1ra fase</small></label>
+                            <input @if(!$primera_fase_activa) disabled @endif wire:model="objetivo" type="number" step="0.01" class="form-control">
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label class="mb-0">Alcanzado <small class="text-danger">Habilitado 2da fase</small></label>
+                            <input @if(!$segunda_fase_activa) disabled @endif wire:model="alcanzado" type="number" step="0.01" class="form-control">
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label class="mb-0">% de cumplimiento (calculado)</label>
+                            <input disabled wire:model="porcentaje_cumplimiento" type="text" class="form-control">
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label class="mb-0">Estado de cumplimiento (calculado)</label>
+                            <input disabled wire:model="estado_cumplimiento" type="text" class="form-control">
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label class="mb-0">Estado de aprobación 
+                                <small class="text-muted">(Pendiente / Validado / No validado)</small>
+                            </label>
+                            <select 
+                                @cannot('validar-planes-mejora') disabled @endcannot
+                                wire:model="estado_aprobacion" class="form-control">
+                                <option value="borrador">Borrador</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="validado">Validado</option>
+                                <option value="no_validado">No validado</option>
+                            </select>
+                        </div>
+
+                        @if($estado_aprobacion === 'no_validado')
+                        <div class="form-group col-sm-12">
+                            <label>Observación de validación</label>
+                            <textarea wire:model.defer="observacion_validacion" class="form-control" rows="2"></textarea>
+                        </div>
+                        @endif
+
                     </fieldset>
                 </form>
             </div>

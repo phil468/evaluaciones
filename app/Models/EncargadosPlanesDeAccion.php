@@ -33,11 +33,22 @@ class EncargadosPlanesDeAccion extends Model
         'planes_de_accion_configuracion_id',
         'habilitado', // Agregar este campo
     ];
+    
+    protected $appends = ['estado_pendiente'];
 
     public function empleado()
     {
         return $this->belongsTo(Personal::class, 'empleado_id','id');
     }
+
+    // buscar el cargo del empleado para la campaña especifica pero en la tabla campaniahasevaluado, ojo que un empleado_id puede aparecer en el personal_id pero de otras campanias
+    public function campania_has_evaluado()
+    {
+
+        return $this->hasOne(CampaniaHasEvaluado::class, 'personal_id','empleado_id')
+                ->when($this->relationLoaded('plan_de_mejora') && $this->plan_de_mejora, 
+                      fn($query) => $query->where('campania_id', $this->plan_de_mejora->campania_id));
+    }  
 
     public function encargado()
     {
@@ -56,12 +67,12 @@ class EncargadosPlanesDeAccion extends Model
 
     public function planes_de_accion_empleado()
     {
-        return $this->hasMany(PlanesDeAccion::class, 'empleado_id','empleado_id');
+        return $this->hasMany(PlanesDeAccion::class, 'encargados_planes_de_accion_id','empleado_id');
     }
     
     public function planes_de_accion_empleado_realizados()
     {
-        return $this->hasMany(PlanesDeAccion::class, 'empleado_id','empleado_id')->where('estado_id','<>',1);
+        return $this->hasMany(PlanesDeAccion::class, 'encargados_planes_de_accion_id','empleado_id')->where('estado_id','<>',1);
     }
 
     public function plan_de_mejora()

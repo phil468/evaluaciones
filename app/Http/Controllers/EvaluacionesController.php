@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CampaniaHasEvaluado;
 use App\Models\Dominio;
+use App\Models\EncargadosPlanesDeAccion;
 use App\Models\Evaluacione;
 use App\Models\EvaluadorHasEvaluado;
 use App\Models\TipoDeEvaluacione;
@@ -166,63 +167,262 @@ class EvaluacionesController extends Controller
         ]);
     }
 
-    public function pendientesData(Request $request)
-    {
-        $id_personal = auth()->user()->personal->id;
-        $tipo_de_evaluacion_id = $request->input('tipo_evaluacion', 1); // Por defecto tipo 1 (competencias)
-        $campania = $request->input('campania', '2'); // Por defecto el año actual
+    // public function pendientesData(Request $request)
+    // {
+    //     $id_personal = auth()->user()->personal->id;
+    //     $tipo_de_evaluacion_id = $request->input('tipo_evaluacion', 1); // Por defecto tipo 1 (competencias)
+    //     $campania = $request->input('campania', '2'); // Por defecto el año actual
         
-        // Obtener evaluaciones
-        $evaluadorHasEvaluados = EvaluadorHasEvaluado::latest('evaluador_has_evaluados.created_at')
-            ->select('evaluador_has_evaluados.*')
-            ->where('evaluador_has_evaluados.evaluador_id', '=', $id_personal)
-            ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
-            ->where('evaluaciones.campania_id', $campania)
-            ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
-            ->with(['evaluacion', 'evaluado', 'grado'])
-            ->get();
+    //     // Obtener evaluaciones
+    //     $evaluadorHasEvaluados = EvaluadorHasEvaluado::latest('evaluador_has_evaluados.created_at')
+    //         ->select('evaluador_has_evaluados.*')
+    //         ->where('evaluador_has_evaluados.evaluador_id', '=', $id_personal)
+    //         ->where('evaluaciones.tipo_de_evaluacion_id', $tipo_de_evaluacion_id)
+    //         ->where('evaluaciones.campania_id', $campania)
+    //         ->join('evaluaciones', 'evaluador_has_evaluados.evaluacion_id', '=', 'evaluaciones.id')
+    //         ->with(['evaluacion', 'evaluado', 'grado'])
+    //         ->get();
         
-        // Cargar manualmente la relación con CampaniaHasEvaluado para cada registro
-        $evaluadorHasEvaluados->each(function($item) {
-            $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $item->campania_id)
-                ->where('personal_id', $item->evaluado_id)
-                ->with('puesto')
-                ->first();
+    //     // Cargar manualmente la relación con CampaniaHasEvaluado para cada registro
+    //     $evaluadorHasEvaluados->each(function($item) {
+    //         $campaniaHasEvaluado = CampaniaHasEvaluado::where('campania_id', $item->campania_id)
+    //             ->where('personal_id', $item->evaluado_id)
+    //             ->with('puesto')
+    //             ->first();
 
-            $dominio = Dominio::where('grado_id', $item->grado_id)
-                ->where('campania_id', $item->campania_id)
-                ->first();
+    //         $dominio = Dominio::where('grado_id', $item->grado_id)
+    //             ->where('campania_id', $item->campania_id)
+    //             ->first();
             
-            $item->cargo_nombre = $campaniaHasEvaluado && $campaniaHasEvaluado->puesto 
-                ? $campaniaHasEvaluado->puesto->name 
-                : 'Sin cargo asignado';
+    //         $item->cargo_nombre = $campaniaHasEvaluado && $campaniaHasEvaluado->puesto 
+    //             ? $campaniaHasEvaluado->puesto->name 
+    //             : 'Sin cargo asignado';
 
-            $item->dominio_nombre = $dominio ? $dominio->name : '';
-        });
+    //         $item->dominio_nombre = $dominio ? $dominio->name : '';
+    //     });
         
-        // Calcular estadísticas
-        if ($tipo_de_evaluacion_id == 1) {
-            $realizados = $evaluadorHasEvaluados->where('realizado', 1)->where('cesado', 0)->count();
-            $totalSincesados = $evaluadorHasEvaluados->where('cesado', 0)->count();
-        } else {
-            $pendientes = $evaluadorHasEvaluados->filter(function($evaluador) {
-                return $evaluador->estado_no_realizado;
-            })->count();
-            $totalSincesados = $evaluadorHasEvaluados->where('cesado', 0)->count();
-            $realizados = $totalSincesados - $pendientes;
-        }
+    //     // Calcular estadísticas
+    //     if ($tipo_de_evaluacion_id == 1) {
+    //         $realizados = $evaluadorHasEvaluados->where('realizado', 1)->where('cesado', 0)->count();
+    //         $totalSincesados = $evaluadorHasEvaluados->where('cesado', 0)->count();
+    //     } else {
+    //         $pendientes = $evaluadorHasEvaluados->filter(function($evaluador) {
+    //             return $evaluador->estado_no_realizado;
+    //         })->count();
+    //         $totalSincesados = $evaluadorHasEvaluados->where('cesado', 0)->count();
+    //         $realizados = $totalSincesados - $pendientes;
+    //     }
         
-        $porcentaje = $totalSincesados == 0 ? 0 : round(($realizados / $totalSincesados) * 100, 2);
+    //     $porcentaje = $totalSincesados == 0 ? 0 : round(($realizados / $totalSincesados) * 100, 2);
         
+    //     return response()->json([
+    //         'evaluaciones' => $evaluadorHasEvaluados->toArray(),
+    //         'estadisticas' => [
+    //             'realizados' => $realizados,
+    //             'total' => $totalSincesados,
+    //             'porcentaje' => $porcentaje,
+    //             'label' => $porcentaje.'%'
+    //         ]
+    //     ]);
+    // }
+
+public function pendientesData(Request $request)
+{
+    $user = auth()->user();
+    if (!$user->personal_id || !$user->personal) {
         return response()->json([
-            'evaluaciones' => $evaluadorHasEvaluados->toArray(),
-            'estadisticas' => [
-                'realizados' => $realizados,
-                'total' => $totalSincesados,
-                'porcentaje' => $porcentaje,
-                'label' => $porcentaje.'%'
+            'evaluaciones_competencias' => [],
+            'evaluaciones_objetivos' => [],
+            'planes_mejora' => [],
+            'estadisticas_competencias' => ['realizados' => 0, 'total' => 0, 'porcentaje' => 0, 'label' => '0%'],
+            'estadisticas_objetivos' => ['realizados' => 0, 'total' => 0, 'porcentaje' => 0, 'label' => '0%'],
+            'estadisticas_planes' => ['realizados' => 0, 'total' => 0, 'porcentaje' => 0, 'label' => '0%'],
+            'secciones_activas' => [
+                'competencias' => false,
+                'objetivos' => false,
+                'planes' => false
             ]
         ]);
     }
+
+    $today = now();
+
+    // Verificar si hay evaluaciones de COMPETENCIAS activas (tipo 1)
+    $hayCompetenciasActivas = \App\Models\Evaluacione::where('status', 1)
+        ->where('tipo_de_evaluacion_id', 1)
+        ->where('fecha_inicio', '<=', $today)
+        ->where('fecha_fin', '>=', $today)
+        ->exists();
+
+    // Verificar si hay evaluaciones de OBJETIVOS activas (tipo 2)
+    $hayObjetivosActivos = \App\Models\Evaluacione::where('status', 1)
+        ->where('tipo_de_evaluacion_id', 2)
+        ->where(function($q) use ($today) {
+            $q->where(function($sub) use ($today) {
+                // Primera fase activa
+                $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+                    ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+            })->orWhere(function($sub) use ($today) {
+                // Segunda fase activa
+                $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+                    ->where('fecha_fin_segunda_fase', '>=', $today);
+            });
+        })
+        ->exists();
+
+    // Verificar si hay planes de mejora activos
+    $hayPlanesActivos = \App\Models\PlanesConfiguracion::where('status', 1)
+        ->where(function($q) use ($today) {
+            $q->where(function($sub) use ($today) {
+                // Primera fase activa
+                $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+                    ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+            })->orWhere(function($sub) use ($today) {
+                // Segunda fase activa
+                $sub->where('fecha_inicio_segunda_fase', '<=', $today)
+                    ->where('fecha_fin_segunda_fase', '>=', $today);
+            });
+        })
+        ->exists();
+
+    $evaluacionesCompetencias = [];
+    $evaluacionesObjetivos = [];
+    $planesMejora = [];
+
+    // // COMPETENCIAS (tipo_de_evaluacion_id = 1)
+    // $evaluacionesCompetencias = EvaluadorHasEvaluado::where('evaluador_id', $user->personal_id)
+    //     ->whereHas('evaluacion', function($q) use ($today) {
+    //         $q->where('status', 1)
+    //           ->where('tipo_de_evaluacion_id', 1)
+    //           ->where('fecha_inicio', '<=', $today)
+    //           ->where('fecha_fin', '>=', $today);
+    //     })
+    //     ->with(['evaluado', 'evaluacion', 'grado'])
+    //     ->get();
+
+    // // OBJETIVOS (tipo_de_evaluacion_id = 2)
+    // $evaluacionesObjetivos = EvaluadorHasEvaluado::where('evaluador_id', $user->personal_id)
+    //     ->whereHas('evaluacion', function($q) use ($today) {
+    //         $q->where('status', 1)
+    //           ->where('tipo_de_evaluacion_id', 2)
+    //           ->where('fecha_inicio', '<=', $today)
+    //           ->where('fecha_fin', '>=', $today);
+    //     })
+    //     ->with(['evaluado', 'evaluacion', 'objetivos'])
+    //     ->get();
+
+    // // PLANES DE MEJORA (EncargadosPlanesDeAccion)
+    // $planesMejora = EncargadosPlanesDeAccion::where('encargado_id', $user->personal_id)
+    //     ->habilitado()
+    //     ->whereHas('plan_de_mejora', function($q) use ($today) {
+    //         $q->where('status', 1)
+    //           ->where('fecha_inicio', '<=', $today)
+    //           ->where('fecha_fin', '>=', $today);
+    //     })
+    //     ->with(['empleado', 'plan_de_mejora', 'planes_de_accion_empleado', 'campania_has_evaluado.puesto'])
+    //     ->get();
+    
+
+    // Solo cargar datos si la sección está activa
+    if ($hayCompetenciasActivas) {
+        $evaluacionesCompetencias = EvaluadorHasEvaluado::where('evaluador_id', $user->personal_id)
+            ->whereHas('evaluacion', function($q) use ($today) {
+                $q->where('status', 1)
+                  ->where('tipo_de_evaluacion_id', 1)
+                  ->where('fecha_inicio', '<=', $today)
+                  ->where('fecha_fin', '>=', $today);
+            })
+            ->with(['evaluado', 'evaluacion', 'grado'])
+            ->get();
+    }
+
+    if ($hayObjetivosActivos) {
+        $evaluacionesObjetivos = EvaluadorHasEvaluado::where('evaluador_id', $user->personal_id)
+            ->whereHas('evaluacion', function($q) use ($today) {
+                $q->where('status', 1)
+                  ->where('tipo_de_evaluacion_id', 2)
+                  ->where(function($sub) use ($today) {
+                      $sub->where(function($primera) use ($today) {
+                          // Primera fase activa
+                          $primera->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+                                  ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+                      })->orWhere(function($segunda) use ($today) {
+                          // Segunda fase activa
+                          $segunda->where('fecha_inicio_segunda_fase', '<=', $today)
+                                  ->where('fecha_fin_segunda_fase', '>=', $today);
+                      });
+                  });
+            })
+            ->with(['evaluado', 'evaluacion', 'objetivos'])
+            ->get();
+    }
+
+    if ($hayPlanesActivos) {
+        $planesMejora = EncargadosPlanesDeAccion::where('encargado_id', $user->personal_id)
+            ->habilitado()
+            ->whereHas('plan_de_mejora', function($q) use ($today) {
+                $q->where('status', 1)
+                  ->where(function($sub) use ($today) {
+                      $sub->where(function($primera) use ($today) {
+                          // Primera fase activa
+                          $primera->where('fecha_inicio_primera_fase_matricula', '<=', $today)
+                                  ->where('fecha_fin_primera_fase_matricula', '>=', $today);
+                      })->orWhere(function($segunda) use ($today) {
+                          // Segunda fase activa
+                          $segunda->where('fecha_inicio_segunda_fase', '<=', $today)
+                                  ->where('fecha_fin_segunda_fase', '>=', $today);
+                      });
+                  });
+            })
+            ->with(['empleado', 'plan_de_mejora', 'planes_de_accion_empleado', 'campania_has_evaluado.puesto'])
+            ->get();
+    }
+
+    // Calcular estadísticas solo para secciones activas
+    $totalCompetencias = is_array($evaluacionesCompetencias) ? 0 : $evaluacionesCompetencias->count();
+    $realizadosCompetencias = is_array($evaluacionesCompetencias) ? 0 : $evaluacionesCompetencias->where('realizado', 1)->count();
+    $porcentajeCompetencias = $totalCompetencias > 0 ? round(($realizadosCompetencias / $totalCompetencias) * 100) : 0;
+
+    $totalObjetivos = is_array($evaluacionesObjetivos) ? 0 : $evaluacionesObjetivos->count();
+    $realizadosObjetivos = is_array($evaluacionesObjetivos) ? 0 : $evaluacionesObjetivos->filter(function($e) {
+        return !$e->estado_pendiente;
+    })->count();
+    $porcentajeObjetivos = $totalObjetivos > 0 ? round(($realizadosObjetivos / $totalObjetivos) * 100) : 0;
+
+    $totalPlanes = is_array($planesMejora) ? 0 : $planesMejora->count();
+    $realizadosPlanes = is_array($planesMejora) ? 0 : $planesMejora->filter(function($p) {
+        return !$p->estado_pendiente;
+    })->count();
+    $porcentajePlanes = $totalPlanes > 0 ? round(($realizadosPlanes / $totalPlanes) * 100) : 0;
+
+    return response()->json([
+        'evaluaciones_competencias' => $evaluacionesCompetencias,
+        'evaluaciones_objetivos' => $evaluacionesObjetivos,
+        'planes_mejora' => $planesMejora,
+        'estadisticas_competencias' => [
+            'realizados' => $realizadosCompetencias,
+            'total' => $totalCompetencias,
+            'porcentaje' => $porcentajeCompetencias,
+            'label' => $porcentajeCompetencias . '%'
+        ],
+        'estadisticas_objetivos' => [
+            'realizados' => $realizadosObjetivos,
+            'total' => $totalObjetivos,
+            'porcentaje' => $porcentajeObjetivos,
+            'label' => $porcentajeObjetivos . '%'
+        ],
+        'estadisticas_planes' => [
+            'realizados' => $realizadosPlanes,
+            'total' => $totalPlanes,
+            'porcentaje' => $porcentajePlanes,
+            'label' => $porcentajePlanes . '%'
+        ],
+        'secciones_activas' => [
+            'competencias' => $hayCompetenciasActivas,
+            'objetivos' => $hayObjetivosActivos,
+            'planes' => $hayPlanesActivos
+        ]
+    ]);
+}
 
 }
