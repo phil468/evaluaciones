@@ -38,14 +38,15 @@
 
     <div class="video-background">
         <video class="video-background-content" 
-        src="{{ url('img/evaluacion/Login - Plataforma de Desarrollo.mp4') }}"
+        {{-- src="{{ url('img/evaluacion/Login - Plataforma de Desarrollo.mp4') }}" --}}
+        src="{{ url('img/evaluacion/Login - Plataforma de Desarrollo (2).mp4') }}"
         autoplay="true" 
         muted="true"
         loop="true">
         </video>
     </div>
 
-    <div class="body-bg d-flex h-100 w-100 justify-content-center " style="background-color: #568ca5;">
+    <div class="body-bg d-flex h-100 w-100 justify-content-center">
         <div class="{{ $auth_type ?? 'login' }}-box ">
             <div class="h-25 d-inline-block"></div>
             <div class="text-center">

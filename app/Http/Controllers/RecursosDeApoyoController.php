@@ -8,11 +8,14 @@ class RecursosDeApoyoController extends Controller
 {    
     public function index()
     {
+        $file = 'manual-desempeno-competencias.pdf'; 
+        abort_unless(file_exists(public_path('docs/' . $file)), 404); 
+        $manualUrl = asset('docs/' . rawurlencode($file)); 
+        // return view('recursos_apoyo.index', compact('manualUrl'));
 
-            $file = 'manual-desempeno-competencias.pdf'; 
-            abort_unless(file_exists(public_path('docs/' . $file)), 404); 
-            $manualUrl = asset('docs/' . rawurlencode($file)); 
-            // return view('recursos_apoyo.index', compact('manualUrl')); 
+        $file2 = 'manual-de-visualizacion-de-resultados.pdf'; 
+        abort_unless(file_exists(public_path('docs/' . $file2)), 404); 
+        $manualUrl2 = asset('docs/' . rawurlencode($file2)); 
 
         $videosTutoriales = [
             'habilitado' => false,
@@ -30,6 +33,12 @@ class RecursosDeApoyoController extends Controller
                 [
                     'titulo' => 'Manual de Usuario - Ingreso y Evaluación de Desempeño por Competencias', 
                     'url' => $manualUrl, 
+                    'habilitado' => true,
+                    'icon' => 'fas fa-file-pdf'
+                ],
+                [
+                    'titulo' => 'Manual de usuario - Visualización de resultados de Evaluación por Competencias', 
+                    'url' => $manualUrl2, 
                     'habilitado' => true,
                     'icon' => 'fas fa-file-pdf'
                 ]
