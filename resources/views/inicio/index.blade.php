@@ -40,19 +40,20 @@
 
     {{-- <div class="mt-2 mb-0 h4 font-style-poppins font-weight-bold">Resultados de Evaluaciones 2024</div> --}}
     
-    <div class="mt-2 mb-0 h4 font-style-poppins font-weight-bold">
+    {{-- <div class="mt-2 mb-0 h4 font-style-poppins font-weight-bold">
         @if(isset($campaniaAnterior) && $campaniaAnterior)
             Resultados de Evaluaciones {{ $campaniaAnterior->anio_mostrar }}
         @else
             No existe campaña anterior
         @endif
-    </div>
+    </div> --}}
     <!-- Secciones principales en tarjetas -->
     <div class="row">
         <!-- Evaluación por Competencias -->
         <div class="mt-3 col-md-4">
             <div class="shadow card h-100">
                 <div class="card-header">
+                    {{-- {{ --indicar el año -- }} --}}
                     <div class="mb-0 h5">Evaluación por Competencias</div>
                 </div>
                 <div class="card-body">
@@ -60,21 +61,49 @@
                         <div class="mb-4 col-12">
                             <p>Evalúa el desarrollo de habilidades blandas, alineadas a nuestros valores y cultura.</p>
                         </div>
-                        <div class="mt-0 mb-6 text-center col-12">
+                        @if(isset($competenciasAnio) && $competenciasAnio)
+                            <small class="text-info">
+                                <i class="fas fa-info-circle"></i>
+                                Mostrando resultados de: <strong>{{ $competenciasAnio }}</strong>
+                                @if($competenciasCampania && $competenciasCampania->es_campania_actual)
+                                    <span class="text-success">(Actual)</span>
+                                @else
+                                    <span class="text-muted">(Anterior)</span>
+                                @endif
+                            </small>
+                        @endif
+        <div class="mt-0 mb-6 text-center col-12">
+            <div class="mb-3 puntaje-medio">
+                @if(!empty($tieneResultadosCompetencias) && $tieneResultadosCompetencias)
+                    <h2 class="font-weight-bold h2">{{ $promedioGeneral }}</h2>
+                @else
+                    <h2 class="font-weight-bold">--</h2>
+                    <br>
+                @endif
+
+                @if(isset($puntajeEsperado) && $puntajeEsperado !== null)
+                    <span class="text-warning d-block">Puntaje esperado: {{ $puntajeEsperado }}</span>
+                @else
+                    <span class="text-muted d-block">{{ $mensajeEsperadoCompetencias ?? 'No se cuenta con puntaje esperado.' }}</span>
+                @endif
+            </div>
+            <p class="text-sm">Resultados de última evaluación</p>
+            @if (empty($tieneResultadosCompetencias) || !$tieneResultadosCompetencias)
+                <span class="text-muted small">{{ $mensajeResultadosCompetencias ?? 'No hay resultados disponibles.' }}</span>
+            @endif
+        </div>
+                        {{-- <div class="mt-0 mb-6 text-center col-12">
                             <div class="mb-3 puntaje-medio">
-                                {{-- <h2 class="font-weight-bold">7.34</h2>
-                                <span class="text-warning">Puntaje esperado: 6.50</span> --}}
-                                
+
                                 @if(!empty($tieneResultados) && $tieneResultados)
-                                    <h2 class="font-weight-bold h2">{{ number_format($promedioGeneral, 2) }}</h2>
+                                    <h2 class="font-weight-bold h2">{{ ($promedioGeneral) }}</h2>
                                 @else
                                 <h2 class="font-weight-bold">--</h2>
                                 <br>
-                                    {{-- <span class="text-muted small">{{ $mensajeResultados ?? 'No hay resultados para la campaña anterior.' }}</span> --}}
                                 @endif
 
                                 @if(isset($puntajeEsperado) && $puntajeEsperado !== null)
-                                    <span class="text-warning d-block">Puntaje esperado: {{ number_format($puntajeEsperado, 2) }}</span>
+                                    <span class="text-warning d-block">Puntaje esperado: {{ ($puntajeEsperado) }}</span>
                                 @else
                                     <span class="text-muted d-block">{{ $mensajeEsperado ?? 'No se cuenta con puntaje esperado.' }}</span>
                                 @endif
@@ -84,27 +113,34 @@
                                 <span class="text-muted small">{{ $mensajeResultados ?? 'No hay resultados para la campaña anterior.' }}</span>
                             @endif
                             
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
-                <div class="card-footer rounded-b-xl">
+{{-- En el botón "Ver Resultados" de Competencias: --}}
+<div class="card-footer rounded-b-xl">
+    @php $btnDisabledComp = !($competenciasCampania && $tieneResultadosCompetencias); @endphp
+    <a href="{{ route('evaluacion_de_competencias') }}"
+       class="shadow rounded-xl btn btn-vanguard btn-block {{ $btnDisabledComp ? 'disabled' : '' }}"
+       {{ $btnDisabledComp ? 'aria-disabled=true' : '' }}>
+        Ver Resultados
+        {{-- @if($competenciasAnio)
+            ({{ $competenciasAnio }})
+        @endif --}}
+    </a>
+</div>
+                {{-- <div class="card-footer rounded-b-xl">
                     @php $btnDisabled = !($campaniaAnterior && $tieneResultados); @endphp
                     <a href="{{ route('evaluacion_de_competencias') }}"
                        class="shadow rounded-xl btn btn-vanguard btn-block {{ $btnDisabled ? 'disabled' : '' }}"
                        {{ $btnDisabled ? 'aria-disabled=true' : '' }}>
                         Ver Resultados
                     </a>
-                    {{-- <a href=
-                    "{{ route('evaluacion_de_competencias') }}" 
-                    class="shadow rounded-xl btn btn-vanguard btn-block">
-                        Ver Resultados
-                    </a> --}}
-                </div>
+                </div> --}}
             </div>
         </div>
 
         <!-- Evaluación por Objetivos -->
-        <div class="mt-3 col-md-4">
+        <div class="mt-3 col-md-4" style="display: none;">
             <div class="shadow card h-100">
                 <div class="card-header">
                     <div class="mb-0 h5">Evaluación por Objetivos</div>

@@ -3,7 +3,23 @@
 @section('title', 'Detalle de Resultados')
 
 @section('content_header')
-    <h3 class="text-center h3">Resultados de Equipo</h3>
+    {{-- agregar botn de atrás --}}
+    {{-- <div class="font-style-poppins font-weight-bold"> --}}
+        {{-- <a href="{{ url()->previous() }}" class="mr-2 btn-link btn-light btn-sm">
+            <i class="fas fa-arrow-left"></i>
+            Atrás
+        </a>
+    {{-- </div> --}}
+    {{-- <h3 class="text-center h3">Resultados de Equipo</h3> --}}
+
+    
+    <h1 class="m-0 text-center text-dark font-weight-bold">
+        <a href="{{ url()->previous() }}" class="mr-2 btn-link btn-light btn-sm">
+            <i class="fas fa-arrow-left"></i>
+            Atrás
+        </a>
+        Resultados de Equipo
+    </h1>
 @stop
 
 @section('content')
@@ -78,7 +94,7 @@
 
     <!-- Evaluación por Objetivos -->
     @if(count($objetivos) > 0)
-    <div class="mb-4 card">
+    <div class="mb-4 card" style="display: none;">
         <div class="card-body">
             <h5 class="h5">Evaluación por Objetivos</h5>
             
@@ -126,7 +142,7 @@
 
     <!-- Plan de Desarrollo Individual -->
     @if(count($pdi) > 0)
-    <div class="mb-4 card">
+    <div class="mb-4 card" style="display: none;">
         <div class="card-body">
             <h5 class="h5">Plan de Desarrollo Individual (PDI)</h5>
             
@@ -174,9 +190,9 @@
     <!-- Mensaje cuando no hay datos -->
     @if(count($competencias) === 0 && count($objetivos) === 0 && count($pdi) === 0)
     <div class="card">
-        <div class="card-body text-center py-5">
+        <div class="py-5 text-center card-body">
             <div class="alert alert-info">
-                <i class="fas fa-info-circle fa-2x mb-3"></i>
+                <i class="mb-3 fas fa-info-circle fa-2x"></i>
                 <h4>Sin datos disponibles</h4>
                 <p>Este miembro del equipo no tiene evaluaciones registradas.</p>
             </div>

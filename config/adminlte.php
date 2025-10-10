@@ -323,14 +323,24 @@ return [
         //     'can'  => 'ver-evaluaciones-de-desempeno',
         //     'classes' => 'rounded-xl',
         // ],
+ 
+        // quitado de producción -inicio
+        // [
+        //     'text' => 'Evaluación por Objetivos',
+        //     'url'  => 'evaluaciones-de-desempeno/2',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        // ],
 
-        [
-            'text' => 'Evaluación por Objetivos',
-            'url'  => 'evaluaciones-de-desempeno/2',
-            'icon' => 'fas fa-pencil-alt',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl',
-        ],
+        // [
+        //     'text' => 'Plan De Mejora Individual',
+        //     'url'  => 'plan-de-mejora',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl'
+        // ],
+        // quitado de producción -fin
 
         //         [
         //     'text' => 'Planes de Acción/ Desarrollo',
@@ -339,14 +349,6 @@ return [
         //     'can'  => 'ver-evaluaciones-de-desempeno',
         //     'classes' => 'rounded-xl',
         // ],
-
-        [
-            'text' => 'Plan De Mejora Individual',
-            'url'  => 'plan-de-mejora',
-            'icon' => 'fas fa-pencil-alt',
-            'can'  => 'ver-evaluaciones-de-desempeno',
-            'classes' => 'rounded-xl'
-        ],
 
         // [
         //     'text' => 'Planes de Acción/ Desarrollo',
