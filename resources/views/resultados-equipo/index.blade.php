@@ -18,7 +18,7 @@
                             <th>Nombre</th>
                             <th class="text-center" style="color: #568ca5;">Puntaje Comp. {{$nombre_campania}}</th>
                             <th class="text-center" style="color: #568ca5;">Puntaje PDI {{$nombre_campania}}</th>
-                            <th class="text-center" style="color: #568ca5;">Puntaje Obj. {{$nombre_campania}}</th>
+                            {{-- <th class="text-center" style="color: #568ca5;">Puntaje Obj. {{$nombre_campania}}</th> --}}
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -30,7 +30,7 @@
                             <td>{{ $miembro['nombre'] ?? 'José Aguilar' }}</td>
                             <td class="text-center">{{ $miembro['puntaje_competencias'] ?? 'XX' }}</td>
                             <td class="text-center">{{ $miembro['puntaje_pdi'] ?? '-' }}</td>
-                            <td class="text-center">{{ $miembro['puntaje_objetivos'] ?? '-' }}</td>
+                            {{-- <td class="text-center">{{ $miembro['puntaje_objetivos'] ?? '-' }}</td> --}}
                             <td class="text-center">
                                 <a href="{{ route('resultados-de-equipo.detalle', ['id' => $miembro['id'] ?? 1]) }}" 
                                    class="btn btn-vanguard btn-sm rounded-xl">Ver resultados</a>
