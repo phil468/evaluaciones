@@ -178,7 +178,8 @@ $competencias = $resultado['competencias'];
                 // Determinar el progreso de la barra basado en porcentaje
                 $progreso = 0;
                 if ($tieneResultados && $puedeVerResultados && $puntajeEsperado > 0) {
-                    $progreso = (($puntajeObtenido / $puntajeEsperado) * 100);
+                    // dd(round($puntajeObtenido, 1), $puntajeEsperado);
+                    $progreso = ((round($puntajeObtenido, 1) / $puntajeEsperado) * 100);
                 } elseif ($tieneResultados && !$puedeVerResultados) {
                     $progreso = 100; // Barra completa gris para resultados pendientes
                 }
@@ -241,7 +242,7 @@ $competencias = $resultado['competencias'];
                         // Determinar progreso
                         $progreso = 0;
                         if ($tieneResultados2024 && $puedeVerResultados) {
-                            $progreso = (($puntajeObtenido / $puntajeEsperado) * 100);
+                            $progreso = ((round($puntajeObtenido, 1) / $puntajeEsperado) * 100);
                         } elseif ($tieneResultados2024 && !$puedeVerResultados) {
                             $progreso = 100;
                         }

@@ -141,7 +141,7 @@ private function procesarEvaluacion($personalId, $campaniaId, $evaluacion, $tipo
     // Calcular progreso
     $progreso = 0;
     if ($tieneResultados && $puedeVerResultados && $puntajeEsperado > 0) {
-        $progreso = (($puntajeObtenido / $puntajeEsperado) * 100);
+        $progreso = ((round($puntajeObtenido, 1) / $puntajeEsperado) * 100);
     } elseif ($tieneResultados && !$puedeVerResultados) {
         $progreso = 100; // Barra completa gris
     }
@@ -244,7 +244,7 @@ private function procesarCampania2024($personalId, &$competencias, &$objetivos, 
             // Calcular progreso
             $progreso = 0;
             if ($tieneResultados && $puedeVerResultados && $puntajeEsperado > 0) {
-                $progreso = (($puntajeObtenido / $puntajeEsperado) * 100);
+                $progreso = ((round($puntajeObtenido, 1) / $puntajeEsperado) * 100);
             } elseif ($tieneResultados && !$puedeVerResultados) {
                 $progreso = 100;
             }
