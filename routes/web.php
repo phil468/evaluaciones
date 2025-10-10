@@ -22,6 +22,7 @@ use App\Http\Controllers\ObjetivosPrecargadosController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PreguntaController;
 use App\Http\Controllers\RespuestasController;
+use App\Http\Controllers\ResultadosDeEquipoController;
 use App\Http\Controllers\SeguimientoEvaluadoresController;
 use App\Http\Controllers\ResumenEvaluacionController;
 use App\Http\Controllers\TipoCompetenciaController;
@@ -228,7 +229,7 @@ Route::group(['middleware'  =>  ['auth']],function(){
 
     //estoy pasando el id de campania como parámetro para mostrar los resultados de la evaluación de competencias
     Route::post('/evaluacion_de_competencias/resultados',
-    [App\Http\Controllers\EvaluacionDeCompetenciasController::class,'mostrarResultados'])
+    [App\Http\Controllers\EvaluacionDeCompetenciasController::class,'resultados'])
     ->name('evaluacion_de_competencias.resultados');
 
     Route::get('/plan-de-mejora', [App\Http\Controllers\PlanDeMejoraController::class, 'index'])
@@ -242,6 +243,14 @@ Route::group(['middleware'  =>  ['auth']],function(){
         ->name('resultados-de-equipo.index');
     Route::get('/resultados-de-equipo/{id}', [App\Http\Controllers\ResultadosDeEquipoController::class, 'detalle'])
         ->name('resultados-de-equipo.detalle');
+    Route::get('/resultados-de-equipo/{empleado}/competencias', [ResultadosDeEquipoController::class, 'competenciasDetalle'])
+        ->name('resultados-equipo.competencias');
+        
+    Route::get('/resultados-de-equipo/{empleado}/objetivos', [ResultadosDeEquipoController::class, 'objetivosDetalle'])
+        ->name('resultados-equipo.objetivos');
+        
+    Route::get('/resultados-de-equipo/{empleado}/pdi', [ResultadosDeEquipoController::class, 'pdiDetalle'])
+        ->name('resultados-equipo.pdi');
 
     // Rutas para ver detalles de evaluaciones y dar feedback
     Route::get('/evaluacion-competencias/detalle', [App\Http\Controllers\EvaluacionDeCompetenciasController::class, 'detalle'])

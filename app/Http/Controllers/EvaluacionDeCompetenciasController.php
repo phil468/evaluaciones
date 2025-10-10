@@ -4,89 +4,307 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Campania;
+use App\Models\CampaniaHasEvaluado;
+use App\Models\Personal;
 use App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\Traits\CalculosCompetencias; // ← Agregar trait
+
 class EvaluacionDeCompetenciasController extends Controller
 {
+    use CalculosCompetencias; // ← Usar trait
     /**
      * Display the evaluation of competencies page.
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function resultados(Request $request)
+    {
+        // Determinar si es para otro empleado (desde resultados de equipo) o el usuario actual
+        $empleadoId = $request->input('empleado_id'); // Desde resultados de equipo
+        $campaniaId = $request->input('campania_id');  // ID de campaña específica
+
+        // dd($empleadoId, $campaniaId);
+        
+        if ($empleadoId) {
+            // Vista desde resultados de equipo - empleado específico
+            $personal = Personal::findOrFail($empleadoId);
+            $personalId = $personal->id;
+            $esVistaEquipo = true;
+        } else {
+            // Vista personal del usuario autenticado
+            $user = auth()->user();
+            if (!$user->personal_id) {
+                return redirect()->back()->with('error', 'No tienes un perfil de personal asociado.');
+            }
+            $personal = $user->personal;
+            $personalId = $user->personal_id;
+            $esVistaEquipo = false;
+        }
+
+        if (!$campaniaId) {
+            return redirect()->back()->with('error', 'ID de campaña requerido.');
+        }
+
+        // Obtener la campaña
+        $campania = Campania::with(['evaluaciones' => function($q) {
+            $q->where('tipo_de_evaluacion_id', 1); // Solo evaluaciones de competencias
+        }])->findOrFail($campaniaId);
+
+        $evaluacion = $campania->evaluaciones->first();
+        if (!$evaluacion) {
+            return redirect()->back()->with('error', 'No se encontró evaluación de competencias para esta campaña.');
+        }
+
+        // Verificar permisos para ver resultados
+        $now = now();
+        $fechaMostrarResultados = $evaluacion->fecha_para_mostrar_resultados;
+        $puedeVerResultados = $fechaMostrarResultados <= $now;
+
+        if (!$puedeVerResultados && !$esVistaEquipo) {
+            // Solo restringir en vista personal, en vista de equipo el jefe puede ver siempre
+            return redirect()->back()->with('error', 'Los resultados aún no están disponibles.');
+        }
+
+        // Obtener datos de competencias y puntajes
+        // $resumenData = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campaniaId)
+        //     ->where('personal_id', $personalId)
+        //     ->with('competencia')
+        //     ->get();
+        // dd($resumenData);
+
+        // $detalles = DB::table('resumen_respuestas_evaluacion_desempeno_competencias as r')
+        //         ->join('campania_has_competencias as chc', 'chc.id', '=', 'r.competencia_id')
+        //         ->join('secciones as competencias', 'competencias.id', '=', 'chc.competencia_id')
+        //         // ->join('secciones as competencias', 'competencias.id', '=', 'r.competencia_id')
+        //         ->select('competencias.name as competencia', DB::raw('AVG(COALESCE(r.puntaje_calibrado, r.puntaje)) as promedio'))
+        //         ->where('r.personal_id', $personalId)
+        //         ->where('r.campania_id', $campania->id)
+        //         ->groupBy('competencias.id', 'competencias.name')
+        //         ->orderBy('promedio', 'desc')
+        //         ->get();
+
+        $resultado = $this->calcularPromedioCompetencias($personalId, $campaniaId);
+
+        if ($resultado['competencias'] === []) {
+            $competencias = [];
+            $puntajes = [];
+            $promedioGeneral = null;
+        } else {
+$competencias = $resultado['competencias'];
+        $puntajes = $resultado['puntajes'];
+        $promedioGeneral = $resultado['promedio_general'];
+            // $competencias = $detalles->pluck('competencia')->toArray();
+            // $puntajes = $detalles->pluck('promedio')->map(fn($v) => round((float)$v, 1))->toArray();
+            // $promedioGeneral = count($puntajes) ? round(collect($puntajes)->avg(), 1) : null;
+
+        }
+
+        // Obtener puntaje esperado
+        $puntajeEsperado = $this->obtenerPuntajeEsperado($personalId, $campaniaId);
+
+        // Datos adicionales para la vista
+        $datosPersonal = [
+            'nombre' => $personal->name,
+            'cargo' => $personal->cargo->name ?? 'Sin cargo'
+        ];
+
+        // dd( 
+        //     $competencias,
+        //     $puntajes,
+        //     $promedioGeneral,
+        //     $puntajeEsperado,
+        //     $esVistaEquipo,
+        //     $datosPersonal
+        // );
+
+        return view('evaluacion_de_competencias.resultados', compact(
+            'campania',
+            'competencias',
+            'puntajes',
+            'promedioGeneral',
+            'puntajeEsperado',
+            'esVistaEquipo',
+            'datosPersonal'
+        ));
+    }
+
     public function index()
     {
-        $campaniaActual = Campania::where('es_campania_actual', true)->first();
-        $campaniaAnterior = $campaniaActual->relacionadoAnterior ?? null;
-
+        $user = auth()->user();
         $evaluaciones = [];
-        $promedioGeneral = null;
-        $puntajeEsperado = null;
-        $tieneResultados = false;
 
-        if ($campaniaAnterior && Auth::user()->personal_id) {
-            $personalId = Auth::user()->personal_id;
+        if ($user->personal_id) {
+            // Obtener todas las campañas donde el usuario haya participado
+            $campanias = CampaniaHasEvaluado::where('personal_id', $user->personal_id)
+                ->with(['campania.evaluaciones' => function($q) {
+                    $q->where('tipo_de_evaluacion_id', 1); // Solo evaluaciones de competencias
+                }])
+                ->get()
+                ->unique('campania_id');
+                // dd($campanias);
 
-            $detalles = DB::table('resumen_respuestas_evaluacion_desempeno_competencias as r')
-                ->join('secciones as c', 'c.id', '=', 'r.competencia_id')
-                ->select('c.id', 'c.name', DB::raw('AVG(COALESCE(r.puntaje_calibrado, r.puntaje)) as promedio'))
-                ->where('r.personal_id', $personalId)
-                ->where('r.campania_id', $campaniaAnterior->id)
-                ->groupBy('c.id', 'c.name')
-                ->get();
+            foreach ($campanias as $campaniaEvaluado) {
+                $campania = $campaniaEvaluado->campania;
+                // dd($campania);
+                if (!$campania) continue;
 
-            $tieneResultados = $detalles->count() > 0;
-            if ($tieneResultados) {
-                $promedioGeneral = round($detalles->avg('promedio'), 2);
-            }
+                // Obtener la evaluación de competencias para esta campaña
+                $evaluacion = $campania->evaluaciones->first();
+                if (!$evaluacion) continue;
 
-            // Puntaje esperado
-            $nombre = trim((string) $campaniaAnterior->name);
-            if ($nombre === '2024-2025') {
-                try {
-                    if (class_exists(\App\Models\EncargadosPlanesDeAccion::class)) {
-                        $epa = \App\Models\EncargadosPlanesDeAccion::where('empleado_id', $personalId)->first();
-                        $puntajeEsperado = $epa->valor_esperado ?? null;
-                    }
-                } catch (\Throwable $e) {
-                    $puntajeEsperado = null;
+                //año de la campaña, extraer del nombre que es tipo "2024-2025"
+                $anio = explode('-', $campania->name)[0];
+                
+                // Verificar si ya pasó la fecha para mostrar resultados
+                $now = now();
+                $fechaMostrarResultados = $evaluacion->fecha_para_mostrar_resultados;
+                $puedeVerResultados = $fechaMostrarResultados <= $now;
+
+                // Obtener el resumen de respuestas para calcular el puntaje
+                $resumen = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', $campania->id)
+                    ->where('personal_id', $user->personal_id)
+                    ->get();
+
+                $tieneResultados = $resumen->isNotEmpty();
+                $puntajeObtenido = $tieneResultados ? ($resumen->avg('puntaje_calibrado') ?: $resumen->avg('puntaje')) : 0;
+                
+                // Obtener puntaje esperado
+                $puntajeEsperado = $this->obtenerPuntajeEsperado($user->personal_id, $campania->id);
+
+                // Determinar el progreso de la barra basado en porcentaje
+                $progreso = 0;
+                if ($tieneResultados && $puedeVerResultados && $puntajeEsperado > 0) {
+                    $progreso = (($puntajeObtenido / $puntajeEsperado) * 100);
+                } elseif ($tieneResultados && !$puedeVerResultados) {
+                    $progreso = 100; // Barra completa gris para resultados pendientes
                 }
-            } elseif ($nombre === '2025-2026') {
-                $puntajeEsperado = (float) env('EVAL_COMP_ESPERADO_2025_2026', 8.0);
-            }
 
-            // Arreglo para la vista índice
-            if ($campaniaAnterior) {
-                $evaluaciones[$campaniaAnterior->anio_mostrar] = [
-                    'puntaje'        => $promedioGeneral,
-                    'progreso'       => $tieneResultados ? 100 : 0,
-                    'tieneResultados'=> $tieneResultados,
-                    'campania_id'    => $campaniaAnterior->id,
+                $evaluaciones[$anio] = [
+                    'campania_id' => $campania->id,
+                    'evaluacion_id' => $evaluacion->id,
+                    'tieneResultados' => $tieneResultados,
+                    'puedeVerResultados' => $puedeVerResultados,
+                    'puntajeObtenido' => round($puntajeObtenido, 1),
+                    'puntajeEsperado' => $puntajeEsperado,
+                    'porcentaje' => round($progreso, 0),
+                    'progreso' => $progreso,
+                    'fecha_para_mostrar_resultados' => $fechaMostrarResultados,
+                    'estado' => $this->determinarEstadoEvaluacion($tieneResultados, $puedeVerResultados)
                 ];
             }
         }
 
-        return view('evaluacion_de_competencias.index', compact('evaluaciones', 'campaniaAnterior', 'promedioGeneral', 'puntajeEsperado'));
-        // $evaluaciones = [
-        //     '2025' => [
-        //         'puntaje' => null, // Si no hay resultados todavía
-        //         'progreso' => 0,    // Porcentaje de progreso (0-100)
-        //         'tieneResultados' => false
-        //     ],
-        //     '2024' => [
-        //         'puntaje' => 7.34,
-        //         'progreso' => 60,   // Porcentaje de progreso (0-100)
-        //         'tieneResultados' => true
-        //     ]
-        // ];
+        // VERIFICACIÓN ESPECIAL PARA CAMPAÑA 2024-2025 (ID = 1)
+        if (!isset($evaluaciones['2024'])) { // Si no se encontró ya la campaña 2024-2025
+            $campania2024 = Campania::with(['evaluaciones' => function($q) {
+                $q->where('tipo_de_evaluacion_id', 1);
+            }])->find(1); // ID campaña 2024-2025
 
-        // return view('evaluacion_de_competencias.index', compact('evaluaciones'));
+            if ($campania2024) {
+                // Verificar si tiene resultados en ResumenRespuestas
+                $tieneResultados2024 = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', 1)
+                    ->where('personal_id', $user->personal_id)
+                    ->exists();
+
+                // Verificar si aparece en EncargadosPlanesDeAccion para esta campaña
+                $apareceEnPlanes2024 = \App\Models\EncargadosPlanesDeAccion::where('empleado_id', $user->personal_id)
+                    ->whereHas('plan_de_mejora', function($q) {
+                        $q->where('campania_id', 1);
+                    })
+                    ->exists();
+
+                // Si tiene resultados O aparece en planes, incluir la campaña
+                if ($tieneResultados2024 || $apareceEnPlanes2024) {
+                    $evaluacion2024 = $campania2024->evaluaciones->first();
+                    
+                    if ($evaluacion2024) {
+                        $now = now();
+                        $fechaMostrarResultados = $evaluacion2024->fecha_para_mostrar_resultados;
+                        $puedeVerResultados = $fechaMostrarResultados <= $now;
+
+                        // Calcular puntaje solo si tiene resultados
+                        $puntaje = 0;
+                        if ($tieneResultados2024) {
+                            $resumen2024 = ResumenRespuestasEvaluacionDesempenoCompetencia::where('campania_id', 1)
+                                ->where('personal_id', $user->personal_id)
+                                ->get();
+                            $puntajeObtenido = $resumen2024->avg('puntaje_calibrado') ?: $resumen2024->avg('puntaje');
+                        }
+
+                        // Obtener puntaje esperado
+                        $puntajeEsperado = $this->obtenerPuntajeEsperado($user->personal_id, 1);
+
+                        // Determinar progreso
+                        $progreso = 0;
+                        if ($tieneResultados2024 && $puedeVerResultados) {
+                            $progreso = (($puntajeObtenido / $puntajeEsperado) * 100);
+                        } elseif ($tieneResultados2024 && !$puedeVerResultados) {
+                            $progreso = 100;
+                        }
+
+                        $evaluaciones['2024'] = [
+                            'campania_id' => $campania2024->id,
+                            'evaluacion_id' => $evaluacion2024->id,
+                            'tieneResultados' => $tieneResultados2024,
+                            'puedeVerResultados' => $puedeVerResultados,
+                            'puntajeObtenido' => round($puntajeObtenido, 1),
+                            'puntajeEsperado' => $puntajeEsperado,
+                            'porcentaje' => round($progreso, 0),
+                            'progreso' => $progreso,
+                            'fecha_para_mostrar_resultados' => $fechaMostrarResultados,
+                            'estado' => $this->determinarEstadoEvaluacion($tieneResultados2024, $puedeVerResultados)
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Ordenar por año descendente
+        krsort($evaluaciones);
+
+        return view('evaluacion_de_competencias.index', compact('evaluaciones'));
+    }
+
+    private function determinarEstadoEvaluacion($tieneResultados, $puedeVerResultados)
+    {
+        if (!$tieneResultados) {
+            return 'sin_resultados'; // No participó en la evaluación
+        }
+        
+        if ($tieneResultados && !$puedeVerResultados) {
+            return 'resultados_pendientes'; // Tiene resultados pero no puede verlos aún
+        }
+        
+        return 'disponible'; // Puede ver los resultados
+    }
+
+    private function obtenerPuntajeEsperado($personalId, $campaniaId)
+    {
+        $campania = Campania::find($campaniaId);
+        if (!$campania) return 5; // Default
+
+        $nombre = trim((string) $campania->name);
+        
+        if ($nombre === '2024-2025') {
+            try {
+                $epa = \App\Models\EncargadosPlanesDeAccion::where('empleado_id', $personalId)->first();
+                return $epa->valor_esperado ?? 5;
+            } catch (\Throwable $e) {
+                return 5;
+            }
+        } elseif ($nombre === '2025-2026') {
+            return (float) env('EVAL_COMP_ESPERADO_2025_2026', 8.0);
+        }
+
+        return 5; // Default
     }
 
     public function mostrarResultados(Request $request)
-    {
-        
+    {        
         $validated = $request->validate([
             'campania_id' => 'required|integer|exists:campanias,id'
         ]);
@@ -101,11 +319,11 @@ class EvaluacionDeCompetenciasController extends Controller
 
         if ($personalId) {
             $detalles = DB::table('resumen_respuestas_evaluacion_desempeno_competencias as r')
-                ->join('secciones as c', 'c.id', '=', 'r.competencia_id')
-                ->select('c.name as competencia', DB::raw('AVG(COALESCE(r.puntaje_calibrado, r.puntaje)) as promedio'))
+                ->join('secciones as competencias', 'competencias.id', '=', 'r.competencia_id')
+                ->select('competencias.name as competencia', DB::raw('AVG(COALESCE(r.puntaje_calibrado, r.puntaje)) as promedio'))
                 ->where('r.personal_id', $personalId)
                 ->where('r.campania_id', $campania->id)
-                ->groupBy('c.id', 'c.name')
+                ->groupBy('competencias.id', 'competencias.name')
                 ->orderBy('promedio', 'desc')
                 ->get();
 
@@ -140,39 +358,6 @@ class EvaluacionDeCompetenciasController extends Controller
             'descripcionNivel'
         ));
 
-        // // Validar el id de campaña recibido
-        // $request->validate([
-        //     'campania_id' => 'required|integer|exists:campanias,id'
-        // ]);
-        // // Obtener el promedio general
-        // $promedioGeneral = 7.36; // Reemplaza con la consulta a tu base de datos
-        
-        // // Obtener competencias y sus puntajes
-        // $competencias = [
-        //     'Liderazgo',
-        //     'Comunicación asertiva',
-        //     'Gestión y Organización',
-        //     'Trabajo en equipo',
-        //     'Toma de decisiones considerando impactos',
-        //     'Planificación Efectiva',
-        //     'Análisis Estratégico',
-        //     'Aprendizaje Continuo',
-        //     'Gestión de recursos',
-        //     'Compromiso',
-        //     'Innovación'
-        // ];
-        
-        // $puntajes = [7.8, 7.6, 7.4, 7.9, 7.5, 8.0, 7.7, 7.5, 7.3, 7.6, 7.2];
-        
-        // // Descripción del nivel según el puntaje
-        // $descripcionNivel = 'Muestra los comportamientos esperados en situaciones simples, con oportunidades de mejora.';
-        
-        // return view('evaluacion_de_competencias.resultados', compact(
-        //     'promedioGeneral',
-        //     'competencias',
-        //     'puntajes',
-        //     'descripcionNivel'
-        // ));
     }
 
     public function detalle()

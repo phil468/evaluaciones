@@ -332,6 +332,22 @@ return [
             'classes' => 'rounded-xl',
         ],
 
+        //         [
+        //     'text' => 'Planes de Acción/ Desarrollo',
+        //     'url'  => 'planes-de-mejora/ingreso',
+        //     'icon' => 'fas fa-pencil-alt',
+        //     'can'  => 'ver-evaluaciones-de-desempeno',
+        //     'classes' => 'rounded-xl',
+        // ],
+
+        [
+            'text' => 'Plan De Mejora Individual',
+            'url'  => 'plan-de-mejora',
+            'icon' => 'fas fa-pencil-alt',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl'
+        ],
+
         // [
         //     'text' => 'Planes de Acción/ Desarrollo',
         //     'url'  => 'planes-de-mejora/ingreso',
@@ -367,14 +383,14 @@ return [
             'classes' => 'rounded-xl',
         ],
 
-        // [
-        //     'text' => 'Resultados de Equipo',
-        //     'url'  => 'resultados-de-equipo',
-        //     'icon' => 'fas fa-chart-bar',
-        //     'can'  => 'ver-evaluaciones-de-desempeno',
-        //     'classes' => 'rounded-xl',
-        //     'active' => ['resultados-de-equipo', 'resultados-de-equipo/*']
-        // ],
+        [
+            'text' => 'Resultados de Equipo',
+            'url'  => 'resultados-de-equipo',
+            'icon' => 'fas fa-chart-bar',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl',
+            'active' => ['resultados-de-equipo', 'resultados-de-equipo/*']
+        ],
 
         // RESULTADOS DE EQUIPO POR EL MOMENTO NO VISIBLE
 
