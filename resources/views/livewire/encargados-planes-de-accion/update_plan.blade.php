@@ -59,6 +59,29 @@
                             </select>
                             @error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
+                        
+                        {{-- NUEVOS CAMPOS DE FEEDBACK --}}
+                        {{-- @if($feedback) --}}
+                        <div class="form-group col-sm-12 col-md-8">
+                            <label class="mb-0">
+                                <i class="fas fa-comment-dots text-info"></i> Feedback
+                                <small class="text-muted"></small>
+                            </label>
+                            <textarea wire:model="feedback" class="form-control bg-light" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-4">
+                            <label class="mb-0">
+                                <i class="fas fa-calendar-alt text-info"></i> Fecha de Feedback
+                                <small class="text-muted"></small>
+                            </label>
+                            <input                                  
+                                wire:model="fecha_feedback" 
+                                type="text" 
+                                class="form-control bg-light"
+                                value="{{ $fecha_feedback ? \Carbon\Carbon::parse($fecha_feedback)->format('d/m/Y H:i') : '-' }}"
+                            >
+                        </div>
                                     
                         <div class="form-group col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <label for="name">Compromiso</label>
@@ -239,6 +262,30 @@
                         </div>
                         @endif
 
+                        {{-- NUEVOS CAMPOS DE FEEDBACK --}}
+                        {{-- @if($feedback) --}}
+                        {{-- <div class="form-group col-sm-12 col-md-8">
+                            <label class="mb-0">
+                                <i class="fas fa-comment-dots text-info"></i> Feedback
+                                <small class="text-muted"></small>
+                            </label>
+                            <textarea disabled wire:model="feedback" class="form-control bg-light" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-4">
+                            <label class="mb-0">
+                                <i class="fas fa-calendar-alt text-info"></i> Fecha de Feedback
+                                <small class="text-muted"></small>
+                            </label>
+                            <input 
+                                disabled 
+                                wire:model="fecha_feedback" 
+                                type="text" 
+                                class="form-control bg-light"
+                                value="{{ $fecha_feedback ? \Carbon\Carbon::parse($fecha_feedback)->format('d/m/Y H:i') : '-' }}"
+                            >
+                        </div> --}}
+                        {{-- @endif --}}
                     </fieldset>
                 </form>
             </div>

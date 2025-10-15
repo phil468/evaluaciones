@@ -64,6 +64,9 @@ class EncargadosPlanesDeAccions extends Component
     public $estado_aprobacion=null,$observacion_validacion;
 
     public $plan_de_mejora_configuracion;
+// Agregar estas propiedades públicas
+public $feedback;
+public $fecha_feedback;
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -491,7 +494,7 @@ class EncargadosPlanesDeAccions extends Component
         // necesido el ide de personal->planes_de_mejora
     }
 
-    
+
     public function render()
     {
         if ($this->dashboard) { //Página en la que se muestra un personal en específico
