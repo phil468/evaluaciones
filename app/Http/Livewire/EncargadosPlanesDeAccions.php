@@ -491,6 +491,7 @@ class EncargadosPlanesDeAccions extends Component
         // necesido el ide de personal->planes_de_mejora
     }
 
+    
     public function render()
     {
         if ($this->dashboard) { //Página en la que se muestra un personal en específico
