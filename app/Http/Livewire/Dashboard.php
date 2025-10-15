@@ -37,6 +37,7 @@ class Dashboard extends Component
 
     public function mount($personal_id=null, $vista_personal=false, $title=null, $ingresar_plan=false, $showHeader=true, $campania_id=2024)
     {
+        // dd($campania_id);
         $evaluaciones = Evaluacione::
         where('tipo_de_evaluacion_id', 1)
         ->where('campania_id', $campania_id)
@@ -58,6 +59,8 @@ class Dashboard extends Component
             ->where('evaluador_has_evaluados.realizado',null)
             ->where('evaluador_has_evaluados.cesado',0)
             ->get();
+
+            // dd($this->evaluaciones_no_completadas);
 
             $this->personal_id = [$personal_id];
             $this->empleado_id = $personal_id;
@@ -129,36 +132,57 @@ class Dashboard extends Component
 
     public function datos_promedio()
     {
-        $respuestas = Respuesta::with('pregunta.seccion','evaluado')
-        ->whereNull('respuestas.deleted_at')
-        ->where('respuestas.campania_id', $this->campania_id)
-        ->get();
-            
-        $this->secciones = $respuestas
-        ->when(!empty($this->area_de_evaluado), function ($collection) {
-            return $collection->filter(function ($respuesta) {
-                return in_array($respuesta->evaluado->area_de_evaluado, $this->area_de_evaluado);
-            });
-        })
-        ->when(!empty($this->gerencia_sub_gerencia_de_evaluado), function ($collection) {
-            return $collection->filter(function ($respuesta) {
-                return in_array($respuesta->evaluado->gerencia_sub_gerencia_de_evaluado, $this->gerencia_sub_gerencia_de_evaluado);
-            });
-        })
-        ->when(!empty($this->personal_id), function ($collection) {
-            return $collection->filter(function ($respuesta) {
-                return in_array($respuesta->evaluado->id, $this->personal_id);
-            });
-        })
-        ->groupBy('pregunta.seccion_id')->map(function ($respuestasPorSeccion) {
-            return [
-                'seccion_id' => $respuestasPorSeccion->first()->pregunta->seccion_id,
-                'nombre' => $respuestasPorSeccion->first()->pregunta->seccion->name,
-                'valor_esperado' => $this->valor_esperado,
-                'promedio' => round($respuestasPorSeccion->avg('valor_numerico'), 2),
-            ];
-        });
+        if($this->campania_id >= 2){
+            $resumen = \App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia::with('competencia')
+                ->where('campania_id',$this->campania_id)
+                ->when(!empty($this->personal_id), fn($q)=>$q->whereIn('personal_id',$this->personal_id))
+                ->get()
+                ->groupBy('competencia_id')
+                ->map(function($g){
+                    return [
+                        'seccion_id' => $g->first()->competencia_id,
+                        'nombre' => $g->first()->competencia->name ?? 'COMP',
+                        'valor_esperado' => $this->valor_esperado,
+                        'promedio' => round($g->avg('puntaje_calibrado') ?: $g->avg('puntaje'),2),
+                    ];
+                });
+            $this->secciones = $resumen;
 
+            // dd($this->secciones);
+            // continuar flujo existente (promedio global, colores, etc.)
+        }else{
+
+            $respuestas = Respuesta::with('pregunta.seccion','evaluado')
+            ->whereNull('respuestas.deleted_at')
+            ->where('respuestas.campania_id', $this->campania_id)
+            ->get();
+                
+            $this->secciones = $respuestas
+            ->when(!empty($this->area_de_evaluado), function ($collection) {
+                return $collection->filter(function ($respuesta) {
+                    return in_array($respuesta->evaluado->area_de_evaluado, $this->area_de_evaluado);
+                });
+            })
+            ->when(!empty($this->gerencia_sub_gerencia_de_evaluado), function ($collection) {
+                return $collection->filter(function ($respuesta) {
+                    return in_array($respuesta->evaluado->gerencia_sub_gerencia_de_evaluado, $this->gerencia_sub_gerencia_de_evaluado);
+                });
+            })
+            ->when(!empty($this->personal_id), function ($collection) {
+                return $collection->filter(function ($respuesta) {
+                    return in_array($respuesta->evaluado->id, $this->personal_id);
+                });
+            })
+            ->groupBy('pregunta.seccion_id')->map(function ($respuestasPorSeccion) {
+                return [
+                    'seccion_id' => $respuestasPorSeccion->first()->pregunta->seccion_id,
+                    'nombre' => $respuestasPorSeccion->first()->pregunta->seccion->name,
+                    'valor_esperado' => $this->valor_esperado,
+                    'promedio' => round($respuestasPorSeccion->avg('valor_numerico'), 2),
+                ];
+            });
+        }
+        
         if (count($this->secciones) > 0) {
             // Calculate overall average
             $overallAverage = round($this->secciones->avg('promedio'), 2);

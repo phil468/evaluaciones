@@ -203,11 +203,11 @@
             </div>
         </div>
 
-        <!-- Plan de Desarrollo Individual -->
+        <!-- Plan de Mejora Individual -->
         <div class="mt-3 col-md-4">
             <div class="shadow card h-100">
                 <div class="card-header">
-                    <div class="mb-0 h5">Plan de Desarrollo Individual</div>
+                    <div class="mb-0 h5">Plan de Mejora Individual</div>
                 </div>
                 <div class="card-body">
                     <div class="row">

@@ -427,7 +427,7 @@ return [
                 ],
 
                 [
-                    'text' => 'Planes de mejora',
+                    'text' => 'Seguimiento de PDI',
                     'url'  => 'planes-de-accion',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-planes-de-accion',

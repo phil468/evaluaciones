@@ -28,16 +28,15 @@
                                 @endforeach
                             </select>
                         </div>
-            
+
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="encargado_id">Encargado</label>
-                            <select disabled wire:model="encargado_id" class="form-control" id="encargado_id">
-                                <option value="">Seleccionar Encargado</option>
-                                @foreach($personals as $index => $name)
+                            <label for="competencia_id">Competencia</label>
+                            <select disabled wire:model="competencia_id" class="form-control" id="competencia_id">
+                                <option value="">Seleccionar Competencia</option>
+                                @foreach($competencias as $index => $name)
                                     <option value="{{ $index}}">{{ $name }}</option>
                                 @endforeach
                             </select>
-                            @error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                         
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -49,18 +48,19 @@
                                 @endforeach
                             </select>
                         </div>
-                        
+
                         <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="competencia_id">Competencia</label>
-                            <select disabled wire:model="competencia_id" class="form-control" id="competencia_id">
-                                <option value="">Seleccionar Competencia</option>
-                                @foreach($competencias as $index => $name)
+                            <label for="encargado_id">Encargado</label>
+                            <select disabled wire:model="encargado_id" class="form-control" id="encargado_id">
+                                <option value="">Seleccionar Encargado</option>
+                                @foreach($personals as $index => $name)
                                     <option value="{{ $index}}">{{ $name }}</option>
                                 @endforeach
                             </select>
+                            @error('encargado_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
                                     
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-group col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <label for="name">Compromiso</label>
                             <textarea
                             @if (!$primera_fase_activa)
@@ -68,18 +68,72 @@
                             @endif
                             wire:model.defer="name" type="text" class="form-control" id="name" placeholder="Compromiso"> </textarea>@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
+
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label class="mb-0">Objetivo
+                                {{-- <br>
+                                 <small class="text-danger">Habilitado 1ra fase</small> --}}
+                            </label>
+                            <input @if(!$primera_fase_activa) disabled @endif wire:model="objetivo" type="number" step="0.01" class="form-control">
+                        </div>
+                        
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label class="mb-0">Tipo de Objetivo 
+                                {{-- <br>
+                                <small class="text-muted">(Por default)</small> --}}
+                            </label>
+                            <select wire:model="tipo_objetivo" class="form-control">
+                                <option value="numerico">Numérico</option>
+                                <option value="porcentual">Porcentual</option>
+                            </select>
+                        </div>
             
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="fecha_de_revision">Fecha De Revisión</label>
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label for="fecha_de_revision">Fecha De Evaluar Cumplimiento
+                                <br>
+                                <small class="text-muted">
+                                    Desde: {{ \Carbon\Carbon::parse($plan_de_mejora_configuracion->fecha_inicio_segunda_fase)->format('d/m/Y') }}
+                                    Hasta: {{ \Carbon\Carbon::parse($plan_de_mejora_configuracion->fecha_fin_segunda_fase)->format('d/m/Y') }}
+                                </small>                               
+                            </label>
                             <input
                             @if (!$primera_fase_activa)
                                 disabled
+                            @endif                            
+                            wire:model="fecha_de_revision"
+                            type="date" class="form-control" 
+                            id="fecha_de_revision" 
+                            placeholder="Fecha De Revision" 
+                            @if($plan_de_mejora_configuracion)
+                                min="{{ \Carbon\Carbon::parse($plan_de_mejora_configuracion->fecha_inicio_segunda_fase)->format('Y-m-d') }}"
+                                max="{{ \Carbon\Carbon::parse($plan_de_mejora_configuracion->fecha_fin_segunda_fase)->format('Y-m-d') }}"
                             @endif
-                            wire:model="fecha_de_revision" type="date" class="form-control" id="fecha_de_revision" placeholder="Fecha De Revision" min="{{ now()->addMonths(6)->format('Y-m-d') }}" max="2025-03-27">
+                            >
                             @error('fecha_de_revision') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div>                        
+
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label class="mb-0">Alcanzado 
+                                {{-- <small class="text-danger">Habilitado 2da fase</small> --}}
+                            </label>
+                            <input @if(!$segunda_fase_activa) disabled @endif wire:model="alcanzado" type="number" step="0.01" class="form-control">
+                        </div>                        
+
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label class="mb-0">% de cumplimiento 
+                                {{-- (calculado) --}}
+                            </label>
+                            <input disabled wire:model="porcentaje_cumplimiento" type="text" class="form-control">
                         </div>
-                        
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label class="mb-0">Estado de cumplimiento
+                                {{-- (calculado) --}}
+                            </label>
+                            <input disabled wire:model="estado_cumplimiento" type="text" class="form-control">
+                        </div>
+
+                        {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
                             <label for="estado_id">Estado</label>
                             <select
                             @if (!$segunda_fase_activa)
@@ -91,26 +145,7 @@
                                     <option value="{{ $index}}">{{ $name }}</option>
                                 @endforeach
                             </select>
-                            {{-- <input wire:model="estado_id" type="text" class="form-control" id="estado_id" placeholder="Estado Id">@error('estado_id') <span class="error text-danger">{{ $message }}</span> @enderror --}}
-                        </div>
-                        
-                        {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="gerencia_id">Gerencia Id</label>
-                            <input wire:model="gerencia_id" type="text" class="form-control" id="gerencia_id" placeholder="Gerencia Id">@error('gerencia_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="area_id">Area Id</label>
-                            <input wire:model="area_id" type="text" class="form-control" id="area_id" placeholder="Area Id">@error('area_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div> --}}
-                        
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                            <label for="avance">Avance (%)</label>
-                            <input 
-                            @if (!$segunda_fase_activa)
-                                disabled
-                            @endif
-                            wire:model="avance" type="number" class="form-control" id="avance" placeholder="Avance">@error('avance') <span class="error text-danger">{{ $message }}</span> @enderror
-                        </div>
 
                         @if (!$segunda_fase_activa)
                             <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -164,34 +199,24 @@
                                 @endif
                             </div>
                         @endif
-
-                        <div class="form-group col-sm-12 col-md-6">
-                            <label class="mb-0">Tipo de Objetivo <small class="text-muted">(Por default)</small></label>
-                            <select disabled wire:model="tipo_objetivo" class="form-control">
-                                <option value="numerico">Numérico</option>
-                                <option value="porcentual">Porcentual</option>
-                            </select>
+                        
+                        {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <label for="gerencia_id">Gerencia Id</label>
+                            <input wire:model="gerencia_id" type="text" class="form-control" id="gerencia_id" placeholder="Gerencia Id">@error('gerencia_id') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
-
-                        <div class="form-group col-sm-12 col-md-6">
-                            <label class="mb-0">Objetivo <small class="text-danger">Habilitado 1ra fase</small></label>
-                            <input @if(!$primera_fase_activa) disabled @endif wire:model="objetivo" type="number" step="0.01" class="form-control">
-                        </div>
-
-                        <div class="form-group col-sm-12 col-md-6">
-                            <label class="mb-0">Alcanzado <small class="text-danger">Habilitado 2da fase</small></label>
-                            <input @if(!$segunda_fase_activa) disabled @endif wire:model="alcanzado" type="number" step="0.01" class="form-control">
-                        </div>
-
-                        <div class="form-group col-sm-12 col-md-6">
-                            <label class="mb-0">% de cumplimiento (calculado)</label>
-                            <input disabled wire:model="porcentaje_cumplimiento" type="text" class="form-control">
-                        </div>
-
-                        <div class="form-group col-sm-12 col-md-6">
-                            <label class="mb-0">Estado de cumplimiento (calculado)</label>
-                            <input disabled wire:model="estado_cumplimiento" type="text" class="form-control">
-                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <label for="area_id">Area Id</label>
+                            <input wire:model="area_id" type="text" class="form-control" id="area_id" placeholder="Area Id">@error('area_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div> --}}
+                        
+                        {{-- <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <label for="avance">Avance (%)</label>
+                            <input 
+                            @if (!$segunda_fase_activa)
+                                disabled
+                            @endif
+                            wire:model="avance" type="number" class="form-control" id="avance" placeholder="Avance">@error('avance') <span class="error text-danger">{{ $message }}</span> @enderror
+                        </div> --}}
 
                         <div class="form-group col-sm-12 col-md-6">
                             <label class="mb-0">Estado de aprobación 
@@ -200,7 +225,7 @@
                             <select 
                                 @cannot('validar-planes-mejora') disabled @endcannot
                                 wire:model="estado_aprobacion" class="form-control">
-                                <option value="borrador">Borrador</option>
+                                <option value=null></option>
                                 <option value="pendiente">Pendiente</option>
                                 <option value="validado">Validado</option>
                                 <option value="no_validado">No validado</option>
@@ -210,7 +235,7 @@
                         @if($estado_aprobacion === 'no_validado')
                         <div class="form-group col-sm-12">
                             <label>Observación de validación</label>
-                            <textarea wire:model.defer="observacion_validacion" class="form-control" rows="2"></textarea>
+                            <textarea wire:model.defer="observacion_validacion" disabled class="form-control" rows="2"></textarea>
                         </div>
                         @endif
 
@@ -242,7 +267,8 @@
                     type="button" 
                     wire:loading.attr="disabled" 
                     wire:click.prevent="update_plan()" 
-                    class="btn btn-vanguard rounded-xl">Guardar</button>
+                    class="btn btn-vanguard rounded-xl">
+                    Guardar</button>
                 @endif
                 
                 {{-- <button 

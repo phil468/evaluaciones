@@ -57,8 +57,13 @@ class EncargadosPlanesDeAccions extends Component
     public $campaniaFiltro = null; // campaña seleccionada
     public $campaniasDisponibles = [];
 
+    // public $competencia = null;
+    public $compromiso = null;
+
     public $objetivo,$alcanzado,$porcentaje_cumplimiento,$estado_cumplimiento,$tipo_objetivo='numerico';
-    public $estado_aprobacion='borrador',$observacion_validacion;
+    public $estado_aprobacion=null,$observacion_validacion;
+
+    public $plan_de_mejora_configuracion;
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -68,6 +73,33 @@ class EncargadosPlanesDeAccions extends Component
         ,'setSeccionesBajas' => 'setSeccionesBajas'
     ];
     
+    // Actualizar el método resetFields:
+    public function resetFields()
+    {
+        $this->selected_id = 0;
+        $this->name = '';
+        $this->empleado_id = '';
+        $this->encargado_id = '';
+        $this->proceso_id = '';
+        $this->competencia_id = '';
+        $this->estado_id = '';
+        $this->gerencia_id = '';
+        // $this->subgerencia_id = '';
+        $this->area_id = '';
+        $this->avance = '';
+        $this->fecha_de_revision = '';
+        // Nuevos campos
+        $this->compromiso = '';
+        $this->objetivo = null;
+        $this->tipo_objetivo = 'numerico';
+        // $this->fecha_evaluar_cumplimiento = '';
+        $this->alcanzado = null;
+        $this->porcentaje_cumplimiento = null;
+        $this->estado_cumplimiento = '';
+        $this->estado_aprobacion = null;
+        $this->observacion_validacion = '';
+    }
+
     protected function rulesPlan() {
         return [
             'name'=>'required',
@@ -78,7 +110,7 @@ class EncargadosPlanesDeAccions extends Component
             'avance'=>'required|numeric|min:0|max:100',
             'objetivo'=>'nullable|numeric|min:0.01',
             'alcanzado'=>'nullable|numeric|min:0',
-            'estado_aprobacion'=>'required|in:borrador,pendiente,validado,no_validado',
+            'estado_aprobacion'=>'required|in:pendiente,validado,no_validado',
             'observacion_validacion'=>'nullable|string'
         ];
     }
@@ -105,10 +137,10 @@ class EncargadosPlanesDeAccions extends Component
         $this->competencia_id = $competencia_id;
     }
 
-    public function setEstadoId($competencia_id)
-    {
-        $this->estado_id = $competencia_id;
-    }
+    // public function setEstadoId($competencia_id)
+    // {
+    //     $this->estado_id = $competencia_id;
+    // }
 
     public function setAvance($competencia_id)
     {
@@ -130,8 +162,12 @@ class EncargadosPlanesDeAccions extends Component
     
     public function evaluar_fases()
     {
+        
         $this->primera_fase_activa = $this->evaluador_has_evaluado->plan_de_mejora->primera_fase_activa;
         $this->segunda_fase_activa = $this->evaluador_has_evaluado->plan_de_mejora->segunda_fase_activa;
+        // dd($this->evaluador_has_evaluado);
+        // dd($this->evaluador_has_evaluado->plan_de_mejora);
+        // dd($this->primera_fase_activa, $this->segunda_fase_activa);
     }
 
     public function openModal()
@@ -141,7 +177,7 @@ class EncargadosPlanesDeAccions extends Component
         $this->emit('opencreatePlanDataModal');
     }
 
-    public function mount($ingreso = null, $empleado_id = null, $dashboard = null)
+    public function mount($ingreso = null, $empleado_id = null, $dashboard = null, $campaniaFiltro = null)
     {
 
         $this->campaniasDisponibles = \App\Models\Campania::orderBy('id','desc')->pluck('name','id')->toArray();
@@ -182,11 +218,25 @@ class EncargadosPlanesDeAccions extends Component
             $this->dashboard = true;
             $this->empleado_id = $empleado_id;
             
-		    $this->evaluador_has_evaluado = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)->get()->first();
-            $this->valor_esperado =         EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->valor_esperado;
-            $this->cantidad_requerida =     EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->cantidad_requerida;
-            $this->encargados_planes_de_accion_id = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)->first()->id;
-            
+		    $this->evaluador_has_evaluado = EncargadosPlanesDeAccion::where('empleado_id',$empleado_id)            
+            //filtro de campania en polanes de accion configuracion
+            ->whereHas('plan_de_mejora', function($q){
+                $q->where('campania_id',$this->campaniaFiltro);
+            })
+            ->get()->first();
+            $this->valor_esperado =         EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)
+            ->whereHas('plan_de_mejora', function($q){
+                $q->where('campania_id',$this->campaniaFiltro);
+            })->first()->valor_esperado;
+            $this->cantidad_requerida =     EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)
+            ->whereHas('plan_de_mejora', function($q){
+                $q->where('campania_id',$this->campaniaFiltro);
+            })->first()->cantidad_requerida;
+            $this->encargados_planes_de_accion_id = EncargadosPlanesDeAccion::where('empleado_id', $this->empleado_id)
+            ->whereHas('plan_de_mejora', function($q){
+                $q->where('campania_id',$this->campaniaFiltro);
+            })->first()->id;
+
             if ($this->campaniaFiltro>=2)
             {
                 $this->secciones = \App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia::with('competencia')
@@ -233,6 +283,9 @@ class EncargadosPlanesDeAccions extends Component
             
                 return $respuesta;
             });
+
+            // plande  mejora configuracion ´para obtener la fecha de inicio y fion de segunda fase
+            $this->plan_de_mejora_configuracion = $this->evaluador_has_evaluado->plan_de_mejora;
 
             // if (count($this->secciones) > 0)
             // {
@@ -587,12 +640,24 @@ class EncargadosPlanesDeAccions extends Component
     public function store_plan()
     {
         $this->evaluar_fases();
+        $this->avance = $this->avance ?? 0;
+        $this->estado_id = $this->estado_id ?? 1;
+        $this->estado_aprobacion = $this->estado_aprobacion ?? 'pendiente';
+        // dd('store_plan');
         $this->validate($this->rulesPlan());
         // contar los planes y si es igual a la cantidad_requerida, entonces, no se puede ingresar más planes
+        // dd($this->cantidad_requerida);
         $contador_de_planes = PlanesDeAccion::latest()
         ->when($this->empleado_id, function ($query, $empleado_id) {
             return $query->where('empleado_id', $empleado_id);
-        })->get()->count();
+        })
+        //filtro de campaña
+        ->whereHas('encargados_planes_de_accion.plan_de_mejora', function($q){
+            $q->where('campania_id',$this->campaniaFiltro);
+        })
+        ->get()->count();
+
+        // dd($contador_de_planes, $this->cantidad_requerida);
 
         if ($this->cantidad_requerida <= $contador_de_planes) {
             $this->emit('closeModal');
@@ -685,8 +750,16 @@ class EncargadosPlanesDeAccions extends Component
     
     public function edit_plan($id)
     {
+        // dd($id);
         $this->evaluar_fases();
         $record = PlanesDeAccion::findOrFail($id);
+        // $this->plan = $record;
+            
+        // Verificar si puede editarse
+        if (!$record->puedeEditarse()) {
+            session()->flash('message', 'Este plan no puede ser editado en su estado actual.');
+            return;
+        }
 
         $this->selected_id = $id; 
 		$this->encargado_id = $record-> encargado_id;
@@ -729,7 +802,8 @@ class EncargadosPlanesDeAccions extends Component
     public function update_plan()
     {
         $this->evaluar_fases();
-    $this->validate($this->rulesPlan());
+        $this->validate($this->rulesPlan());
+
         // $this->validate([
 		// 	'name' => 'required',
 		// 	'encargado_id' => 'required',
@@ -747,7 +821,7 @@ class EncargadosPlanesDeAccions extends Component
 
         if ($this->selected_id) {
 			$record = PlanesDeAccion::find($this->selected_id);
-        $estadoAnterior = $record->estado_aprobacion;
+            $estadoAnterior = $record->estado_aprobacion;
             $record->update([ 
 			'encargado_id' => $this-> encargado_id,
 			'empleado_id' => $this-> empleado_id,
@@ -765,13 +839,14 @@ class EncargadosPlanesDeAccions extends Component
             'porcentaje_cumplimiento'=>$this->porcentaje_cumplimiento,
             'estado_cumplimiento'=>$this->estado_cumplimiento,
             'tipo_objetivo'=>$this->tipo_objetivo,
-            'estado_aprobacion'=>$this->estado_aprobacion,
+            'estado_aprobacion'=>'pendiente',
             'observacion_validacion'=>$this->observacion_validacion,
             ]);
-        if($estadoAnterior !== $plan->estado_aprobacion){
-            $this->registrarHistorial($plan,$estadoAnterior,$plan->estado_aprobacion);
-            $this->enviarCorreoCambioEstado($plan);
-        }
+
+            if($estadoAnterior !== $record->estado_aprobacion){
+                $this->registrarHistorial($record,$estadoAnterior,$record->estado_aprobacion);
+                $this->enviarCorreoCambioEstado($record);
+            }
 
             // Procesar y guardar las evidencias
             if ($this->evidencias) {

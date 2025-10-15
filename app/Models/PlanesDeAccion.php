@@ -34,8 +34,31 @@ class PlanesDeAccion extends Model implements Auditable
         'name',
         'nombre_de_proceso_id',
         'encargados_planes_de_accion_id',
+        'objetivo','alcanzado','porcentaje_cumplimiento','estado_cumplimiento',
+        'tipo_objetivo','estado_aprobacion','observacion_validacion',
+        'enviado_para_validacion_at','aprobado_revisado_at','ultima_notificacion_aprobacion_at',
         // 'planes_de_accion_configuracion_id',
     ];
+
+    
+public function aprobacionesHistorial() {
+    return $this->hasMany(PlanesDeAccionAprobacionHistorial::class,'planes_de_accion_id');
+}
+
+public function recalcularCumplimiento() {
+    if($this->objetivo && $this->objetivo > 0 && $this->alcanzado !== null){
+        $pct = ($this->alcanzado / $this->objetivo) * 100;
+        $this->porcentaje_cumplimiento = round($pct,2);
+        // Rangos visualizados en tu maqueta
+        if($pct < 50) $this->estado_cumplimiento = 'No cumplimiento';
+        elseif($pct < 70) $this->estado_cumplimiento = 'Bajo cumplimiento';
+        elseif($pct < 90) $this->estado_cumplimiento = 'Medio cumplimiento';
+        else $this->estado_cumplimiento = 'Cumplimiento esperado';
+    } else {
+        $this->porcentaje_cumplimiento = null;
+        $this->estado_cumplimiento = null;
+    }
+}
 
     public function competencia()
     {
@@ -90,5 +113,74 @@ class PlanesDeAccion extends Model implements Auditable
     public function evidencias()
     {
         return $this->hasMany(PlanesDeMejoraHasEvidencia::class, 'planes_de_accion_id','id');
+    }
+
+    // Acceso a la campaña a través de las relaciones
+    public function getCampaniaAttribute()
+    {
+        // Compatible con PHP < 8 y usa el nombre correcto de la relación
+        return data_get($this, 'encargados_planes_de_accion.plan_de_mejora.campania');
+    }
+
+    // Métodos de estado
+    public function puedeEditarse()
+    {
+        return in_array($this->estado_aprobacion, ['borrador', 'no_validado']);
+    }
+
+    public function estaEnFase1()
+    {
+        return (bool) data_get($this, 'encargados_planes_de_accion.plan_de_mejora.primera_fase_activa', false);
+    }
+
+    public function estaEnFase2()
+    {
+        return (bool) data_get($this, 'encargados_planes_de_accion.plan_de_mejora.segunda_fase_activa', false);
+    }
+
+    public function puedeValidarse()
+    {
+        $campania = $this->campania;
+        return $this->estado_aprobacion === 'pendiente' && 
+               $campania && 
+               $campania->es_campania_actual && 
+               $this->estaEnFase1();
+    }
+
+    // Cálculo automático de porcentaje
+    public function calcularPorcentajeCumplimiento()
+    {
+        if (!$this->objetivo || !$this->alcanzado) {
+            return null;
+        }
+        
+        return round(($this->alcanzado / $this->objetivo) * 100, 2);
+    }
+
+    // Estado de cumplimiento según porcentaje
+    public function determinarEstadoCumplimiento()
+    {
+        $porcentaje = $this->porcentaje_cumplimiento;
+        
+        if ($porcentaje === null) return null;
+        
+        if ($porcentaje >= 100) return 'Superado';
+        if ($porcentaje >= 90) return 'Cumplido';
+        if ($porcentaje >= 70) return 'Parcialmente Cumplido';
+        return 'No Cumplido';
+    }
+
+    // Boot method para cálculos automáticos
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::saving(function ($plan) {
+            // Calcular porcentaje automáticamente en fase 2
+            if ($plan->estaEnFase2() && $plan->objetivo && $plan->alcanzado) {
+                $plan->porcentaje_cumplimiento = $plan->calcularPorcentajeCumplimiento();
+                $plan->estado_cumplimiento = $plan->determinarEstadoCumplimiento();
+            }
+        });
     }
 }

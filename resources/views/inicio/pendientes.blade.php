@@ -59,7 +59,7 @@
 
             <!-- Feedback y Planes de Mejora Individual -->
             <div id="seccion-planes" class="mb-4" style="display: none;">
-                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Feedback y Planes de Mejora Individual</h1>
+                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Feedback y Planes de Desarrollo Individual</h1>
                 
                 <div class="mb-4 progress rounded-2xl bg-primary" style="height: 25px;">
                     <div id="progress-bar-planes" class="progress-bar" role="progressbar" style="width: 0%;" 
@@ -77,9 +77,9 @@
             </div>
 
             <!-- Mensaje cuando no hay secciones activas -->
-            <div id="sin-secciones-activas" class="text-center py-5" style="display: none;">
+            <div id="sin-secciones-activas" class="py-5 text-center" style="display: none;">
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                    <i class="mb-3 fas fa-info-circle fa-2x"></i>
                     <h4>No hay evaluaciones activas</h4>
                     <p>Actualmente no hay evaluaciones de desempeño o planes de mejora activos para mostrar.</p>
                 </div>

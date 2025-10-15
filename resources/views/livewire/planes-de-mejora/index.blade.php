@@ -9,6 +9,12 @@
 @section('content')
 
     @php
+    // dd(App\Models\PlanesConfiguracion::          // ->where()
+    //         vigente()
+    //         ->get(), now()
+        
+
+    //     );
         $campania = 
         App\Models\PlanesConfiguracion::select('planes_de_accion_configuracion.campania_id')
             // ->where()
@@ -33,6 +39,7 @@
             'ingreso' => $ingreso ?? null,
             'dashboard' => $dashboard ?? null,
             'empleado_id' => $empleado_id ?? null,
+            'campania_id' => $value->campania_id,
         ])
     @endforeach
 
@@ -47,14 +54,14 @@
 
     @isset($dashboard)
         {{-- enviar la campaña activa de ahora --}}
-        @livewire('dashboard', [
+        {{-- @livewire('dashboard', [
             'personal_id' => $empleado_id,
             'vista_personal' => true,
             'title' => 'Dashboard del personal',
             'ingresar_plan' => true,
             'showHeader' => false,
             'campania_id' => $campania_actual->id ?? 0,
-        ])
+        ]) --}}
     @endisset
 
 @stop

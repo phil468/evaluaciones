@@ -140,11 +140,11 @@
     </div>
     @endif
 
-    <!-- Plan de Desarrollo Individual -->
+    <!-- Plan de Mejora Individual -->
     @if(count($pdi) > 0)
     <div class="mb-4 card" style="display: none;">
         <div class="card-body">
-            <h5 class="h5">Plan de Desarrollo Individual (PDI)</h5>
+            <h5 class="h5">Plan de Mejora Individual (PMI)</h5>
             
             <table class="table table-borderless">
                 <tbody>

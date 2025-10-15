@@ -131,7 +131,6 @@ sudo php artisan migrate --path=/database/migrations/2025_09_09_154403_add_cesad
 
 sudo php artisan migrate --path=/database/migrations/2025_09_15_171139_add_cols_to_resumen_respuestas_competencias.php
 
-
 sudo php artisan migrate --path=/database/migrations/2025_09_16_115414_index_to_resumen_respuestas_competencias.php
 sudo php artisan migrate --path=/database/migrations/2025_09_16_115610_index_to_comentarios.php
 

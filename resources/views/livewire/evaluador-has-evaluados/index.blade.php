@@ -8,6 +8,7 @@
 
 @section('content')
 
+
     @php
         $campania_vigentes = App\Models\Evaluacione::select('evaluaciones.campania')
             ->vigente()

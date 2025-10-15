@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <h4 class="h5">Planes De Mejora de personal a cargo</h4>
+                            <h4 class="h5">Planes de Desarrollo Individual</h4>
                         </div>
 
                         @if (session()->has('message'))
@@ -307,14 +307,14 @@
                         {{--media pantalla cuando es grande y completa de mediana para abajo--}}
                         {{-- <div class="col-md-12 col-lg-6 col-xl-6"> --}}
                             <canvas id="myChart"></canvas>
-                            {{-- <div class="card card-body border-0 shadow mb-4">
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h2 class="h5 mb-0">Promedio General de Desempeño</h2>
+                            {{-- <div class="mb-4 border-0 shadow card card-body">
+                                <div class="mb-3 d-flex align-items-center justify-content-between">
+                                    <h2 class="mb-0 h5">Promedio General de Desempeño</h2>
                                     <span class="badge rounded-pill bg-soft-vanguard text-vanguard">{{ round($this->secciones->avg(function($item) {
                                         return $item['promedio'];  // Acceso como array
                                     }), 2) }}%</span>
                                 </div>
-                                <p class="text-sm text-gray-700 mb-0">
+                                <p class="mb-0 text-sm text-gray-700">
                                     El promedio general de desempeño se calcula como el promedio de los promedios de cada sección evaluada. Este valor proporciona una visión general del rendimiento global en todas las áreas evaluadas.
                                 </p>
                             </div> --}}

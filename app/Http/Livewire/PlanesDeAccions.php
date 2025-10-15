@@ -28,6 +28,13 @@ class PlanesDeAccions extends Component
 	public $areas 		;
 	public $personals 	;
 	
+    public $auditorias = [];
+    public $showModalValidacion = false;
+    public $planSeleccionado = null;
+    public $observacionValidacion = '';
+    public $estadoValidacion = '';
+
+	
 	public function mount($encargado_id=null,$empleado_id=null,$competencia_id=null,$tipo_de_proceso_id=null,$nombre_de_proceso_id=null)
 	{
 		$this->encargado_id = $encargado_id;
@@ -191,4 +198,77 @@ class PlanesDeAccions extends Component
             $record->delete();
         }
     }
+
+	
+
+    public function abrirModalValidacion($planId, $estado)
+    {
+        // dd("modal");
+        $this->planSeleccionado = $planId;
+        $this->estadoValidacion = $estado;
+        $this->observacionValidacion = '';
+        $this->showModalValidacion = true;
+    }
+
+    public function cerrarModalValidacion()
+    {
+        $this->showModalValidacion = false;
+        $this->planSeleccionado = null;
+        $this->estadoValidacion = '';
+        $this->observacionValidacion = '';
+    }
+
+    public function procesarValidacion()
+    {
+        $this->validate([
+            'observacionValidacion' => $this->estadoValidacion === 'no_validado' ? 'required|min:10' : 'nullable',
+        ], [
+            'observacionValidacion.required' => 'La observación es obligatoria para rechazar un plan.',
+            'observacionValidacion.min' => 'La observación debe tener al menos 10 caracteres.',
+        ]);
+
+        $plan = PlanesDeAccion::with(['empleado', 'encargadoPlan.plan_de_mejora'])->findOrFail($this->planSeleccionado);
+        $estadoAnterior = $plan->estado_aprobacion;
+
+        // Actualizar el plan
+        $plan->update([
+            'estado_aprobacion' => $this->estadoValidacion,
+            'observacion_validacion' => $this->observacionValidacion
+        ]);
+
+        // Registrar en historial
+        PlanesDeAccionAprobacionHistorial::create([
+            'planes_de_accion_id' => $plan->id,
+            'user_id' => Auth::id(),
+            'estado_anterior' => $estadoAnterior,
+            'estado_nuevo' => $this->estadoValidacion,
+            'observacion' => $this->observacionValidacion
+        ]);
+
+        // Enviar email
+        try {
+            if ($plan->empleado && $plan->empleado->email) {
+                Mail::to($plan->empleado->email)->send(new EstadoAprobacionPlanMail($plan));
+            }
+        } catch (\Exception $e) {
+            session()->flash('warning', 'Plan actualizado pero no se pudo enviar el email: ' . $e->getMessage());
+        }
+
+        // Mensaje de éxito
+        $mensaje = $this->estadoValidacion === 'validado' 
+            ? 'Plan validado correctamente' 
+            : 'Plan rechazado. Se ha notificado al empleado.';
+        
+        session()->flash('message', $mensaje);
+
+        $this->cerrarModalValidacion();
+        $this->emit('refreshDatatable');
+    }
+
+    public function mostrarAuditorias($id)
+    {
+        $this->auditorias = Audit::where('auditable_id', $id)->where('auditable_type', PlanesDeAccion::class)->get()->toArray();
+        $this->emit('enviarAuditorias', $this->auditorias);
+    }
+
 }

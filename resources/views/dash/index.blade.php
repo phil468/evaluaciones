@@ -31,7 +31,7 @@
                                 font-style: normal;">
                                         En este proceso, tienes la misión de compartir tus opiniones sobre las fortalezas y
                                         oportunidades de mejora de las personas a evaluar. De esta manera, las ayudarás a
-                                        potenciar su plan de desarrollo individual.
+                                        potenciar su plan de mejora individual.
                                     </p>
                                     <br>
                                     <div class="h4 bold font-weight-bold">
