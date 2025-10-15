@@ -59,7 +59,7 @@
 
             <!-- Feedback y Planes de Mejora Individual -->
             <div id="seccion-planes" class="mb-4" style="display: none;">
-                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Feedback y Planes de Desarrollo Individual</h1>
+                <h1 class="mb-3 h5 font-style-poppins font-weight-bold">Feedback y Planes de Mejora Individual</h1>
                 
                 <div class="mb-4 progress rounded-2xl bg-primary" style="height: 25px;">
                     <div id="progress-bar-planes" class="progress-bar" role="progressbar" style="width: 0%;" 

@@ -29,10 +29,10 @@ class ResumenRespuestasEvaluacionDesempenoCompetencia extends Model
         return $this->belongsTo(Personal::class, 'personal_id');
     }
 
-    public function competencia()
-    {
-        return $this->belongsTo(Seccione::class, 'competencia_id'); // O el modelo correcto
-    }
+    // public function competencia()
+    // {
+    //     return $this->belongsTo(Seccione::class, 'competencia_id'); // O el modelo correcto
+    // }
 
     public function pregunta()
     {
@@ -50,6 +50,11 @@ class ResumenRespuestasEvaluacionDesempenoCompetencia extends Model
     public function comite()
     {
         return $this->belongsTo(ComiteCalibracion::class, 'comite_calibracion_id');
+    }
+    // Relación correcta con CampaniaHasCompetencia
+    public function competencia()
+    {
+        return $this->belongsTo(CampaniaHasCompetencia::class, 'competencia_id', 'id');
     }
 
 }

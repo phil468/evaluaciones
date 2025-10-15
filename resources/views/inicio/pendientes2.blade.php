@@ -179,7 +179,7 @@
         <div class="col-12">
             <div class="card card-outline card-info">
                 <div class="card-header">
-                    <h3 class="card-title">Feedback y Planes de Desarrollo Individual</h3>
+                    <h3 class="card-title">Feedback y Planes de Mejora Individual</h3>
                     <div class="card-tools">
                         <span class="badge badge-warning">2 pendientes</span>
                     </div>

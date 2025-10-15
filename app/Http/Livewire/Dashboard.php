@@ -132,6 +132,8 @@ class Dashboard extends Component
 
     public function datos_promedio()
     {
+        // dd(1);
+         // Obtener las respuestas filtradas por campaña y otros criterios
         if($this->campania_id >= 2){
             $resumen = \App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia::with('competencia')
                 ->where('campania_id',$this->campania_id)

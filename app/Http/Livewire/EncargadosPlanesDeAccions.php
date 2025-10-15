@@ -239,6 +239,7 @@ class EncargadosPlanesDeAccions extends Component
 
             if ($this->campaniaFiltro>=2)
             {
+                // dd(1);
                 $this->secciones = \App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia::with('competencia')
                     ->where('campania_id',$this->campaniaFiltro)
                     ->when(!empty($this->personal_id), fn($q)=>$q->whereIn('personal_id',$this->personal_id))
@@ -246,8 +247,9 @@ class EncargadosPlanesDeAccions extends Component
                     ->groupBy('competencia_id')
                     ->map(function($g){
                         return (object) [
-                            'seccion_id' => $g->first()->competencia_id,
-                            'nombre' => $g->first()->competencia->name ?? 'COMP',
+                            'seccion_id' => $g->first()->competencia_id,                            
+                            'nombre' => $g->first()->competencia->nombre ?? $g->first()->competencia->competencia->name ?? 'COMP',
+                            // 'nombre' => $g->first()->competencia->name ?? 'COMP',
                             'valor_esperado' => $this->valor_esperado,
                             'promedio' => round($g->avg('puntaje_calibrado') ?: $g->avg('puntaje'),2),
                         ];
@@ -316,6 +318,7 @@ class EncargadosPlanesDeAccions extends Component
     {
         if ($this->campaniaFiltro>=2)
         {
+            // dd(2);
             $secciones = \App\Models\ResumenRespuestasEvaluacionDesempenoCompetencia::with('competencia')
                 ->where('campania_id',$this->campaniaFiltro)
                 ->when(!empty($this->personal_id), fn($q)=>$q->whereIn('personal_id',$this->personal_id))
@@ -324,7 +327,8 @@ class EncargadosPlanesDeAccions extends Component
                 ->map(function($g){
                     return (object) [
                         'seccion_id' => $g->first()->competencia_id,
-                        'nombre' => $g->first()->competencia->name ?? 'COMP',
+                        'nombre' => $g->first()->competencia->nombre ?? $g->first()->competencia->competencia->name ?? 'COMP',
+                        // 'nombre' => $g->first()->competencia->name ?? 'COMP',
                         'valor_esperado' => $this->valor_esperado,
                         'promedio' => round($g->avg('puntaje_calibrado') ?: $g->avg('puntaje'),2),
                     ];
@@ -758,7 +762,11 @@ class EncargadosPlanesDeAccions extends Component
         // Verificar si puede editarse
         if (!$record->puedeEditarse()) {
             session()->flash('message', 'Este plan no puede ser editado en su estado actual.');
+            
+            $this->updateMode = false;
             return;
+        } else {            
+            $this->updateMode = true;
         }
 
         $this->selected_id = $id; 
@@ -786,7 +794,7 @@ class EncargadosPlanesDeAccions extends Component
         }
         // $this->evidencias = $record->evidencias;
 		
-        $this->updateMode = true;
+        // $this->updateMode = true;
         // return redirect()->route(Route::currentRouteName());
     }
 

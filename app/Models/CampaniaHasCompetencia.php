@@ -50,4 +50,16 @@ class CampaniaHasCompetencia extends Model
     {
         return $this->hasMany(DominioHasPregunta::class, 'campania_has_competencia_id');
     }
+    
+    // Relación con la competencia original (si existe)
+    public function competenciaOriginal()
+    {
+        return $this->belongsTo(Competencia::class, 'competencia_id');
+    }
+    
+    // Accessor para obtener el nombre
+    public function getNameAttribute()
+    {
+        return $this->nombre ?? $this->competenciaOriginal->name ?? 'Sin nombre';
+    }
 }

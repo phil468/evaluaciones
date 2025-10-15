@@ -6,7 +6,7 @@
                 <div class="text-white card-header bg-vanguard rounded-t-xl">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <h4 class="h5">Planes de Desarrollo Individual</h4>
+                            <h4 class="h5">Planes de Mejora Individual</h4>
                         </div>
 
                         @if (session()->has('message'))
@@ -258,10 +258,10 @@
                                                                 class="btn btn-sm btn-vanguard rounded-xl"
                                                                 wire:click="edit_plan({{ $row->id }})">Editar </a>
                                                             @if ($primera_fase_activa)
-                                                                <a class="btn btn-sm btn-danger rounded-xl"
+                                                                {{-- <a class="btn btn-sm btn-danger rounded-xl"
                                                                     onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
                                                                     wire:click="destroy_plan({{ $row->id }})"> Borrar
-                                                                </a>
+                                                                </a> --}}
                                                             @endif
                                                         </div>
                                                     </td>

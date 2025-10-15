@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Livewire\EncargadosPlanes;
+use App\Http\Livewire\Secciones;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -60,9 +61,29 @@ public function recalcularCumplimiento() {
     }
 }
 
+    // public function competencia()
+    // {
+    //     return $this->belongsTo('App\Models\Competencia', 'competencia_id','id');
+    // }
+
+    
     public function competencia()
     {
-        return $this->belongsTo('App\Models\Competencia', 'competencia_id','id');
+        // Ahora apunta a CampaniaHasCompetencia en lugar de Secciones
+        return $this->belongsTo(CampaniaHasCompetencia::class, 'competencia_id');
+    }
+
+    // Agregar relación opcional a la competencia original
+    public function competenciaOriginal()
+    {
+        return $this->hasOneThrough(
+            Secciones::class,
+            CampaniaHasCompetencia::class,
+            'id', // Foreign key en campania_has_competencias
+            'id', // Foreign key en secciones
+            'competencia_id', // Local key en planes_de_accion
+            'competencia_id' // Local key en campania_has_competencias
+        );
     }
     public function estado()
     {
