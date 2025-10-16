@@ -147,9 +147,12 @@ class User extends Authenticatable implements JWTSubject
     // Pendientes como encargado de planes de acción (relación con plan_de_mejora)
     $pendientesComoEncargadoPlanes = $this->personal->planesComoEncargado()
         ->habilitado()
+        // ->where('habilitado',1)
         ->whereHas('plan_de_mejora', function($query) {
             $today = now();
             $query->where('status', 1)
+            // ->where('estado_aprobacion' , '!=' , 'validado')
+            // ->where('estado_aprobacion' , '<>' , 'validado')
                 ->where(function($q) use ($today) {
                     $q->where(function($sub) use ($today) {
                         $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
@@ -160,6 +163,9 @@ class User extends Authenticatable implements JWTSubject
                             ->where('fecha_fin_segunda_fase', '>=', $today);
                     });
                 });
+        })
+        ->whereHas('planesDeMejora', function($q) {
+            $q->where('estado_aprobacion' , '!=' , 'validado');
         })
         ->get()
         ->contains(fn($p) => $p->estado_pendiente);

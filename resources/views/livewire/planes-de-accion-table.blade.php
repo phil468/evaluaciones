@@ -7,7 +7,7 @@
 
     {{-- Modal de validación --}}
     @if($showModalValidacion)
-    {{ dd("mostrar validacion") }}
+    {{-- {{ dd("mostrar validacion") }} --}}
     <div class="fixed inset-0 z-50 overflow-y-auto" style="background: rgba(0,0,0,0.5);" wire:click="cerrarModalValidacion">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="w-full max-w-md bg-white rounded-lg shadow-xl" wire:click.stop>

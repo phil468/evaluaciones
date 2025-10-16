@@ -27,7 +27,16 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
     </style>
-
+<style>
+    .bg-light {
+        background-color: #f8f9fa !important;
+        cursor: not-allowed;
+    }
+    
+    .alert-info {
+        border-left: 4px solid #17a2b8;
+    }
+</style>
     {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
 @stop
 

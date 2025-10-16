@@ -27,7 +27,7 @@
                         @isset($dashboard)
                             @if ($dashboard)
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
+                                    <a href="{{ route('pendientes') }}"
                                         class="btn btn-xl btn-default rounded-xl">
                                         <i class="fa fa-arrow-left"></i> Volver
                                     </a>
@@ -228,35 +228,45 @@
                                     <table class="table table-striped table-hover table-sm">
                                         <thead class="thead">
                                             <tr>
-                                                <th>Campaña</th>
+                                                {{-- <th>Campaña</th> --}}
                                                 <th>ACCIONES</th>
-                                                <th>#</th>
-                                                <th>Descripción</th>
-                                                <th>Tipo De Proceso</th>
+                                                {{-- <th>#</th> --}}
+                                                {{-- <th>Tipo De Proceso</th> --}}
                                                 <th>Proceso</th>
-                                                <th>Encargado</th>
-                                                <th>Personal</th>
                                                 <th>Competencia</th>
+                                                {{-- <th>Descripción</th> --}}
+                                                <th>Evaluado</th>
+                                                <th>Líder</th>
+                                                <th>Feedback</th>
+                                                <th>Fecha Feedback</th>
+                                                <th>Compromiso</th>
+                                                <th>Objetivo</th>
+                                                <th>Tipo Objetivo</th>
                                                 <th>Fecha De Revision</th>
-                                                <th>Estado</th>
+                                                <th>Estado de Validación</th>
+                                                <th>Observación de Validación</th>
                                                 <th>Avance</th>
                                                 <th>Evidencias</th>
-                                                <th>Gerencia</th>
-                                                <th>Area</th>
+                                                {{-- <th>Gerencia</th> --}}
+                                                {{-- <th>Area</th> --}}
                                                 <th>Fecha de Creación</th>
                                                 <th>Fecha de Modificación</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($planesDeAccions as $row)
-                                                {{-- {{dd($row)}} --}}
+                                                {{-- {{dd($row, $row->puedeEditarse())}} --}}
                                                 <tr>
-                                                    <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td>
+                                                    {{-- <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td> --}}
                                                     <td width="90">
                                                         <div class="btn-group">
-                                                            <a data-toggle="modal" data-target="#updatePlanDataModal"
-                                                                class="btn btn-sm btn-vanguard rounded-xl"
-                                                                wire:click="edit_plan({{ $row->id }})">Editar </a>
+                                                            @if ($row->puedeEditarse())                                                                
+                                                                <a data-toggle="modal" data-target="#updatePlanDataModal"
+                                                                    class="btn btn-sm btn-vanguard rounded-xl"
+                                                                    wire:click="edit_plan({{ $row->id }})">
+                                                                    Editar
+                                                                </a>
+                                                            @endif
                                                             @if ($primera_fase_activa)
                                                                 {{-- <a class="btn btn-sm btn-danger rounded-xl"
                                                                     onclick="confirm('Confirma borrar Planes De Mejora : {{ $row->name }}? \nPlanes De Mejora borrados no pueden ser recuperados!')||event.stopImmediatePropagation()"
@@ -266,16 +276,39 @@
                                                         </div>
                                                     </td>
 
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $row->name }}</td>
-                                                    <td>{{ $row->tipo_de_proceso->name ?? '' }}</td>
+                                                    {{-- <td>{{ $loop->iteration }}</td> --}}
+                                                    {{-- <td>{{ $row->tipo_de_proceso->name ?? '' }}</td> --}}
                                                     <td>{{ $row->proceso->name ?? '' }}</td>
-                                                    <td>{{ $row->encargado->name ?? '' }}</td>
-                                                    <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
+                                                    <td>{{ $row->empleado->name ?? '' }}</td>
+                                                    <td>{{ $row->encargado->name ?? '' }}</td>
+                                                    <td>"Feedback"</td>
+                                                    <td>"Fecha de Feedback"</td>
+                                                    <td>{{ $row->name }}</td>
+                                                    <td>{{ $row->objetivo }}</td>
+                                                    <td>{{ ucfirst(str_replace('_', ' ', $row->tipo_objetivo))}}</td>                                                    
                                                     <td>{{ $row->fecha_de_revision ?? '' }}</td>
-                                                    <td style=" background-color: {{ $row->estado->color ?? '' }};">
-                                                        {{ $row->estado->name ?? '' }}</td>
+                                                    {{-- <td style=" background-color: {{ $row->estado->color ?? '' }};">
+                                                        {{ $row->estado->name ?? '' }}</td> --}}
+                                                    <td>
+                                                        
+                                                        {{-- {{ strtoupper(str_replace('_', ' ', $row->estado_aprobacion)) }} --}}
+                                                        @if($row->estado_aprobacion == "validado")
+                                                            <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
+                                                                Validado
+                                                            </span>
+                                                        @elseif($row->estado_aprobacion == "no_validado")
+                                                            <span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">
+                                                                Rechazado
+                                                            </span>
+                                                        @elseif($row->estado_aprobacion == "pendiente")
+                                                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
+                                                                Pendiente
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    {{-- observaciones en caso de no validado --}}
+                                                    <td>{{ $row->estado_aprobacion == "no_validado" ? $row->observacion_validacion : '' }}</td>
                                                     <td>{{ $row->avance }}%</td>
 
                                                     <td>
@@ -290,9 +323,9 @@
                                                             <br>
                                                         @endforeach
                                                     </td>
-
+{{-- 
                                                     <td>{{ '' }}</td>
-                                                    <td>{{ '' }}</td>
+                                                    <td>{{ '' }}</td> --}}
                                                     <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
                                                     <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
                                                 </tr>

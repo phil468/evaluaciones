@@ -19,7 +19,7 @@ class PlanesDeAccionTable extends LivewireDatatable
 {
     public $hideable = 'inline';
     public $exportable = true;
-    public $afterTableSlot = 'planes-de-accion-table';
+    public $afterTableSlot = 'livewire.planes-de-accion-table';
     
     public $numeroSerieValidado=true, $fileUpload;
     public $updateMode = false;
@@ -180,11 +180,12 @@ class PlanesDeAccionTable extends LivewireDatatable
     public function abrirModalValidacion($planId, $estado)
     {
         // dd("modal");
-        $this->procesarValidacion(); // Llamada inicial para evitar problemas de validación
+        // $this->procesarValidacion(); // Llamada inicial para evitar problemas de validación
         $this->planSeleccionado = $planId;
         $this->estadoValidacion = $estado;
         $this->observacionValidacion = '';
         $this->showModalValidacion = true;
+        // $this->emit('abrirModalValidacion');
     }
 
     public function cerrarModalValidacion()
@@ -195,11 +196,11 @@ class PlanesDeAccionTable extends LivewireDatatable
         $this->observacionValidacion = '';
     }
 
-    public function procesarValidacion($estadoValidacion = 'no_validado', $observacion = 'mensaje x mensaje')
+    public function procesarValidacion()
     {
         // dd("procesar");
-        $this->estadoValidacion = $estadoValidacion; // 'validado' o 'no_validado'
-        $this->observacionValidacion = $observacion;
+        // $this->estadoValidacion = $estadoValidacion; // 'validado' o 'no_validado'
+        // $this->observacionValidacion = $observacion;
         $this->validate([
             'observacionValidacion' => $this->estadoValidacion === 'no_validado' ? 'required|min:10' : 'nullable',
         ], [

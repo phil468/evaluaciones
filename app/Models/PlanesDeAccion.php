@@ -42,6 +42,20 @@ class PlanesDeAccion extends Model implements Auditable
     ];
 
     
+    protected $dates = ['deleted_at', 'fecha_de_revision', 'fecha_evaluar_cumplimiento'];
+
+    // Relación polimórfica con feedbacks
+    public function feedbacks()
+    {
+        return $this->morphMany(Feedback::class, 'feedbackable')->orderBy('fecha_feedback', 'desc');
+    }
+
+    // Obtener el último feedback
+    public function getUltimoFeedbackAttribute()
+    {
+        return $this->feedbacks()->first();
+    }
+    
 public function aprobacionesHistorial() {
     return $this->hasMany(PlanesDeAccionAprobacionHistorial::class,'planes_de_accion_id');
 }

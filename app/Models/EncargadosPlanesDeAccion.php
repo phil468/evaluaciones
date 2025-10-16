@@ -44,7 +44,6 @@ class EncargadosPlanesDeAccion extends Model
     // buscar el cargo del empleado para la campaña especifica pero en la tabla campaniahasevaluado, ojo que un empleado_id puede aparecer en el personal_id pero de otras campanias
     public function campania_has_evaluado()
     {
-
         return $this->hasOne(CampaniaHasEvaluado::class, 'personal_id','empleado_id')
                 ->when($this->relationLoaded('plan_de_mejora') && $this->plan_de_mejora, 
                       fn($query) => $query->where('campania_id', $this->plan_de_mejora->campania_id));

@@ -64,9 +64,11 @@ class EncargadosPlanesDeAccions extends Component
     public $estado_aprobacion=null,$observacion_validacion;
 
     public $plan_de_mejora_configuracion;
-// Agregar estas propiedades públicas
-public $feedback;
-public $fecha_feedback;
+    // Agregar estas propiedades públicas
+    public $feedback;
+    public $fecha_feedback;
+    public $feedbacksGuardados = [];
+public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedback
 
     protected $listeners = [
         'setCompetenciaId' => 'setCompetenciaId'
@@ -101,6 +103,12 @@ public $fecha_feedback;
         $this->estado_cumplimiento = '';
         $this->estado_aprobacion = null;
         $this->observacion_validacion = '';
+        
+        $this->feedback = '';
+        $this->fecha_feedback = '';
+        $this->feedbacksGuardados = [];
+        $this->tiene_feedback = false;
+
     }
 
     protected function rulesPlan() {
@@ -118,6 +126,70 @@ public $fecha_feedback;
         ];
     }
     
+    protected function rules()
+{
+    $rules = [
+        'name' => 'required|min:10',
+        'competencia_id'=>'required',
+        'empleado_id' => 'required',
+        'encargado_id' => 'required',
+    ];
+
+    if ($this->primera_fase_activa) {
+        $planConfig = $this->plan_de_mejora_configuracion;
+        
+        $rules = array_merge($rules, [
+            'objetivo' => 'required|numeric|min:0',
+            'fecha_de_revision' => [
+                'required',
+                'date',
+                'after:today',
+                function ($attribute, $value, $fail) use ($planConfig) {
+                    $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_segunda_fase);
+                    $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_segunda_fase);
+                    $fechaSeleccionada = \Carbon\Carbon::parse($value);
+                    
+                    if ($fechaSeleccionada->lt($fechaInicio) || $fechaSeleccionada->gt($fechaFin)) {
+                        $fail('La fecha debe estar entre ' . $fechaInicio->format('d/m/Y') . ' y ' . $fechaFin->format('d/m/Y'));
+                    }
+                }
+            ],
+        ]);
+
+        // Solo validar feedback si hay contenido (es opcional pero si se llena debe cumplir validaciones)
+        if (!empty($this->feedback) || !empty($this->fecha_feedback)) {
+            $rules = array_merge($rules, [
+                'feedback' => 'required|min:10',
+                'fecha_feedback' => [
+                    'required',
+                    'date',
+                    function ($attribute, $value, $fail) use ($planConfig) {
+                        $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_primera_fase_matricula);
+                        $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_primera_fase_matricula);
+                        $fechaSeleccionada = \Carbon\Carbon::parse($value);
+                        
+                        if ($fechaSeleccionada->lt($fechaInicio) || $fechaSeleccionada->gt($fechaFin)) {
+                            $fail('La fecha debe estar entre ' . $fechaInicio->format('d/m/Y') . ' y ' . $fechaFin->format('d/m/Y'));
+                        }
+                    }
+                ],
+            ]);
+        }
+    }
+
+    if ($this->segunda_fase_activa) {
+        $rules = array_merge($rules, [
+            'alcanzado' => 'required|numeric|min:0',
+            
+            // 'porcentaje_cumplimiento' => 'required|numeric|min:0|max:100',
+            // 'estado_cumplimiento' => 'required',
+            // 'estado_aprobacion' => 'required|in:pendiente,validado,no_validado',
+        ]);
+    }
+
+    return $rules;
+}
+
     public function updatedObjetivo(){ $this->recalcularPct(); }
     public function updatedAlcanzado(){ $this->recalcularPct(); }
     
@@ -499,7 +571,9 @@ public $fecha_feedback;
     {
         if ($this->dashboard) { //Página en la que se muestra un personal en específico
             $this->proceso_id = 1;
-            $this->nombreEmpleado = Personal::find($this->empleado_id)->name;
+            $this->nombreEmpleado = 
+            // Personal::find($this->empleado_id)->name;
+            $this->evaluador_has_evaluado->empleado->name;
 
             if ($this->secciones) {
                 $this->secciones_ordenadas = $this->secciones_bajas($this->empleado_id);
@@ -566,7 +640,7 @@ public $fecha_feedback;
     
     public function cancel_plan()
     {
-        $this->resetInput_plan();
+        $this->resetFields();
         $this->updateMode = false;
         // return redirect()->route(Route::currentRouteName());
     }
@@ -651,8 +725,7 @@ public $fecha_feedback;
         $this->avance = $this->avance ?? 0;
         $this->estado_id = $this->estado_id ?? 1;
         $this->estado_aprobacion = $this->estado_aprobacion ?? 'pendiente';
-        // dd('store_plan');
-        $this->validate($this->rulesPlan());
+        $this->validate($this->rules());
         // contar los planes y si es igual a la cantidad_requerida, entonces, no se puede ingresar más planes
         // dd($this->cantidad_requerida);
         $contador_de_planes = PlanesDeAccion::latest()
@@ -706,7 +779,7 @@ public $fecha_feedback;
             'porcentaje_cumplimiento'=>$this->porcentaje_cumplimiento,
             'estado_cumplimiento'=>$this->estado_cumplimiento,
             'tipo_objetivo'=>$this->tipo_objetivo,
-            'estado_aprobacion'=>$this->estado_aprobacion,
+        'estado_aprobacion' => 'pendiente',
             'observacion_validacion'=>$this->observacion_validacion,
             'encargados_planes_de_accion_id'=>$this->encargados_planes_de_accion_id,
         ]);
@@ -715,7 +788,15 @@ public $fecha_feedback;
         // notificar si pasa a pendiente
         if($plan->estado_aprobacion==='pendiente') $this->enviarCorreoCambioEstado($plan);
 
-        $this->resetInput_plan();
+    // Guardar feedback si existe
+    if (!empty($this->feedback) && !empty($this->fecha_feedback)) {
+        $plan->feedbacks()->create([
+            'user_id' => auth()->id(),
+            'feedback' => $this->feedback,
+            'fecha_feedback' => $this->fecha_feedback,
+        ]);
+    }
+        $this->resetFields();
 		$this->emit('closeModal');
 		session()->flash('message', 'Planes De Mejora creado correctamente.');
         // return redirect()->route(Route::currentRouteName());
@@ -760,13 +841,26 @@ public $fecha_feedback;
     {
         // dd($id);
         $this->evaluar_fases();
-        $record = PlanesDeAccion::findOrFail($id);
+        $record = PlanesDeAccion::with('feedbacks.user')->findOrFail($id);
         // $this->plan = $record;
-            
+        
+        // Cargar feedbacks guardados
+        $this->feedbacksGuardados = $record->feedbacks->map(function($fb) {
+            return [
+                'id' => $fb->id,
+                'feedback' => $fb->feedback,
+                'fecha_feedback' => $fb->fecha_feedback->format('d/m/Y H:i'),
+                'usuario' => $fb->user->name ?? 'Usuario',
+            ];
+        })->toArray();
+        
+        // Limpiar campos de nuevo feedback
+        $this->feedback = '';
+        $this->fecha_feedback = '';
+
         // Verificar si puede editarse
         if (!$record->puedeEditarse()) {
             session()->flash('message', 'Este plan no puede ser editado en su estado actual.');
-            
             $this->updateMode = false;
             return;
         } else {            
@@ -785,11 +879,13 @@ public $fecha_feedback;
 		$this->area_id = $record-> area_id;
 		$this->avance = $record-> avance;
 		$this->name = $record-> name;
+
         $this->objetivo = $record->objetivo;
+    $this->tipo_objetivo = $record->tipo_objetivo ?? 'numerico';
         $this->alcanzado = $record->alcanzado;
         $this->porcentaje_cumplimiento = $record->porcentaje_cumplimiento;
         $this->estado_cumplimiento = $record->estado_cumplimiento;
-        $this->tipo_objetivo = $record->tipo_objetivo;
+        // $this->tipo_objetivo = $record->tipo_objetivo;
         $this->estado_aprobacion = $record->estado_aprobacion;
         $this->observacion_validacion = $record->observacion_validacion;
         
@@ -798,8 +894,78 @@ public $fecha_feedback;
         }
         // $this->evidencias = $record->evidencias;
 		
+        
+    // Cargar feedback (solo el primero, ya que es único)
+    $feedbackExistente = $record->feedbacks->first();
+    if ($feedbackExistente) {
+        $this->feedback = $feedbackExistente->feedback;
+        $this->fecha_feedback = $feedbackExistente->fecha_feedback 
+            ? \Carbon\Carbon::parse($feedbackExistente->fecha_feedback)->format('Y-m-d') 
+            : '';
+        $this->tiene_feedback = true;
+    } else {
+        $this->feedback = '';
+        $this->fecha_feedback = '';
+        $this->tiene_feedback = false;
+    }
         // $this->updateMode = true;
         // return redirect()->route(Route::currentRouteName());
+    }
+
+    
+    // Método para guardar feedback
+    public function guardarFeedback()
+    {
+        // Validar solo si hay contenido en feedback
+        if (empty($this->feedback)) {
+            return;
+        }
+
+        $plan = PlanesDeAccion::findOrFail($this->selected_id);
+        $planConfig = $plan->encargadoPlan->plan_de_mejora;
+
+        $this->validate([
+            'feedback' => 'required|min:10',
+            'fecha_feedback' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) use ($planConfig) {
+                    $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_primera_fase_matricula);
+                    $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_primera_fase_matricula);
+                    $fechaSeleccionada = \Carbon\Carbon::parse($value);
+                    
+                    if ($fechaSeleccionada->lt($fechaInicio) || $fechaSeleccionada->gt($fechaFin)) {
+                        $fail('La fecha debe estar entre ' . $fechaInicio->format('d/m/Y') . ' y ' . $fechaFin->format('d/m/Y'));
+                    }
+                }
+            ],
+        ], [
+            'feedback.required' => 'El feedback es obligatorio.',
+            'feedback.min' => 'El feedback debe tener al menos 10 caracteres.',
+            'fecha_feedback.required' => 'La fecha de feedback es obligatoria.',
+            'fecha_feedback.date' => 'Ingrese una fecha válida.',
+        ]);
+
+        // Crear el feedback
+        $nuevoFeedback = $plan->feedbacks()->create([
+            'user_id' => auth()->id(),
+            'feedback' => $this->feedback,
+            'fecha_feedback' => $this->fecha_feedback,
+        ]);
+
+        // Agregar a la lista de feedbacks guardados
+        $this->feedbacksGuardados[] = [
+            'id' => $nuevoFeedback->id,
+            'feedback' => $nuevoFeedback->feedback,
+            'fecha_feedback' => \Carbon\Carbon::parse($nuevoFeedback->fecha_feedback)->format('d/m/Y H:i'),
+            'usuario' => auth()->user()->name,
+        ];
+
+        // Limpiar campos
+        $this->feedback = '';
+        $this->fecha_feedback = '';
+
+        session()->flash('message', 'Feedback guardado correctamente.');
     }
 
     public function destroy_plan($id)
@@ -814,7 +980,15 @@ public $fecha_feedback;
     public function update_plan()
     {
         $this->evaluar_fases();
-        $this->validate($this->rulesPlan());
+    $record = PlanesDeAccion::findOrFail($this->selected_id);
+    
+    // Verificar si puede editarse
+    if (!$record->puedeEditarse()) {
+        session()->flash('message', 'Este plan no puede ser editado en su estado actual.');
+        return;
+    }
+
+    $this->validate($this->rules());
 
         // $this->validate([
 		// 	'name' => 'required',
@@ -859,6 +1033,18 @@ public $fecha_feedback;
                 $this->registrarHistorial($record,$estadoAnterior,$record->estado_aprobacion);
                 $this->enviarCorreoCambioEstado($record);
             }
+            
+    if ($this->primera_fase_activa && 
+        !$this->tiene_feedback && 
+        !empty($this->feedback) && 
+        !empty($this->fecha_feedback)) {
+        
+        $record->feedbacks()->create([
+            'user_id' => auth()->id(),
+            'feedback' => $this->feedback,
+            'fecha_feedback' => $this->fecha_feedback,
+        ]);
+    }
 
             // Procesar y guardar las evidencias
             if ($this->evidencias) {
@@ -875,7 +1061,7 @@ public $fecha_feedback;
                 }
             }
 
-            $this->resetInput_plan();
+            $this->resetFields();
             $this->updateMode = false;
 		    $this->emit('closeModal');
 			session()->flash('message', 'Planes De Mejora actualizado correctamente.');
