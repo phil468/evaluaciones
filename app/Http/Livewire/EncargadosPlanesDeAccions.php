@@ -145,9 +145,11 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
                 'date',
                 'after:today',
                 function ($attribute, $value, $fail) use ($planConfig) {
-                    $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_segunda_fase);
-                    $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_segunda_fase);
-                    $fechaSeleccionada = \Carbon\Carbon::parse($value);
+                    //quiero que la fecha se compare sin horas
+                    $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_segunda_fase)->startOfDay();
+                    $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_segunda_fase)->endOfDay();
+                    $fechaSeleccionada = \Carbon\Carbon::parse($value)->startOfDay();
+                    // dd($fechaSeleccionada, $fechaInicio, $fechaFin);
                     
                     if ($fechaSeleccionada->lt($fechaInicio) || $fechaSeleccionada->gt($fechaFin)) {
                         $fail('La fecha debe estar entre ' . $fechaInicio->format('d/m/Y') . ' y ' . $fechaFin->format('d/m/Y'));
@@ -164,9 +166,9 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
                     'required',
                     'date',
                     function ($attribute, $value, $fail) use ($planConfig) {
-                        $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_primera_fase_matricula);
-                        $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_primera_fase_matricula);
-                        $fechaSeleccionada = \Carbon\Carbon::parse($value);
+                        $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_primera_fase_matricula)->startOfDay();
+                        $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_primera_fase_matricula)->endOfDay();
+                        $fechaSeleccionada = \Carbon\Carbon::parse($value)->startOfDay();
                         
                         if ($fechaSeleccionada->lt($fechaInicio) || $fechaSeleccionada->gt($fechaFin)) {
                             $fail('La fecha debe estar entre ' . $fechaInicio->format('d/m/Y') . ' y ' . $fechaFin->format('d/m/Y'));
@@ -930,9 +932,9 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
                 'required',
                 'date',
                 function ($attribute, $value, $fail) use ($planConfig) {
-                    $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_primera_fase_matricula);
-                    $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_primera_fase_matricula);
-                    $fechaSeleccionada = \Carbon\Carbon::parse($value);
+                    $fechaInicio = \Carbon\Carbon::parse($planConfig->fecha_inicio_primera_fase_matricula)->startOfDay();
+                    $fechaFin = \Carbon\Carbon::parse($planConfig->fecha_fin_primera_fase_matricula)->endOfDay();
+                    $fechaSeleccionada = \Carbon\Carbon::parse($value)->startOfDay();
                     
                     if ($fechaSeleccionada->lt($fechaInicio) || $fechaSeleccionada->gt($fechaFin)) {
                         $fail('La fecha debe estar entre ' . $fechaInicio->format('d/m/Y') . ' y ' . $fechaFin->format('d/m/Y'));

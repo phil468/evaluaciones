@@ -282,12 +282,12 @@
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
                                                     <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->encargado->name ?? '' }}</td>
-                                                    <td>"Feedback"</td>
-                                                    <td>"Fecha de Feedback"</td>
+                                                    <td>{{ $row->feedbacks->first()->feedback ?? '' }}</td>
+                                                    <td>{{ $row->feedbacks->first() ? $row->feedbacks->first()->fecha_feedback->format('d-m-Y') : '' }}</td>
                                                     <td>{{ $row->name }}</td>
                                                     <td>{{ $row->objetivo }}</td>
                                                     <td>{{ ucfirst(str_replace('_', ' ', $row->tipo_objetivo))}}</td>                                                    
-                                                    <td>{{ $row->fecha_de_revision ?? '' }}</td>
+                                                    <td>{{ $row->fecha_de_revision->format('d-m-Y') ?? '' }}</td>
                                                     {{-- <td style=" background-color: {{ $row->estado->color ?? '' }};">
                                                         {{ $row->estado->name ?? '' }}</td> --}}
                                                     <td>
