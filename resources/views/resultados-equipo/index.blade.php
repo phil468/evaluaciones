@@ -17,7 +17,7 @@
                         <tr>
                             <th>Nombre</th>
                             <th class="text-center" style="color: #568ca5;">Puntaje Comp. {{$nombre_campania}}</th>
-                            <th class="text-center" style="color: #568ca5;">Puntaje PDI {{$nombre_campania}}</th>
+                            <th class="text-center" style="color: #568ca5;">Puntaje PMI {{$nombre_campania}}</th>
                             {{-- <th class="text-center" style="color: #568ca5;">Puntaje Obj. {{$nombre_campania}}</th> --}}
                             <th class="text-center">Acciones</th>
                         </tr>

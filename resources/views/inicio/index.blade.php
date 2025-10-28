@@ -18,7 +18,7 @@
             <div class="shadow card rounded-xl">
                 <div class="card-body justify-content-between align-items-center">
                     <div class=" d-flex">
-                        <h5 class="m-0 h5">¡Tienes evaluaciones pendientes por realizar!</h5>
+                        <h5 class="m-0 h5">¡Tienes pendientes por realizar!</h5>
                         <div class="d-flex align-items-center">
                             <div class="ml-3 notification-bell">
                                 <i class="fas fa-bell fa-lg text-muted"></i>

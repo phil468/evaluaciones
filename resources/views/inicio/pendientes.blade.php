@@ -295,7 +295,7 @@
             } else {
                 estadoBadge = 'badge-warning';
                 estadoBtn = 'btn-vanguard';
-                estadoTexto = plan.plan_de_mejora.primera_fase_activa ? 'Dar Feedback' : 'Ingresar Seguimiento';
+                estadoTexto = plan.plan_de_mejora.primera_fase_activa ? 'Ingresar Feedback y PMI' : 'Ingresar Seguimiento';
             }
 
             return `
@@ -307,7 +307,7 @@
                             </div>
                             <h5 class="mb-0 employee-name">${nombreCompleto}</h5>
                             <p class="mb-1 text-muted small">${plan.campania_has_evaluado.puesto?.name || 'Sin cargo'}</p>
-                            <div class="mb-2 badge ${estadoBadge}">Fase ${plan.plan_de_mejora.primera_fase_activa ? '1' : '2'}</div>
+                            <div class="mb-2 badge ${estadoBadge}">Fase ${plan.plan_de_mejora.primera_fase_activa ? 'de registro' : 'de seguimiento'}</div>
 
                             <a href='${nuevaRuta}'
                                class="btn ${estadoBtn} btn-block btn-sm rounded-xl"

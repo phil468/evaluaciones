@@ -150,7 +150,7 @@
                 <tbody>
                     @foreach($pdi as $anio => $datos)
                     <tr>
-                        <td style="width: 20%;">PDI {{ $anio }}</td>
+                        <td style="width: 20%;">PMI {{ $anio }}</td>
                         <td style="width: 50%;">
                             <div class="progress" style="height: 25px;">
                                 @if($datos['estado'] === 'sin_resultados')
@@ -270,7 +270,7 @@
             alert('Detalle de objetivos por implementar');
         } else if (tipo === 'pdi') {
             // Implementar para PDI
-            alert('Detalle de PDI por implementar');
+            alert('Detalle de PMI por implementar');
         }
         // const rutas = {
         //     'competencias': `{{ route('evaluacion-competencias.detalle') }}?empleado_id=${empleadoId}&anio=${anio}`,

@@ -427,7 +427,7 @@ return [
                 ],
 
                 [
-                    'text' => 'Seguimiento de PDI',
+                    'text' => 'Seguimiento de PMI',
                     'url'  => 'planes-de-accion',
                     'icon' => 'fas fa-cog fa-xs',
                     'can'  => 'ver-planes-de-accion',

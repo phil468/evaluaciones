@@ -154,7 +154,17 @@
                         @if ($dashboard)
                             <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-2">
                                 <div class="float-left h5">
-                                    PERSONAL: {{ $nombreEmpleado }}
+                                    <b>Evaluado</b>
+                                    {{-- <br> --}}
+                                    <p class="mx-2">{{ $nombreEmpleado }}</p>
+                                    
+                                </div>
+                                <div class="float-left h5">
+                                    <b>Líder</b> 
+                                    {{-- <br>  --}}
+                                    <p class="mx-2">
+                                        {{ $evaluador_has_evaluado->encargado->name }}
+                                    </p>
                                 </div>
                                 {{-- <a href="{{ route('planes-de-mejora.ingreso', [$ingreso => 'ingreso']) }}"
                                     class="btn btn-xl btn-default rounded-xl">
@@ -162,7 +172,7 @@
                                 </a> --}}
                             </div>
 
-                            <div class="float-right mb-2">
+                            {{-- <div class="float-right mb-2"> --}}
                                 {{-- <p class="text-right align">
                                     <button class="btn rounded-xl btn-vanguard" 
                                     wire:click="openModal()" 
@@ -175,12 +185,12 @@
                                         <i class="fa fa-plus"></i>  Nuevo
                                     </button>
                                 </p> --}}
-                                <p>
+                                {{-- <p>
                                     (Requeridos: {{ $cantidad_requerida }} planes)
-                                </p>
-                            </div>
+                                </p> --}}
+                            {{-- </div> --}}
                             @if ($planesDeAccions->count() < $cantidad_requerida)
-                                <p class="mb-2 h6">Debe ingresar planes de mejora de las siguientes competencias: </p>
+                                <p class="mb-2 h6">Construye el PMI, eligiendo las dos (02) competencias más bajas a continuación: </p>
                                 @foreach ($secciones_ordenadas as $row)
                                     {{-- {{dd($secciones_ordenadas)}} --}}
                                     @if ($row->bajo)
@@ -225,32 +235,33 @@
                                         No hay registro de planes de acción ingresados
                                     </div>
                                 @else
-                                    <table class="table table-striped table-hover table-sm">
+                                    <table class="table table-striped table-hover table-sm" id="table-planes">
                                         <thead class="thead">
                                             <tr>
+                                                <th>Estado</th>
+                                                <th>Observación de Validación</th>
                                                 {{-- <th>Campaña</th> --}}
-                                                <th>ACCIONES</th>
+                                                <th>Edición</th>
                                                 {{-- <th>#</th> --}}
                                                 {{-- <th>Tipo De Proceso</th> --}}
-                                                <th>Proceso</th>
+                                                {{-- <th>Proceso</th> --}}
                                                 <th>Competencia</th>
-                                                {{-- <th>Descripción</th> --}}
-                                                <th>Evaluado</th>
-                                                <th>Líder</th>
                                                 <th>Feedback</th>
-                                                <th>Fecha Feedback</th>
-                                                <th>Compromiso</th>
-                                                <th>Objetivo</th>
+                                                <th>Fecha de feedback</th>
+                                                <th>Compromiso SMART</th>
+                                                <th>Objetivo medible</th>
                                                 <th>Tipo Objetivo</th>
-                                                <th>Fecha De Revision</th>
-                                                <th>Estado de Validación</th>
-                                                <th>Observación de Validación</th>
-                                                <th>Avance</th>
+                                                <th>Fecha de revisión de compromiso</th>
                                                 <th>Evidencias</th>
+                                                <th>Fecha de registro de compromiso</th>
+                                                {{-- <th>Descripción</th> --}}
+                                                {{-- <th>Evaluado</th>
+                                                <th>Líder</th>
+                                                <th>Avance</th>
+                                                <th>Evidencias</th> --}}
                                                 {{-- <th>Gerencia</th> --}}
                                                 {{-- <th>Area</th> --}}
-                                                <th>Fecha de Creación</th>
-                                                <th>Fecha de Modificación</th>
+                                                {{-- <th>Fecha de Creación</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -258,6 +269,23 @@
                                                 {{-- {{dd($row, $row->puedeEditarse())}} --}}
                                                 <tr>
                                                     {{-- <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td> --}}
+                                                    <td>
+                                                        {{-- {{ strtoupper(str_replace('_', ' ', $row->estado_aprobacion)) }} --}}
+                                                        @if($row->estado_aprobacion == "validado")
+                                                            <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
+                                                                Validado
+                                                            </span>
+                                                        @elseif($row->estado_aprobacion == "no_validado")
+                                                            <span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">
+                                                                No validado
+                                                            </span>
+                                                        @elseif($row->estado_aprobacion == "pendiente")
+                                                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
+                                                                Pendiente
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $row->estado_aprobacion == "no_validado" ? $row->observacion_validacion : '' }}</td>
                                                     <td width="90">
                                                         <div class="btn-group">
                                                             @if ($row->puedeEditarse())                                                                
@@ -278,38 +306,20 @@
 
                                                     {{-- <td>{{ $loop->iteration }}</td> --}}
                                                     {{-- <td>{{ $row->tipo_de_proceso->name ?? '' }}</td> --}}
-                                                    <td>{{ $row->proceso->name ?? '' }}</td>
+                                                    {{-- <td>{{ $row->proceso->name ?? '' }}</td> --}}
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
-                                                    <td>{{ $row->empleado->name ?? '' }}</td>
-                                                    <td>{{ $row->encargado->name ?? '' }}</td>
                                                     <td>{{ $row->feedbacks->first()->feedback ?? '' }}</td>
                                                     <td>{{ $row->feedbacks->first() ? $row->feedbacks->first()->fecha_feedback->format('d-m-Y') : '' }}</td>
+                                                    {{-- <td>{{ $row->empleado->name ?? '' }}</td>
+                                                    <td>{{ $row->encargado->name ?? '' }}</td> --}}
                                                     <td>{{ $row->name }}</td>
                                                     <td>{{ $row->objetivo }}</td>
-                                                    <td>{{ ucfirst(str_replace('_', ' ', $row->tipo_objetivo))}}</td>                                                    
+                                                    <td>{{ ucfirst(str_replace('_', ' ', $row->tipo_objetivo))}}</td>
                                                     <td>{{ $row->fecha_de_revision->format('d-m-Y') ?? '' }}</td>
                                                     {{-- <td style=" background-color: {{ $row->estado->color ?? '' }};">
                                                         {{ $row->estado->name ?? '' }}</td> --}}
-                                                    <td>
-                                                        
-                                                        {{-- {{ strtoupper(str_replace('_', ' ', $row->estado_aprobacion)) }} --}}
-                                                        @if($row->estado_aprobacion == "validado")
-                                                            <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
-                                                                Validado
-                                                            </span>
-                                                        @elseif($row->estado_aprobacion == "no_validado")
-                                                            <span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">
-                                                                Rechazado
-                                                            </span>
-                                                        @elseif($row->estado_aprobacion == "pendiente")
-                                                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
-                                                                Pendiente
-                                                            </span>
-                                                        @endif
-                                                    </td>
                                                     {{-- observaciones en caso de no validado --}}
-                                                    <td>{{ $row->estado_aprobacion == "no_validado" ? $row->observacion_validacion : '' }}</td>
-                                                    <td>{{ $row->avance }}%</td>
+                                                    {{-- <td>{{ $row->avance }}%</td> --}}
 
                                                     <td>
                                                         @foreach ($row->evidencias()->get() as $evidencia)
@@ -326,7 +336,7 @@
 {{-- 
                                                     <td>{{ '' }}</td>
                                                     <td>{{ '' }}</td> --}}
-                                                    <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td>
+                                                    {{-- <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td> --}}
                                                     <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
                                                 </tr>
                                             @endforeach
