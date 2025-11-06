@@ -14,7 +14,7 @@
 
     
     <h1 class="m-0 text-center text-dark font-weight-bold">
-        <a href="{{ url()->previous() }}" class="mr-2 btn-link btn-light btn-sm">
+        <a href="{{ route('resultados-de-equipo.index') }}" class="mr-2 btn-link btn-light btn-sm">
             <i class="fas fa-arrow-left"></i>
             Atrás
         </a>

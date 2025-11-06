@@ -333,13 +333,13 @@ return [
         //     'classes' => 'rounded-xl',
         // ],
 
-        // [
-        //     'text' => 'Plan De Mejora Individual',
-        //     'url'  => 'plan-de-mejora',
-        //     'icon' => 'fas fa-pencil-alt',
-        //     'can'  => 'ver-evaluaciones-de-desempeno',
-        //     'classes' => 'rounded-xl'
-        // ],
+        [
+            'text' => 'Plan De Mejora Individual',
+            'url'  => 'plan-de-mejora',
+            'icon' => 'fas fa-pencil-alt',
+            'can'  => 'ver-evaluaciones-de-desempeno',
+            'classes' => 'rounded-xl'
+        ],
         // quitado de producción -fin
 
         //         [

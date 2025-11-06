@@ -145,14 +145,15 @@ class User extends Authenticatable implements JWTSubject
         
 
     // Pendientes como encargado de planes de acción (relación con plan_de_mejora)
-    $pendientesComoEncargadoPlanes = $this->personal->planesComoEncargado()
+    // Considera pendiente si:
+    // 1. No tiene planes ingresados (whereDoesntHave)
+    // 2. Tiene planes pero no están validados (orWhereHas con condición)
+    $pendientesComoEncargadoPlanes = 
+    $this->personal->planesComoEncargado()
         ->habilitado()
-        // ->where('habilitado',1)
         ->whereHas('plan_de_mejora', function($query) {
             $today = now();
             $query->where('status', 1)
-            // ->where('estado_aprobacion' , '!=' , 'validado')
-            // ->where('estado_aprobacion' , '<>' , 'validado')
                 ->where(function($q) use ($today) {
                     $q->where(function($sub) use ($today) {
                         $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
@@ -164,102 +165,15 @@ class User extends Authenticatable implements JWTSubject
                     });
                 });
         })
-        ->whereHas('planesDeMejora', function($q) {
-            $q->where('estado_aprobacion' , '!=' , 'validado');
+        ->where(function($query) {
+            // Sin planes ingresados O con planes no validados
+            $query->whereDoesntHave('planesDeMejora')
+                  ->orWhereHas('planesDeMejora', function($q) {
+                      $q->where('estado_aprobacion', '!=', 'validado');
+                  });
         })
-        ->get()
-        ->contains(fn($p) => $p->estado_pendiente);
+        ->exists();
 
-        // dd(
-        //     $this->personal->planesComoEncargado()
-        //         ->habilitado()
-        //         ->whereHas('plan_de_mejora', function($query) {
-        //         $today = now();
-        //         $query->where('status', 1)
-        //             ->where(function($q) use ($today) {
-        //                 $q->where(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
-        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
-        //                 })
-        //                 ->orWhere(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
-        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
-        //                 });
-        //             });
-        //         })
-        //         ->get() ,
-
-        //         $this->personal->planesComoEncargado()
-        //         ->habilitado()
-        //         ->whereHas('plan_de_mejora', function($query) {
-        //         $today = now();
-        //         $query->where('status', 1)
-        //             ->where(function($q) use ($today) {
-        //                 $q->where(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
-        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
-        //                 })
-        //                 ->orWhere(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
-        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
-        //                 });
-        //             });
-        //         })
-        //         ->first()->cantidad_requerida ,
-
-        //         $this->personal->planesComoEncargado()
-        //         ->habilitado()
-        //         ->whereHas('plan_de_mejora', function($query) {
-        //         $today = now();
-        //         $query->where('status', 1)
-        //             ->where(function($q) use ($today) {
-        //                 $q->where(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
-        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
-        //                 })
-        //                 ->orWhere(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
-        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
-        //                 });
-        //             });
-        //         })
-                
-        //         ->first()->estado_pendiente ,
-
-        //         $this->personal->planesComoEncargado()
-        //         ->habilitado()
-        //         ->whereHas('plan_de_mejora', function($query) {
-        //         $today = now();
-        //         $query->where('status', 1)
-        //             ->where(function($q) use ($today) {
-        //                 $q->where(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_primera_fase_matricula', '<=', $today)
-        //                         ->where('fecha_fin_primera_fase_matricula', '>=', $today);
-        //                 })
-        //                 ->orWhere(function($sub) use ($today) {
-        //                     $sub->where('fecha_inicio_segunda_fase', '<=', $today)
-        //                         ->where('fecha_fin_segunda_fase', '>=', $today);
-        //                 });
-        //             });
-        //         })
-                
-        //         ->first()->planes_de_accion_empleado ,
-
-        //         )
-        //     ;
-
-
-        // Verificar evaluaciones pendientes como evaluado
-        // $pendientesComoEvaluado = $this->personal->evaluadoHasEvaluadors()
-        //     ->whereHas('evaluacion', function($query) {
-        //         $query->where('activa', true);
-        //     })
-        //     ->get()
-        //     ->filter(function($evaluacion) {
-        //         return $evaluacion->estado_pendiente;
-        //     })
-        //     ->count() > 0;
-        
         // return $pendientesComoEvaluador || $pendientesComoEvaluado;
         return $pendientesComoEvaluador || $pendientesComoEncargadoPlanes;
     }

@@ -72,7 +72,7 @@
                         @if(!($esVistaEquipo ?? false))
                             {{-- Solo mostrar el botón en vista personal --}}
                             <div class="mt-4 text-center">
-                                <a href="{{ route('plan.mejora') ?? '#' }}"
+                                <a href="{{ route('plan.mejora.index') ?? '#' }}"
                                    class="btn btn-vanguard disabled" aria-disabled="true">
                                     Ir a Plan de Mejora
                                 </a>

@@ -208,7 +208,7 @@ class PlanesDeAccionTable extends LivewireDatatable
             'observacionValidacion.min' => 'La observación debe tener al menos 10 caracteres.',
         ]);
 
-        $plan = PlanesDeAccion::with(['empleado', 'encargado'])->findOrFail($this->planSeleccionado);
+        $plan = PlanesDeAccion::with(['empleado', 'encargado', 'encargados_planes_de_accion'])->findOrFail($this->planSeleccionado);
         $estadoAnterior = $plan->estado_aprobacion;
 
         // Actualizar el plan
@@ -226,14 +226,8 @@ class PlanesDeAccionTable extends LivewireDatatable
             'observacion' => $this->observacionValidacion
         ]);
 
-        // Enviar email
-        try {
-            if ($plan->encargado && $plan->encargado->user->email) {
-                Mail::to($plan->encargado->user->email)->send(new EstadoAprobacionPlanMail($plan));
-            }
-        } catch (\Exception $e) {
-            session()->flash('warning', 'Plan actualizado pero no se pudo enviar el email: ' . $e->getMessage());
-        }
+        // Verificar si se deben enviar todos los planes del encargado
+        $this->verificarYEnviarCorreoCompleto($plan);
 
         // Mensaje de éxito
         $mensaje = $this->estadoValidacion === 'validado' 
@@ -244,6 +238,64 @@ class PlanesDeAccionTable extends LivewireDatatable
 
         $this->cerrarModalValidacion();
         $this->emit('refreshDatatable');
+    }
+
+    /**
+     * Verifica si todos los planes del encargado están validados/no_validados
+     * y envía el correo con todos los planes si se cumple la condición
+     */
+    protected function verificarYEnviarCorreoCompleto($plan)
+    {
+        if (!$plan->encargados_planes_de_accion_id) {
+            return; // No tiene encargado asociado
+        }
+
+        $encargadoPlan = EncargadosPlanesDeAccion::with([
+            'planesDeMejora.competencia',
+            'empleado.user',
+            'encargado.user'
+        ])->find($plan->encargados_planes_de_accion_id);
+
+        if (!$encargadoPlan) {
+            return;
+        }
+
+        // Obtener todos los planes relacionados
+        $todosLosPlanes = $encargadoPlan->planesDeMejora;
+        
+        // Verificar condición 1: Se alcanzó la cantidad requerida
+        if ($todosLosPlanes->count() < $encargadoPlan->cantidad_requerida) {
+            return; // No se han ingresado todos los planes requeridos
+        }
+
+        // Verificar condición 2: Ningún plan debe estar en estado 'pendiente'
+        $hayPendientes = $todosLosPlanes->contains('estado_aprobacion', 'pendiente');
+        
+        if ($hayPendientes) {
+            return; // Aún hay planes pendientes de validación
+        }
+
+        // Verificar condición 3: Todos deben estar en 'validado' o 'no_validado'
+        $todosRevisados = $todosLosPlanes->every(function($p) {
+            return in_array($p->estado_aprobacion, ['validado', 'no_validado']);
+        });
+
+        if (!$todosRevisados) {
+            return; // No todos están en estado final
+        }
+
+        // ✅ Todas las condiciones se cumplen: Enviar correo
+        try {
+            if ($encargadoPlan->encargado && $encargadoPlan->encargado->user && $encargadoPlan->encargado->user->email) {
+                Mail::to($encargadoPlan->encargado->user->email)
+                    ->send(new EstadoAprobacionPlanMail($encargadoPlan));
+                
+                session()->flash('success', 'Todos los planes han sido revisados. Se ha enviado notificación al encargado.');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error enviando correo de planes validados: ' . $e->getMessage());
+            session()->flash('warning', 'Planes actualizados pero no se pudo enviar el email: ' . $e->getMessage());
+        }
     }
 
     public function mostrarAuditorias($id)

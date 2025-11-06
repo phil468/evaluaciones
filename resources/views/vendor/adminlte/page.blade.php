@@ -104,6 +104,11 @@
             $('#graciasModal').modal('show');
         });
 
+        // window.livewire.on('showWelcomeAlert', () => {
+        //     // $('#indicacionesModal').modal('show');
+        //     console.log('Indicaciones modal abierto');
+        // });
+
         window.livewire.on('confirmacionModal', () => {
             $('#confirmacionModal').modal('show');
         });

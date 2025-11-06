@@ -2,6 +2,7 @@
 namespace App\Mail;
 
 use App\Models\PlanesDeAccion;
+use App\Models\EncargadosPlanesDeAccion;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -9,13 +10,18 @@ use Illuminate\Queue\SerializesModels;
 class EstadoAprobacionPlanMail extends Mailable {
     use Queueable, SerializesModels;
 
-    public $plan;
-    public function __construct(PlanesDeAccion $plan){
-        $this->plan = $plan;
+    public $planes;
+    public $encargadoPlan;
+    public $empleado;
+    
+    public function __construct(EncargadosPlanesDeAccion $encargadoPlan){
+        $this->encargadoPlan = $encargadoPlan;
+        $this->planes = $encargadoPlan->planesDeMejora;
+        $this->empleado = $encargadoPlan->empleado;
     }
+    
     public function build(){
-        $estado = $this->plan->estado_aprobacion;
-        $subject = 'Plan de Mejora '.strtoupper($estado);
+        $subject = 'Validación de Planes de Mejora Individual (PMI)';
         return $this->subject($subject)
             ->view('emails.plan_estado_aprobacion');
     }

@@ -236,7 +236,7 @@
                 </div>
                 <div class="card-footer rounded-b-xl">
                     <a href=
-                    {{ route('plan.mejora') }}
+                    {{ route('plan.mejora.index') }}
                     {{-- "#" --}}
                     {{-- "{{ route('evaluaciones.desarrollo') }}"  --}}
                     class="shadow rounded-xl btn btn-vanguard btn-block disabled" disabled>

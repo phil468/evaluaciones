@@ -36,7 +36,6 @@
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
         <link href="{{ asset('css/fonts.css') }}" rel="stylesheet">
-        
     @else
         <link rel="stylesheet" href="{{ mix(config('adminlte.laravel_mix_css_path', 'css/app.css')) }}">
     @endif
@@ -47,7 +46,7 @@
     {{-- Livewire Styles --}}
     @if (config('adminlte.livewire'))
         @if (app()->version() >= 7)
-            @livewireStyles(['nonce' =>  $nonce])
+            @livewireStyles(['nonce' => $nonce])
         @else
             <livewire:styles />
         @endif
@@ -112,7 +111,7 @@
             font-style: normal;
             font-size: 2.5em;
         }
-        
+
         /* Estilos personalizados */
         .font-style-poppins {
             font-family: "poppins", sans-serif;
@@ -120,7 +119,6 @@
             /* font-style: normal; */
             /* font-size: 2.5em; */
         }
-
     </style>
 
 </head>
@@ -160,12 +158,12 @@
     {{-- Base Scripts --}}
     @if (!config('adminlte.enabled_laravel_mix'))
         <script nonce="{{ $nonce }}" src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-        
+
         <script nonce="{{ $nonce }}" src="{{ asset('js/csrf.js') }}"></script>
         <script nonce="{{ $nonce }}" src="{{ asset('js/utils.js') }}"></script>
         <script nonce="{{ $nonce }}" src="{{ asset('js/baseModel.js') }}"></script>
-        
-        
+
+
         {{-- <script nonce="{{ $nonce }}" src="{{ asset('js/app.js') }}" defer></script> --}}
         <script nonce="{{ $nonce }}" src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         {{-- <script nonce="{{ $nonce }}" src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
@@ -191,17 +189,17 @@
     @endif
 
     <script nonce="{{ $nonce }}" src="{{ asset('js/bootstrap4-toggle.min.js') }}"></script>
-    <script nonce="{{ $nonce }}" type="text/javascript" src="js/select2.full.min.js"></script>
-    <script nonce="{{ $nonce }}" type="text/javascript" src="js/luxon.min.js"></script>
-    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="js/orgchart.js"></script> --}}
-    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-org-chart.js"></script> --}}
-    <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3.v7.min.js"></script>
-    <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-org-chart@3.0.1"></script>
-    <script nonce="{{ $nonce }}" type="text/javascript" src="js/d3-flextree.js"></script>
-    
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/luxon.min.js') }}"></script>
+    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/orgchart.js') }}"></script> --}}
+    {{-- <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/d3-org-chart.js') }}"></script> --}}
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/d3.v7.min.js') }}"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/d3-org-chart@3.0.1') }}"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/d3-flextree.js') }}"></script>
+
     <script nonce="{{ $nonce }}" src="{{ asset('js/chart.js') }}"></script>
     <script nonce="{{ $nonce }}" src="{{ asset('js/chartjs-plugin-datalabels@2.js') }}"></script>
-    
+
     @yield('adminlte_js')
     {{-- <script nonce="{{ $nonce }}" src= --}}
     {{-- "{{ asset('js/bootstrap4-toggle.min.js')}}" --}}
@@ -212,13 +210,14 @@
     <script nonce="{{ $nonce }}" src="{{ asset('js/choices.min.js') }}" {{-- "https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js" --}}></script>
 
     <!-- Tabulator -->
-    <link nonce="{{ $nonce }}" href="dist/css/tabulator_bootstrap5.min.css" rel="stylesheet">
-    <script nonce="{{ $nonce }}" type="text/javascript" src="dist/js/tabulator.min.js"></script>
+    <link nonce="{{ $nonce }}" href="{{ asset('dist/css/tabulator_bootstrap5.min.css') }}" rel="stylesheet">
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('dist/js/tabulator.min.js') }}"></script>
 
     <!-- SweetAlert -->
-    <script nonce="{{ $nonce }}" type="text/javascript" src="dist/js/sweetalert2.all.min.js"></script>
-    <link nonce="{{ $nonce }}" href="dist/css/sweetalert2.min.css" rel="stylesheet">
-    <script nonce="{{ $nonce }}" type="text/javascript" src="js/xlsx.full.min.js"></script>
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('dist/js/sweetalert2.all.min.js') }}">
+    </script>
+    <link nonce="{{ $nonce }}" href="{{ asset('dist/css/sweetalert2.min.css') }}" rel="stylesheet">
+    <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/xlsx.full.min.js') }}"></script>
 
 </body>
 

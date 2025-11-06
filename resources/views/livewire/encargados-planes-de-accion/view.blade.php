@@ -1,4 +1,4 @@
-{{-- @section('title', __('Encargados Planes De Mejora')) --}}
+@section('title', __('Planes De Mejora Individual'))
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -190,7 +190,7 @@
                                 </p> --}}
                             {{-- </div> --}}
                             @if ($planesDeAccions->count() < $cantidad_requerida)
-                                <p class="mb-2 h6">Construye el PMI, eligiendo las dos (02) competencias más bajas a continuación: </p>
+                                <p class="mb-2 h6 text-bold">Construye el PMI, eligiendo las dos (02) competencias más bajas a continuación: </p>
                                 @foreach ($secciones_ordenadas as $row)
                                     {{-- {{dd($secciones_ordenadas)}} --}}
                                     @if ($row->bajo)
@@ -235,11 +235,11 @@
                                         No hay registro de planes de acción ingresados
                                     </div>
                                 @else
-                                    <table class="table table-striped table-hover table-sm" id="table-planes">
-                                        <thead class="thead">
+                                    <table class="table table-bordered table-striped table-hover table-sm" id="table-planes">
+                                        <thead class="text-white thead bg-vanguard">
                                             <tr>
-                                                <th>Estado</th>
-                                                <th>Observación de Validación</th>
+                                                <th style="min-width: 100px;">Estado de aprobación</th>
+                                                {{-- <th>Observación de Validación</th> --}}
                                                 {{-- <th>Campaña</th> --}}
                                                 <th>Edición</th>
                                                 {{-- <th>#</th> --}}
@@ -247,12 +247,14 @@
                                                 {{-- <th>Proceso</th> --}}
                                                 <th>Competencia</th>
                                                 <th>Feedback</th>
-                                                <th>Fecha de feedback</th>
+                                                <th style="min-width: 105px;">Fecha de feedback</th>
                                                 <th>Compromiso SMART</th>
                                                 <th>Objetivo medible</th>
                                                 <th>Tipo Objetivo</th>
                                                 <th>Fecha de revisión de compromiso</th>
-                                                <th>Evidencias</th>
+                                                @if ($segunda_fase_activa)
+                                                    <th>Evidencias</th>
+                                                @endif
                                                 <th>Fecha de registro de compromiso</th>
                                                 {{-- <th>Descripción</th> --}}
                                                 {{-- <th>Evaluado</th>
@@ -272,20 +274,20 @@
                                                     <td>
                                                         {{-- {{ strtoupper(str_replace('_', ' ', $row->estado_aprobacion)) }} --}}
                                                         @if($row->estado_aprobacion == "validado")
-                                                            <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
+                                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-success">
                                                                 Validado
                                                             </span>
                                                         @elseif($row->estado_aprobacion == "no_validado")
-                                                            <span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">
+                                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-danger">
                                                                 No validado
                                                             </span>
                                                         @elseif($row->estado_aprobacion == "pendiente")
-                                                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
+                                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray">
                                                                 Pendiente
                                                             </span>
                                                         @endif
                                                     </td>
-                                                    <td>{{ $row->estado_aprobacion == "no_validado" ? $row->observacion_validacion : '' }}</td>
+                                                    {{-- <td>{{ $row->estado_aprobacion == "no_validado" ? $row->observacion_validacion : '' }}</td> --}}
                                                     <td width="90">
                                                         <div class="btn-group">
                                                             @if ($row->puedeEditarse())                                                                
@@ -294,6 +296,10 @@
                                                                     wire:click="edit_plan({{ $row->id }})">
                                                                     Editar
                                                                 </a>
+                                                            @else
+                                                                <span class="font-weight-bold font-italic">
+                                                                    Edición no disponible
+                                                                </span>
                                                             @endif
                                                             @if ($primera_fase_activa)
                                                                 {{-- <a class="btn btn-sm btn-danger rounded-xl"
@@ -309,7 +315,11 @@
                                                     {{-- <td>{{ $row->proceso->name ?? '' }}</td> --}}
                                                     <td>{{ $row->competencia->name ?? '' }}</td>
                                                     <td>{{ $row->feedbacks->first()->feedback ?? '' }}</td>
-                                                    <td>{{ $row->feedbacks->first() ? $row->feedbacks->first()->fecha_feedback->format('d-m-Y') : '' }}</td>
+                                                    <td>
+                                                        {{-- <span class="px-2 py-1 text-xs font-medium rounded-full bg-success"> --}}
+                                                            {{ $row->feedbacks->first() ? $row->feedbacks->first()->fecha_feedback->format('d-m-Y') : '' }}
+                                                        {{-- </span> --}}
+                                                    </td>
                                                     {{-- <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->encargado->name ?? '' }}</td> --}}
                                                     <td>{{ $row->name }}</td>
@@ -320,24 +330,29 @@
                                                         {{ $row->estado->name ?? '' }}</td> --}}
                                                     {{-- observaciones en caso de no validado --}}
                                                     {{-- <td>{{ $row->avance }}%</td> --}}
-
-                                                    <td>
-                                                        @foreach ($row->evidencias()->get() as $evidencia)
-                                                            <div class="mb-2 btn-group" role="group"
-                                                                aria-label="Basic example">
-                                                                <a href="{{ route('download_evidencia_plan', $evidencia->id) }}"
-                                                                    class="btn btn-link">
-                                                                    {{ $evidencia->name }}
-                                                                </a>
-                                                            </div>
-                                                            <br>
-                                                        @endforeach
-                                                    </td>
-{{-- 
+                                                    @if ($segunda_fase_activa)
+                                                        <td>
+                                                            @foreach ($row->evidencias()->get() as $evidencia)
+                                                                <div class="mb-2 btn-group" role="group"
+                                                                    aria-label="Basic example">
+                                                                    <a href="{{ route('download_evidencia_plan', $evidencia->id) }}"
+                                                                        class="btn btn-link">
+                                                                        {{ $evidencia->name }}
+                                                                    </a>
+                                                                </div>
+                                                                <br>
+                                                            @endforeach
+                                                        </td>
+                                                    @endif
+                                                    {{-- 
                                                     <td>{{ '' }}</td>
                                                     <td>{{ '' }}</td> --}}
                                                     {{-- <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td> --}}
-                                                    <td>{{ date_format($row->updated_at, 'd-m-Y h:i:s a') }}</td>
+                                                    <td>
+                                                        @if($row->estado_aprobacion == "validado")
+                                                            {{ date_format($row->updated_at, 'd-m-Y') }}                                                            
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -467,16 +482,58 @@
 
     </div>
 
-    @once
+    {{-- @once
         @push('js')
-            <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
         @endpush
-    @endonce
+    @endonce --}}
 
     @push('js')
+
+            {{-- <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
+            {{-- <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script> --}}
         @if ($dashboard)
             <script>
+                // SweetAlert de Indicaciones al cargar la página
+                //  window.livewire.on( () => {
+                    // console.log('Mostrando indicaciones...');
+                    // Obtener datos del líder
+                    // const liderNombre = "{{ auth()->user()->name }}";
+                    // const evaluadoNombre = "{{ $nombreEmpleado }}";
+                
+                //lanzar una vez que termine de cargar la ventana
+                window.addEventListener('load', () => {
+                    console.log('Mostrando indicaciones...');
+                    
+                    
+                    Swal.fire({
+                        title: 'Indicaciones',
+                        html: `
+                            <div class="text-left">
+                                <p class="mb-2">En esta fase, como líder, deberá seleccionar las <strong>dos (02) competencias más bajas del evaluado</strong>, brindarle <strong>feedback</strong> y, de manera conjunta, elaborar un <strong>plan de mejora individual</strong> basado en los resultados de su Evaluación de Desempeño por Competencias.</p>
+                            </div>
+                        `,
+                        icon: 'info',
+                        iconColor: '#17a2b8',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#568ca5',
+                        cancelButtonText: 'Volver',
+                        cancelButtonColor: '#6c757d',
+                        customClass: {
+                            popup: 'rounded-xl',
+                            confirmButton: 'rounded-xl',
+                            cancelButton: 'rounded-xl'
+                        },
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (!result.isConfirmed) {
+                            // Si hace clic en "Volver", redirigir a la página anterior
+                            window.history.back();
+                        }
+                    });
+                });
+                // });
+
                 Chart.defaults.font.size = 16;
 
                 var ctx = document.getElementById('myChart').getContext('2d');
@@ -617,8 +674,46 @@
                 Livewire.on('dataUpdated', () => {
                     myChart.update();
                 });
+
+                function confirmarGuardado(tipo) {
+                    Swal.fire({
+                        // title: '¿Está seguro de guardar el Plan de Mejora?',
+                        html: `
+                            <div class="text-center">
+                                <p class="mb-0">Este compromiso será enviado a validación por GTH para verificar que cumple con la metodología SMART.</p>
+                                <p class="mb-2">Una vez enviado, no podrá realizarse modificaciones.</p>
+                                <p class="mb-2 text-bold">¿Está seguro de que desea continuar?</p>
+                            </div>
+                        `,
+                        icon: 'question',
+                        iconColor: '#568ca5',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, continuar',
+                        confirmButtonColor: '#568ca5',
+                        cancelButtonText: 'Cancelar',
+                        cancelButtonColor: '#6c757d',
+                        customClass: {
+                            popup: 'rounded-xl',
+                            confirmButton: 'rounded-xl',
+                            cancelButton: 'rounded-xl'
+                        },
+                        allowOutsideClick: false,
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Llamar al método de Livewire según el tipo
+                            if (tipo === 'nuevo') {
+                                @this.call('store_plan');
+                            } else if (tipo === 'actualizar') {
+                                @this.call('update_plan');
+                            }
+                        }
+                    });
+                }
+
             </script>
         @endif
+
     @endpush
 
 </div>

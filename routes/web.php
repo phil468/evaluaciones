@@ -233,10 +233,12 @@ Route::group(['middleware'  =>  ['auth']],function(){
     ->name('evaluacion_de_competencias.resultados');
 
     Route::get('/plan-de-mejora', [App\Http\Controllers\PlanDeMejoraController::class, 'index'])
-        ->name('plan.mejora');
+        ->name('plan.mejora.index')
+        ->middleware(['can:ver-evaluaciones-de-desempeno']);
 
-    Route::get('/plan-de-mejora/detalle', [App\Http\Controllers\PlanDeMejoraController::class, 'detalle'])
-        ->name('plan.mejora.detalle');
+    Route::get('/plan-de-mejora/detalle/{empleado_id}', [App\Http\Controllers\PlanDeMejoraController::class, 'detalle'])
+        ->name('plan.mejora.detalle')
+        ->middleware(['can:ver-evaluaciones-de-desempeno']);
     
     // Resultados de equipo
     Route::get('/resultados-de-equipo', [App\Http\Controllers\ResultadosDeEquipoController::class, 'index'])

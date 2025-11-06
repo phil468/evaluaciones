@@ -18,6 +18,8 @@ use App\Models\RangosDePlanDeAccion;
 use App\Models\Respuesta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
 
 class EncargadosPlanesDeAccions extends Component
@@ -256,6 +258,8 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
 
     public function mount($ingreso = null, $empleado_id = null, $dashboard = null, $campaniaFiltro = null)
     {
+        // Emitir evento para mostrar alert de bienvenida si es vista dashboard
+        // dd($dashboard);
 
         $this->campaniasDisponibles = \App\Models\Campania::orderBy('id','desc')->pluck('name','id')->toArray();
         // si no se define, usar campania actual
@@ -383,7 +387,17 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
             // }
 
             $this->evaluar_fases();
+        
         }
+
+        
+        // if ($dashboard == 'dashboard') {
+        //     // dd(1);
+            
+        //     $this->emit('mostrarIndicaciones');
+        //     // $this->emit('showWelcomeAlert');
+        // }
+
     }
 
     public function updatedCampaniaFiltro(){
@@ -568,6 +582,12 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
         // necesido el ide de personal->planes_de_mejora
     }
 
+    // public function booted()
+    // {
+    //         // Emitir evento para mostrar indicaciones
+    //         $this->emit('mostrarIndicaciones');
+    // }
+
 
     public function render()
     {
@@ -576,6 +596,10 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
             $this->nombreEmpleado = 
             // Personal::find($this->empleado_id)->name;
             $this->evaluador_has_evaluado->empleado->name;
+
+            // Emitir evento para mostrar indicaciones
+            // $this->emit('mostrarIndicaciones');
+            // dd(1);
 
             if ($this->secciones) {
                 $this->secciones_ordenadas = $this->secciones_bajas($this->empleado_id);
@@ -875,7 +899,10 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
 		$this->competencia_id = $record-> competencia_id;
 		$this->tipo_de_proceso_id = $record-> tipo_de_proceso_id;
 		$this->proceso_id = $record-> proceso_id;
-		$this->fecha_de_revision = $record-> fecha_de_revision;
+		$this->fecha_de_revision = 
+        $record-> fecha_de_revision 
+            ? \Carbon\Carbon::parse($record->fecha_de_revision)->format('Y-m-d') 
+            : '';
 		$this->estado_id = $record-> estado_id;
 		$this->gerencia_id = $record-> gerencia_id;
 		$this->area_id = $record-> area_id;

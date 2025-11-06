@@ -19,7 +19,7 @@
                     <fieldset class="row" wire:target="edit,store,update" wire:loading.attr="disabled">
                         <input type="hidden" wire:model="selected_id">
                         
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
                             <label for="proceso_id">Proceso</label>
                             <select disabled wire:model="proceso_id" class="form-control" id="proceso_id">
                                 <option value="">Seleccionar Proceso</option>
@@ -29,7 +29,7 @@
                             </select>
                         </div>
 
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
                             <label for="competencia_id">Competencia</label>
                             <select disabled wire:model="competencia_id" class="form-control" id="competencia_id">
                                 <option value="">Seleccionar Competencia</option>
@@ -39,7 +39,7 @@
                             </select>
                         </div>
                         
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
                             <label for="empleado_id">Evaluado</label>
                             <select disabled wire:model="empleado_id" class="form-control" id="empleado_id">
                                 <option value="">Seleccionar Personal</option>
@@ -49,7 +49,7 @@
                             </select>
                         </div>
 
-                        <div class="form-group col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
                             <label for="encargado_id">Líder</label>
                             <select disabled wire:model="encargado_id" class="form-control" id="encargado_id">
                                 <option value="">Seleccionar Encargado</option>
@@ -64,16 +64,16 @@
 @if($primera_fase_activa)
 <div class="col-12">
     <hr class="my-3">
-    <h6 class="mb-3"><i class="fas fa-comment-dots text-info"></i> Feedback</h6>
+    {{-- <h6 class="mb-3"><i class="fas fa-comment-dots text-info"></i> Feedback</h6> --}}
 </div>
 
-<div class="form-group col-sm-12 col-md-8">
+<div class="form-group col-sm-6 col-md-6">
     <label class="mb-0">
         <i class="fas fa-comment-dots text-info"></i> Feedback
         @if($tiene_feedback)
-            <small class="text-muted">(Solo lectura - Ya registrado)</small>
+            {{-- <small class="text-muted">(Solo lectura - Ya registrado)</small> --}}
         @else
-            <small class="text-muted">(Opcional - Solo se puede registrar una vez)</small>
+            {{-- <small class="text-muted">(Opcional - Solo se puede registrar una vez)</small> --}}
         @endif
     </label>
     <textarea 
@@ -85,7 +85,7 @@
     @error('feedback') <span class="error text-danger">{{ $message }}</span> @enderror
 </div>
 
-<div class="form-group col-sm-12 col-md-4">
+<div class="form-group col-sm-6 col-md-6">
     <label class="mb-0">
         <i class="fas fa-calendar-alt text-info"></i> Fecha de Feedback
         @if(!$tiene_feedback && $plan_de_mejora_configuracion)
@@ -143,8 +143,8 @@
 </div>
 @endif
                                     
-                        <div class="form-group col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                            <label for="name">Compromiso</label>
+                        <div class="form-group col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <label for="name">Compromiso SMART</label>
                             <textarea
                             @if (!$primera_fase_activa)
                                 disabled
@@ -152,7 +152,7 @@
                             wire:model.defer="name" type="text" class="form-control" id="name" placeholder="Compromiso"> </textarea>@error('name') <span class="error text-danger">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="form-group col-sm-12 col-md-3">
+                        <div class="form-group col-sm-2 col-md-2">
                             <label class="mb-0">Objetivo Medible
                                 {{-- <br>
                                  <small class="text-danger">Habilitado 1ra fase</small> --}}
@@ -160,7 +160,7 @@
                             <input @if(!$primera_fase_activa) disabled @endif wire:model="objetivo" type="number" step="0.01" class="form-control">
                         </div>
                         
-                        <div class="form-group col-sm-12 col-md-3">
+                        <div class="form-group col-sm-12 col-md-2 col-sm-2">
                             <label class="mb-0">Tipo de Objetivo 
                                 {{-- <br>
                                 <small class="text-muted">(Por default)</small> --}}
@@ -171,7 +171,7 @@
                             </select>
                         </div>
             
-                        <div class="form-group col-sm-12 col-md-3">
+                        <div class="form-group col-sm-12 col-md-2 col-sm-2">
                             <label for="fecha_de_revision">Fecha De Revisión
                                 <br>
                                 <small class="text-muted">
@@ -346,15 +346,15 @@
                 class="btn btn-secondary close-btn rounded-xl" 
                 data-dismiss="modal">Cerrar</button>
 
-                @if ($this->selected_id == 0)                    
+                @if ($this->selected_id == 0)
                     <button
                     @if (!$primera_fase_activa && !$segunda_fase_activa)
                         disabled
                     @endif 
                     type="button" 
                     wire:loading.attr="disabled"
-                    wire:click.prevent="store_plan()" 
-                    class="btn btn-vanguard rounded-xl close-modal">Guardar</button>
+                    onclick="confirmarGuardado('nuevo')" 
+                    class="btn btn-vanguard rounded-xl close-modal">Enviar a validación</button>
                 @else
                     <button 
                     @if (!$primera_fase_activa && !$segunda_fase_activa)
@@ -362,12 +362,10 @@
                     @endif 
                     type="button" 
                     wire:loading.attr="disabled" 
-                    wire:click.prevent="update_plan()" 
+                    onclick="confirmarGuardado('actualizar')" 
                     class="btn btn-vanguard rounded-xl">
-                    Guardar</button>
-                @endif
-                
-                {{-- <button 
+                    Enviar a validación</button>
+                @endif                {{-- <button 
                 type="button" 
                 wire:click.prevent="update_plan()" 
                 class="btn btn-vanguard close-btn rounded-xl">Guardar</button> --}}
@@ -376,3 +374,42 @@
        </div>
     </div>
 </div>
+
+{{-- @push('js')
+<script>
+    function confirmarGuardado(tipo) {
+        Swal.fire({
+            title: '¿Está seguro de guardar el Plan de Mejora?',
+            html: `
+                <div class="text-left">
+                    <p class="mb-2">Recuerde que es importante que el plan de mejora sea <strong>realista, específico y medible</strong>.</p>
+                    <p class="mb-0">Una vez guardado, el plan quedará registrado y podrá ser evaluado posteriormente.</p>
+                </div>
+            `,
+            icon: 'question',
+            iconColor: '#568ca5',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            confirmButtonColor: '#568ca5',
+            cancelButtonText: 'Cancelar',
+            cancelButtonColor: '#6c757d',
+            customClass: {
+                popup: 'rounded-xl',
+                confirmButton: 'rounded-xl',
+                cancelButton: 'rounded-xl'
+            },
+            allowOutsideClick: false,
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Llamar al método de Livewire según el tipo
+                if (tipo === 'nuevo') {
+                    @this.call('store_plan');
+                } else if (tipo === 'actualizar') {
+                    @this.call('update_plan');
+                }
+            }
+        });
+    }
+</script>
+@endpush --}}

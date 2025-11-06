@@ -374,7 +374,7 @@ public function pendientesData(Request $request)
                       });
                   });
             })
-            ->with(['empleado', 'plan_de_mejora', 'planes_de_accion_empleado', 'campania_has_evaluado.puesto'])
+            ->with(['empleado', 'plan_de_mejora', 'planes_de_accion_empleado', 'campania_has_evaluado.puesto', 'planesDeMejora'])
             ->get();
     }
 
