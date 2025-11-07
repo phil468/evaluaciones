@@ -236,6 +236,10 @@ Route::group(['middleware'  =>  ['auth']],function(){
         ->name('plan.mejora.index')
         ->middleware(['can:ver-evaluaciones-de-desempeno']);
 
+    Route::get('/plan-de-mejora/subordinado/{empleado_id}', [App\Http\Controllers\PlanDeMejoraController::class, 'subordinado'])
+        ->name('plan.mejora.subordinado')
+        ->middleware(['can:ver-evaluaciones-de-desempeno']);
+
     Route::get('/plan-de-mejora/detalle/{empleado_id}', [App\Http\Controllers\PlanDeMejoraController::class, 'detalle'])
         ->name('plan.mejora.detalle')
         ->middleware(['can:ver-evaluaciones-de-desempeno']);

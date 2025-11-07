@@ -100,6 +100,8 @@ class ResultadosDeEquipoController extends Controller
         krsort($objetivos);
         krsort($pdi);
         
+        // dd($competencias, $objetivos, $pdi);
+
         return view('resultados-equipo.detalle', compact(
             'miembro',
             'competencias', 
@@ -171,7 +173,7 @@ private function procesarPDI($personalId, $campaniaId)
         ->whereHas('plan_de_mejora', function($q) use ($campaniaId) {
             $q->where('campania_id', $campaniaId);
         })
-        ->with('plan_de_mejora')
+        ->with('plan_de_mejora', 'planesDeMejora')
         ->first();
 
     if (!$planMejora) {
@@ -179,12 +181,16 @@ private function procesarPDI($personalId, $campaniaId)
             'tieneResultados' => false,
             'puedeVerResultados' => false,
             'progreso' => 0,
-            'estado' => 'sin_resultados'
+            'estado' => 'sin_resultados',
+            'empleado_id' => $personalId,
+            'campania_id' => $campaniaId,
         ];
     }
 
     $now = now();
     $planConfig = $planMejora->plan_de_mejora;
+    
+    $planesValidados = $planMejora->planesDeMejora->where('estado_aprobacion', 'validado');
     
     // Verificar si puede ver resultados (basado en las fases del plan)
     $puedeVerResultados = ($planConfig->primera_fase_activa || $planConfig->segunda_fase_activa) && 
@@ -192,17 +198,24 @@ private function procesarPDI($personalId, $campaniaId)
 
     // Calcular progreso del PDI (puedes ajustar esta lógica según tus necesidades)
     $progreso = 0;
-    if ($planMejora && !$planMejora->estado_pendiente) {
-        $progreso = 100; // Completado
-    } elseif ($planMejora && $planMejora->estado_pendiente) {
-        $progreso = 50; // En progreso
+    // if ($planMejora && !$planMejora->estado_pendiente) {
+    //     $progreso = 100; // Completado
+    // } elseif ($planMejora && $planMejora->estado_pendiente) {
+    //     $progreso = 50; // En progreso
+    // }
+    
+    if ($planesValidados->count() >= $planMejora->cantidad_requerida &&
+        $planesValidados->count() > 0) {
+        $progreso = round($planesValidados->avg('avance'), 2);
     }
 
     return [
         'tieneResultados' => true,
         'puedeVerResultados' => $puedeVerResultados,
         'progreso' => $progreso,
-        'estado' => $planMejora->estado_pendiente ? 'resultados_pendientes' : 'disponible'
+        'estado' => $planMejora->estado_pendiente ? 'resultados_pendientes' : 'disponible',
+        'empleado_id' => $personalId,
+        'campania_id' => $campaniaId,
     ];
 }
 

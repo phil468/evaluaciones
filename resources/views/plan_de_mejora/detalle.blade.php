@@ -4,7 +4,9 @@
 
 @section('content_header')
     <h1 class="text-center font-weight-bold">
-        <a href="{{ route('plan.mejora.index') }}" class="mr-2 btn-link btn-light btn-sm">
+        <a 
+        href="{{ $esPropio ? route('plan.mejora.index') : route('resultados-de-equipo.detalle', ['id' => $empleado_id ?? 1]) }}" 
+        class="mr-2 btn-link btn-light btn-sm">
             <i class="fas fa-arrow-left"></i>
             Volver
         </a>
@@ -16,17 +18,17 @@
     <div class="container-fluid">
         <div class="card rounded-xl">
             <div class="text-white card-header bg-vanguard rounded-t-xl">
-                <h4 class="h5 mb-0">Mis Planes de Mejora Individual</h4>
+                <h4 class="mb-0 h5">Mis Planes de Mejora Individual</h4>
             </div>
 
             <div class="card-body">
                 {{-- Información del Empleado y Encargado --}}
-                <div class="row mb-4">
+                <div class="mb-4 row">
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-muted">EVALUADO</h6>
-                                <p class="h5 mb-0">{{ $encargadoPlan->empleado->name ?? 'N/A' }}</p>
+                                <p class="mb-0 h5">{{ $encargadoPlan->empleado->name ?? 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +36,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-muted">LÍDER/ENCARGADO</h6>
-                                <p class="h5 mb-0">{{ $encargadoPlan->encargado->name ?? 'N/A' }}</p>
+                                <p class="mb-0 h5">{{ $encargadoPlan->encargado->name ?? 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
@@ -43,7 +45,7 @@
                 {{-- Tabla de Planes --}}
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
+                        <thead class="text-white bg-vanguard">
                             <tr>
                                 <th style="width: 5%">#</th>
                                 <th style="width: 25%">Competencia</th>
@@ -65,7 +67,7 @@
 
                                         {{-- Mostrar feedback si existe --}}
                                         @if ($plan->feedbacks->count() > 0)
-                                            <div class="mt-2 p-2 bg-light border-left border-info">
+                                            <div class="p-2 mt-2 bg-light border-left border-info">
                                                 <small class="text-muted">
                                                     <i class="fas fa-comment-alt text-info"></i>
                                                     <strong>Feedback:</strong>
@@ -106,13 +108,13 @@
                 </div>
 
                 {{-- Promedio de Avance --}}
-                <div class="row mt-4">
+                <div class="mt-4 row">
                     <div class="col-md-12">
                         <div class="card bg-light">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col-md-6">
-                                        <h6 class="font-weight-bold mb-0">PROMEDIO DE AVANCE</h6>
+                                        <h6 class="mb-0 font-weight-bold">PROMEDIO DE AVANCE</h6>
                                     </div>
                                     <div class="col-md-6">
                                         @php
@@ -126,7 +128,7 @@
                                         <div class="progress" style="height: 30px;">
                                             <div class="progress-bar" role="progressbar"
                                                 style="width: {{ $promedioAvance }}%; background-color: #5bbfba;">
-                                                <span class="font-weight-bold h6 mb-0">{{ $promedioAvance }}%</span>
+                                                <span class="mb-0 font-weight-bold h6">{{ $promedioAvance }}%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -138,17 +140,17 @@
 
                 {{-- Evidencias (si las hay) --}}
                 @if ($encargadoPlan->planesDeMejora->flatMap->evidencias->count() > 0)
-                    <div class="row mt-4">
+                    <div class="mt-4 row">
                         <div class="col-md-12">
-                            <h5 class="font-weight-bold mb-3">Evidencias Adjuntas</h5>
+                            <h5 class="mb-3 font-weight-bold">Evidencias Adjuntas</h5>
                             <div class="list-group">
                                 @foreach ($encargadoPlan->planesDeMejora as $plan)
                                     @foreach ($plan->evidencias as $evidencia)
                                         <a href="{{ route('download_evidencia_plan', $evidencia->id) }}"
                                             class="list-group-item list-group-item-action">
                                             <i class="fas fa-file-pdf text-danger"></i>
-                                            {{ $evidencia->nombre_archivo }}
-                                            <span class="badge badge-secondary float-right">
+                                            {{ $evidencia->name }}
+                                            <span class="float-right badge badge-secondary">
                                                 {{ \Carbon\Carbon::parse($evidencia->created_at)->format('d/m/Y') }}
                                             </span>
                                         </a>
