@@ -27,19 +27,18 @@
                         @isset($dashboard)
                             @if ($dashboard)
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <a href="{{ route('pendientes') }}"
-                                        class="btn btn-xl btn-default rounded-xl">
+                                    <a href="{{ route('pendientes') }}" class="btn btn-xl btn-default rounded-xl">
                                         <i class="fa fa-arrow-left"></i> Volver
                                     </a>
                                 </div>
                             @endif
                         @endisset
-                        
+
                         {{-- Selector de campaña --}}
                         {{-- <div class="mb-2">
                             <label class="small font-weight-bold">Campaña:</label>
                             <select wire:model="campaniaFiltro" class="form-control form-control-sm" style="max-width:240px;">
-                                @foreach($campaniasDisponibles as $cid => $cname)
+                                @foreach ($campaniasDisponibles as $cid => $cname)
                                     <option value="{{ $cid }}">{{ $cname }}</option>
                                 @endforeach
                             </select>
@@ -77,7 +76,8 @@
                                             <tbody>
                                                 @foreach ($encargadosPlanesDeAccions as $row)
                                                     <tr>
-                                                        <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td>
+                                                        <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}
+                                                        </td>
                                                         @if ($ingreso)
                                                         @else
                                                             <td>{{ $row->encargado->name }}</td>
@@ -116,8 +116,7 @@
 
                         @isset($vistaAprobacionDePlanes)
                             @if ($vistaAprobacionDePlanes)
-
-                                {{-- @foreach($planesDeAccions->groupBy('empleado_id') as $empleadoId => $planesPersona)
+                                {{-- @foreach ($planesDeAccions->groupBy('empleado_id') as $empleadoId => $planesPersona)
                                     <h6 class="mt-3">{{ $planesPersona->first()->empleado->name }} (Campaña:
                                         {{ $planesPersona->first()->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }})</h6>
                                     <table class="table table-sm table-bordered">
@@ -131,7 +130,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        @foreach($planesPersona as $plan)
+                                        @foreach ($planesPersona as $plan)
                                             <tr>
                                                 <td>{{ $plan->name }}</td>
                                                 <td>{{ $plan->competencia->name ?? '' }}</td>
@@ -145,7 +144,6 @@
                                         </tbody>
                                     </table>
                                 @endforeach --}}
-
                             @endif
                         @endisset
                     </div>
@@ -157,10 +155,10 @@
                                     <b>Evaluado</b>
                                     {{-- <br> --}}
                                     <p class="mx-2">{{ $nombreEmpleado }}</p>
-                                    
+
                                 </div>
                                 <div class="float-left h5">
-                                    <b>Líder</b> 
+                                    <b>Líder</b>
                                     {{-- <br>  --}}
                                     <p class="mx-2">
                                         {{ $evaluador_has_evaluado->encargado->name }}
@@ -173,7 +171,7 @@
                             </div>
 
                             {{-- <div class="float-right mb-2"> --}}
-                                {{-- <p class="text-right align">
+                            {{-- <p class="text-right align">
                                     <button class="btn rounded-xl btn-vanguard" 
                                     wire:click="openModal()" 
                                     data-toggle="modal" 
@@ -185,14 +183,14 @@
                                         <i class="fa fa-plus"></i>  Nuevo
                                     </button>
                                 </p> --}}
-                                {{-- <p>
+                            {{-- <p>
                                     (Requeridos: {{ $cantidad_requerida }} planes)
                                 </p> --}}
                             {{-- </div> --}}
                             @if ($planesDeAccions->count() < $cantidad_requerida)
-                                <p class="mb-2 h6 text-bold">Construye el PMI, eligiendo las dos (02) competencias más bajas a continuación: </p>
+                                <p class="mb-2 h6 text-bold">Construye el PMI, eligiendo las dos (02) competencias más bajas
+                                    a continuación: </p>
                                 @foreach ($secciones_ordenadas as $row)
-                                    {{-- {{dd($secciones_ordenadas)}} --}}
                                     @if ($row->bajo)
                                         @if ($row->obligatorio)
                                             @if ($row->ingresado)
@@ -200,7 +198,8 @@
                                                 <p class="mb-2">
                                                     <button type="button"
                                                         class="rounded-xl btn btn-outline-danger btn-block"
-                                                        wire:click='setValues({{ $row->seccion_id }})'>
+                                                        wire:click='setValues({{ $row->seccion_id }})'
+                                                        onclick="mostrarLoading()">
                                                         <div class="h6"> {{ $row->nombre }} (Obligatorio) </div>
                                                     </button>
                                                 </p>
@@ -212,7 +211,8 @@
                                                     <p class="mb-2">
                                                         <button type="button"
                                                             class="rounded-xl btn btn-outline-warning btn-block"
-                                                            wire:click='setValues({{ $row->seccion_id }})'>
+                                                            wire:click='setValues({{ $row->seccion_id }})'
+                                                            onclick="mostrarLoading()">
                                                             <div class="h6"> {{ $row->nombre }} (Opcional) </div>
                                                         </button>
                                                     </p>
@@ -235,7 +235,8 @@
                                         No hay registro de planes de acción ingresados
                                     </div>
                                 @else
-                                    <table class="table table-bordered table-striped table-hover table-sm" id="table-planes">
+                                    <table class="table table-bordered table-striped table-hover table-sm"
+                                        id="table-planes">
                                         <thead class="text-white thead bg-vanguard">
                                             <tr>
                                                 <th style="min-width: 100px;">Estado de aprobación</th>
@@ -273,16 +274,19 @@
                                                     {{-- <td>{{ $row->encargados_planes_de_accion->plan_de_mejora->campania->name ?? '' }}</td> --}}
                                                     <td>
                                                         {{-- {{ strtoupper(str_replace('_', ' ', $row->estado_aprobacion)) }} --}}
-                                                        @if($row->estado_aprobacion == "validado")
-                                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-success">
+                                                        @if ($row->estado_aprobacion == 'validado')
+                                                            <span
+                                                                class="px-2 py-1 text-xs font-medium rounded-full bg-success">
                                                                 Validado
                                                             </span>
-                                                        @elseif($row->estado_aprobacion == "no_validado")
-                                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-danger">
+                                                        @elseif($row->estado_aprobacion == 'no_validado')
+                                                            <span
+                                                                class="px-2 py-1 text-xs font-medium rounded-full bg-danger">
                                                                 No validado
                                                             </span>
-                                                        @elseif($row->estado_aprobacion == "pendiente")
-                                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray">
+                                                        @elseif($row->estado_aprobacion == 'pendiente')
+                                                            <span
+                                                                class="px-2 py-1 text-xs font-medium rounded-full bg-gray">
                                                                 Pendiente
                                                             </span>
                                                         @endif
@@ -290,7 +294,7 @@
                                                     {{-- <td>{{ $row->estado_aprobacion == "no_validado" ? $row->observacion_validacion : '' }}</td> --}}
                                                     <td width="90">
                                                         <div class="btn-group">
-                                                            @if ($row->puedeEditarse())                                                                
+                                                            @if ($row->puedeEditarse())
                                                                 <a data-toggle="modal" data-target="#updatePlanDataModal"
                                                                     class="btn btn-sm btn-vanguard rounded-xl"
                                                                     wire:click="edit_plan({{ $row->id }})">
@@ -317,14 +321,14 @@
                                                     <td>{{ $row->feedbacks->first()->feedback ?? '' }}</td>
                                                     <td>
                                                         {{-- <span class="px-2 py-1 text-xs font-medium rounded-full bg-success"> --}}
-                                                            {{ $row->feedbacks->first() ? $row->feedbacks->first()->fecha_feedback->format('d-m-Y') : '' }}
+                                                        {{ $row->feedbacks->first() ? $row->feedbacks->first()->fecha_feedback->format('d-m-Y') : '' }}
                                                         {{-- </span> --}}
                                                     </td>
                                                     {{-- <td>{{ $row->empleado->name ?? '' }}</td>
                                                     <td>{{ $row->encargado->name ?? '' }}</td> --}}
                                                     <td>{{ $row->name }}</td>
                                                     <td>{{ $row->objetivo }}</td>
-                                                    <td>{{ ucfirst(str_replace('_', ' ', $row->tipo_objetivo))}}</td>
+                                                    <td>{{ ucfirst(str_replace('_', ' ', $row->tipo_objetivo)) }}</td>
                                                     <td>{{ $row->fecha_de_revision->format('d-m-Y') ?? '' }}</td>
                                                     {{-- <td style=" background-color: {{ $row->estado->color ?? '' }};">
                                                         {{ $row->estado->name ?? '' }}</td> --}}
@@ -349,8 +353,8 @@
                                                     <td>{{ '' }}</td> --}}
                                                     {{-- <td>{{ date_format($row->created_at, 'd-m-Y h:i:s a') }}</td> --}}
                                                     <td>
-                                                        @if($row->estado_aprobacion == "validado")
-                                                            {{ date_format($row->updated_at, 'd-m-Y') }}                                                            
+                                                        @if ($row->estado_aprobacion == 'validado')
+                                                            {{ date_format($row->updated_at, 'd-m-Y') }}
                                                         @endif
                                                     </td>
                                                 </tr>
@@ -362,10 +366,10 @@
                             </div>
                         @endif
 
-                        {{--media pantalla cuando es grande y completa de mediana para abajo--}}
+                        {{-- media pantalla cuando es grande y completa de mediana para abajo --}}
                         {{-- <div class="col-md-12 col-lg-6 col-xl-6"> --}}
-                            <canvas id="myChart"></canvas>
-                            {{-- <div class="mb-4 border-0 shadow card card-body">
+                        <canvas id="myChart"></canvas>
+                        {{-- <div class="mb-4 border-0 shadow card card-body">
                                 <div class="mb-3 d-flex align-items-center justify-content-between">
                                     <h2 class="mb-0 h5">Promedio General de Desempeño</h2>
                                     <span class="badge rounded-pill bg-soft-vanguard text-vanguard">{{ round($this->secciones->avg(function($item) {
@@ -489,22 +493,30 @@
 
     @push('js')
 
-            {{-- <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
-            {{-- <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script> --}}
+        {{-- <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
+        {{-- <script nonce="{{ $nonce }}" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script> --}}
         @if ($dashboard)
             <script>
                 // SweetAlert de Indicaciones al cargar la página
                 //  window.livewire.on( () => {
-                    // console.log('Mostrando indicaciones...');
-                    // Obtener datos del líder
-                    // const liderNombre = "{{ auth()->user()->name }}";
-                    // const evaluadoNombre = "{{ $nombreEmpleado }}";
-                
+                // console.log('Mostrando indicaciones...');
+                // Obtener datos del líder
+                // const liderNombre = "{{ auth()->user()->name }}";
+                // const evaluadoNombre = "{{ $nombreEmpleado }}";
+
                 //lanzar una vez que termine de cargar la ventana
                 window.addEventListener('load', () => {
                     console.log('Mostrando indicaciones...');
-                    
-                    
+
+                    // Solo mostrar indicaciones si aún no se ha alcanzado la cantidad requerida
+                    const planesIngresados = {{ $planesDeAccions->count() }};
+                    const cantidadRequerida = {{ $cantidad_requerida }};
+
+                    if (planesIngresados >= cantidadRequerida) {
+                        console.log('Ya se completaron los planes requeridos. No se muestra alerta de indicaciones.');
+                        return;
+                    }
+
                     Swal.fire({
                         title: 'Indicaciones',
                         html: `
@@ -537,26 +549,39 @@
                 Chart.defaults.font.size = 16;
 
                 var ctx = document.getElementById('myChart').getContext('2d');
-                var labels = {!! json_encode($this->secciones->pluck('nombre')) !!};
-                var data = {!! json_encode($this->secciones->pluck('promedio')) !!};
-                var valor_esperado_data = {!! json_encode($this->secciones->pluck('valor_esperado')) !!};
-                var seccion_ids = {!! json_encode($this->secciones->pluck('seccion_id')) !!};
+                var labels = {!! json_encode($secciones_ordenadas->pluck('nombre')) !!};
+                var data = {!! json_encode($secciones_ordenadas->pluck('promedio')) !!};
+                var valor_esperado_data = {!! json_encode($secciones_ordenadas->pluck('valor_esperado')) !!};
+                var seccion_ids = {!! json_encode($secciones_ordenadas->pluck('seccion_id')) !!};
+                var bajo_flags = {!! json_encode($secciones_ordenadas->pluck('bajo')) !!};
+                var visible_flags = {!! json_encode($secciones_ordenadas->pluck('visible')) !!};
+                var ingresado_flags = {!! json_encode($secciones_ordenadas->pluck('ingresado')) !!};
+                var cantidad_requerida = {{ $cantidad_requerida }};
+                var planes_ingresados = {{ $planesDeAccions->count() }};
 
-                // Add a line with the value from Livewire
+                console.log('Datos cargados:');
+                console.log('Labels:', labels);
+                console.log('Bajo flags:', bajo_flags);
+                console.log('Visible flags:', visible_flags);
+                console.log('Ingresado flags:', ingresado_flags);
+                console.log('Planes ingresados:', planes_ingresados, '/ Requeridos:', cantidad_requerida);
 
-                var backgroundColors = {!! json_encode($this->secciones->pluck('color')) !!};
+                var backgroundColors = {!! json_encode($secciones_ordenadas->pluck('color')) !!};
 
-                var borderColors = data.map((value) => 'rgba(75, 192, 192, 1)');
+                // Asignar color gris al promedio si no tiene color
+                backgroundColors = backgroundColors.map((color, index) => {
+                    return color || 'rgba(200, 200, 200, 0.5)';
+                });
 
-                var sortedData = [...data].sort((a, b) => a - b);
-                var lowestValues = sortedData.slice(0, 2);
+                var borderColors = [];
                 var secciones_bajas = [];
 
+                // Procesar cada sección
                 data.forEach((value, index) => {
-                    if (lowestValues.includes(value)) {
+                    // Marcar con borde rojo solo si es bajo=true
+                    if (bajo_flags[index] === true) {
                         borderColors[index] = 'rgba(255, 99, 132, 1)';
                         labels[index] = labels[index] + ' (Bajo)';
-                        // hacer un array
                         secciones_bajas.push(seccion_ids[index]);
                     } else {
                         borderColors[index] = 'rgba(0, 0, 0, 0.1)';
@@ -636,9 +661,90 @@
                         onClick: function(event, array) {
                             if (array.length > 0) {
                                 var index = array[0].index;
-                                if (lowestValues.includes(data[index])) {
-                                    var seccion_id = this.data.datasets[0].data_id[index];
+                                var seccion_id = this.data.datasets[0].data_id[index];
+
+                                console.log('Click en barra:', index, 'seccion_id:', seccion_id);
+                                console.log('bajo:', bajo_flags[index], 'visible:', visible_flags[index], 'ingresado:',
+                                    ingresado_flags[index]);
+
+                                // Verificar primero si ya se alcanzó la cantidad requerida
+                                if (planes_ingresados >= cantidad_requerida) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Planes completos',
+                                        text: 'Ya has completado la cantidad de planes requeridos (' +
+                                            cantidad_requerida + ')',
+                                        iconColor: '#28a745',
+                                        confirmButtonColor: '#568ca5',
+                                        confirmButtonText: 'Entendido',
+                                        customClass: {
+                                            popup: 'rounded-xl',
+                                            confirmButton: 'rounded-xl'
+                                        }
+                                    });
+                                    return;
+                                }
+
+                                // Verificar si la sección es clickeable (bajo=true, visible=true, ingresado=false)
+                                if (bajo_flags[index] === true &&
+                                    visible_flags[index] === true &&
+                                    ingresado_flags[index] === false) {
+                                    console.log('Emitiendo setValues con seccion_id:', seccion_id);
+
+                                    // Mostrar loading
+                                    Swal.fire({
+                                        title: 'Cargando...',
+                                        text: 'Preparando el formulario',
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+
                                     Livewire.emit('setValues', seccion_id);
+                                } else {
+                                    // Mostrar mensaje con SweetAlert si no es clickeable
+                                    if (ingresado_flags[index] === true) {
+                                        Swal.fire({
+                                            icon: 'info',
+                                            title: 'Competencia ya ingresada',
+                                            text: 'Esta competencia ya tiene un plan ingresado',
+                                            iconColor: '#17a2b8',
+                                            confirmButtonColor: '#568ca5',
+                                            confirmButtonText: 'Entendido',
+                                            customClass: {
+                                                popup: 'rounded-xl',
+                                                confirmButton: 'rounded-xl'
+                                            }
+                                        });
+                                    } else if (visible_flags[index] === false) {
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Competencia no disponible',
+                                            text: 'Esta competencia no está disponible para selección',
+                                            iconColor: '#ffc107',
+                                            confirmButtonColor: '#568ca5',
+                                            confirmButtonText: 'Entendido',
+                                            customClass: {
+                                                popup: 'rounded-xl',
+                                                confirmButton: 'rounded-xl'
+                                            }
+                                        });
+                                    } else if (bajo_flags[index] === false) {
+                                        Swal.fire({
+                                            icon: 'info',
+                                            title: 'Selección no permitida',
+                                            text: 'Solo puedes seleccionar las competencias más bajas',
+                                            iconColor: '#17a2b8',
+                                            confirmButtonColor: '#568ca5',
+                                            confirmButtonText: 'Entendido',
+                                            customClass: {
+                                                popup: 'rounded-xl',
+                                                confirmButton: 'rounded-xl'
+                                            }
+                                        });
+                                    }
                                 }
                             }
                         },
@@ -671,8 +777,69 @@
                     }
                 });
 
-                Livewire.on('dataUpdated', () => {
+                Livewire.on('dataUpdated', async () => {
+                    console.log('Evento dataUpdated recibido - Actualizando gráfico...');
+
+                    // Obtener datos actualizados desde Livewire usando @this
+                    const secciones_actualizadas = await @this.get('secciones_ordenadas');
+                    const planes_count = await @this.get('planesDeAccions');
+
+                    // Actualizar contador de planes ingresados
+                    planes_ingresados = planes_count.length || 0;
+
+                    console.log('Secciones actualizadas recibidas:', secciones_actualizadas);
+                    console.log('Planes ingresados actualizados:', planes_ingresados);
+
+                    // Procesar los datos
+                    var labels_updated = [];
+                    var data_updated = [];
+                    var seccion_ids_updated = [];
+                    var bajo_flags_updated = [];
+                    var visible_flags_updated = [];
+                    var ingresado_flags_updated = [];
+                    var backgroundColors_updated = [];
+                    var borderColors_updated = [];
+
+                    secciones_actualizadas.forEach((seccion, index) => {
+                        labels_updated.push(seccion.nombre + (seccion.bajo === true ? ' (Bajo)' : ''));
+                        data_updated.push(seccion.promedio);
+                        seccion_ids_updated.push(seccion.seccion_id);
+                        bajo_flags_updated.push(seccion.bajo);
+                        visible_flags_updated.push(seccion.visible);
+                        ingresado_flags_updated.push(seccion.ingresado);
+                        backgroundColors_updated.push(seccion.color || 'rgba(200, 200, 200, 0.5)');
+                        borderColors_updated.push(seccion.bajo === true ? 'rgba(255, 99, 132, 1)' :
+                            'rgba(0, 0, 0, 0.1)');
+                    });
+
+                    // Actualizar las variables globales
+                    bajo_flags = bajo_flags_updated;
+                    visible_flags = visible_flags_updated;
+                    ingresado_flags = ingresado_flags_updated;
+
+                    // Actualizar los datos del gráfico
+                    myChart.data.labels = labels_updated;
+                    myChart.data.datasets[0].data = data_updated;
+                    myChart.data.datasets[0].data_id = seccion_ids_updated;
+                    myChart.data.datasets[0].backgroundColor = backgroundColors_updated;
+                    myChart.data.datasets[0].borderColor = borderColors_updated;
+
+                    // Refrescar el gráfico
                     myChart.update();
+
+                    console.log('Gráfico actualizado correctamente', {
+                        bajo_flags: bajo_flags_updated,
+                        visible_flags: visible_flags_updated,
+                        ingresado_flags: ingresado_flags_updated,
+                        planes_ingresados: planes_ingresados
+                    });
+                });
+
+                // Listener cuando se cierra el modal después de guardar
+                Livewire.on('closeModal', () => {
+                    console.log('Modal cerrado - Solicitando actualización de datos...');
+                    // Emitir evento para que Livewire recargue los datos
+                    @this.call('$refresh');
                 });
 
                 function confirmarGuardado(tipo) {
@@ -711,6 +878,27 @@
                     });
                 }
 
+                // Listener para abrir el modal cuando se hace clic en el gráfico o botones
+                Livewire.on('openUpdatePlanDataModal', () => {
+                    console.log('Evento openUpdatePlanDataModal recibido');
+                    // Cerrar el loading si está activo
+                    Swal.close();
+                    // Abrir el modal
+                    $('#updatePlanDataModal').modal('show');
+                });
+
+                // Función para mostrar loading cuando se hace clic en botones
+                function mostrarLoading() {
+                    Swal.fire({
+                        title: 'Cargando...',
+                        text: 'Preparando el formulario',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
             </script>
         @endif
 

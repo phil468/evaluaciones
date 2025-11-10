@@ -228,6 +228,7 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
 
     public function setValues($seccion_id)
     {
+        // dd('set values');
         $this->competencia_id = $seccion_id;    
         $this->estado_id = 1;
         $this->avance = 0;
@@ -476,43 +477,49 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
             }
             return $respuesta;
         });
-// dd($secciones);
-        // si el campo promedio es unico en la lista se ahgrega a su nombre la palbara obligatorio si es repetido se agraga lka palabra opcional
-        $secciones = $secciones->map(function ($respuesta) use ($secciones) {
-            // $respuesta->nombre = $respuesta->nombre . ' ' . ($secciones->where('promedio', $respuesta->promedio)->count() > 1 ? '(Opcional)' : '(Obligatorio)');
-            $respuesta->obligatorio = ($secciones->where('PROMEDIO', $respuesta->promedio)->count() > 1 ? false : true);
-            return $respuesta;
-        });
-// dd($secciones);
-        //Encontrar los dos valores mas bajos y hacer una lsita de todas las secciones que esten por debajo de esos valores
+        // dd($secciones);
+        // Encontrar los valores más bajos
         $valores = $secciones->pluck('promedio')->toArray();
-
+        
         // Ordenar los valores de menor a mayor
         sort($valores);
-
-        // Obtener los primeros $cantidad_requerida valores más bajos
-        $valores_mas_bajos = array_slice($valores, 0, $this->cantidad_requerida);
-        // dd($valores_mas_bajos);
-
-        // Marcar las secciones con los $cantidad_requerida valores más bajos
-        $secciones = $secciones->map(function ($respuesta) use ($valores_mas_bajos) {
+        
+        // Obtener los valores únicos más bajos según cantidad_requerida
+        $valores_unicos = array_unique($valores);
+        $valores_mas_bajos_unicos = array_slice($valores_unicos, 0, $this->cantidad_requerida);
+        
+        // Obtener todas las secciones que tienen estos valores (incluyendo empates)
+        $valores_mas_bajos = array_filter($valores, function($valor) use ($valores_mas_bajos_unicos) {
+            return in_array($valor, $valores_mas_bajos_unicos);
+        });
+        
+        // dd($valores_mas_bajos, $valores_mas_bajos_unicos);
+        
+        // Marcar las secciones bajas y determinar si son obligatorias u opcionales
+        $secciones = $secciones->map(function ($respuesta) use ($valores_mas_bajos, $secciones) {
             if (in_array($respuesta->promedio, $valores_mas_bajos)) {
                 $respuesta->bajo = true;
+                
+                // Contar cuántas secciones tienen este mismo promedio ENTRE LAS BAJAS
+                $conteo_mismo_valor = collect($valores_mas_bajos)->filter(function($valor) use ($respuesta) {
+                    return $valor === $respuesta->promedio;
+                })->count();
+                
+                // Es obligatorio solo si NO hay empate (valor único entre las bajas)
+                $respuesta->obligatorio = ($conteo_mismo_valor === 1);
+                
                 if ($respuesta->obligatorio && !$this->tieneObligatorioBajo) {
                     $this->tieneObligatorioBajo = true;
                 }
-                // $respuesta->color = 'red';
-                //evaluar si $respuesta->promedio es unico en la lista de $respuesta->promedio si es unico se agreag a su nombre obligatorio sino es unico se agrega opcional
             } else {
-                // Asegurarse de que 'bajo' no esté marcado si no es necesario
                 $respuesta->bajo = false;
+                $respuesta->obligatorio = false;
             }
             return $respuesta;
         });
 
         // Copia ordenada de las secciones por valor promedio
         $secciones_ordenadas = $secciones->sortBy('promedio');
-        //ordenar secciones_ordenadas
 
         // ahora vamos a ver la lista de planes de acciones (mejoras)
         $planes_ingesados = PlanesDeAccion::latest()
@@ -520,9 +527,7 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
                     return $query->where('empleado_id', $personal_id);
                 })->get();
         
-        // quiero que se agregue un campo a cada seccion que sea planes_de_accion la relación es seccion_id iagual al id de planes_ingresados, debe agregarse un campo ingresado =  true
-        //Considera esta condición, sí es un campo obligatorio es falso el que es verdadero $planes_ingresados->count() > 0 entonces se agrega un campo ingresado = false, pero visible = false
-        // $this->ingresado_opcional = false;
+        // Agregar información de planes ingresados a cada sección
         $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) use ($planes_ingesados) {
             $planes_ingresados = $planes_ingesados->where('competencia_id', $seccion->seccion_id);
             $seccion->planes_de_accion = $planes_ingresados;
@@ -534,25 +539,34 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
                     $this->ingresado_opcional = true;
                 }
             }
-            // si esta sección el campo obligatorio es falso e ingresado = true, entonces se agrega un campo visible = false y todos los campos obligatorio = false se vuelven visible = false
             return $seccion;
         });
 
-        if ($this->ingresado_opcional) {
-            // verificar si $secciones_ordenadas tiene algun campo obligatorio = true
-
-            if($this->tieneObligatorioBajo) {
-                if (!$this->secciones_opcionales_no_visibles) {
-                    $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) {
-                        if (!$seccion->obligatorio) {
-                            $seccion->visible = false;
-                        }
-                        return $seccion;
-                    });
-                    $this->secciones_opcionales_no_visibles = true;
-                }
+        // Calcular cuántos planes aún faltan por ingresar
+        $planes_ingresados_count = $secciones_ordenadas->where('ingresado', true)->count();
+        $planes_faltantes = $this->cantidad_requerida - $planes_ingresados_count;
+        
+        // Si ya se ingresó una opcional y quedan obligatorias sin ingresar
+        if ($this->ingresado_opcional && $planes_faltantes > 0) {
+            // Contar cuántas obligatorias quedan sin ingresar
+            $obligatorias_sin_ingresar = $secciones_ordenadas->filter(function($seccion) {
+                return $seccion->bajo === true && 
+                       $seccion->obligatorio === true && 
+                       $seccion->ingresado === false;
+            })->count();
+            
+            // Si hay obligatorias sin ingresar, ocultar todas las opcionales restantes
+            if ($obligatorias_sin_ingresar > 0) {
+                $secciones_ordenadas = $secciones_ordenadas->map(function ($seccion) {
+                    // Ocultar opcionales que no han sido ingresadas
+                    if ($seccion->bajo === true && 
+                        $seccion->obligatorio === false && 
+                        $seccion->ingresado === false) {
+                        $seccion->visible = false;
+                    }
+                    return $seccion;
+                });
             }
-
         }
 
         if (count($secciones) > 0) {
@@ -567,7 +581,9 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
                 'promedio' => $overallAverage,
                 'color' => null,
                 'obligatorio' => null,
-                'bajo' => null,
+                'bajo' => false,  // No es una competencia baja
+                'visible' => false,  // No debe ser visible para selección
+                'ingresado' => false,  // No está ingresada
             ];
             
             $secciones_ordenadas->prepend($overallRow);
@@ -823,7 +839,12 @@ public $tiene_feedback = false; // Nueva propiedad para saber si ya tiene feedba
         ]);
     }
         $this->resetFields();
+        
+        // Recalcular secciones_ordenadas con los planes actualizados
+        $this->secciones_ordenadas = $this->secciones_bajas($this->empleado_id);
+        
 		$this->emit('closeModal');
+		$this->emit('dataUpdated'); // Emitir evento para actualizar el gráfico
 		session()->flash('message', 'Planes De Mejora creado correctamente.');
         // return redirect()->route(Route::currentRouteName());
     }
