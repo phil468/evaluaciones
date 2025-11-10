@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Mail\EstadoAprobacionPlanMail;
+use App\Models\Campania;
 use App\Models\EncargadosPlanesDeAccion;
 use App\Models\Objetivo;
 use App\Models\PlanesDeAccion;
@@ -30,6 +31,10 @@ class PlanesDeAccionTable extends LivewireDatatable
     public $planSeleccionado = null;
     public $observacionValidacion = '';
     public $estadoValidacion = '';
+    
+    public $defaultFilters = [
+        // 'campanias.es_campania_actual' => '1',
+    ];
 
     public function builder()
     {
@@ -68,28 +73,58 @@ class PlanesDeAccionTable extends LivewireDatatable
 
     public function columns()
     {
+        // Obtener todas las campañas para el filtro
+        $campanias = Campania::orderBy('name', 'asc')->pluck('name', 'name')->toArray();
+        
+        // Obtener el nombre de la campaña actual para el filtro predeterminado
+        $campaniaActual = Campania::where('es_campania_actual', true)->first();
+        $nombreCampaniaActual = $campaniaActual ? $campaniaActual->name : null;
+        
+        $this->defaultFilters['campania_actual'] = 1;
+    
         return [
         Column::name('name')->label('Descripcion')->searchable()->filterable()->defaultSort('asc'),
             
-            // NUEVA COLUMNA: Campaña (a través de las relaciones)
-        Column::name('campanias.name')->label('Campaña')->searchable()->filterable(),
+            // COLUMNA: Campaña con filtro por nombre y valor predeterminado en campaña actual
+        Column::name('campanias.name')
+        ->label('Campaña')
+        ->searchable()
+        ->filterable($campanias),
             
-            Column::callback([
-                'campanias.es_campania_actual',
-                'campanias.name'
-            ], function ($esCampaniaActual, $nombreCampania) {
-                if ($esCampaniaActual) {
-                    return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Actual</span>';
-                } else {
-                    return '<span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">Anterior</span>';
-                }
-            })->label('Tipo Campaña')->alignCenter()
-            ->filterable([
-                'Actual' => 'campanias.es_campania_actual = 1',
-                'Anterior' => 'campanias.es_campania_actual = 0',
-            ])
-            ,
+        Column::callback([
+            'campanias.es_campania_actual',
+            'campanias.name'
+        ], function ($esCampaniaActual, $nombreCampania) {
+            if ($esCampaniaActual) {
+                return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Actual</span>';
+            } else {
+                return '<span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">Anterior</span>';
+            }
+        },[],'campania_actual')->label('Tipo Campaña')
+        ->alignCenter()
+        ->filterable([
+            '1'=>'1',
+        ]),
 
+        // COLUMNA: Eliminar plan (solo si es campaña actual)
+        Column::callback([
+            'id',
+            'campanias.es_campania_actual'
+        ], function ($id, $esCampaniaActual) {
+            if ($esCampaniaActual) {
+                return '<button 
+                    wire:click="eliminarPlan(' . $id . ')" 
+                    onclick="return confirm(\'¿Está seguro de eliminar este plan?\')||event.stopImmediatePropagation()"
+                    class="px-3 py-1 text-xs font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>';
+            }
+            return '-';
+        })
+        ->label('Acciones')
+        ->alignCenter()
+        ->excludeFromExport(),
+        
         Column::name('tipo_de_evaluaciones.name')->label('Proceso')->searchable()->filterable()->defaultSort('asc'),
         Column::name('tipo.name')->label('Tipo de proceso')->searchable()->filterable()->defaultSort('asc'),
         Column::name('evaluador.name')->label('Encargado')->searchable()->filterable()->defaultSort('asc'),
@@ -303,6 +338,47 @@ class PlanesDeAccionTable extends LivewireDatatable
         $this->auditorias = Audit::where('auditable_id', $id)->where('auditable_type', PlanesDeAccion::class)->get()->toArray();
         $this->emit('enviarAuditorias', $this->auditorias);
     }
+
+    public function eliminarPlan($id)
+    {
+        
+            $plan = PlanesDeAccion::with('encargados_planes_de_accion.plan_de_mejora.campania')->findOrFail($id);
+            // dd(
+            //     $plan->encargados_planes_de_accion,
+            //     $plan->encargados_planes_de_accion->plan_de_mejora,
+            //     $plan->encargados_planes_de_accion->plan_de_mejora->campania()->get()[0],
+            //     // $plan->campania(),
+            //     $plan->encargados_planes_de_accion->plan_de_mejora->campania()->get()[0]->es_campania_actual
+            // );
+        // dd("eliminar");
+        // dd(PlanesDeAccion::with('encargados_planes_de_accion.plan_de_mejora.campania')->findOrFail($id));
+        try {
+            $plan = PlanesDeAccion::with('encargados_planes_de_accion.plan_de_mejora.campania')->findOrFail($id);
+            // dd(
+            //     $plan->encargados_planes_de_accion,
+            //     $plan->encargados_planes_de_accion->plan_de_mejora,
+            //     $plan->encargados_planes_de_accion->plan_de_mejora->campania(),
+            //     $plan->encargados_planes_de_accion->plan_de_mejora->campania()->es_campania_actual
+            // );
+            // Verificar que sea de una campaña actual
+            if (!$plan->encargados_planes_de_accion || 
+                !$plan->encargados_planes_de_accion->plan_de_mejora || 
+                !$plan->encargados_planes_de_accion->plan_de_mejora->campania()->get()[0] ||
+                !$plan->encargados_planes_de_accion->plan_de_mejora->campania()->get()[0]->es_campania_actual) {
+                session()->flash('error', 'Solo se pueden eliminar planes de la campaña actual.');
+                return;
+            }           
+            
+            // Soft delete
+            $plan->delete();
+            
+            session()->flash('message', 'Plan eliminado correctamente.');
+            $this->emit('refreshDatatable');
+            
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error al eliminar el plan: ' . $e->getMessage());
+        }
+    }
     
     public function export()
     {
@@ -312,6 +388,8 @@ class PlanesDeAccionTable extends LivewireDatatable
         $export->setFileName('Planes.xlsx');
         return $export->download();
     }
+
+
 
 //     public function render()
 //     {

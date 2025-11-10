@@ -506,14 +506,14 @@
 
                 //lanzar una vez que termine de cargar la ventana
                 window.addEventListener('load', () => {
-                    console.log('Mostrando indicaciones...');
+                    // console.log('Mostrando indicaciones...');
 
                     // Solo mostrar indicaciones si aún no se ha alcanzado la cantidad requerida
                     const planesIngresados = {{ $planesDeAccions->count() }};
                     const cantidadRequerida = {{ $cantidad_requerida }};
 
                     if (planesIngresados >= cantidadRequerida) {
-                        console.log('Ya se completaron los planes requeridos. No se muestra alerta de indicaciones.');
+                        // console.log('Ya se completaron los planes requeridos. No se muestra alerta de indicaciones.');
                         return;
                     }
 
@@ -559,12 +559,12 @@
                 var cantidad_requerida = {{ $cantidad_requerida }};
                 var planes_ingresados = {{ $planesDeAccions->count() }};
 
-                console.log('Datos cargados:');
-                console.log('Labels:', labels);
-                console.log('Bajo flags:', bajo_flags);
-                console.log('Visible flags:', visible_flags);
-                console.log('Ingresado flags:', ingresado_flags);
-                console.log('Planes ingresados:', planes_ingresados, '/ Requeridos:', cantidad_requerida);
+                // console.log('Datos cargados:');
+                // console.log('Labels:', labels);
+                // console.log('Bajo flags:', bajo_flags);
+                // console.log('Visible flags:', visible_flags);
+                // console.log('Ingresado flags:', ingresado_flags);
+                // console.log('Planes ingresados:', planes_ingresados, '/ Requeridos:', cantidad_requerida);
 
                 var backgroundColors = {!! json_encode($secciones_ordenadas->pluck('color')) !!};
 
@@ -602,7 +602,7 @@
                             data_id: seccion_ids,
                             backgroundColor: backgroundColors,
                             borderColor: borderColors,
-                            borderWidth: 1,
+                            borderWidth: 4,
                             order: 1,
                             usePointStyle: false,
                             pointStyle: 'rect',
@@ -663,9 +663,9 @@
                                 var index = array[0].index;
                                 var seccion_id = this.data.datasets[0].data_id[index];
 
-                                console.log('Click en barra:', index, 'seccion_id:', seccion_id);
-                                console.log('bajo:', bajo_flags[index], 'visible:', visible_flags[index], 'ingresado:',
-                                    ingresado_flags[index]);
+                                // console.log('Click en barra:', index, 'seccion_id:', seccion_id);
+                                // console.log('bajo:', bajo_flags[index], 'visible:', visible_flags[index], 'ingresado:',
+                                //     ingresado_flags[index]);
 
                                 // Verificar primero si ya se alcanzó la cantidad requerida
                                 if (planes_ingresados >= cantidad_requerida) {
@@ -689,7 +689,7 @@
                                 if (bajo_flags[index] === true &&
                                     visible_flags[index] === true &&
                                     ingresado_flags[index] === false) {
-                                    console.log('Emitiendo setValues con seccion_id:', seccion_id);
+                                    // console.log('Emitiendo setValues con seccion_id:', seccion_id);
 
                                     // Mostrar loading
                                     Swal.fire({
@@ -778,7 +778,7 @@
                 });
 
                 Livewire.on('dataUpdated', async () => {
-                    console.log('Evento dataUpdated recibido - Actualizando gráfico...');
+                    // console.log('Evento dataUpdated recibido - Actualizando gráfico...');
 
                     // Obtener datos actualizados desde Livewire usando @this
                     const secciones_actualizadas = await @this.get('secciones_ordenadas');
@@ -787,8 +787,8 @@
                     // Actualizar contador de planes ingresados
                     planes_ingresados = planes_count.length || 0;
 
-                    console.log('Secciones actualizadas recibidas:', secciones_actualizadas);
-                    console.log('Planes ingresados actualizados:', planes_ingresados);
+                    // console.log('Secciones actualizadas recibidas:', secciones_actualizadas);
+                    // console.log('Planes ingresados actualizados:', planes_ingresados);
 
                     // Procesar los datos
                     var labels_updated = [];
@@ -827,17 +827,17 @@
                     // Refrescar el gráfico
                     myChart.update();
 
-                    console.log('Gráfico actualizado correctamente', {
-                        bajo_flags: bajo_flags_updated,
-                        visible_flags: visible_flags_updated,
-                        ingresado_flags: ingresado_flags_updated,
-                        planes_ingresados: planes_ingresados
-                    });
+                    // console.log('Gráfico actualizado correctamente', {
+                    //     bajo_flags: bajo_flags_updated,
+                    //     visible_flags: visible_flags_updated,
+                    //     ingresado_flags: ingresado_flags_updated,
+                    //     planes_ingresados: planes_ingresados
+                    // });
                 });
 
                 // Listener cuando se cierra el modal después de guardar
                 Livewire.on('closeModal', () => {
-                    console.log('Modal cerrado - Solicitando actualización de datos...');
+                    // console.log('Modal cerrado - Solicitando actualización de datos...');
                     // Emitir evento para que Livewire recargue los datos
                     @this.call('$refresh');
                 });
@@ -880,7 +880,7 @@
 
                 // Listener para abrir el modal cuando se hace clic en el gráfico o botones
                 Livewire.on('openUpdatePlanDataModal', () => {
-                    console.log('Evento openUpdatePlanDataModal recibido');
+                    // console.log('Evento openUpdatePlanDataModal recibido');
                     // Cerrar el loading si está activo
                     Swal.close();
                     // Abrir el modal

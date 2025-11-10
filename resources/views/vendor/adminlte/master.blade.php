@@ -52,7 +52,6 @@
         @endif
     @endif
 
-    <script nonce="{{ $nonce }}" src="{{ asset('js/alpine.min.js') }}"></script>
     {{-- <script nonce="{{ $nonce }}" src="{{ asset('js/app.js') }}" defer></script> --}}
 
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"> --}}
@@ -182,11 +181,14 @@
     {{-- Livewire Script --}}
     @if (config('adminlte.livewire'))
         @if (app()->version() >= 7)
-            @livewireScripts
+            @livewireScripts(['nonce' => $nonce])
         @else
             <livewire:scripts />
         @endif
     @endif
+
+    {{-- Alpine JS - DEBE cargarse DESPUÉS de Livewire --}}
+    <script nonce="{{ $nonce }}" src="{{ asset('js/alpine.min.js') }}" defer></script>
 
     <script nonce="{{ $nonce }}" src="{{ asset('js/bootstrap4-toggle.min.js') }}"></script>
     <script nonce="{{ $nonce }}" type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>

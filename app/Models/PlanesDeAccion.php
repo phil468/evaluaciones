@@ -56,24 +56,24 @@ class PlanesDeAccion extends Model implements Auditable
         return $this->feedbacks()->first();
     }
     
-public function aprobacionesHistorial() {
-    return $this->hasMany(PlanesDeAccionAprobacionHistorial::class,'planes_de_accion_id');
-}
-
-public function recalcularCumplimiento() {
-    if($this->objetivo && $this->objetivo > 0 && $this->alcanzado !== null){
-        $pct = ($this->alcanzado / $this->objetivo) * 100;
-        $this->porcentaje_cumplimiento = round($pct,2);
-        // Rangos visualizados en tu maqueta
-        if($pct < 50) $this->estado_cumplimiento = 'No cumplimiento';
-        elseif($pct < 70) $this->estado_cumplimiento = 'Bajo cumplimiento';
-        elseif($pct < 90) $this->estado_cumplimiento = 'Medio cumplimiento';
-        else $this->estado_cumplimiento = 'Cumplimiento esperado';
-    } else {
-        $this->porcentaje_cumplimiento = null;
-        $this->estado_cumplimiento = null;
+    public function aprobacionesHistorial() {
+        return $this->hasMany(PlanesDeAccionAprobacionHistorial::class,'planes_de_accion_id');
     }
-}
+
+    public function recalcularCumplimiento() {
+        if($this->objetivo && $this->objetivo > 0 && $this->alcanzado !== null){
+            $pct = ($this->alcanzado / $this->objetivo) * 100;
+            $this->porcentaje_cumplimiento = round($pct,2);
+            // Rangos visualizados en tu maqueta
+            if($pct < 50) $this->estado_cumplimiento = 'No cumplimiento';
+            elseif($pct < 70) $this->estado_cumplimiento = 'Bajo cumplimiento';
+            elseif($pct < 90) $this->estado_cumplimiento = 'Medio cumplimiento';
+            else $this->estado_cumplimiento = 'Cumplimiento esperado';
+        } else {
+            $this->porcentaje_cumplimiento = null;
+            $this->estado_cumplimiento = null;
+        }
+    }
 
     // public function competencia()
     // {
